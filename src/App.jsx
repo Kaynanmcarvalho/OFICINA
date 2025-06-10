@@ -1,0 +1,146 @@
+import React, { useEffect, Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { useStore, useAuthStore, useThemeStore } from './store/index.jsx';
+import { LoadingSpinner } from './components/ui/LoadingSpinner';
+import { ErrorBoundary } from './components/ui/ErrorBoundary';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { Layout } from './components/layout/Layout';
+
+// Lazy load pages for better performance
+const LoginPage = React.lazy(() => import('./pages/auth/LoginPage'));
+const RegisterPage = React.lazy(() => import('./pages/auth/RegisterPage'));
+const DashboardPage = React.lazy(() => import('./pages/DashboardPage'));
+const CheckinPage = React.lazy(() => import('./pages/CheckinPage'));
+const ClientsPage = React.lazy(() => import('./pages/ClientsPage'));
+const InventoryPage = React.lazy(() => import('./pages/InventoryPage'));
+const MotorcyclesPage = React.lazy(() => import('./pages/MotorcyclesPage'));
+const ToolsPage = React.lazy(() => import('./pages/ToolsPage'));
+const TeamPage = React.lazy(() => import('./pages/TeamPage'));
+const SchedulePage = React.lazy(() => import('./pages/SchedulePage'));
+const SettingsPage = React.lazy(() => import('./pages/SettingsPage'));
+const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
+const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
+
+function App() {
+  const { initializeStores, setupRealtimeListeners, isGlobalLoading } = useStore();
+  const { user, isLoading: authLoading } = useAuthStore();
+  const { isDarkMode } = useThemeStore();
+
+  useEffect(() => {
+    // Initialize all stores on app start
+    initializeStores();
+  }, [initializeStores]);
+
+  useEffect(() => {
+    // Setup real-time listeners when user is authenticated
+    if (user) {
+      const unsubscribe = setupRealtimeListeners();
+      return unsubscribe;
+    }
+  }, [user, setupRealtimeListeners]);
+
+  // Apply dark mode class to document
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
+
+  // Show loading spinner while initializing
+  if (authLoading || isGlobalLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  return (
+    <ErrorBoundary>
+      <Router>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+          <Suspense 
+            fallback={
+              <div className="min-h-screen flex items-center justify-center">
+                <LoadingSpinner size="lg" />
+              </div>
+            }
+          >
+            <Routes>
+              {/* Public routes */}
+              <Route 
+                path="/login" 
+                element={
+                  user ? <Navigate to="/dashboard" replace /> : <LoginPage />
+                } 
+              />
+              <Route 
+                path="/register" 
+                element={
+                  user ? <Navigate to="/dashboard" replace /> : <RegisterPage />
+                } 
+              />
+              
+              {/* Protected routes */}
+              <Route 
+                path="/" 
+                element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<Navigate to="/dashboard" replace />} />
+                <Route path="dashboard" element={<DashboardPage />} />
+                <Route path="checkin" element={<CheckinPage />} />
+                <Route path="clients" element={<ClientsPage />} />
+                <Route path="inventory" element={<InventoryPage />} />
+                <Route path="motorcycles" element={<MotorcyclesPage />} />
+                <Route path="tools" element={<ToolsPage />} />
+                <Route path="team" element={<TeamPage />} />
+                <Route path="schedule" element={<SchedulePage />} />
+                <Route path="settings" element={<SettingsPage />} />
+                <Route path="profile" element={<ProfilePage />} />
+              </Route>
+              
+              {/* Catch all route */}
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </Suspense>
+          
+          {/* Toast notifications */}
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              className: 'glass-card',
+              style: {
+                background: isDarkMode ? 'rgba(31, 41, 55, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+                color: isDarkMode ? '#f9fafb' : '#111827',
+                backdropFilter: 'blur(10px)',
+                border: isDarkMode ? '1px solid rgba(75, 85, 99, 0.3)' : '1px solid rgba(209, 213, 219, 0.3)',
+              },
+              success: {
+                iconTheme: {
+                  primary: '#10b981',
+                  secondary: '#ffffff',
+                },
+              },
+              error: {
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: '#ffffff',
+                },
+              },
+            }}
+          />
+        </div>
+      </Router>
+    </ErrorBoundary>
+  );
+}
+
+export default App;
