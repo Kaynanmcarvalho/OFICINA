@@ -140,7 +140,7 @@ const ToolsPage = () => {
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-xl shadow-lg text-white">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-medium opacity-90">Total de Ferramentas</h3>
-            <Tool className="w-8 h-8 opacity-80" />
+            <Settings className="w-8 h-8 opacity-80" />
           </div>
           <p className="text-3xl font-bold">{stats.total}</p>
         </div>
