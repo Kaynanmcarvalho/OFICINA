@@ -1,13 +1,96 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { Users, UserPlus, Edit, Trash2, Calendar, Award, Clock } from 'lucide-react';
+import toast from 'react-hot-toast';
+import Modal from '../components/ui/Modal';
+import TeamMemberForm from '../components/forms/TeamMemberForm';
+import { useTeamStore } from '../store';
 
 const TeamPage = () => {
+  const { members, schedules, fetchMembers, fetchSchedules, createMember, updateMember, deleteMember, getTeamStatistics, isLoading } = useTeamStore();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingMember, setEditingMember] = useState(null);
+  const [filterRole, setFilterRole] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
+
+  useEffect(() => {
+    fetchMembers();
+    fetchSchedules();
+  }, [fetchMembers, fetchSchedules]);
+
+  const handleCreateMember = async (memberData) => {
+    const result = await createMember(memberData);
+    if (result.success) {
+      toast.success('Membro cadastrado com sucesso!');
+      setIsModalOpen(false);
+    } else {
+      toast.error(result.error || 'Erro ao cadastrar membro');
+    }
+  };
+
+  const handleUpdateMember = async (memberData) => {
+    const result = await updateMember(editingMember.firestoreId, memberData);
+    if (result.success) {
+      toast.success('Membro atualizado com sucesso!');
+      setIsModalOpen(false);
+      setEditingMember(null);
+    } else {
+      toast.error(result.error || 'Erro ao atualizar membro');
+    }
+  };
+
+  const handleDeleteMember = async (memberId) => {
+    if (window.confirm('Tem certeza que deseja excluir este membro?')) {
+      const result = await deleteMember(memberId);
+      if (result.success) {
+        toast.success('Membro excluído com sucesso!');
+      } else {
+        toast.error(result.error || 'Erro ao excluir membro');
+      }
+    }
+  };
+
+  const handleEdit = (member) => {
+    setEditingMember(member);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingMember(null);
+  };
+
+  const stats = getTeamStatistics();
+
+  const filteredMembers = members.filter(member => {
+    if (filterRole && member.role !== filterRole) return false;
+    if (filterStatus && member.status !== filterStatus) return false;
+    return true;
+  });
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Ativo': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      case 'Inativo': return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+      case 'Férias': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+      case 'Licença': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
+      case 'Afastado': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+    }
+  };
+
+  const todaySchedules = schedules.filter(s => s.date === new Date().toISOString().split('T')[0] && s.status !== 'Cancelado');
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           Gestão de Equipe
         </h1>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+        >
+          <UserPlus className="w-5 h-5" />
           Novo Membro
         </button>
       </div>

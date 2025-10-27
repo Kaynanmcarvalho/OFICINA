@@ -268,66 +268,18 @@ const SchedulePage = () => {
         )}
       </div>
 
-      {/* Weekly Schedule */}
-      <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-          Cronograma Semanal
-        </h2>
-        
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-200 dark:border-gray-600">
-                <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">Horário</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">Segunda</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">Terça</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">Quarta</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">Quinta</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">Sexta</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">Sábado</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-gray-100 dark:border-gray-700">
-                <td className="py-3 px-4 text-gray-600 dark:text-gray-400">08:00</td>
-                <td className="py-3 px-4"><span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">Revisão</span></td>
-                <td className="py-3 px-4"><span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Montagem</span></td>
-                <td className="py-3 px-4"></td>
-                <td className="py-3 px-4"><span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">Manutenção</span></td>
-                <td className="py-3 px-4"><span className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs">Customização</span></td>
-                <td className="py-3 px-4"></td>
-              </tr>
-              <tr className="border-b border-gray-100 dark:border-gray-700">
-                <td className="py-3 px-4 text-gray-600 dark:text-gray-400">10:00</td>
-                <td className="py-3 px-4"></td>
-                <td className="py-3 px-4"><span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">Revisão</span></td>
-                <td className="py-3 px-4"><span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Montagem</span></td>
-                <td className="py-3 px-4"></td>
-                <td className="py-3 px-4"><span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">Manutenção</span></td>
-                <td className="py-3 px-4"><span className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs">Customização</span></td>
-              </tr>
-              <tr className="border-b border-gray-100 dark:border-gray-700">
-                <td className="py-3 px-4 text-gray-600 dark:text-gray-400">14:00</td>
-                <td className="py-3 px-4"><span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Montagem</span></td>
-                <td className="py-3 px-4"></td>
-                <td className="py-3 px-4"><span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">Revisão</span></td>
-                <td className="py-3 px-4"><span className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs">Customização</span></td>
-                <td className="py-3 px-4"></td>
-                <td className="py-3 px-4"><span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">Manutenção</span></td>
-              </tr>
-              <tr>
-                <td className="py-3 px-4 text-gray-600 dark:text-gray-400">16:00</td>
-                <td className="py-3 px-4"><span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">Manutenção</span></td>
-                <td className="py-3 px-4"><span className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs">Customização</span></td>
-                <td className="py-3 px-4"></td>
-                <td className="py-3 px-4"><span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Montagem</span></td>
-                <td className="py-3 px-4"><span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">Revisão</span></td>
-                <td className="py-3 px-4"></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title={editingSchedule ? 'Editar Agendamento' : 'Novo Agendamento'}
+        size="lg"
+      >
+        <ScheduleForm
+          onSubmit={editingSchedule ? handleUpdateSchedule : handleCreateSchedule}
+          onClose={handleCloseModal}
+          initialData={editingSchedule}
+        />
+      </Modal>
     </div>
   );
 };
