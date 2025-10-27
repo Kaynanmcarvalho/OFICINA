@@ -18,11 +18,14 @@ import {
   MdPerson,
   MdLogout,
   MdGarage,
-  MdSupervisorAccount
+  MdSupervisorAccount,
+  MdExpandMore,
+  MdExpandLess
 } from 'react-icons/md';
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [employeesMenuOpen, setEmployeesMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout, userRole } = useAuthStore();
@@ -40,11 +43,14 @@ const Layout = () => {
     { path: '/vehicles', name: 'Veículos', icon: MdTwoWheeler, color: 'blue' },
     { path: '/inventory', name: 'Estoque', icon: MdInventory, color: 'blue' },
     { path: '/tools', name: 'Ferramentas', icon: MdBuild, color: 'blue' },
-    { path: '/team', name: 'Equipe', icon: MdGroup, color: 'blue' },
     { path: '/schedule', name: 'Agenda', icon: MdCalendarToday, color: 'blue' },
     { path: '/reports', name: 'Relatórios', icon: MdBarChart, color: 'amber' },
-    ...(userRole === 'admin' ? [{ path: '/employees', name: 'Funcionários', icon: MdSupervisorAccount, color: 'blue' }] : []),
     { path: '/settings', name: 'Configurações', icon: MdSettings, color: 'blue' },
+  ];
+
+  const employeesSubmenu = [
+    { path: '/employees', name: 'Funcionários', icon: MdSupervisorAccount },
+    { path: '/team', name: 'Equipe', icon: MdGroup },
   ];
 
   return (
@@ -82,6 +88,50 @@ const Layout = () => {
                 </Link>
               );
             })}
+
+            {/* Employees Menu with Submenu (Admin only) */}
+            {userRole === 'admin' && (
+              <div>
+                <button
+                  onClick={() => setEmployeesMenuOpen(!employeesMenuOpen)}
+                  className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <div className="flex items-center">
+                    <MdSupervisorAccount className="mr-3 text-lg" />
+                    <span>Gestão de Pessoas</span>
+                  </div>
+                  {employeesMenuOpen ? (
+                    <MdExpandLess className="text-lg" />
+                  ) : (
+                    <MdExpandMore className="text-lg" />
+                  )}
+                </button>
+
+                {/* Submenu */}
+                {employeesMenuOpen && (
+                  <div className="ml-4 mt-1 space-y-1">
+                    {employeesSubmenu.map((subItem) => {
+                      const isActive = location.pathname === subItem.path;
+
+                      return (
+                        <Link
+                          key={subItem.path}
+                          to={subItem.path}
+                          className={`flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${isActive
+                              ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200'
+                              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                            }`}
+                          onClick={() => setSidebarOpen(false)}
+                        >
+                          <subItem.icon className="mr-3 text-base" />
+                          {subItem.name}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </nav>
       </div>
