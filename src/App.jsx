@@ -14,6 +14,7 @@ const CompleteProfilePage = React.lazy(() => import('./pages/auth/CompleteProfil
 const DashboardPage = React.lazy(() => import('./pages/DashboardPage'));
 const EmployeeManagementPage = React.lazy(() => import('./pages/EmployeeManagementPage'));
 const CheckinPage = React.lazy(() => import('./pages/CheckinPage'));
+const CheckInDetailsPage = React.lazy(() => import('./pages/CheckInDetailsPage'));
 const ClientsPage = React.lazy(() => import('./pages/ClientsPage'));
 const InventoryPage = React.lazy(() => import('./pages/InventoryPage'));
 const VehiclesPage = React.lazy(() => import('./pages/VehiclesPage'));
@@ -109,6 +110,7 @@ function App() {
                 <Route index element={<Navigate to="/dashboard" replace />} />
                 <Route path="dashboard" element={<DashboardPage />} />
                 <Route path="checkin" element={<CheckinPage />} />
+                <Route path="checkin/:id" element={<CheckInDetailsPage />} />
                 <Route path="clients" element={<ClientsPage />} />
                 <Route path="inventory" element={<InventoryPage />} />
                 <Route path="vehicles" element={<VehiclesPage />} />

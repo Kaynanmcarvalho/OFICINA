@@ -1,41 +1,125 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { Wrench, Pencil, Trash2, CheckCircle, AlertCircle, Settings } from 'lucide-react';
 import Modal from '../components/ui/Modal';
 import ToolForm from '../components/forms/ToolForm';
+import { useToolStore } from '../store/toolStore';
 
 const ToolsPage = () => {
+  const { 
+    tools, 
+    fetchTools, 
+    createTool, 
+    updateTool, 
+    deleteTool, 
+    searchTools,
+    getToolStatistics,
+    isLoading 
+  } = useToolStore();
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [isToolModalOpen, setIsToolModalOpen] = useState(false);
+  const [editingTool, setEditingTool] = useState(null);
+  const [filteredTools, setFilteredTools] = useState([]);
+
+  useEffect(() => {
+    loadTools();
+  }, []);
+
+  useEffect(() => {
+    filterTools();
+  }, [tools, statusFilter]);
+
+  const loadTools = async () => {
+    await fetchTools();
+  };
+
+  const filterTools = () => {
+    let filtered = [...tools];
+    
+    if (statusFilter) {
+      filtered = filtered.filter(tool => tool.status === statusFilter);
+    }
+    
+    setFilteredTools(filtered);
+  };
 
   const handleNewTool = () => {
+    setEditingTool(null);
     setIsToolModalOpen(true);
   };
 
-  const handleToolSubmit = (toolData) => {
-    console.log('Tool data:', toolData);
-    // Aqui você salvaria os dados no banco/store
+  const handleEditTool = (tool) => {
+    setEditingTool(tool);
+    setIsToolModalOpen(true);
+  };
+
+  const handleToolSubmit = async (toolData) => {
+    try {
+      if (editingTool) {
+        const result = await updateTool(editingTool.firestoreId, toolData);
+        if (result.success) {
+          toast.success('Ferramenta atualizada com sucesso!');
+          setIsToolModalOpen(false);
+          setEditingTool(null);
+        } else {
+          toast.error(result.error || 'Erro ao atualizar ferramenta');
+        }
+      } else {
+        const result = await createTool(toolData);
+        if (result.success) {
+          toast.success('Ferramenta cadastrada com sucesso!');
+          setIsToolModalOpen(false);
+        } else {
+          toast.error(result.error || 'Erro ao cadastrar ferramenta');
+        }
+      }
+    } catch (error) {
+      toast.error('Erro ao salvar ferramenta');
+    }
+  };
+
+  const handleDeleteTool = async (tool) => {
+    if (window.confirm(`Tem certeza que deseja excluir "${tool.name}"?`)) {
+      const result = await deleteTool(tool.firestoreId);
+      if (result.success) {
+        toast.success('Ferramenta excluída com sucesso!');
+      } else {
+        toast.error(result.error || 'Erro ao excluir ferramenta');
+      }
+    }
   };
 
   const handleSearch = async () => {
-    if (!searchTerm.trim() && !statusFilter) {
-      toast.error('Digite um termo para buscar ou selecione um status');
+    if (!searchTerm.trim()) {
+      filterTools();
       return;
     }
     
-    setIsLoading(true);
-    try {
-      // Simular busca
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      const searchInfo = [];
-      if (searchTerm) searchInfo.push(`termo: ${searchTerm}`);
-      if (statusFilter) searchInfo.push(`status: ${statusFilter}`);
-      toast.success(`Buscando por: ${searchInfo.join(', ')}`);
-    } catch (error) {
+    const result = await searchTools(searchTerm);
+    if (result.success) {
+      setFilteredTools(result.data);
+      if (result.data.length === 0) {
+        toast.info('Nenhuma ferramenta encontrada');
+      }
+    } else {
       toast.error('Erro ao buscar ferramentas');
-    } finally {
-      setIsLoading(false);
+    }
+  };
+
+  const stats = getToolStatistics();
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'disponivel':
+        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Disponível</span>;
+      case 'em_uso':
+        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">Em Uso</span>;
+      case 'manutencao':
+        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">Manutenção</span>;
+      default:
+        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">{status}</span>;
     }
   };
   return (
@@ -53,32 +137,36 @@ const ToolsPage = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            Total de Ferramentas
-          </h3>
-          <p className="text-3xl font-bold text-blue-600">0</p>
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-xl shadow-lg text-white">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium opacity-90">Total de Ferramentas</h3>
+            <Tool className="w-8 h-8 opacity-80" />
+          </div>
+          <p className="text-3xl font-bold">{stats.total}</p>
         </div>
         
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            Disponíveis
-          </h3>
-          <p className="text-3xl font-bold text-green-600">0</p>
+        <div className="bg-gradient-to-br from-green-500 to-green-600 p-6 rounded-xl shadow-lg text-white">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium opacity-90">Disponíveis</h3>
+            <CheckCircle className="w-8 h-8 opacity-80" />
+          </div>
+          <p className="text-3xl font-bold">{stats.available}</p>
         </div>
         
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            Em Uso
-          </h3>
-          <p className="text-3xl font-bold text-yellow-600">0</p>
+        <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 p-6 rounded-xl shadow-lg text-white">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium opacity-90">Em Uso</h3>
+            <Wrench className="w-8 h-8 opacity-80" />
+          </div>
+          <p className="text-3xl font-bold">{stats.inUse}</p>
         </div>
         
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            Manutenção
-          </h3>
-          <p className="text-3xl font-bold text-red-600">0</p>
+        <div className="bg-gradient-to-br from-red-500 to-red-600 p-6 rounded-xl shadow-lg text-white">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium opacity-90">Manutenção</h3>
+            <AlertCircle className="w-8 h-8 opacity-80" />
+          </div>
+          <p className="text-3xl font-bold">{stats.maintenance}</p>
         </div>
       </div>
       
@@ -141,11 +229,70 @@ const ToolsPage = () => {
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              <tr>
-                <td colSpan="6" className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
-                  Nenhuma ferramenta cadastrada.
-                </td>
-              </tr>
+              {isLoading ? (
+                <tr>
+                  <td colSpan="6" className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                    Carregando...
+                  </td>
+                </tr>
+              ) : filteredTools.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                    Nenhuma ferramenta cadastrada.
+                  </td>
+                </tr>
+              ) : (
+                filteredTools.map((tool) => (
+                  <tr key={tool.firestoreId} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        {tool.name}
+                      </div>
+                      {tool.serialNumber && (
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          S/N: {tool.serialNumber}
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900 dark:text-white">
+                        {tool.category}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {getStatusBadge(tool.status)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900 dark:text-white">
+                        {tool.location || '-'}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900 dark:text-white">
+                        {tool.assignedTo || '-'}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => handleEditTool(tool)}
+                          className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                          title="Editar"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteTool(tool)}
+                          className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                          title="Excluir"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -153,13 +300,20 @@ const ToolsPage = () => {
       
       <Modal
         isOpen={isToolModalOpen}
-        onClose={() => setIsToolModalOpen(false)}
-        title="Nova Ferramenta"
+        onClose={() => {
+          setIsToolModalOpen(false);
+          setEditingTool(null);
+        }}
+        title={editingTool ? 'Editar Ferramenta' : 'Nova Ferramenta'}
         size="lg"
       >
         <ToolForm
+          tool={editingTool}
           onSubmit={handleToolSubmit}
-          onClose={() => setIsToolModalOpen(false)}
+          onClose={() => {
+            setIsToolModalOpen(false);
+            setEditingTool(null);
+          }}
         />
       </Modal>
     </div>

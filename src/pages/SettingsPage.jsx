@@ -114,6 +114,20 @@ const SettingsPage = () => {
       const result = await updateSettings(user.uid, preferences);
 
       if (result.success) {
+        // Aplicar o tema imediatamente
+        if (preferences.theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else if (preferences.theme === 'light') {
+          document.documentElement.classList.remove('dark');
+        } else {
+          // Auto - detectar preferência do sistema
+          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        }
+        
         toast.success('Preferências salvas com sucesso!');
       }
     } catch (error) {

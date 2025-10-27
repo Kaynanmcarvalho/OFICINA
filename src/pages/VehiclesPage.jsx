@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { Pencil, Trash2, Eye } from 'lucide-react';
 import Modal from '../components/ui/Modal';
 import VehicleForm from '../components/forms/VehicleForm';
 import { useVehicleStore } from '../store';
 
 const VehiclesPage = () => {
-  const { vehicles, fetchVehicles, searchVehicles, createVehicle, isLoading: storeLoading, error } = useVehicleStore();
+  const { vehicles, fetchVehicles, searchVehicles, createVehicle, updateVehicle, deleteVehicle, isLoading: storeLoading, error } = useVehicleStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
+  const [editingVehicle, setEditingVehicle] = useState(null);
 
   useEffect(() => {
     fetchVehicles();
@@ -34,11 +36,33 @@ const VehiclesPage = () => {
 
   const handleVehicleSubmit = async (vehicleData) => {
     try {
-      await createVehicle(vehicleData);
-      toast.success('Veículo criado com sucesso!');
+      if (editingVehicle) {
+        await updateVehicle(editingVehicle.firestoreId, vehicleData);
+        toast.success('Veículo atualizado com sucesso!');
+      } else {
+        await createVehicle(vehicleData);
+        toast.success('Veículo criado com sucesso!');
+      }
       setIsVehicleModalOpen(false);
+      setEditingVehicle(null);
     } catch (err) {
-      toast.error('Erro ao criar veículo');
+      toast.error(editingVehicle ? 'Erro ao atualizar veículo' : 'Erro ao criar veículo');
+    }
+  };
+
+  const handleEditVehicle = (vehicle) => {
+    setEditingVehicle(vehicle);
+    setIsVehicleModalOpen(true);
+  };
+
+  const handleDeleteVehicle = async (vehicleId) => {
+    if (window.confirm('Tem certeza que deseja excluir este veículo?')) {
+      try {
+        await deleteVehicle(vehicleId);
+        toast.success('Veículo excluído com sucesso!');
+      } catch (err) {
+        toast.error('Erro ao excluir veículo');
+      }
     }
   };
 
@@ -187,10 +211,25 @@ const VehiclesPage = () => {
                       {vehicle.status}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {vehicle.progress || '0%'} // Assumindo que há um campo progress
+                      {vehicle.progress || '0%'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      // Botões de ações aqui
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => handleEditVehicle(vehicle)}
+                          className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                          title="Editar"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteVehicle(vehicle.firestoreId)}
+                          className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                          title="Excluir"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -202,13 +241,20 @@ const VehiclesPage = () => {
       
       <Modal
         isOpen={isVehicleModalOpen}
-        onClose={() => setIsVehicleModalOpen(false)}
-        title="Novo Veículo"
+        onClose={() => {
+          setIsVehicleModalOpen(false);
+          setEditingVehicle(null);
+        }}
+        title={editingVehicle ? 'Editar Veículo' : 'Novo Veículo'}
         size="lg"
       >
         <VehicleForm
+          vehicle={editingVehicle}
           onSubmit={handleVehicleSubmit}
-          onClose={() => setIsVehicleModalOpen(false)}
+          onClose={() => {
+            setIsVehicleModalOpen(false);
+            setEditingVehicle(null);
+          }}
         />
       </Modal>
     </div>
