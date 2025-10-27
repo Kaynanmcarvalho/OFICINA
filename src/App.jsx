@@ -23,6 +23,7 @@ const ToolsPage = React.lazy(() => import('./pages/ToolsPage'));
 const TeamPage = React.lazy(() => import('./pages/TeamPage'));
 const SchedulePage = React.lazy(() => import('./pages/SchedulePage'));
 const SettingsPage = React.lazy(() => import('./pages/SettingsPage'));
+const IntegrationsPage = React.lazy(() => import('./pages/IntegrationsPage'));
 const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
 const ReportsPage = React.lazy(() => import('./pages/ReportsPage'));
 const DevPage = React.lazy(() => import('./pages/DevPage'));
@@ -122,6 +123,7 @@ function App() {
                 <Route path="reports" element={<ReportsPage />} />
                 <Route path="dev" element={<DevPage />} />
                 <Route path="settings" element={<SettingsPage />} />
+                <Route path="integrations" element={<IntegrationsPage />} />
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="employees" element={<EmployeeManagementPage />} />
               </Route>

@@ -5,10 +5,13 @@ import { ptBR } from 'date-fns/locale';
 import toast from 'react-hot-toast';
 import Modal from '../components/ui/Modal';
 import ScheduleForm from '../components/forms/ScheduleForm';
-import { useTeamStore } from '../store';
+import { useTeamStore, useAuthStore } from '../store';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 
 const SchedulePage = () => {
   const { schedules, members, fetchSchedules, fetchMembers, createSchedule, updateSchedule, deleteSchedule, isLoading } = useTeamStore();
+  const { user } = useAuthStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState(null);
   
@@ -25,11 +28,45 @@ const SchedulePage = () => {
   const [selectedDate, setSelectedDate] = useState(getTodayInSaoPaulo());
   const [currentMonth, setCurrentMonth] = useState(getTodayInSaoPaulo());
   const [filterShift, setFilterShift] = useState('');
+  
+  // Configurações de integração
+  const [integrationSettings, setIntegrationSettings] = useState({
+    showEmployeeName: true,
+    showResponsibilities: true,
+    enableColorCustomization: true,
+    defaultColor: '#3B82F6',
+    urgentColor: '#EF4444',
+    highColor: '#F97316',
+    normalColor: '#3B82F6',
+    lowColor: '#6B7280',
+  });
 
   useEffect(() => {
     fetchSchedules();
     fetchMembers();
+    loadIntegrationSettings();
   }, [fetchSchedules, fetchMembers]);
+
+  const loadIntegrationSettings = async () => {
+    if (!user?.organizationId) return;
+    
+    try {
+      const docRef = doc(db, 'integrations', user.organizationId);
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.schedule) {
+          setIntegrationSettings({
+            ...integrationSettings,
+            ...data.schedule
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao carregar configurações de integração:', error);
+    }
+  };
 
   const handleCreateSchedule = async (scheduleData) => {
     const result = await createSchedule(scheduleData);
@@ -145,13 +182,36 @@ const SchedulePage = () => {
   };
 
   const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 'urgent': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      case 'high': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
-      case 'normal': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'low': return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+    if (!integrationSettings.enableColorCustomization) {
+      switch (priority) {
+        case 'urgent': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+        case 'high': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
+        case 'normal': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+        case 'low': return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+        default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+      }
     }
+    
+    // Usar cores personalizadas
+    const colorMap = {
+      urgent: integrationSettings.urgentColor,
+      high: integrationSettings.highColor,
+      normal: integrationSettings.normalColor,
+      low: integrationSettings.lowColor,
+    };
+    
+    return colorMap[priority] || integrationSettings.defaultColor;
+  };
+
+  const getPriorityStyle = (priority) => {
+    if (!integrationSettings.enableColorCustomization) return {};
+    
+    const color = getPriorityColor(priority);
+    return {
+      backgroundColor: `${color}20`,
+      color: color,
+      borderColor: color,
+    };
   };
 
   return (
@@ -370,14 +430,27 @@ const SchedulePage = () => {
         ) : (
           <div className="space-y-3">
             {filteredSchedules.map((schedule) => (
-              <div key={schedule.firestoreId} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+              <div 
+                key={schedule.firestoreId} 
+                className="flex items-center justify-between p-4 rounded-lg hover:shadow-md transition-all border-l-4"
+                style={integrationSettings.enableColorCustomization ? {
+                  backgroundColor: 'var(--tw-bg-opacity)',
+                  borderLeftColor: getPriorityColor(schedule.priority)
+                } : {}}
+              >
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
+                  <div className="flex items-center gap-3 mb-2 flex-wrap">
                     <Clock className="w-4 h-4 text-gray-500" />
                     <span className="font-medium text-gray-900 dark:text-white">
                       {schedule.startTime} - {schedule.endTime}
                     </span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(schedule.priority)}`}>
+                    <span 
+                      className={integrationSettings.enableColorCustomization ? 
+                        'px-2 py-1 rounded-full text-xs font-medium border' : 
+                        `px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(schedule.priority)}`
+                      }
+                      style={integrationSettings.enableColorCustomization ? getPriorityStyle(schedule.priority) : {}}
+                    >
                       {schedule.priority === 'urgent' ? 'Urgente' :
                         schedule.priority === 'high' ? 'Alta' :
                           schedule.priority === 'low' ? 'Baixa' : 'Normal'}
@@ -389,11 +462,14 @@ const SchedulePage = () => {
                     )}
                   </div>
                   <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
-                    {schedule.serviceType} - {getMemberName(schedule.memberId)}
+                    {schedule.serviceType}
+                    {integrationSettings.showEmployeeName && (
+                      <span className="text-blue-600 dark:text-blue-400"> • {getMemberName(schedule.memberId)}</span>
+                    )}
                   </p>
-                  {schedule.description && (
+                  {integrationSettings.showResponsibilities && schedule.description && (
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {schedule.description}
+                      <span className="font-medium">Responsabilidades:</span> {schedule.description}
                     </p>
                   )}
                 </div>
