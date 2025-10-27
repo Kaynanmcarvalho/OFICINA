@@ -1,15 +1,23 @@
 import { useState, useEffect } from 'react';
-import { Link2, Calendar, Save, RotateCcw } from 'lucide-react';
+import { Link2, Calendar, Save, RotateCcw, ChevronDown, ChevronUp, FileText, ShoppingCart, Upload, MapPin } from 'lucide-react';
 import { useAuthStore } from '../store';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '../config/firebase';
 import toast from 'react-hot-toast';
 
 const IntegrationsPage = () => {
   const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState('caixa');
   
+  // Estados de expansão
+  const [isScheduleExpanded, setIsScheduleExpanded] = useState(false);
+  const [isInvoiceExpanded, setIsInvoiceExpanded] = useState(false);
+  const [isSalesExpanded, setIsSalesExpanded] = useState(false);
+
+  // Configurações de Agenda
   const [scheduleIntegrations, setScheduleIntegrations] = useState({
     showEmployeeName: true,
     showResponsibilities: true,
@@ -21,12 +29,45 @@ const IntegrationsPage = () => {
     lowColor: '#6B7280',
   });
 
+  // Configurações de Nota Fiscal
+  const [invoiceSettings, setInvoiceSettings] = useState({
+    regimeTributario: '1',
+    cnae: '',
+    inscricaoEstadual: '',
+    inscricaoMunicipal: '',
+    cep: '',
+    logradouro: '',
+    numero: '',
+    complemento: '',
+    bairro: '',
+    cidade: '',
+    estado: '',
+    ambiente: 'homologacao',
+    serieNFe: '1',
+    numeroNFe: '1',
+    integracaoIBPT: false,
+    estadoIBPT: '',
+    cfopDentroEstado: '5102',
+    cfopForaEstado: '6102',
+    csosnIcms: '102',
+    ncmPadrao: '',
+    cestPadrao: '',
+    certificadoUrl: '',
+    certificadoSenha: '',
+    contadorNome: '',
+    contadorEmail: '',
+    contadorTelefone: '',
+  });
+
   useEffect(() => {
     loadIntegrations();
-  }, [user]);
+  }, [user?.organizationId]);
 
   const loadIntegrations = async () => {
-    if (!user?.organizationId) return;
+    if (!user?.organizationId) {
+      setIsLoading(false);
+      return;
+    }
     
     setIsLoading(true);
     try {
@@ -35,10 +76,12 @@ const IntegrationsPage = () => {
       
       if (docSnap.exists()) {
         const data = docSnap.data();
-        setScheduleIntegrations({
-          ...scheduleIntegrations,
-          ...data.schedule
-        });
+        if (data.schedule) {
+          setScheduleIntegrations(prev => ({ ...prev, ...data.schedule }));
+        }
+        if (data.invoice) {
+          setInvoiceSettings(prev => ({ ...prev, ...data.invoice }));
+        }
       }
     } catch (error) {
       console.error('Erro ao carregar integrações:', error);
@@ -59,6 +102,7 @@ const IntegrationsPage = () => {
       const docRef = doc(db, 'integrations', user.organizationId);
       await setDoc(docRef, {
         schedule: scheduleIntegrations,
+        invoice: invoiceSettings,
         updatedAt: new Date().toISOString(),
         updatedBy: user.uid
       }, { merge: true });
@@ -72,32 +116,59 @@ const IntegrationsPage = () => {
     }
   };
 
-  const handleReset = () => {
-    setScheduleIntegrations({
-      showEmployeeName: true,
-      showResponsibilities: true,
-      enableColorCustomization: true,
-      defaultColor: '#3B82F6',
-      urgentColor: '#EF4444',
-      highColor: '#F97316',
-      normalColor: '#3B82F6',
-      lowColor: '#6B7280',
-    });
-    toast.success('Configurações resetadas para o padrão');
-  };
-
   const handleToggle = (field) => {
-    setScheduleIntegrations({
-      ...scheduleIntegrations,
-      [field]: !scheduleIntegrations[field]
-    });
+    setScheduleIntegrations({ ...scheduleIntegrations, [field]: !scheduleIntegrations[field] });
   };
 
   const handleColorChange = (field, value) => {
-    setScheduleIntegrations({
-      ...scheduleIntegrations,
-      [field]: value
-    });
+    setScheduleIntegrations({ ...scheduleIntegrations, [field]: value });
+  };
+
+  const handleInvoiceChange = (field, value) => {
+    setInvoiceSettings({ ...invoiceSettings, [field]: value });
+  };
+
+  const handleCepSearch = async (cep) => {
+    const cleanCep = cep.replace(/\D/g, '');
+    if (cleanCep.length !== 8) return;
+
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+      const data = await response.json();
+      
+      if (!data.erro) {
+        setInvoiceSettings(prev => ({
+          ...prev,
+          cep: cleanCep,
+          logradouro: data.logradouro,
+          bairro: data.bairro,
+          cidade: data.localidade,
+          estado: data.uf,
+        }));
+        toast.success('CEP encontrado!');
+      } else {
+        toast.error('CEP não encontrado');
+      }
+    } catch (error) {
+      toast.error('Erro ao buscar CEP');
+    }
+  };
+
+  const handleCertificateUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      const storageRef = ref(storage, `certificates/${user.organizationId}/${file.name}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      
+      setInvoiceSettings(prev => ({ ...prev, certificadoUrl: url }));
+      toast.success('Certificado enviado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao fazer upload:', error);
+      toast.error('Erro ao enviar certificado');
+    }
   };
 
   if (isLoading) {
@@ -122,213 +193,568 @@ const IntegrationsPage = () => {
         </p>
       </div>
 
-      {/* Integração com Agenda */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 p-6">
-          <div className="flex items-center gap-3 text-white">
-            <Calendar className="w-8 h-8" />
-            <div>
-              <h2 className="text-2xl font-bold">Agenda e Cronograma</h2>
-              <p className="text-blue-100 mt-1">Personalize a exibição e funcionalidades da agenda</p>
-            </div>
+      {/* Navegação por Abas */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+        <div className="flex border-b border-gray-200 dark:border-gray-700">
+          <button
+            onClick={() => setActiveTab('caixa')}
+            className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors ${
+              activeTab === 'caixa'
+                ? 'text-blue-600 border-b-2 border-blue-600 dark:text-blue-400'
+                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+            }`}
+          >
+            <FileText className="w-5 h-5" />
+            Caixa
+          </button>
+          <button
+            onClick={() => setActiveTab('vendas')}
+            className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors ${
+              activeTab === 'vendas'
+                ? 'text-blue-600 border-b-2 border-blue-600 dark:text-blue-400'
+                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+            }`}
+          >
+            <ShoppingCart className="w-5 h-5" />
+            Vendas
+          </button>
+        </div>
+      </div>
+
+      {/* Conteúdo da Aba Caixa */}
+      {activeTab === 'caixa' && (
+        <div className="space-y-6">
+          {/* Nota Fiscal */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <button
+              onClick={() => setIsInvoiceExpanded(!isInvoiceExpanded)}
+              className="w-full bg-gradient-to-r from-green-600 to-green-700 dark:from-green-700 dark:to-green-800 p-6 hover:from-green-700 hover:to-green-800 transition-all"
+            >
+              <div className="flex items-center justify-between text-white">
+                <div className="flex items-center gap-3">
+                  <FileText className="w-8 h-8" />
+                  <div className="text-left">
+                    <h2 className="text-2xl font-bold">Nota Fiscal</h2>
+                    <p className="text-green-100 mt-1">Configurações de emissão de NF-e</p>
+                  </div>
+                </div>
+                {isInvoiceExpanded ? <ChevronUp className="w-6 h-6" /> : <ChevronDown className="w-6 h-6" />}
+              </div>
+            </button>
+
+            {isInvoiceExpanded && (
+              <div className="p-6 space-y-6">
+                {/* Dados Fiscais */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Dados Fiscais</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Regime Tributário
+                      </label>
+                      <select
+                        value={invoiceSettings.regimeTributario}
+                        onChange={(e) => handleInvoiceChange('regimeTributario', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      >
+                        <option value="1">Simples Nacional</option>
+                        <option value="2">Simples Nacional - Excesso</option>
+                        <option value="3">Regime Normal</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        CNAE
+                      </label>
+                      <input
+                        type="text"
+                        value={invoiceSettings.cnae}
+                        onChange={(e) => handleInvoiceChange('cnae', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        placeholder="0000-0/00"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Inscrição Estadual
+                      </label>
+                      <input
+                        type="text"
+                        value={invoiceSettings.inscricaoEstadual}
+                        onChange={(e) => handleInvoiceChange('inscricaoEstadual', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Inscrição Municipal
+                      </label>
+                      <input
+                        type="text"
+                        value={invoiceSettings.inscricaoMunicipal}
+                        onChange={(e) => handleInvoiceChange('inscricaoMunicipal', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Endereço */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-blue-600" />
+                    Endereço Completo
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        CEP
+                      </label>
+                      <input
+                        type="text"
+                        value={invoiceSettings.cep}
+                        onChange={(e) => {
+                          handleInvoiceChange('cep', e.target.value);
+                          if (e.target.value.replace(/\D/g, '').length === 8) {
+                            handleCepSearch(e.target.value);
+                          }
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        placeholder="00000-000"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Logradouro
+                      </label>
+                      <input
+                        type="text"
+                        value={invoiceSettings.logradouro}
+                        onChange={(e) => handleInvoiceChange('logradouro', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Número
+                      </label>
+                      <input
+                        type="text"
+                        value={invoiceSettings.numero}
+                        onChange={(e) => handleInvoiceChange('numero', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Complemento
+                      </label>
+                      <input
+                        type="text"
+                        value={invoiceSettings.complemento}
+                        onChange={(e) => handleInvoiceChange('complemento', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Bairro
+                      </label>
+                      <input
+                        type="text"
+                        value={invoiceSettings.bairro}
+                        onChange={(e) => handleInvoiceChange('bairro', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Cidade
+                      </label>
+                      <input
+                        type="text"
+                        value={invoiceSettings.cidade}
+                        onChange={(e) => handleInvoiceChange('cidade', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Estado
+                      </label>
+                      <input
+                        type="text"
+                        value={invoiceSettings.estado}
+                        onChange={(e) => handleInvoiceChange('estado', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        maxLength="2"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Configurações de Numeração e Ambiente */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Configurações de Numeração e Ambiente</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Ambiente
+                      </label>
+                      <select
+                        value={invoiceSettings.ambiente}
+                        onChange={(e) => handleInvoiceChange('ambiente', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      >
+                        <option value="homologacao">Homologação</option>
+                        <option value="producao">Produção</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Série NF-e
+                      </label>
+                      <input
+                        type="text"
+                        value={invoiceSettings.serieNFe}
+                        onChange={(e) => handleInvoiceChange('serieNFe', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Número Inicial NF-e
+                      </label>
+                      <input
+                        type="text"
+                        value={invoiceSettings.numeroNFe}
+                        onChange={(e) => handleInvoiceChange('numeroNFe', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Configurações Tributárias Avançadas */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Configurações Tributárias Avançadas</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white">Integração IBPT</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Ativar cálculo de impostos aproximados</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={invoiceSettings.integracaoIBPT}
+                          onChange={(e) => handleInvoiceChange('integracaoIBPT', e.target.checked)}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                      </label>
+                    </div>
+                    {invoiceSettings.integracaoIBPT && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                          Estado para IBPT
+                        </label>
+                        <input
+                          type="text"
+                          value={invoiceSettings.estadoIBPT}
+                          onChange={(e) => handleInvoiceChange('estadoIBPT', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                          maxLength="2"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Configurações Tributárias */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Configurações Tributárias</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        CFOP Dentro do Estado
+                      </label>
+                      <input
+                        type="text"
+                        value={invoiceSettings.cfopDentroEstado}
+                        onChange={(e) => handleInvoiceChange('cfopDentroEstado', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        placeholder="5102"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        CFOP Fora do Estado
+                      </label>
+                      <input
+                        type="text"
+                        value={invoiceSettings.cfopForaEstado}
+                        onChange={(e) => handleInvoiceChange('cfopForaEstado', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        placeholder="6102"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        CSOSN ICMS
+                      </label>
+                      <input
+                        type="text"
+                        value={invoiceSettings.csosnIcms}
+                        onChange={(e) => handleInvoiceChange('csosnIcms', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        placeholder="102"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        NCM Padrão
+                      </label>
+                      <input
+                        type="text"
+                        value={invoiceSettings.ncmPadrao}
+                        onChange={(e) => handleInvoiceChange('ncmPadrao', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        CEST Padrão
+                      </label>
+                      <input
+                        type="text"
+                        value={invoiceSettings.cestPadrao}
+                        onChange={(e) => handleInvoiceChange('cestPadrao', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Certificado Digital */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                    <Upload className="w-5 h-5 text-blue-600" />
+                    Certificado Digital A1/A3
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Upload do Certificado
+                      </label>
+                      <input
+                        type="file"
+                        accept=".pfx,.p12"
+                        onChange={handleCertificateUpload}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      />
+                      {invoiceSettings.certificadoUrl && (
+                        <p className="text-sm text-green-600 dark:text-green-400 mt-2">✓ Certificado enviado</p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Senha do Certificado
+                      </label>
+                      <input
+                        type="password"
+                        value={invoiceSettings.certificadoSenha}
+                        onChange={(e) => handleInvoiceChange('certificadoSenha', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dados do Contador */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Dados do Contador</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Nome
+                      </label>
+                      <input
+                        type="text"
+                        value={invoiceSettings.contadorNome}
+                        onChange={(e) => handleInvoiceChange('contadorNome', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        value={invoiceSettings.contadorEmail}
+                        onChange={(e) => handleInvoiceChange('contadorEmail', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Telefone
+                      </label>
+                      <input
+                        type="tel"
+                        value={invoiceSettings.contadorTelefone}
+                        onChange={(e) => handleInvoiceChange('contadorTelefone', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Agenda e Cronograma */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <button
+              onClick={() => setIsScheduleExpanded(!isScheduleExpanded)}
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 p-6 hover:from-blue-700 hover:to-blue-800 transition-all"
+            >
+              <div className="flex items-center justify-between text-white">
+                <div className="flex items-center gap-3">
+                  <Calendar className="w-8 h-8" />
+                  <div className="text-left">
+                    <h2 className="text-2xl font-bold">Agenda e Cronograma</h2>
+                    <p className="text-blue-100 mt-1">Personalize a exibição e funcionalidades da agenda</p>
+                  </div>
+                </div>
+                {isScheduleExpanded ? <ChevronUp className="w-6 h-6" /> : <ChevronDown className="w-6 h-6" />}
+              </div>
+            </button>
+
+            {isScheduleExpanded && (
+              <div className="p-6 space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                    <Link2 className="w-5 h-5 text-blue-600" />
+                    Funcionalidades de Exibição
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white">Mostrar Nome do Funcionário</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          Exibe o nome do funcionário responsável dentro do card de agendamento
+                        </p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={scheduleIntegrations.showEmployeeName}
+                          onChange={() => handleToggle('showEmployeeName')}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                      </label>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white">Mostrar Responsabilidades</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          Exibe as responsabilidades e tarefas atribuídas ao agendamento
+                        </p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={scheduleIntegrations.showResponsibilities}
+                          onChange={() => handleToggle('showResponsibilities')}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                      </label>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white">Personalização de Cores</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          Permite customizar as cores dos agendamentos por prioridade
+                        </p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={scheduleIntegrations.enableColorCustomization}
+                          onChange={() => handleToggle('enableColorCustomization')}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                {scheduleIntegrations.enableColorCustomization && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Cores por Prioridade</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {[
+                        { label: 'Cor Padrão', field: 'defaultColor' },
+                        { label: 'Urgente', field: 'urgentColor' },
+                        { label: 'Alta Prioridade', field: 'highColor' },
+                        { label: 'Normal', field: 'normalColor' },
+                        { label: 'Baixa Prioridade', field: 'lowColor' },
+                      ].map(({ label, field }) => (
+                        <div key={field} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                          <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">{label}</label>
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="color"
+                              value={scheduleIntegrations[field]}
+                              onChange={(e) => handleColorChange(field, e.target.value)}
+                              className="w-16 h-10 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
+                            />
+                            <input
+                              type="text"
+                              value={scheduleIntegrations[field]}
+                              onChange={(e) => handleColorChange(field, e.target.value)}
+                              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
+      )}
 
-        <div className="p-6 space-y-6">
-          {/* Funcionalidades de Exibição */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-              <Link2 className="w-5 h-5 text-blue-600" />
-              Funcionalidades de Exibição
-            </h3>
-            
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <div>
-                  <h4 className="font-medium text-gray-900 dark:text-white">Mostrar Nome do Funcionário</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Exibe o nome do funcionário responsável dentro do card de agendamento
-                  </p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={scheduleIntegrations.showEmployeeName}
-                    onChange={() => handleToggle('showEmployeeName')}
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                </label>
-              </div>
-
-              <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <div>
-                  <h4 className="font-medium text-gray-900 dark:text-white">Mostrar Responsabilidades</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Exibe as responsabilidades e tarefas atribuídas ao agendamento
-                  </p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={scheduleIntegrations.showResponsibilities}
-                    onChange={() => handleToggle('showResponsibilities')}
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                </label>
-              </div>
-
-              <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <div>
-                  <h4 className="font-medium text-gray-900 dark:text-white">Personalização de Cores</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Permite customizar as cores dos agendamentos por prioridade
-                  </p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={scheduleIntegrations.enableColorCustomization}
-                    onChange={() => handleToggle('enableColorCustomization')}
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          {/* Personalização de Cores */}
-          {scheduleIntegrations.enableColorCustomization && (
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Cores por Prioridade
-              </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                  <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                    Cor Padrão
-                  </label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="color"
-                      value={scheduleIntegrations.defaultColor}
-                      onChange={(e) => handleColorChange('defaultColor', e.target.value)}
-                      className="w-16 h-10 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
-                    />
-                    <input
-                      type="text"
-                      value={scheduleIntegrations.defaultColor}
-                      onChange={(e) => handleColorChange('defaultColor', e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                    />
-                  </div>
-                </div>
-
-                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                  <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                    Urgente
-                  </label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="color"
-                      value={scheduleIntegrations.urgentColor}
-                      onChange={(e) => handleColorChange('urgentColor', e.target.value)}
-                      className="w-16 h-10 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
-                    />
-                    <input
-                      type="text"
-                      value={scheduleIntegrations.urgentColor}
-                      onChange={(e) => handleColorChange('urgentColor', e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                    />
-                  </div>
-                </div>
-
-                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                  <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                    Alta Prioridade
-                  </label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="color"
-                      value={scheduleIntegrations.highColor}
-                      onChange={(e) => handleColorChange('highColor', e.target.value)}
-                      className="w-16 h-10 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
-                    />
-                    <input
-                      type="text"
-                      value={scheduleIntegrations.highColor}
-                      onChange={(e) => handleColorChange('highColor', e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                    />
-                  </div>
-                </div>
-
-                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                  <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                    Normal
-                  </label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="color"
-                      value={scheduleIntegrations.normalColor}
-                      onChange={(e) => handleColorChange('normalColor', e.target.value)}
-                      className="w-16 h-10 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
-                    />
-                    <input
-                      type="text"
-                      value={scheduleIntegrations.normalColor}
-                      onChange={(e) => handleColorChange('normalColor', e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                    />
-                  </div>
-                </div>
-
-                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                  <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                    Baixa Prioridade
-                  </label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="color"
-                      value={scheduleIntegrations.lowColor}
-                      onChange={(e) => handleColorChange('lowColor', e.target.value)}
-                      className="w-16 h-10 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
-                    />
-                    <input
-                      type="text"
-                      value={scheduleIntegrations.lowColor}
-                      onChange={(e) => handleColorChange('lowColor', e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Botões de Ação */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <button
-              onClick={handleReset}
-              className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-            >
-              <RotateCcw className="w-4 h-4" />
-              Resetar
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <Save className="w-4 h-4" />
-              {isSaving ? 'Salvando...' : 'Salvar Configurações'}
-            </button>
-          </div>
+      {/* Conteúdo da Aba Vendas */}
+      {activeTab === 'vendas' && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <p className="text-gray-600 dark:text-gray-400">Configurações de vendas em desenvolvimento...</p>
         </div>
+      )}
+
+      {/* Botões de Ação */}
+      <div className="flex items-center justify-end gap-3 mt-6">
+        <button
+          onClick={loadIntegrations}
+          className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+        >
+          <RotateCcw className="w-4 h-4" />
+          Resetar
+        </button>
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          <Save className="w-4 h-4" />
+          {isSaving ? 'Salvando...' : 'Salvar Configurações'}
+        </button>
       </div>
     </div>
   );

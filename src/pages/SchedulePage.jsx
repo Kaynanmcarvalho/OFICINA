@@ -359,14 +359,14 @@ const SchedulePage = () => {
                       : 'border-gray-200 dark:border-gray-700 hover:border-blue-400 hover:shadow-md'
                     }
                     ${!isCurrentMonth && 'opacity-40'}
-                    ${isToday && !isSelected && 'border-blue-400 bg-blue-50/50 dark:bg-blue-900/20'}
+                    ${isToday && !isSelected && 'border-green-400 bg-green-50/50 dark:bg-green-900/20'}
                   `}
                 >
                   <div className="flex flex-col items-center justify-center h-full">
                     <span className={`
                       text-2xl font-bold mb-1
                       ${isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-white'}
-                      ${isToday && !isSelected && 'text-blue-600 dark:text-blue-400'}
+                      ${isToday && !isSelected && 'text-green-600 dark:text-green-400'}
                     `}>
                       {format(day, 'd')}
                     </span>

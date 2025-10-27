@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { useThemeStore, useAuthStore, useOrganizationStore, useSettingsStore } from '../store/index.jsx';
 import { MdDarkMode, MdLightMode, MdLanguage, MdBusiness, MdLocationOn, MdPhone, MdEmail, MdSchedule, MdEdit, MdSave, MdCancel, MdWarning } from 'react-icons/md';
 import toast from 'react-hot-toast';
@@ -177,10 +178,10 @@ const SettingsPage = () => {
                 <span className="mr-3">🔒</span>
                 Segurança
               </a>
-              <a href="/integrations" className="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+              <Link to="/integrations" className="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                 <span className="mr-3">🔗</span>
-                Integrações
-              </a>
+                Integrações - Configurações
+              </Link>
               <a href="#backup" className="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                 <span className="mr-3">💾</span>
                 Backup
