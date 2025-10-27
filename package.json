@@ -13,7 +13,7 @@
     "@hookform/resolvers": "^3.3.2",
     "@tanstack/react-table": "^8.20.5",
     "clsx": "^2.0.0",
-    "date-fns": "^2.30.0",
+    "date-fns": "^4.1.0",
     "firebase": "^10.7.1",
     "framer-motion": "^10.16.16",
     "html5-qrcode": "^2.3.8",

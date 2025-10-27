@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, Plus, Edit, Trash2, Filter } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Calendar, Clock, Plus, Edit, Trash2, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, addMonths, subMonths, startOfWeek, endOfWeek } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import toast from 'react-hot-toast';
 import Modal from '../components/ui/Modal';
 import ScheduleForm from '../components/forms/ScheduleForm';
@@ -9,8 +11,19 @@ const SchedulePage = () => {
   const { schedules, members, fetchSchedules, fetchMembers, createSchedule, updateSchedule, deleteSchedule, isLoading } = useTeamStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
-  const [viewMode, setViewMode] = useState('day'); // day, week, month
+  
+  // Usar timezone de São Paulo (UTC-3)
+  const getTodayInSaoPaulo = () => {
+    const now = new Date();
+    const saoPauloOffset = -3 * 60; // UTC-3 em minutos
+    const localOffset = now.getTimezoneOffset();
+    const diff = localOffset - saoPauloOffset;
+    const saoPauloTime = new Date(now.getTime() - diff * 60 * 1000);
+    return saoPauloTime;
+  };
+
+  const [selectedDate, setSelectedDate] = useState(getTodayInSaoPaulo());
+  const [currentMonth, setCurrentMonth] = useState(getTodayInSaoPaulo());
   const [filterShift, setFilterShift] = useState('');
 
   useEffect(() => {
@@ -60,20 +73,51 @@ const SchedulePage = () => {
     setEditingSchedule(null);
   };
 
-  const todaySchedules = schedules.filter(s => s.date === selectedDate && s.status !== 'Cancelado');
-  const filteredSchedules = filterShift 
+  const selectedDateStr = format(selectedDate, 'yyyy-MM-dd');
+  const todaySchedules = schedules.filter(s => s.date === selectedDateStr && s.status !== 'Cancelado');
+  const filteredSchedules = filterShift
     ? todaySchedules.filter(s => s.shift === filterShift)
     : todaySchedules;
+
+  // Gerar dias do calendário
+  const generateCalendarDays = () => {
+    const monthStart = startOfMonth(currentMonth);
+    const monthEnd = endOfMonth(currentMonth);
+    const calendarStart = startOfWeek(monthStart, { locale: ptBR });
+    const calendarEnd = endOfWeek(monthEnd, { locale: ptBR });
+    
+    return eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+  };
+
+  const calendarDays = generateCalendarDays();
+
+  // Contar agendamentos por dia
+  const getScheduleCountForDay = (day) => {
+    const dayStr = format(day, 'yyyy-MM-dd');
+    return schedules.filter(s => s.date === dayStr && s.status !== 'Cancelado').length;
+  };
+
+  const handlePreviousMonth = () => {
+    setCurrentMonth(subMonths(currentMonth, 1));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentMonth(addMonths(currentMonth, 1));
+  };
+
+  const handleDateClick = (day) => {
+    setSelectedDate(day);
+  };
 
   const getScheduleStats = () => {
     const today = new Date().toISOString().split('T')[0];
     const todayCount = schedules.filter(s => s.date === today && s.status !== 'Cancelado').length;
-    
+
     const weekStart = new Date();
     weekStart.setDate(weekStart.getDate() - weekStart.getDay());
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekEnd.getDate() + 6);
-    
+
     const weekCount = schedules.filter(s => {
       const scheduleDate = new Date(s.date);
       return scheduleDate >= weekStart && scheduleDate <= weekEnd && s.status !== 'Cancelado';
@@ -142,7 +186,7 @@ const SchedulePage = () => {
           <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{stats.todayCount}</p>
           <p className="text-sm text-gray-500 dark:text-gray-400">Data: {new Date(selectedDate).toLocaleDateString('pt-BR')}</p>
         </div>
-        
+
         <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3 mb-2">
             <Clock className="w-6 h-6 text-green-600" />
@@ -153,7 +197,7 @@ const SchedulePage = () => {
           <p className="text-3xl font-bold text-green-600 dark:text-green-400">{stats.weekCount}</p>
           <p className="text-sm text-gray-500 dark:text-gray-400">Agendamentos confirmados</p>
         </div>
-        
+
         <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3 mb-2">
             <Calendar className="w-6 h-6 text-purple-600" />
@@ -166,49 +210,154 @@ const SchedulePage = () => {
         </div>
       </div>
 
-      {/* Date Selector and Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-gray-500" />
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            />
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <Filter className="w-5 h-5 text-gray-500" />
-            <select
-              value={filterShift}
-              onChange={(e) => setFilterShift(e.target.value)}
-              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+      {/* Calendário Mensal Completo */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg mb-6 overflow-hidden">
+        {/* Cabeçalho do Calendário */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <button
+              onClick={handlePreviousMonth}
+              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
             >
-              <option value="">Todos os turnos</option>
-              <option value="Manhã">Manhã</option>
-              <option value="Tarde">Tarde</option>
-              <option value="Noite">Noite</option>
-              <option value="Integral">Integral</option>
-            </select>
+              <ChevronLeft className="w-6 h-6 text-white" />
+            </button>
+            
+            <div className="text-center text-white">
+              <h2 className="text-4xl font-bold uppercase">
+                {format(currentMonth, 'MMMM', { locale: ptBR })}
+              </h2>
+              <p className="text-xl font-medium mt-1">
+                {format(currentMonth, 'yyyy')}
+              </p>
+            </div>
+
+            <button
+              onClick={handleNextMonth}
+              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+            >
+              <ChevronRight className="w-6 h-6 text-white" />
+            </button>
           </div>
 
-          <button
-            onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
-            className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
-          >
-            Hoje
-          </button>
+          {/* Filtros */}
+          <div className="flex items-center justify-center gap-3">
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+              <Filter className="w-4 h-4 text-white" />
+              <select
+                value={filterShift}
+                onChange={(e) => setFilterShift(e.target.value)}
+                className="bg-transparent border-0 text-white font-medium focus:outline-none cursor-pointer"
+              >
+                <option value="" className="text-gray-900">Todos os turnos</option>
+                <option value="Manhã" className="text-gray-900">Manhã</option>
+                <option value="Tarde" className="text-gray-900">Tarde</option>
+                <option value="Noite" className="text-gray-900">Noite</option>
+                <option value="Integral" className="text-gray-900">Integral</option>
+              </select>
+            </div>
+
+            <button
+              onClick={() => {
+                const today = getTodayInSaoPaulo();
+                setSelectedDate(today);
+                setCurrentMonth(today);
+              }}
+              className="px-4 py-2 bg-white text-blue-600 rounded-lg hover:bg-blue-50 font-semibold transition-colors"
+            >
+              Hoje
+            </button>
+          </div>
+        </div>
+
+        {/* Grid do Calendário */}
+        <div className="p-6">
+          {/* Dias da Semana */}
+          <div className="grid grid-cols-7 gap-2 mb-3">
+            {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day) => (
+              <div key={day} className="text-center font-bold text-gray-600 dark:text-gray-400 py-2">
+                {day}
+              </div>
+            ))}
+          </div>
+
+          {/* Dias do Mês */}
+          <div className="grid grid-cols-7 gap-2">
+            {calendarDays.map((day, index) => {
+              const isSelected = isSameDay(day, selectedDate);
+              const isToday = isSameDay(day, getTodayInSaoPaulo());
+              const isCurrentMonth = isSameMonth(day, currentMonth);
+              const scheduleCount = getScheduleCountForDay(day);
+              
+              return (
+                <button
+                  key={index}
+                  onClick={() => handleDateClick(day)}
+                  className={`
+                    relative min-h-[80px] p-2 rounded-lg border-2 transition-all
+                    ${isSelected 
+                      ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/30 shadow-lg scale-105' 
+                      : 'border-gray-200 dark:border-gray-700 hover:border-blue-400 hover:shadow-md'
+                    }
+                    ${!isCurrentMonth && 'opacity-40'}
+                    ${isToday && !isSelected && 'border-blue-400 bg-blue-50/50 dark:bg-blue-900/20'}
+                  `}
+                >
+                  <div className="flex flex-col items-center justify-center h-full">
+                    <span className={`
+                      text-2xl font-bold mb-1
+                      ${isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-white'}
+                      ${isToday && !isSelected && 'text-blue-600 dark:text-blue-400'}
+                    `}>
+                      {format(day, 'd')}
+                    </span>
+                    
+                    {scheduleCount > 0 && (
+                      <div className="flex items-center gap-1">
+                        <div className={`
+                          w-2 h-2 rounded-full
+                          ${scheduleCount >= 5 ? 'bg-red-500' : scheduleCount >= 3 ? 'bg-orange-500' : 'bg-green-500'}
+                        `} />
+                        <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">
+                          {scheduleCount}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Data Selecionada - Destaque */}
+        <div className="bg-gray-50 dark:bg-gray-900 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Calendar className="w-6 h-6 text-blue-600" />
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Data Selecionada</p>
+                <p className="text-xl font-bold text-gray-900 dark:text-white">
+                  {format(selectedDate, "EEEE, d 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                </p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-gray-500 dark:text-gray-400">Agendamentos</p>
+              <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                {todaySchedules.length}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Schedule List */}
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-          Agendamentos - {new Date(selectedDate).toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+          <Clock className="w-6 h-6 text-blue-600" />
+          Agendamentos do Dia
         </h2>
-        
+
         {isLoading ? (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
             Carregando agendamentos...
@@ -229,9 +378,9 @@ const SchedulePage = () => {
                       {schedule.startTime} - {schedule.endTime}
                     </span>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(schedule.priority)}`}>
-                      {schedule.priority === 'urgent' ? 'Urgente' : 
-                       schedule.priority === 'high' ? 'Alta' :
-                       schedule.priority === 'low' ? 'Baixa' : 'Normal'}
+                      {schedule.priority === 'urgent' ? 'Urgente' :
+                        schedule.priority === 'high' ? 'Alta' :
+                          schedule.priority === 'low' ? 'Baixa' : 'Normal'}
                     </span>
                     {schedule.shift && (
                       <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-full text-xs font-medium">
