@@ -25,7 +25,7 @@ export const authStore = (set, get) => ({
   // Auth state
   user: null,
   isAuthenticated: false,
-  isLoading: false,
+  isLoading: true, // Começa como true para evitar flash da tela de login
   authError: null,
 
   // User roles and permissions
@@ -232,34 +232,40 @@ export const authStore = (set, get) => ({
 
   // Initialize auth listener
   initializeAuth: () => {
-    return onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        // Get user data from Firestore
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        const userData = userDoc.exists() ? userDoc.data() : null;
+    // Retorna uma Promise que resolve quando o estado de autenticação é verificado
+    return new Promise((resolve) => {
+      const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          // Get user data from Firestore
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          const userData = userDoc.exists() ? userDoc.data() : null;
+          
+          set({
+            user: {
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              ...userData
+            },
+            isAuthenticated: true,
+            userRole: userData?.role || 'viewer',
+            permissions: userData?.permissions || [],
+            isLoading: false
+          });
+        } else {
+          set({
+            user: null,
+            isAuthenticated: false,
+            userRole: null,
+            permissions: [],
+            isLoading: false
+          });
+        }
         
-        set({
-          user: {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-            ...userData
-          },
-          isAuthenticated: true,
-          userRole: userData?.role || 'viewer',
-          permissions: userData?.permissions || [],
-          isLoading: false
-        });
-      } else {
-        set({
-          user: null,
-          isAuthenticated: false,
-          userRole: null,
-          permissions: [],
-          isLoading: false
-        });
-      }
+        // Resolve a Promise na primeira verificação
+        resolve(unsubscribe);
+      });
     });
   },
 
