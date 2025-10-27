@@ -1,47 +1,114 @@
 import { create } from 'zustand';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import toast from 'react-hot-toast';
 
-export const useSettingsStore = create((set, get) => ({
-  settings: {
-    workshopName: '',
-    address: '',
-    phone: '',
-    email: '',
-    openingTime: '08:00',
-    closingTime: '18:00',
-    theme: 'auto',
-    language: 'pt-BR',
-  },
+export const settingsStore = (set, get) => ({
+  // Settings state
+  settings: null,
   isLoading: false,
   error: null,
 
-  fetchSettings: async () => {
-    set({ isLoading: true });
+  // Default settings
+  defaultSettings: {
+    theme: 'auto',
+    language: 'pt-BR',
+    emailNotifications: true,
+    pushNotifications: true,
+    lowStockAlerts: true,
+    appointmentReminders: true,
+    createdAt: null,
+    updatedAt: null
+  },
+
+  // Actions
+  fetchSettings: async (userId) => {
+    if (!userId) return;
+    
+    set({ isLoading: true, error: null });
     try {
-      const docRef = doc(db, 'settings', 'global');
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        set({ settings: docSnap.data(), isLoading: false });
+      const settingsDoc = await getDoc(doc(db, 'userSettings', userId));
+      
+      if (settingsDoc.exists()) {
+        const settingsData = settingsDoc.data();
+        set({
+          settings: { id: userId, ...settingsData },
+          isLoading: false
+        });
       } else {
-        // Default settings if not exist
-        const defaultSettings = get().settings;
-        await setDoc(docRef, defaultSettings);
-        set({ settings: defaultSettings, isLoading: false });
+        // Create default settings if they don't exist
+        const defaultSettings = {
+          ...get().defaultSettings,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        
+        await setDoc(doc(db, 'userSettings', userId), defaultSettings);
+        set({
+          settings: { id: userId, ...defaultSettings },
+          isLoading: false
+        });
       }
-    } catch (err) {
-      set({ error: err.message, isLoading: false });
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+      set({ error: error.message, isLoading: false });
+      toast.error('Erro ao carregar configurações');
     }
   },
 
-  updateSettings: async (newSettings) => {
-    set({ isLoading: true });
+  updateSettings: async (userId, updates) => {
+    if (!userId) return { success: false, error: 'ID do usuário não fornecido' };
+    
+    set({ isLoading: true, error: null });
     try {
-      const docRef = doc(db, 'settings', 'global');
-      await setDoc(docRef, newSettings, { merge: true });
-      set({ settings: { ...get().settings, ...newSettings }, isLoading: false });
-    } catch (err) {
-      set({ error: err.message, isLoading: false });
+      const updatedData = {
+        ...updates,
+        updatedAt: new Date().toISOString()
+      };
+      
+      const settingsRef = doc(db, 'userSettings', userId);
+      const settingsDoc = await getDoc(settingsRef);
+      
+      if (settingsDoc.exists()) {
+        await updateDoc(settingsRef, updatedData);
+      } else {
+        await setDoc(settingsRef, {
+          ...get().defaultSettings,
+          ...updatedData,
+          createdAt: new Date().toISOString()
+        });
+      }
+      
+      set({
+        settings: { 
+          ...get().settings, 
+          ...updatedData 
+        },
+        isLoading: false
+      });
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Error updating settings:', error);
+      set({ error: error.message, isLoading: false });
+      toast.error('Erro ao atualizar configurações');
+      return { success: false, error: error.message };
     }
   },
-}));
+
+  // Get specific setting
+  getSetting: (key) => {
+    const { settings, defaultSettings } = get();
+    return settings?.[key] ?? defaultSettings[key];
+  },
+
+  // Clear settings
+  clearSettings: () => {
+    set({
+      settings: null,
+      error: null
+    });
+  }
+});
+
+export const useSettingsStore = create(settingsStore);
