@@ -28,6 +28,27 @@ export const storage = getStorage(app);
 export const functions = getFunctions(app);
 
 // Initialize Firebase Cloud Messaging and get a reference to the service
-export const messaging = isSupported() ? getMessaging(app) : null;
+// Check if messaging is supported before initializing
+let messaging = null;
 
+// Async function to initialize messaging
+export const initializeMessaging = async () => {
+  try {
+    const messagingSupported = await isSupported();
+    if (messagingSupported) {
+      messaging = getMessaging(app);
+      return messaging;
+    }
+    console.warn('Firebase Messaging is not supported in this browser');
+    return null;
+  } catch (error) {
+    console.warn('Error checking messaging support:', error);
+    return null;
+  }
+};
+
+// Export messaging getter
+export const getMessagingInstance = () => messaging;
+
+export { messaging };
 export default app;
