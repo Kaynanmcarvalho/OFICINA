@@ -9,15 +9,13 @@ import { getMessaging, isSupported } from 'firebase/messaging';
 // Your web app's Firebase configuration
 // For Firebase JS SDK v9-compat and later, measurementId is optional
 const firebaseConfig = {
-  // TODO: Add your Firebase config here
-  // You can get this from your Firebase Console
-  apiKey: "your-api-key",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "your-app-id",
-  measurementId: "your-measurement-id"
+  apiKey: "AIzaSyCMhYAH03gzL0H705XjSBp8-4gxhmE246Q",
+  authDomain: "oficina-reparofacil.firebaseapp.com",
+  projectId: "oficina-reparofacil",
+  storageBucket: "oficina-reparofacil.firebasestorage.app",
+  messagingSenderId: "610352587990",
+  appId: "1:610352587990:web:dc0add122ccb7f54c09577",
+  measurementId: "G-YGV44MV8G3"
 };
 
 // Initialize Firebase

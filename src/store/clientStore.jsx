@@ -181,16 +181,34 @@ export const useClientStore = create((set, get) => ({
         limit(10)
       );
       
-      const [nameResults, idResults, phoneResults] = await Promise.all([
+      // Search by CPF
+      const cpfQuery = query(
+        collection(db, 'clients'),
+        where('cpf', '>=', searchTerm),
+        where('cpf', '<=', searchTerm + '\uf8ff'),
+        limit(10)
+      );
+      
+      // Search by CNPJ (if cpf field contains CNPJ)
+      const cnpjQuery = query(
+        collection(db, 'clients'),
+        where('cnpj', '>=', searchTerm),
+        where('cnpj', '<=', searchTerm + '\uf8ff'),
+        limit(10)
+      );
+      
+      const [nameResults, idResults, phoneResults, cpfResults, cnpjResults] = await Promise.all([
         getDocs(nameQuery),
         getDocs(idQuery),
-        getDocs(phoneQuery)
+        getDocs(phoneQuery),
+        getDocs(cpfQuery),
+        getDocs(cnpjQuery)
       ]);
       
       const allResults = new Map();
       
       // Combine results and remove duplicates
-      [...nameResults.docs, ...idResults.docs, ...phoneResults.docs].forEach(doc => {
+      [...nameResults.docs, ...idResults.docs, ...phoneResults.docs, ...cpfResults.docs, ...cnpjResults.docs].forEach(doc => {
         allResults.set(doc.id, { ...doc.data(), firestoreId: doc.id });
       });
       

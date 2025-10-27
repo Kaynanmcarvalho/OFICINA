@@ -1,6 +1,67 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuthStore, useOrganizationStore } from '../store/index.jsx';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
+import { MdBusiness, MdLocationOn, MdPhone, MdEmail, MdSchedule, MdEdit, MdSave, MdCancel } from 'react-icons/md';
 
 const ProfilePage = () => {
+  const { user } = useAuthStore();
+  const { organization, fetchOrganization, getOrganizationInfo } = useOrganizationStore();
+  const [formData, setFormData] = useState({
+    displayName: '',
+    email: '',
+    phone: '',
+    position: '',
+    bio: '',
+  });
+  const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        displayName: user.displayName || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        position: user.position || '',
+        bio: user.bio || '',
+      });
+      
+      // Fetch organization data
+      if (user.organizationId) {
+        fetchOrganization(user.organizationId);
+      }
+    }
+  }, [user, fetchOrganization]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
+        ...formData,
+        updatedAt: new Date().toISOString()
+      });
+      setIsEditing(false);
+      // Reload user data
+      window.location.reload();
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const organizationInfo = getOrganizationInfo();
+
+  if (!user) return <div>Carregando...</div>;
+
   return (
     <div className="p-6">
       <div className="mb-6">
@@ -18,59 +79,60 @@ const ProfilePage = () => {
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
             <div className="flex flex-col items-center text-center mb-6">
               <div className="w-32 h-32 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mb-4 overflow-hidden">
-                <span className="text-5xl text-blue-600 dark:text-blue-400">JD</span>
-                {/* Alternatively, use an image: */}
-                {/* <img src="/path/to/avatar.jpg" alt="Profile" className="w-full h-full object-cover" /> */}
+                {user.photoURL ? (
+                  <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-5xl text-blue-600 dark:text-blue-400">{user.displayName?.[0] || 'U'}</span>
+                )}
               </div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">João da Silva</h2>
-              <p className="text-gray-600 dark:text-gray-400">Mecânico Chefe</p>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{user.displayName}</h2>
+              <p className="text-gray-600 dark:text-gray-400">{user.position || 'Cargo não definido'}</p>
             </div>
 
             <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
               <div className="flex items-center mb-3">
                 <span className="w-8 text-gray-500 dark:text-gray-400">📧</span>
-                <span className="text-gray-700 dark:text-gray-300">joao@oficina.com</span>
+                <span className="text-gray-700 dark:text-gray-300">{user.email}</span>
               </div>
               <div className="flex items-center mb-3">
                 <span className="w-8 text-gray-500 dark:text-gray-400">📱</span>
-                <span className="text-gray-700 dark:text-gray-300">(11) 98765-4321</span>
+                <span className="text-gray-700 dark:text-gray-300">{user.phone || 'Não informado'}</span>
               </div>
               <div className="flex items-center mb-3">
                 <span className="w-8 text-gray-500 dark:text-gray-400">🏢</span>
-                <span className="text-gray-700 dark:text-gray-300">Unidade Centro</span>
+                <span className="text-gray-700 dark:text-gray-300">{organizationInfo.name}</span>
               </div>
               <div className="flex items-center">
                 <span className="w-8 text-gray-500 dark:text-gray-400">🔑</span>
-                <span className="text-gray-700 dark:text-gray-300">Administrador</span>
+                <span className="text-gray-700 dark:text-gray-300">
+                  {user.role === 'admin' ? 'Administrador' : user.role === 'func' ? 'Funcionário' : user.role}
+                </span>
               </div>
             </div>
           </div>
 
-          <div className="mt-6 bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Atividade Recente
+          {/* Organization Info */}
+          <div className="mt-6 bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
+              <MdBusiness className="mr-2" />
+              Informações da Empresa
             </h3>
-            <div className="space-y-4">
-              <div className="flex items-start">
-                <div className="w-2 h-2 mt-2 rounded-full bg-blue-500 mr-3"></div>
-                <div>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">Completou manutenção da Honda CB500</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Hoje, 14:30</p>
-                </div>
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center">
+                <MdLocationOn className="w-4 h-4 mr-2 text-gray-500" />
+                <span className="text-gray-700 dark:text-gray-300">{organizationInfo.address}</span>
               </div>
-              <div className="flex items-start">
-                <div className="w-2 h-2 mt-2 rounded-full bg-green-500 mr-3"></div>
-                <div>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">Adicionou novo cliente: Maria Santos</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Ontem, 10:15</p>
-                </div>
+              <div className="flex items-center">
+                <MdPhone className="w-4 h-4 mr-2 text-gray-500" />
+                <span className="text-gray-700 dark:text-gray-300">{organizationInfo.phone}</span>
               </div>
-              <div className="flex items-start">
-                <div className="w-2 h-2 mt-2 rounded-full bg-purple-500 mr-3"></div>
-                <div>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">Atualizou estoque de peças</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">2 dias atrás, 16:45</p>
-                </div>
+              <div className="flex items-center">
+                <MdEmail className="w-4 h-4 mr-2 text-gray-500" />
+                <span className="text-gray-700 dark:text-gray-300">{organizationInfo.email}</span>
+              </div>
+              <div className="flex items-center">
+                <MdSchedule className="w-4 h-4 mr-2 text-gray-500" />
+                <span className="text-gray-700 dark:text-gray-300">{organizationInfo.businessHours}</span>
               </div>
             </div>
           </div>
@@ -78,45 +140,58 @@ const ProfilePage = () => {
 
         {/* Profile Content */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Personal Information */}
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Informações Pessoais
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Informações Pessoais
+              </h2>
+              {!isEditing ? (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="flex items-center px-3 py-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                >
+                  <MdEdit className="mr-1" />
+                  Editar
+                </button>
+              ) : (
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    className="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  >
+                    <MdCancel className="mr-1" />
+                    Cancelar
+                  </button>
+                </div>
+              )}
+            </div>
             
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Nome
-                  </label>
-                  <input 
-                    type="text" 
-                    defaultValue="João"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Sobrenome
-                  </label>
-                  <input 
-                    type="text" 
-                    defaultValue="da Silva"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                  />
-                </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Nome Completo
+                </label>
+                <input
+                  type="text"
+                  name="displayName"
+                  value={formData.displayName}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800"
+                />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Email
                 </label>
-                <input 
-                  type="email" 
-                  defaultValue="joao@oficina.com"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  disabled={true}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
                 />
               </div>
               
@@ -124,148 +199,80 @@ const ProfilePage = () => {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Telefone
                 </label>
-                <input 
-                  type="tel" 
-                  defaultValue="(11) 98765-4321"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800"
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Cargo
+                  Cargo/Posição
                 </label>
-                <input 
-                  type="text" 
-                  defaultValue="Mecânico Chefe"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                <input
+                  type="text"
+                  name="position"
+                  value={formData.position}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800"
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Unidade
+                  Biografia
                 </label>
-                <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
-                  <option value="centro">Unidade Centro</option>
-                  <option value="zona-sul">Unidade Zona Sul</option>
-                  <option value="zona-leste">Unidade Zona Leste</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Bio
-                </label>
-                <textarea 
+                <textarea
+                  name="bio"
+                  value={formData.bio}
+                  onChange={handleChange}
+                  disabled={!isEditing}
                   rows={3}
-                  defaultValue="Mecânico especializado em motos de alta cilindrada com mais de 10 anos de experiência. Certificado pela Honda e Yamaha."
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800"
                 />
               </div>
-            </div>
+              
+              {isEditing && (
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <MdSave className="mr-2" />
+                  {isLoading ? 'Salvando...' : 'Salvar Alterações'}
+                </button>
+              )}
+            </form>
           </div>
-
-          {/* Password Change */}
+          
+          {/* Document Info */}
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Alterar Senha
+              Informações do Documento
             </h2>
-            
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Senha Atual
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Tipo de Pessoa
                 </label>
-                <input 
-                  type="password" 
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                />
+                <p className="text-gray-900 dark:text-white">
+                  {user.personType === 'juridica' ? 'Pessoa Jurídica' : 'Pessoa Física'}
+                </p>
               </div>
-              
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Nova Senha
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  {user.personType === 'juridica' ? 'CNPJ' : 'CPF'}
                 </label>
-                <input 
-                  type="password" 
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Confirmar Nova Senha
-                </label>
-                <input 
-                  type="password" 
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                />
+                <p className="text-gray-900 dark:text-white font-mono">
+                  {user.cpfCnpj || user.cnpj || user.cpf || 'Não informado'}
+                </p>
               </div>
             </div>
-          </div>
-
-          {/* Preferences */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Preferências
-            </h2>
-            
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">Tema Escuro</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Ativar modo escuro na interface</p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                </label>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">Notificações por Email</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Receber atualizações por email</p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" defaultChecked />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                </label>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">Notificações Push</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Receber notificações no navegador</p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" defaultChecked />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                </label>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Idioma
-                </label>
-                <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
-                  <option value="pt-BR">Português (Brasil)</option>
-                  <option value="en-US">English (US)</option>
-                  <option value="es-ES">Español</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          {/* Save Button */}
-          <div className="flex justify-end space-x-4">
-            <button className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
-              Cancelar
-            </button>
-            <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-              Salvar Alterações
-            </button>
           </div>
         </div>
       </div>

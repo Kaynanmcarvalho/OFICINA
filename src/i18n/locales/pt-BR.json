@@ -47,7 +47,7 @@
     "checkout": "Check-out",
     "clients": "Clientes",
     "inventory": "Estoque",
-    "motorcycles": "Motos Montadas",
+    "motorcycles": "Veículos Montados",
     "tools": "Ferramentas",
     "schedule": "Escalas",
     "reports": "Relatórios",
@@ -113,7 +113,7 @@
     "editPart": "Editar Peça"
   },
   "motorcycles": {
-    "title": "Motos Montadas",
+    "title": "Veículos Montados",
     "model": "Modelo",
     "progress": "Progresso",
     "markCompleted": "Marcar como Concluído",
@@ -148,7 +148,7 @@
   "dashboard": {
     "title": "Painel de Controle",
     "kpis": "Indicadores",
-    "motorcyclesServed": "Motos Atendidas",
+    "motorcyclesServed": "Veículos Atendidos",
     "averageServiceTime": "Tempo Médio de Serviço",
     "lowStockParts": "Peças em Baixa",
     "teamPerformance": "Performance da Equipe",

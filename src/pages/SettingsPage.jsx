@@ -1,6 +1,82 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useThemeStore, useAuthStore, useOrganizationStore } from '../store/index.jsx';
+import { MdDarkMode, MdLightMode, MdLanguage, MdBusiness, MdLocationOn, MdPhone, MdEmail, MdSchedule, MdEdit, MdSave, MdCancel, MdWarning } from 'react-icons/md';
 
 const SettingsPage = () => {
+  const { theme, toggleTheme } = useThemeStore();
+  const { user } = useAuthStore();
+  const { organization, fetchOrganization, updateOrganization, loading, error } = useOrganizationStore();
+  const [formData, setFormData] = useState({});
+  const [workshopData, setWorkshopData] = useState({
+    workshopName: '',
+    address: '',
+    phone: '',
+    email: '',
+    openingTime: '',
+    closingTime: '',
+  });
+  const [language, setLanguage] = useState('pt-BR');
+  const [isEditingWorkshop, setIsEditingWorkshop] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  
+  const isAdmin = user?.role === 'admin';
+
+  useEffect(() => {
+    if (user?.organizationId) {
+      fetchOrganization(user.organizationId);
+    }
+  }, [user, fetchOrganization]);
+  
+  useEffect(() => {
+    if (organization) {
+      setWorkshopData({
+        workshopName: organization.name || '',
+        address: organization.address || '',
+        phone: organization.phone || '',
+        email: organization.email || '',
+        openingTime: organization.openingTime || '',
+        closingTime: organization.closingTime || '',
+      });
+    }
+  }, [organization]);
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
+  };
+
+  const handleWorkshopSubmit = async (e) => {
+    e.preventDefault();
+    if (!isAdmin) {
+      alert('Apenas administradores podem editar essas informações.');
+      return;
+    }
+    
+    setIsSaving(true);
+    try {
+      await updateOrganization(user.organizationId, {
+        name: workshopData.workshopName,
+        address: workshopData.address,
+        phone: workshopData.phone,
+        email: workshopData.email,
+        openingTime: workshopData.openingTime,
+        closingTime: workshopData.closingTime,
+      });
+      setIsEditingWorkshop(false);
+      alert('Dados da oficina salvos com sucesso!');
+    } catch (error) {
+      console.error('Erro ao salvar dados da oficina:', error);
+      alert('Erro ao salvar dados da oficina.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // await updateSettings(formData);
+  };
+
   return (
     <div className="p-6">
       <div className="mb-6">
@@ -48,19 +124,65 @@ const SettingsPage = () => {
         <div className="lg:col-span-2 space-y-6">
           {/* General Settings */}
           <div id="general" className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Configurações Gerais
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
+                <MdBusiness className="mr-2" />
+                Informações da Oficina
+              </h2>
+              {isAdmin && !isEditingWorkshop ? (
+                <button
+                  onClick={() => setIsEditingWorkshop(true)}
+                  className="flex items-center px-3 py-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                >
+                  <MdEdit className="mr-1" />
+                  Editar
+                </button>
+              ) : isAdmin && isEditingWorkshop ? (
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setIsEditingWorkshop(false)}
+                    className="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  >
+                    <MdCancel className="mr-1" />
+                    Cancelar
+                  </button>
+                </div>
+              ) : null}
+            </div>
             
-            <div className="space-y-4">
+            {!isAdmin && (
+              <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                <div className="flex items-center text-yellow-800 dark:text-yellow-200">
+                  <MdWarning className="mr-2" />
+                  <span className="text-sm">Apenas administradores podem editar essas informações.</span>
+                </div>
+              </div>
+            )}
+            
+            {loading && (
+              <div className="text-center py-4">
+                <span className="text-gray-500">Carregando...</span>
+              </div>
+            )}
+            
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <span className="text-red-800 dark:text-red-200 text-sm">{error}</span>
+              </div>
+            )}
+            
+            <form onSubmit={handleWorkshopSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Nome da Oficina
                 </label>
                 <input 
                   type="text" 
-                  defaultValue="Oficina Premium Motos"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                  value={workshopData.workshopName}
+                  onChange={(e) => setWorkshopData({...workshopData, workshopName: e.target.value})}
+                  disabled={!isAdmin || !isEditingWorkshop}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500"
+                  placeholder="Digite o nome da oficina"
                 />
               </div>
               
@@ -68,10 +190,13 @@ const SettingsPage = () => {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Endereço
                 </label>
-                <textarea 
-                  rows={3}
-                  defaultValue="Rua das Motos, 123 - Centro\nSão Paulo, SP - 01234-567"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                <input 
+                  type="text"
+                  value={workshopData.address}
+                  onChange={(e) => setWorkshopData({...workshopData, address: e.target.value})}
+                  disabled={!isAdmin || !isEditingWorkshop}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500"
+                  placeholder="Digite o endereço completo"
                 />
               </div>
               
@@ -82,8 +207,11 @@ const SettingsPage = () => {
                   </label>
                   <input 
                     type="tel" 
-                    defaultValue="(11) 99999-9999"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                    value={workshopData.phone}
+                    onChange={(e) => setWorkshopData({...workshopData, phone: e.target.value})}
+                    disabled={!isAdmin || !isEditingWorkshop}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500"
+                    placeholder="(11) 99999-9999"
                   />
                 </div>
                 
@@ -93,8 +221,11 @@ const SettingsPage = () => {
                   </label>
                   <input 
                     type="email" 
-                    defaultValue="contato@oficina.com"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                    value={workshopData.email}
+                    onChange={(e) => setWorkshopData({...workshopData, email: e.target.value})}
+                    disabled={!isAdmin || !isEditingWorkshop}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500"
+                    placeholder="contato@oficina.com"
                   />
                 </div>
               </div>
@@ -108,21 +239,36 @@ const SettingsPage = () => {
                     <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Abertura</label>
                     <input 
                       type="time" 
-                      defaultValue="08:00"
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                      value={workshopData.openingTime}
+                      onChange={(e) => setWorkshopData({...workshopData, openingTime: e.target.value})}
+                      disabled={!isAdmin || !isEditingWorkshop}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500"
                     />
                   </div>
                   <div>
                     <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Fechamento</label>
                     <input 
                       type="time" 
-                      defaultValue="18:00"
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                      value={workshopData.closingTime}
+                      onChange={(e) => setWorkshopData({...workshopData, closingTime: e.target.value})}
+                      disabled={!isAdmin || !isEditingWorkshop}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500"
                     />
                   </div>
                 </div>
               </div>
-            </div>
+              
+              {isAdmin && isEditingWorkshop && (
+                <button
+                  type="submit"
+                  disabled={isSaving}
+                  className="flex items-center justify-center w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <MdSave className="mr-2" />
+                  {isSaving ? 'Salvando...' : 'Salvar Informações da Oficina'}
+                </button>
+              )}
+            </form>
           </div>
 
           {/* Theme Settings */}
@@ -138,15 +284,15 @@ const SettingsPage = () => {
                 </label>
                 <div className="flex space-x-4">
                   <label className="flex items-center">
-                    <input type="radio" name="theme" value="light" className="mr-2" defaultChecked />
+                    <input type="radio" name="theme" value="light" checked={formData.theme === 'light'} onChange={handleInputChange} className="mr-2" />
                     <span className="text-gray-700 dark:text-gray-300">Claro</span>
                   </label>
                   <label className="flex items-center">
-                    <input type="radio" name="theme" value="dark" className="mr-2" />
+                    <input type="radio" name="theme" value="dark" checked={formData.theme === 'dark'} onChange={handleInputChange} className="mr-2" />
                     <span className="text-gray-700 dark:text-gray-300">Escuro</span>
                   </label>
                   <label className="flex items-center">
-                    <input type="radio" name="theme" value="auto" className="mr-2" />
+                    <input type="radio" name="theme" value="auto" checked={formData.theme === 'auto'} onChange={handleInputChange} className="mr-2" />
                     <span className="text-gray-700 dark:text-gray-300">Automático</span>
                   </label>
                 </div>
@@ -156,7 +302,7 @@ const SettingsPage = () => {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Idioma
                 </label>
-                <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                <select name="language" value={formData.language || 'pt-BR'} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
                   <option value="pt-BR">Português (Brasil)</option>
                   <option value="en-US">English (US)</option>
                   <option value="es-ES">Español</option>
@@ -175,10 +321,10 @@ const SettingsPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-medium text-gray-900 dark:text-white">Notificações por Email</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Receber notificações importantes por email</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Receber notificicações importantes por email</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" defaultChecked />
+                  <input type="checkbox" name="emailNotifications" checked={formData.emailNotifications} onChange={handleInputChange} className="sr-only peer" />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 </label>
               </div>
@@ -189,7 +335,7 @@ const SettingsPage = () => {
                   <p className="text-sm text-gray-500 dark:text-gray-400">Receber notificações no navegador</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" defaultChecked />
+                  <input type="checkbox" name="pushNotifications" checked={formData.pushNotifications} onChange={handleInputChange} className="sr-only peer" />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 </label>
               </div>
@@ -200,7 +346,7 @@ const SettingsPage = () => {
                   <p className="text-sm text-gray-500 dark:text-gray-400">Notificar quando itens estiverem com estoque baixo</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" defaultChecked />
+                  <input type="checkbox" name="lowStockAlerts" checked={formData.lowStockAlerts} onChange={handleInputChange} className="sr-only peer" />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 </label>
               </div>
@@ -211,7 +357,7 @@ const SettingsPage = () => {
                   <p className="text-sm text-gray-500 dark:text-gray-400">Lembrar sobre agendamentos próximos</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" defaultChecked />
+                  <input type="checkbox" name="appointmentReminders" checked={formData.appointmentReminders} onChange={handleInputChange} className="sr-only peer" />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 </label>
               </div>
@@ -220,10 +366,10 @@ const SettingsPage = () => {
 
           {/* Save Button */}
           <div className="flex justify-end space-x-4">
-            <button className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+            <button type="button" className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
               Cancelar
             </button>
-            <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <button type="submit" disabled={loading} className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
               Salvar Configurações
             </button>
           </div>

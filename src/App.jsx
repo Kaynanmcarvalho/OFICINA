@@ -10,11 +10,13 @@ import { Layout } from './components/layout/Layout';
 // Lazy load pages for better performance
 const LoginPage = React.lazy(() => import('./pages/auth/LoginPage'));
 const RegisterPage = React.lazy(() => import('./pages/auth/RegisterPage'));
+const CompleteProfilePage = React.lazy(() => import('./pages/auth/CompleteProfilePage'));
 const DashboardPage = React.lazy(() => import('./pages/DashboardPage'));
+const EmployeeManagementPage = React.lazy(() => import('./pages/EmployeeManagementPage'));
 const CheckinPage = React.lazy(() => import('./pages/CheckinPage'));
 const ClientsPage = React.lazy(() => import('./pages/ClientsPage'));
 const InventoryPage = React.lazy(() => import('./pages/InventoryPage'));
-const MotorcyclesPage = React.lazy(() => import('./pages/MotorcyclesPage'));
+const VehiclesPage = React.lazy(() => import('./pages/VehiclesPage'));
 const ToolsPage = React.lazy(() => import('./pages/ToolsPage'));
 const TeamPage = React.lazy(() => import('./pages/TeamPage'));
 const SchedulePage = React.lazy(() => import('./pages/SchedulePage'));
@@ -84,6 +86,16 @@ function App() {
                 } 
               />
               
+              {/* Profile completion route */}
+              <Route 
+                path="/complete-profile" 
+                element={
+                  <ProtectedRoute>
+                    <CompleteProfilePage />
+                  </ProtectedRoute>
+                } 
+              />
+              
               {/* Protected routes */}
               <Route 
                 path="/" 
@@ -98,12 +110,13 @@ function App() {
                 <Route path="checkin" element={<CheckinPage />} />
                 <Route path="clients" element={<ClientsPage />} />
                 <Route path="inventory" element={<InventoryPage />} />
-                <Route path="motorcycles" element={<MotorcyclesPage />} />
+                <Route path="vehicles" element={<VehiclesPage />} />
                 <Route path="tools" element={<ToolsPage />} />
                 <Route path="team" element={<TeamPage />} />
                 <Route path="schedule" element={<SchedulePage />} />
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="profile" element={<ProfilePage />} />
+                <Route path="employees" element={<EmployeeManagementPage />} />
               </Route>
               
               {/* Catch all route */}

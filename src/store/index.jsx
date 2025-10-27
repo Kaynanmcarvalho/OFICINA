@@ -6,9 +6,11 @@ import { useNotificationStore } from './notificationStore.jsx';
 import { useCheckinStore } from './checkinStore.jsx';
 import { useClientStore } from './clientStore.jsx';
 import { useInventoryStore } from './inventoryStore.jsx';
-import { useMotorcycleStore } from './motorcycleStore.jsx';
+import { useVehicleStore } from './vehicleStore.jsx';
 import { useToolStore } from './toolStore.jsx';
 import { useTeamStore } from './teamStore.jsx';
+import { useSettingsStore } from './settingsStore.jsx';
+import { useOrganizationStore } from './organizationStore.jsx';
 
 // Main store combining all stores
 export const useStore = create(
@@ -43,7 +45,7 @@ export const useStore = create(
                 useCheckinStore.getState().fetchCheckins(),
                 useClientStore.getState().fetchClients(),
                 useInventoryStore.getState().fetchParts(),
-                useMotorcycleStore.getState().fetchMotorcycles(),
+                useVehicleStore.getState().fetchVehicles(),
                 useToolStore.getState().fetchTools(),
                 useTeamStore.getState().fetchMembers(),
               ]);
@@ -65,7 +67,7 @@ export const useStore = create(
           useCheckinStore.getState().clearError();
           useClientStore.getState().clearError();
           useInventoryStore.getState().clearError();
-          useMotorcycleStore.getState().clearError();
+          useVehicleStore.getState().clearError();
           useToolStore.getState().clearError();
           useTeamStore.getState().clearError();
           set({ globalError: null, isGlobalLoading: false });
@@ -80,7 +82,7 @@ export const useStore = create(
             useCheckinStore.getState().subscribeToCheckins(),
             useClientStore.getState().subscribeToClients(),
             useInventoryStore.getState().subscribeToInventory(),
-            useMotorcycleStore.getState().subscribeToMotorcycles(),
+            useVehicleStore.getState().subscribeToVehicles(),
             useToolStore.getState().subscribeToTools(),
             useTeamStore.getState().subscribeToMembers(),
             useTeamStore.getState().subscribeToSchedules()
@@ -111,6 +113,8 @@ export { useNotificationStore } from './notificationStore.jsx';
 export { useCheckinStore } from './checkinStore.jsx';
 export { useClientStore } from './clientStore.jsx';
 export { useInventoryStore } from './inventoryStore.jsx';
-export { useMotorcycleStore } from './motorcycleStore.jsx';
+export { useVehicleStore } from './vehicleStore.jsx';
 export { useToolStore } from './toolStore.jsx';
 export { useTeamStore } from './teamStore.jsx';
+export { useSettingsStore } from './settingsStore.jsx';
+export { useOrganizationStore } from './organizationStore.jsx';

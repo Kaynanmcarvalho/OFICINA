@@ -17,14 +17,15 @@ import {
   MdDarkMode,
   MdPerson,
   MdLogout,
-  MdGarage
+  MdGarage,
+  MdSupervisorAccount
 } from 'react-icons/md';
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+  const { user, logout, userRole } = useAuthStore();
   const { isDarkMode, toggleTheme } = useThemeStore();
 
   const handleLogout = async () => {
@@ -36,12 +37,13 @@ const Layout = () => {
     { path: '/dashboard', name: 'Dashboard', icon: MdDashboard },
     { path: '/checkin', name: 'Check-in', icon: MdCheckCircle },
     { path: '/clients', name: 'Clientes', icon: MdPeople },
-    { path: '/motorcycles', name: 'Motos', icon: MdTwoWheeler },
+    { path: '/vehicles', name: 'Veículos', icon: MdTwoWheeler },
     { path: '/inventory', name: 'Estoque', icon: MdInventory },
     { path: '/tools', name: 'Ferramentas', icon: MdBuild },
     { path: '/team', name: 'Equipe', icon: MdGroup },
     { path: '/schedule', name: 'Agenda', icon: MdCalendarToday },
     { path: '/reports', name: 'Relatórios', icon: MdBarChart },
+    ...(userRole === 'admin' ? [{ path: '/employees', name: 'Funcionários', icon: MdSupervisorAccount }] : []),
     { path: '/settings', name: 'Configurações', icon: MdSettings },
   ];
 
@@ -54,7 +56,7 @@ const Layout = () => {
         <div className="flex items-center justify-center h-16 px-4 bg-blue-600 dark:bg-blue-700">
           <MdGarage className="text-white text-2xl mr-2" />
           <h1 className="text-xl font-bold text-white">
-            Oficina System
+            Oficina ReparoFácil
           </h1>
         </div>
         
@@ -92,7 +94,7 @@ const Layout = () => {
                 <MdMenu className="w-6 h-6" />
               </button>
               <h1 className="ml-4 text-xl font-semibold text-gray-900 dark:text-white">
-                Sistema de Gestão - Oficina
+                Oficina ReparoFácil - Sistema de Gestão
               </h1>
             </div>
             
