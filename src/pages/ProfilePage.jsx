@@ -130,15 +130,36 @@ const ProfilePage = () => {
         <div className="lg:col-span-1">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
             <div className="flex flex-col items-center text-center mb-6">
-              <div className="w-32 h-32 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mb-4 overflow-hidden">
-                {user.photoURL ? (
-                  <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
+              <div className="relative w-32 h-32 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mb-4 overflow-hidden group">
+                {photoURL ? (
+                  <img src={photoURL} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-5xl text-blue-600 dark:text-blue-400">{user.displayName?.[0] || 'U'}</span>
                 )}
+                
+                {/* Upload overlay */}
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                     onClick={() => fileInputRef.current?.click()}>
+                  {isUploadingPhoto ? (
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                  ) : (
+                    <MdCamera className="w-8 h-8 text-white" />
+                  )}
+                </div>
+                
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  className="hidden"
+                />
               </div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{user.displayName}</h2>
               <p className="text-gray-600 dark:text-gray-400">{user.position || 'Cargo não definido'}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                Clique na foto para alterar
+              </p>
             </div>
 
             <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
