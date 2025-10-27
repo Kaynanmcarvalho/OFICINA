@@ -332,39 +332,36 @@ const ReportsPage = () => {
         <div className="flex border-b border-gray-200 dark:border-gray-700">
           <button
             onClick={() => setActiveTab('checkins')}
-            className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
-              activeTab === 'checkins'
+            className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${activeTab === 'checkins'
                 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-b-2 border-blue-600'
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-            }`}
+              }`}
           >
             <div className="flex items-center justify-center gap-2">
               <FileText className="w-5 h-5" />
               <span>Relatório de Check-ins</span>
             </div>
           </button>
-          
+
           <button
             onClick={() => setActiveTab('clients')}
-            className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
-              activeTab === 'clients'
+            className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${activeTab === 'clients'
                 ? 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border-b-2 border-green-600'
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-            }`}
+              }`}
           >
             <div className="flex items-center justify-center gap-2">
               <Users className="w-5 h-5" />
               <span>Relatório de Clientes</span>
             </div>
           </button>
-          
+
           <button
             onClick={() => setActiveTab('financial')}
-            className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
-              activeTab === 'financial'
+            className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${activeTab === 'financial'
                 ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 border-b-2 border-purple-600'
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-            }`}
+              }`}
           >
             <div className="flex items-center justify-center gap-2">
               <DollarSign className="w-5 h-5" />
@@ -376,230 +373,230 @@ const ReportsPage = () => {
 
       {/* Relatório de Check-ins */}
       {activeTab === 'checkins' && (
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <FileText className="w-6 h-6 text-blue-600" />
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Relatório de Check-ins
-            </h2>
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <FileText className="w-6 h-6 text-blue-600" />
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Relatório de Check-ins
+              </h2>
+            </div>
+            <button
+              onClick={() => exportReport('checkins')}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              Exportar
+            </button>
           </div>
-          <button
-            onClick={() => exportReport('checkins')}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-          >
-            <Download className="w-4 h-4" />
-            Exportar
-          </button>
-        </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">ID</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Cliente</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Veículo</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Data</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Valor</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {filteredCheckins.length === 0 ? (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <td colSpan="6" className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                    Nenhum check-in encontrado no período selecionado
-                  </td>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">ID</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Cliente</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Veículo</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Data</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Valor</th>
                 </tr>
-              ) : (
-                filteredCheckins.slice(0, 10).map((checkin) => (
-                  <tr key={checkin.firestoreId} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{checkin.id}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{checkin.clientName}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                      {checkin.vehicleModel} - {checkin.vehiclePlate}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                      {new Date(checkin.createdAt).toLocaleDateString('pt-BR')}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${checkin.status === 'completed'
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                          : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                        }`}>
-                        {checkin.status === 'completed' ? 'Concluído' : 'Em andamento'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-sm font-semibold text-gray-900 dark:text-white">
-                      R$ {(checkin.serviceValue || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {filteredCheckins.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                      Nenhum check-in encontrado no período selecionado
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {filteredCheckins.length > 10 && (
-          <div className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
-            Mostrando 10 de {filteredCheckins.length} registros. Use os filtros para refinar a busca.
+                ) : (
+                  filteredCheckins.slice(0, 10).map((checkin) => (
+                    <tr key={checkin.firestoreId} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{checkin.id}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{checkin.clientName}</td>
+                      <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+                        {checkin.vehicleModel} - {checkin.vehiclePlate}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+                        {new Date(checkin.createdAt).toLocaleDateString('pt-BR')}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${checkin.status === 'completed'
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                          : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                          }`}>
+                          {checkin.status === 'completed' ? 'Concluído' : 'Em andamento'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm font-semibold text-gray-900 dark:text-white">
+                        R$ {(checkin.serviceValue || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
-        )}
-      </div>
+
+          {filteredCheckins.length > 10 && (
+            <div className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
+              Mostrando 10 de {filteredCheckins.length} registros. Use os filtros para refinar a busca.
+            </div>
+          )}
+        </div>
       )}
 
       {/* Relatório de Clientes */}
       {activeTab === 'clients' && (
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Users className="w-6 h-6 text-green-600" />
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Relatório de Clientes
-            </h2>
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <Users className="w-6 h-6 text-green-600" />
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Relatório de Clientes
+              </h2>
+            </div>
+            <button
+              onClick={() => exportReport('clientes')}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              Exportar
+            </button>
           </div>
-          <button
-            onClick={() => exportReport('clientes')}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-          >
-            <Download className="w-4 h-4" />
-            Exportar
-          </button>
-        </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Nome</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Telefone</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Email</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Total Serviços</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Último Serviço</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {clients.length === 0 ? (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <td colSpan="5" className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                    Nenhum cliente cadastrado
-                  </td>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Nome</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Telefone</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Email</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Total Serviços</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Último Serviço</th>
                 </tr>
-              ) : (
-                clients.slice(0, 10).map((client) => (
-                  <tr key={client.firestoreId} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">{client.name}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{client.phone}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{client.email || '-'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{client.totalServices || 0}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                      {client.lastServiceDate
-                        ? new Date(client.lastServiceDate).toLocaleDateString('pt-BR')
-                        : '-'
-                      }
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {clients.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                      Nenhum cliente cadastrado
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {clients.length > 10 && (
-          <div className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
-            Mostrando 10 de {clients.length} clientes. Exporte para ver todos.
+                ) : (
+                  clients.slice(0, 10).map((client) => (
+                    <tr key={client.firestoreId} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">{client.name}</td>
+                      <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{client.phone}</td>
+                      <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{client.email || '-'}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{client.totalServices || 0}</td>
+                      <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+                        {client.lastServiceDate
+                          ? new Date(client.lastServiceDate).toLocaleDateString('pt-BR')
+                          : '-'
+                        }
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
-        )}
-      </div>
+
+          {clients.length > 10 && (
+            <div className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
+              Mostrando 10 de {clients.length} clientes. Exporte para ver todos.
+            </div>
+          )}
+        </div>
       )}
 
       {/* Relatório Financeiro */}
       {activeTab === 'financial' && (
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <DollarSign className="w-6 h-6 text-purple-600" />
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Relatório Financeiro
-            </h2>
-          </div>
-          <button
-            onClick={() => exportReport('financeiro')}
-            className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
-          >
-            <Download className="w-4 h-4" />
-            Exportar
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-            <p className="text-sm text-green-600 dark:text-green-400 mb-1">Receitas</p>
-            <p className="text-2xl font-bold text-green-700 dark:text-green-300">
-              R$ {revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-            </p>
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <DollarSign className="w-6 h-6 text-purple-600" />
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Relatório Financeiro
+              </h2>
+            </div>
+            <button
+              onClick={() => exportReport('financeiro')}
+              className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              Exportar
+            </button>
           </div>
 
-          <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
-            <p className="text-sm text-red-600 dark:text-red-400 mb-1">Despesas</p>
-            <p className="text-2xl font-bold text-red-700 dark:text-red-300">
-              R$ 0,00
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+              <p className="text-sm text-green-600 dark:text-green-400 mb-1">Receitas</p>
+              <p className="text-2xl font-bold text-green-700 dark:text-green-300">
+                R$ {revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </p>
+            </div>
+
+            <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+              <p className="text-sm text-red-600 dark:text-red-400 mb-1">Despesas</p>
+              <p className="text-2xl font-bold text-red-700 dark:text-red-300">
+                R$ 0,00
+              </p>
+            </div>
+
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+              <p className="text-sm text-blue-600 dark:text-blue-400 mb-1">Lucro</p>
+              <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
+                R$ {revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </p>
+            </div>
           </div>
 
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-            <p className="text-sm text-blue-600 dark:text-blue-400 mb-1">Lucro</p>
-            <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
-              R$ {revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-            </p>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Data</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Descrição</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Tipo</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Valor</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {filteredCheckins.filter(c => c.status === 'completed' && c.serviceValue).length === 0 ? (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <td colSpan="4" className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                    Nenhuma transação no período selecionado
-                  </td>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Data</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Descrição</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Tipo</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Valor</th>
                 </tr>
-              ) : (
-                filteredCheckins
-                  .filter(c => c.status === 'completed' && c.serviceValue)
-                  .slice(0, 10)
-                  .map((checkin) => (
-                    <tr key={checkin.firestoreId} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                      <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                        {new Date(checkin.checkoutDate || checkin.createdAt).toLocaleDateString('pt-BR')}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">
-                        Serviço - {checkin.clientName}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                          Receita
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-sm font-semibold text-green-600 dark:text-green-400">
-                        + R$ {(checkin.serviceValue || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                      </td>
-                    </tr>
-                  ))
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {filteredCheckins.filter(c => c.status === 'completed' && c.serviceValue).length === 0 ? (
+                  <tr>
+                    <td colSpan="4" className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                      Nenhuma transação no período selecionado
+                    </td>
+                  </tr>
+                ) : (
+                  filteredCheckins
+                    .filter(c => c.status === 'completed' && c.serviceValue)
+                    .slice(0, 10)
+                    .map((checkin) => (
+                      <tr key={checkin.firestoreId} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+                          {new Date(checkin.checkoutDate || checkin.createdAt).toLocaleDateString('pt-BR')}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                          Serviço - {checkin.clientName}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                            Receita
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-sm font-semibold text-green-600 dark:text-green-400">
+                          + R$ {(checkin.serviceValue || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </td>
+                      </tr>
+                    ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
       )}
     </div>
   );
