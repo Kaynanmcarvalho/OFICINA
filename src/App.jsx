@@ -14,7 +14,7 @@ const RegisterPage = React.lazy(() => import('./pages/auth/RegisterPage'));
 const CompleteProfilePage = React.lazy(() => import('./pages/auth/CompleteProfilePage'));
 const DashboardPage = React.lazy(() => import('./pages/DashboardPage'));
 const EmployeeManagementPage = React.lazy(() => import('./pages/EmployeeManagementPage'));
-const CheckinPage = React.lazy(() => import('./pages/CheckinPage'));
+const CheckinPage = React.lazy(() => import('./pages/CheckInPage'));
 const CheckInDetailsPage = React.lazy(() => import('./pages/CheckInDetailsPage'));
 const ClientsPage = React.lazy(() => import('./pages/ClientsPage'));
 const InventoryPage = React.lazy(() => import('./pages/InventoryPage'));
@@ -25,6 +25,7 @@ const SchedulePage = React.lazy(() => import('./pages/SchedulePage'));
 const SettingsPage = React.lazy(() => import('./pages/SettingsPage'));
 const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
 const ReportsPage = React.lazy(() => import('./pages/ReportsPage'));
+const DevPage = React.lazy(() => import('./pages/DevPage'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 
 function App() {
@@ -119,6 +120,7 @@ function App() {
                 <Route path="team" element={<TeamPage />} />
                 <Route path="schedule" element={<SchedulePage />} />
                 <Route path="reports" element={<ReportsPage />} />
+                <Route path="dev" element={<DevPage />} />
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="employees" element={<EmployeeManagementPage />} />

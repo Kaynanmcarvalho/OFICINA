@@ -34,49 +34,55 @@ const Layout = () => {
   };
 
   const menuItems = [
-    { path: '/dashboard', name: 'Dashboard', icon: MdDashboard },
-    { path: '/checkin', name: 'Check-in', icon: MdCheckCircle },
-    { path: '/clients', name: 'Clientes', icon: MdPeople },
-    { path: '/vehicles', name: 'Veículos', icon: MdTwoWheeler },
-    { path: '/inventory', name: 'Estoque', icon: MdInventory },
-    { path: '/tools', name: 'Ferramentas', icon: MdBuild },
-    { path: '/team', name: 'Equipe', icon: MdGroup },
-    { path: '/schedule', name: 'Agenda', icon: MdCalendarToday },
-    { path: '/reports', name: 'Relatórios', icon: MdBarChart },
-    ...(userRole === 'admin' ? [{ path: '/employees', name: 'Funcionários', icon: MdSupervisorAccount }] : []),
-    { path: '/settings', name: 'Configurações', icon: MdSettings },
+    { path: '/dashboard', name: 'Dashboard', icon: MdDashboard, color: 'blue' },
+    { path: '/checkin', name: 'Check-in', icon: MdCheckCircle, color: 'blue' },
+    { path: '/clients', name: 'Clientes', icon: MdPeople, color: 'blue' },
+    { path: '/vehicles', name: 'Veículos', icon: MdTwoWheeler, color: 'blue' },
+    { path: '/inventory', name: 'Estoque', icon: MdInventory, color: 'blue' },
+    { path: '/tools', name: 'Ferramentas', icon: MdBuild, color: 'blue' },
+    { path: '/team', name: 'Equipe', icon: MdGroup, color: 'blue' },
+    { path: '/schedule', name: 'Agenda', icon: MdCalendarToday, color: 'blue' },
+    { path: '/reports', name: 'Relatórios', icon: MdBarChart, color: 'amber' },
+    { path: '/dev', name: 'Dev', icon: MdSettings, color: 'amber' },
+    ...(userRole === 'admin' ? [{ path: '/employees', name: 'Funcionários', icon: MdSupervisorAccount, color: 'blue' }] : []),
+    { path: '/settings', name: 'Configurações', icon: MdSettings, color: 'blue' },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:translate-x-0`}>
+      <div className={`fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } lg:translate-x-0`}>
         <div className="flex items-center justify-center h-16 px-4 bg-blue-600 dark:bg-blue-700">
           <MdGarage className="text-white text-2xl mr-2" />
           <h1 className="text-xl font-bold text-white">
             Oficina ReparoFácil
           </h1>
         </div>
-        
+
         <nav className="mt-8">
           <div className="px-4 space-y-2">
-            {menuItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${
-                  location.pathname === item.path
-                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200'
+            {menuItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              const isAmber = item.color === 'amber';
+
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${isActive
+                    ? isAmber
+                      ? 'bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-200'
+                      : 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200'
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}
-                onClick={() => setSidebarOpen(false)}
-              >
-                <item.icon className="mr-3 text-lg" />
-                {item.name}
-              </Link>
-            ))}
+                    }`}
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <item.icon className="mr-3 text-lg" />
+                  {item.name}
+                </Link>
+              );
+            })}
           </div>
         </nav>
       </div>
@@ -97,7 +103,7 @@ const Layout = () => {
                 Oficina ReparoFácil - Sistema de Gestão
               </h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               {/* Dark Mode Toggle */}
               <button
@@ -107,7 +113,7 @@ const Layout = () => {
               >
                 {isDarkMode ? <MdLightMode className="w-5 h-5" /> : <MdDarkMode className="w-5 h-5" />}
               </button>
-              
+
               {/* User Menu */}
               <div className="flex items-center space-x-3">
                 <div className="text-right">
