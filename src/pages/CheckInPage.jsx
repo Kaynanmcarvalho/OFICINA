@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Clock, Car, CheckCircle, AlertCircle, ExternalLink, Copy } from 'lucide-react';
 import toast from 'react-hot-toast';
-import Modal from '../components/ui/Modal';
-import CheckInForm from '../components/forms/CheckInForm';
-import CheckOutForm from '../components/forms/CheckOutForm';
+import ModalCheckin from './checkin/componentes/ModalCheckin';
+import ModalCheckout from './checkin/componentes/ModalCheckout';
 import { useCheckinStore } from '../store';
 
 const CheckInPage = () => {
   const navigate = useNavigate();
-  const { checkins, fetchCheckins, createCheckin, isLoading, error } = useCheckinStore();
+  const { checkins, fetchCheckins, isLoading } = useCheckinStore();
   const [isCheckInModalOpen, setIsCheckInModalOpen] = useState(false);
   const [isCheckOutModalOpen, setIsCheckOutModalOpen] = useState(false);
+  const [selectedCheckin, setSelectedCheckin] = useState(null);
 
   const copyToClipboard = (text, e) => {
     e.stopPropagation();
@@ -27,37 +27,25 @@ const CheckInPage = () => {
     fetchCheckins();
   }, [fetchCheckins]);
 
-  const handleCheckInSubmit = async (checkInData) => {
+  const handleCheckInSuccess = async () => {
     try {
-      await createCheckin(checkInData);
-      setIsCheckInModalOpen(false);
+      await fetchCheckins();
     } catch (error) {
-      console.error('Erro ao criar check-in:', error);
+      console.error('Erro ao atualizar lista:', error);
     }
   };
 
-  const handleCheckOutSubmit = async (checkOutData) => {
+  const handleCheckOutSuccess = async () => {
     try {
-      const { completeCheckout } = useCheckinStore.getState();
-      const result = await completeCheckout(checkOutData.checkInId, {
-        servicesPerformed: checkOutData.servicesPerformed,
-        totalCost: parseFloat(checkOutData.totalCost) || 0,
-        paymentMethod: checkOutData.paymentMethod,
-        observations: checkOutData.observations,
-        checkoutPhotos: checkOutData.photos
-      });
-      
-      if (result.success) {
-        toast.success('Check-out realizado com sucesso!');
-        setIsCheckOutModalOpen(false);
-        fetchCheckins(); // Recarregar lista
-      } else {
-        toast.error(result.error || 'Erro ao realizar check-out');
-      }
+      await fetchCheckins();
     } catch (error) {
-      console.error('Erro ao realizar check-out:', error);
-      toast.error('Erro ao realizar check-out');
+      console.error('Erro ao atualizar lista:', error);
     }
+  };
+
+  const handleCheckoutClick = (checkin) => {
+    setSelectedCheckin(checkin);
+    setIsCheckOutModalOpen(true);
   };
   return (
     <div className="space-y-6">
@@ -88,14 +76,11 @@ const CheckInPage = () => {
             Check-out
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Registre a saída de funcionários, clientes ou visitantes.
+            Selecione um check-in ativo abaixo para realizar o check-out.
           </p>
-          <button 
-            onClick={() => setIsCheckOutModalOpen(true)}
-            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors duration-200 font-medium"
-          >
-            Fazer Check-out
-          </button>
+          <p className="text-sm text-gray-500 dark:text-gray-500">
+            Clique em um registro ativo na lista para fazer o check-out
+          </p>
         </div>
       </div>
       
@@ -117,8 +102,7 @@ const CheckInPage = () => {
             {checkins.slice(0, 10).map((checkin) => (
               <div 
                 key={checkin.firestoreId} 
-                onClick={() => handleCheckinClick(checkin)}
-                className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer transition-colors"
+                className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
               >
                 <div className="flex items-center space-x-4 flex-1">
                   <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
@@ -159,7 +143,23 @@ const CheckInPage = () => {
                   }`}>
                     {checkin.status === 'completed' ? 'Concluído' : 'Em andamento'}
                   </span>
-                  <ExternalLink className="w-4 h-4 text-gray-400" />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleCheckinClick(checkin)}
+                      className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                      title="Ver detalhes"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </button>
+                    {checkin.status !== 'completed' && (
+                      <button
+                        onClick={() => handleCheckoutClick(checkin)}
+                        className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded-lg transition-colors"
+                      >
+                        Check-out
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -167,29 +167,21 @@ const CheckInPage = () => {
         )}
       </div>
       
-      <Modal
-         isOpen={isCheckInModalOpen}
-         onClose={() => setIsCheckInModalOpen(false)}
-         title="Novo Check-in"
-         size="lg"
-       >
-         <CheckInForm
-           onSubmit={handleCheckInSubmit}
-           onClose={() => setIsCheckInModalOpen(false)}
-         />
-       </Modal>
+      <ModalCheckin
+        isOpen={isCheckInModalOpen}
+        onClose={() => setIsCheckInModalOpen(false)}
+        onSuccess={handleCheckInSuccess}
+      />
        
-       <Modal
-         isOpen={isCheckOutModalOpen}
-         onClose={() => setIsCheckOutModalOpen(false)}
-         title="Fazer Check-out"
-         size="lg"
-       >
-         <CheckOutForm
-           onSubmit={handleCheckOutSubmit}
-           onClose={() => setIsCheckOutModalOpen(false)}
-         />
-       </Modal>
+      <ModalCheckout
+        isOpen={isCheckOutModalOpen}
+        onClose={() => {
+          setIsCheckOutModalOpen(false);
+          setSelectedCheckin(null);
+        }}
+        onSuccess={handleCheckOutSuccess}
+        checkinData={selectedCheckin}
+      />
     </div>
   );
 };
