@@ -43,7 +43,6 @@ const Layout = () => {
     { path: '/team', name: 'Equipe', icon: MdGroup, color: 'blue' },
     { path: '/schedule', name: 'Agenda', icon: MdCalendarToday, color: 'blue' },
     { path: '/reports', name: 'Relatórios', icon: MdBarChart, color: 'amber' },
-    { path: '/dev', name: 'Dev', icon: MdSettings, color: 'amber' },
     ...(userRole === 'admin' ? [{ path: '/employees', name: 'Funcionários', icon: MdSupervisorAccount, color: 'blue' }] : []),
     { path: '/settings', name: 'Configurações', icon: MdSettings, color: 'blue' },
   ];
