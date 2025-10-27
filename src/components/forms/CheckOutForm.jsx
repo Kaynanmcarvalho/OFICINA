@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { useCheckinStore } from '../../store/checkinStore';
 
 const CheckOutForm = ({ onClose, onSubmit }) => {
+  const { checkins } = useCheckinStore();
   const [formData, setFormData] = useState({
     checkInId: '',
     clientName: '',
@@ -13,6 +15,10 @@ const CheckOutForm = ({ onClose, onSubmit }) => {
     photos: []
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedCheckin, setSelectedCheckin] = useState(null);
+
+  // Filtrar apenas check-ins em andamento
+  const activeCheckins = checkins.filter(c => c.status === 'in-progress');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -20,6 +26,29 @@ const CheckOutForm = ({ onClose, onSubmit }) => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleCheckinSelect = (e) => {
+    const checkinId = e.target.value;
+    const checkin = activeCheckins.find(c => c.firestoreId === checkinId);
+    
+    if (checkin) {
+      setSelectedCheckin(checkin);
+      setFormData(prev => ({
+        ...prev,
+        checkInId: checkin.firestoreId,
+        clientName: checkin.clientName,
+        motorcycle: `${checkin.vehicleModel} - ${checkin.vehiclePlate}`
+      }));
+    } else {
+      setSelectedCheckin(null);
+      setFormData(prev => ({
+        ...prev,
+        checkInId: '',
+        clientName: '',
+        motorcycle: ''
+      }));
+    }
   };
 
   const handlePhotoUpload = (e) => {
@@ -71,52 +100,47 @@ const CheckOutForm = ({ onClose, onSubmit }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            ID do Check-in *
-          </label>
-          <input
-            type="text"
-            name="checkInId"
-            value={formData.checkInId}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="CHK-123456789"
-            required
-          />
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Nome do Cliente
-          </label>
-          <input
-            type="text"
-            name="clientName"
-            value={formData.clientName}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Nome será preenchido automaticamente"
-            readOnly
-          />
-        </div>
-      </div>
-
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Modelo da Moto
+          Selecionar Check-in *
         </label>
-        <input
-          type="text"
-          name="motorcycle"
-          value={formData.motorcycle}
-          onChange={handleInputChange}
+        <select
+          onChange={handleCheckinSelect}
+          value={formData.checkInId}
           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="Modelo será preenchido automaticamente"
-          readOnly
-        />
+          required
+        >
+          <option value="">Selecione um check-in...</option>
+          {activeCheckins.map((checkin) => (
+            <option key={checkin.firestoreId} value={checkin.firestoreId}>
+              {checkin.id} - {checkin.clientName} ({checkin.vehicleModel})
+            </option>
+          ))}
+        </select>
+        {activeCheckins.length === 0 && (
+          <p className="text-sm text-yellow-600 dark:text-yellow-400 mt-1">
+            Nenhum check-in em andamento encontrado
+          </p>
+        )}
       </div>
+
+      {selectedCheckin && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Cliente
+            </label>
+            <p className="text-gray-900 dark:text-white">{formData.clientName}</p>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Veículo
+            </label>
+            <p className="text-gray-900 dark:text-white">{formData.motorcycle}</p>
+          </div>
+        </div>
+      )}
 
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

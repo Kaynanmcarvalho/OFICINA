@@ -32,7 +32,7 @@ const ProfilePage = () => {
         bio: user.bio || '',
       });
       setPhotoURL(user.photoURL || '');
-      
+
       // Fetch organization data
       if (user.organizationId) {
         fetchOrganization(user.organizationId);
@@ -77,7 +77,7 @@ const ProfilePage = () => {
 
       setPhotoURL(downloadURL);
       toast.success('Foto atualizada com sucesso!');
-      
+
       // Recarregar dados do usuário
       setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
@@ -99,7 +99,7 @@ const ProfilePage = () => {
       });
       setIsEditing(false);
       toast.success('Perfil atualizado com sucesso!');
-      
+
       // Reload user data
       setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
@@ -136,17 +136,17 @@ const ProfilePage = () => {
                 ) : (
                   <span className="text-5xl text-blue-600 dark:text-blue-400">{user.displayName?.[0] || 'U'}</span>
                 )}
-                
+
                 {/* Upload overlay */}
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                     onClick={() => fileInputRef.current?.click()}>
+                  onClick={() => fileInputRef.current?.click()}>
                   {isUploadingPhoto ? (
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
                   ) : (
                     <MdCamera className="w-8 h-8 text-white" />
                   )}
                 </div>
-                
+
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -238,7 +238,7 @@ const ProfilePage = () => {
                 </div>
               )}
             </div>
-            
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -253,7 +253,7 @@ const ProfilePage = () => {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Email
@@ -267,7 +267,7 @@ const ProfilePage = () => {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Telefone
@@ -281,7 +281,7 @@ const ProfilePage = () => {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Cargo/Posição
@@ -295,7 +295,7 @@ const ProfilePage = () => {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Biografia
@@ -309,7 +309,7 @@ const ProfilePage = () => {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800"
                 />
               </div>
-              
+
               {isEditing && (
                 <button
                   type="submit"
@@ -322,7 +322,7 @@ const ProfilePage = () => {
               )}
             </form>
           </div>
-          
+
           {/* Document Info */}
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">

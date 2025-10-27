@@ -36,9 +36,28 @@ const CheckInPage = () => {
     }
   };
 
-  const handleCheckOutSubmit = (checkOutData) => {
-    console.log('Check-out data:', checkOutData);
-    // Aqui você salvaria os dados no banco/store
+  const handleCheckOutSubmit = async (checkOutData) => {
+    try {
+      const { completeCheckout } = useCheckinStore.getState();
+      const result = await completeCheckout(checkOutData.checkInId, {
+        servicesPerformed: checkOutData.servicesPerformed,
+        totalCost: parseFloat(checkOutData.totalCost) || 0,
+        paymentMethod: checkOutData.paymentMethod,
+        observations: checkOutData.observations,
+        checkoutPhotos: checkOutData.photos
+      });
+      
+      if (result.success) {
+        toast.success('Check-out realizado com sucesso!');
+        setIsCheckOutModalOpen(false);
+        fetchCheckins(); // Recarregar lista
+      } else {
+        toast.error(result.error || 'Erro ao realizar check-out');
+      }
+    } catch (error) {
+      console.error('Erro ao realizar check-out:', error);
+      toast.error('Erro ao realizar check-out');
+    }
   };
   return (
     <div className="space-y-6">
