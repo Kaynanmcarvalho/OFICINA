@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuthStore, useOrganizationStore } from '../store/index.jsx';
 import { doc, updateDoc } from 'firebase/firestore';
-import { db } from '../config/firebase';
-import { MdBusiness, MdLocationOn, MdPhone, MdEmail, MdSchedule, MdEdit, MdSave, MdCancel } from 'react-icons/md';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '../config/firebase';
+import { MdBusiness, MdLocationOn, MdPhone, MdEmail, MdSchedule, MdEdit, MdSave, MdCancel, MdCamera } from 'react-icons/md';
+import toast from 'react-hot-toast';
 
 const ProfilePage = () => {
   const { user } = useAuthStore();
   const { organization, fetchOrganization, getOrganizationInfo } = useOrganizationStore();
+  const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     displayName: '',
     email: '',
@@ -16,6 +19,8 @@ const ProfilePage = () => {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [photoURL, setPhotoURL] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -26,6 +31,7 @@ const ProfilePage = () => {
         position: user.position || '',
         bio: user.bio || '',
       });
+      setPhotoURL(user.photoURL || '');
       
       // Fetch organization data
       if (user.organizationId) {
@@ -39,6 +45,49 @@ const ProfilePage = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handlePhotoChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validar tipo de arquivo
+    if (!file.type.startsWith('image/')) {
+      toast.error('Por favor, selecione uma imagem válida');
+      return;
+    }
+
+    // Validar tamanho (máximo 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('A imagem deve ter no máximo 5MB');
+      return;
+    }
+
+    setIsUploadingPhoto(true);
+    try {
+      // Upload para Firebase Storage
+      const storageRef = ref(storage, `profile-photos/${user.uid}/${Date.now()}-${file.name}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      // Atualizar Firestore
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
+        photoURL: downloadURL,
+        updatedAt: new Date().toISOString()
+      });
+
+      setPhotoURL(downloadURL);
+      toast.success('Foto atualizada com sucesso!');
+      
+      // Recarregar dados do usuário
+      setTimeout(() => window.location.reload(), 1000);
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+      toast.error('Erro ao fazer upload da foto');
+    } finally {
+      setIsUploadingPhoto(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -49,10 +98,13 @@ const ProfilePage = () => {
         updatedAt: new Date().toISOString()
       });
       setIsEditing(false);
+      toast.success('Perfil atualizado com sucesso!');
+      
       // Reload user data
-      window.location.reload();
+      setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
       console.error('Error updating profile:', error);
+      toast.error('Erro ao atualizar perfil');
     } finally {
       setIsLoading(false);
     }

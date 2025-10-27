@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useThemeStore, useAuthStore, useOrganizationStore, useSettingsStore } from '../store/index.jsx';
 import { MdDarkMode, MdLightMode, MdLanguage, MdBusiness, MdLocationOn, MdPhone, MdEmail, MdSchedule, MdEdit, MdSave, MdCancel, MdWarning } from 'react-icons/md';
 import toast from 'react-hot-toast';
 
 const SettingsPage = () => {
+  const { i18n } = useTranslation();
   const { isDarkMode, toggleTheme } = useThemeStore();
   const { user } = useAuthStore();
   const { organization, fetchOrganization, updateOrganization, isLoading: orgLoading, error } = useOrganizationStore();
@@ -126,6 +128,12 @@ const SettingsPage = () => {
           } else {
             document.documentElement.classList.remove('dark');
           }
+        }
+        
+        // Aplicar o idioma imediatamente
+        if (preferences.language) {
+          i18n.changeLanguage(preferences.language);
+          localStorage.setItem('i18nextLng', preferences.language);
         }
         
         toast.success('Preferências salvas com sucesso!');
