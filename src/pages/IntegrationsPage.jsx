@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Link2, Calendar, Save, RotateCcw, ChevronDown, ChevronUp, FileText, ShoppingCart, Upload, MapPin } from 'lucide-react';
+import { Link2, Calendar, Save, RotateCcw, ChevronDown, ChevronUp, FileText, ShoppingCart, Upload, MapPin, CheckCircle, XCircle, Loader } from 'lucide-react';
 import { useAuthStore } from '../store';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
 import toast from 'react-hot-toast';
+import gynFiscalOnlineService from '../config/gynFiscalOnlineService';
 
 const IntegrationsPage = () => {
   const { user } = useAuthStore();
@@ -20,6 +21,12 @@ const IntegrationsPage = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [uploadingCertificate, setUploadingCertificate] = useState(false);
 
+  // Estados de teste de conexão
+  const [testingConnection, setTestingConnection] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState(null);
+  const [testingCredentials, setTestingCredentials] = useState(false);
+  const [credentialsStatus, setCredentialsStatus] = useState(null);
+
   // Configurações de Agenda
   const [scheduleIntegrations, setScheduleIntegrations] = useState({
     showEmployeeName: true,
@@ -34,6 +41,8 @@ const IntegrationsPage = () => {
 
   // Configurações de Nota Fiscal
   const [invoiceSettings, setInvoiceSettings] = useState({
+    nomeEmpresa: '',
+    cnpj: '',
     regimeTributario: '1',
     cnae: '',
     inscricaoEstadual: '',
@@ -60,6 +69,12 @@ const IntegrationsPage = () => {
     contadorNome: '',
     contadorEmail: '',
     contadorTelefone: '',
+    // Permissões de emissão
+    nfeAtivo: false,
+    nfceAtivo: false,
+    // API Gyn Fiscal Online
+    apiCodigoAutorizador: '',
+    apiSenhaAutorizada: '',
   });
 
   useEffect(() => {
@@ -101,7 +116,7 @@ const IntegrationsPage = () => {
 
   const handleSave = async () => {
     console.log('User data:', user);
-    
+
     if (!user) {
       toast.error('Usuário não autenticado');
       return;
@@ -109,7 +124,7 @@ const IntegrationsPage = () => {
 
     // Usar uid como fallback se organizationId não existir
     const orgId = user.organizationId || user.uid;
-    
+
     if (!orgId) {
       toast.error('ID da organização não encontrado');
       return;
@@ -227,6 +242,73 @@ const IntegrationsPage = () => {
     if (file) handleCertificateUpload(file);
   };
 
+  // Testar conexão com servidor Gyn Fiscal Online
+  const handleTestConnection = async () => {
+    setTestingConnection(true);
+    setConnectionStatus(null);
+
+    try {
+      const result = await gynFiscalOnlineService.verificarStatus();
+      setConnectionStatus(result);
+
+      if (result.success && result.online) {
+        toast.success('✅ Servidor Gyn Fiscal Online está online!');
+      } else {
+        toast.error('❌ Servidor Gyn Fiscal Online está offline');
+      }
+    } catch (error) {
+      setConnectionStatus({
+        success: false,
+        online: false,
+        message: 'Erro ao conectar',
+        error: error.message
+      });
+      toast.error('Erro ao testar conexão');
+    } finally {
+      setTestingConnection(false);
+    }
+  };
+
+  // Validar credenciais
+  const handleTestCredentials = async () => {
+    if (!invoiceSettings.apiCodigoAutorizador || !invoiceSettings.apiSenhaAutorizada) {
+      toast.error('Preencha o Código Autorizador e a Senha antes de testar');
+      return;
+    }
+
+    setTestingCredentials(true);
+    setCredentialsStatus(null);
+
+    try {
+      const result = await gynFiscalOnlineService.validarCredenciais(
+        invoiceSettings.apiCodigoAutorizador,
+        invoiceSettings.apiSenhaAutorizada
+      );
+
+      console.log('🔍 [DEBUG] Resultado da validação:', result);
+      console.log('🔍 [DEBUG] result.valid =', result.valid);
+      console.log('🔍 [DEBUG] result.success =', result.success);
+
+      setCredentialsStatus(result);
+
+      if (result.success && result.valid) {
+        toast.success('✅ Credenciais válidas!');
+      } else {
+        toast.error('❌ Credenciais inválidas');
+      }
+    } catch (error) {
+      setCredentialsStatus({
+        success: false,
+        valid: false,
+        message: 'Erro ao validar',
+        error: error.message
+      });
+      toast.error('Erro ao validar credenciais');
+    } finally {
+      setTestingCredentials(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="p-6">
@@ -276,6 +358,43 @@ const IntegrationsPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                      Nome da Empresa *
+                    </label>
+                    <input
+                      type="text"
+                      value={invoiceSettings.nomeEmpresa}
+                      onChange={(e) => handleInvoiceChange('nomeEmpresa', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      placeholder="Razão Social da Empresa"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                      CNPJ *
+                    </label>
+                    <input
+                      type="text"
+                      value={invoiceSettings.cnpj}
+                      onChange={(e) => {
+                        // Formatar CNPJ automaticamente
+                        let value = e.target.value.replace(/\D/g, '');
+                        if (value.length <= 14) {
+                          value = value.replace(/^(\d{2})(\d)/, '$1.$2');
+                          value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+                          value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
+                          value = value.replace(/(\d{4})(\d)/, '$1-$2');
+                          handleInvoiceChange('cnpj', value);
+                        }
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      placeholder="00.000.000/0000-00"
+                      maxLength="18"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
                       Regime Tributário
                     </label>
                     <select
@@ -323,6 +442,207 @@ const IntegrationsPage = () => {
                     />
                   </div>
                 </div>
+              </div>
+
+              {/* Permissões de Emissão */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Permissões de Emissão</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                    <div>
+                      <h4 className="font-medium text-gray-900 dark:text-white">NF-e (Nota Fiscal Eletrônica)</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Permite emissão de Nota Fiscal Eletrônica para vendas
+                      </p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={invoiceSettings.nfeAtivo}
+                        onChange={(e) => handleInvoiceChange('nfeAtivo', e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                    </label>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                    <div>
+                      <h4 className="font-medium text-gray-900 dark:text-white">NFC-e (Nota Fiscal de Consumidor Eletrônica)</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Permite emissão de NFC-e para vendas no PDV/Caixa
+                      </p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={invoiceSettings.nfceAtivo}
+                        onChange={(e) => handleInvoiceChange('nfceAtivo', e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                    </label>
+                  </div>
+
+                  {!invoiceSettings.nfeAtivo && !invoiceSettings.nfceAtivo && (
+                    <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                      <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                        ⚠️ Nenhuma modalidade de nota fiscal está ativa. Ative pelo menos uma para permitir emissão de notas.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* API - Gyn Fiscal Online */}
+              <div>
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">API - Gyn Fiscal Online</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    Credenciais para emissão de notas fiscais através da API
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                      Código Autorizador
+                    </label>
+                    <input
+                      type="text"
+                      value={invoiceSettings.apiCodigoAutorizador}
+                      onChange={(e) => handleInvoiceChange('apiCodigoAutorizador', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono"
+                      placeholder="Digite o código autorizador"
+                    />
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      Client ID fornecido pela{' '}
+                      <a
+                        href="https://gynfiscal.netlify.app/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                      >
+                        Gyn Fiscal
+                      </a>
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                      Senha Autorizada para Emissão
+                    </label>
+                    <input
+                      type="password"
+                      value={invoiceSettings.apiSenhaAutorizada}
+                      onChange={(e) => handleInvoiceChange('apiSenhaAutorizada', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono"
+                      placeholder="Digite a senha autorizada"
+                    />
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      Client Secret fornecido pela{' '}
+                      <a
+                        href="https://gynfiscal.netlify.app/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                      >
+                        Gyn Fiscal
+                      </a>
+                    </p>
+                  </div>
+                </div>
+
+                {invoiceSettings.apiCodigoAutorizador && invoiceSettings.apiSenhaAutorizada && (
+                  <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <p className="text-sm text-green-800 dark:text-green-200">
+                      ✓ Credenciais da API configuradas
+                    </p>
+                  </div>
+                )}
+
+                {/* Botões de Teste */}
+                <div className="mt-4 flex gap-3">
+                  <button
+                    onClick={handleTestConnection}
+                    disabled={testingConnection}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg transition-colors"
+                  >
+                    {testingConnection ? (
+                      <>
+                        <Loader className="w-4 h-4 animate-spin" />
+                        Testando...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="w-4 h-4" />
+                        Testar Servidor
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={handleTestCredentials}
+                    disabled={testingCredentials || !invoiceSettings.apiCodigoAutorizador || !invoiceSettings.apiSenhaAutorizada}
+                    className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-lg transition-colors"
+                  >
+                    {testingCredentials ? (
+                      <>
+                        <Loader className="w-4 h-4 animate-spin" />
+                        Validando...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="w-4 h-4" />
+                        Validar Credenciais
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Status da Conexão */}
+                {connectionStatus && (
+                  <div className={`mt-4 p-4 rounded-lg border ${connectionStatus.online
+                    ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                    : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                    }`}>
+                    <div className="flex items-center gap-2">
+                      {connectionStatus.online ? (
+                        <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+                      ) : (
+                        <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+                      )}
+                      <p className={`text-sm font-medium ${connectionStatus.online
+                        ? 'text-green-800 dark:text-green-200'
+                        : 'text-red-800 dark:text-red-200'
+                        }`}>
+                        {connectionStatus.message}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Status das Credenciais */}
+                {credentialsStatus && (
+                  <div className={`mt-4 p-4 rounded-lg border ${credentialsStatus.valid
+                    ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                    : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                    }`}>
+                    <div className="flex items-center gap-2">
+                      {credentialsStatus.valid ? (
+                        <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+                      ) : (
+                        <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+                      )}
+                      <p className={`text-sm font-medium ${credentialsStatus.valid
+                        ? 'text-green-800 dark:text-green-200'
+                        : 'text-red-800 dark:text-red-200'
+                        }`}>
+                        {credentialsStatus.message}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Endereço */}

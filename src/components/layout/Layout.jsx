@@ -22,7 +22,8 @@ import {
   MdExpandMore,
   MdExpandLess,
   MdSearch,
-  MdClose
+  MdClose,
+  MdPointOfSale
 } from 'react-icons/md';
 
 const Layout = () => {
@@ -44,6 +45,9 @@ const Layout = () => {
   // Itens pesquisáveis
   const searchableItems = [
     { name: 'Dashboard', path: '/dashboard', category: 'Página' },
+    { name: 'Caixa', path: '/caixa', category: 'Página' },
+    { name: 'PDV', path: '/caixa', category: 'Página' },
+    { name: 'Ponto de Venda', path: '/caixa', category: 'Página' },
     { name: 'Check-in', path: '/checkin', category: 'Página' },
     { name: 'Clientes', path: '/clients', category: 'Página' },
     { name: 'Veículos', path: '/vehicles', category: 'Página' },
@@ -85,6 +89,7 @@ const Layout = () => {
 
   const menuItems = [
     { path: '/dashboard', name: 'Dashboard', icon: MdDashboard, color: 'blue' },
+    { path: '/caixa', name: 'Caixa / PDV', icon: MdPointOfSale, color: 'green' },
     { path: '/checkin', name: 'Check-in', icon: MdCheckCircle, color: 'blue' },
     { path: '/clients', name: 'Clientes', icon: MdPeople, color: 'blue' },
     { path: '/vehicles', name: 'Veículos', icon: MdTwoWheeler, color: 'blue' },
@@ -117,6 +122,8 @@ const Layout = () => {
             {menuItems.map((item) => {
               const isActive = location.pathname === item.path;
               const isAmber = item.color === 'amber';
+              const isGreen = item.color === 'green';
+              const isRed = item.color === 'red';
 
               return (
                 <Link
@@ -125,6 +132,10 @@ const Layout = () => {
                   className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${isActive
                     ? isAmber
                       ? 'bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-200'
+                      : isGreen
+                      ? 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200'
+                      : isRed
+                      ? 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200'
                       : 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200'
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}

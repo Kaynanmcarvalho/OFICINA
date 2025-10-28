@@ -1,0 +1,341 @@
+.itens-nf-form {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.itens-nf-form .form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.itens-nf-form .form-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.itens-nf-form .btn-add-item {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.itens-nf-form .btn-add-item:hover {
+  background: #219a52;
+}
+
+.itens-nf-form .items-container {
+  max-height: 600px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.itens-nf-form .item-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  background: #fafafa;
+  transition: box-shadow 0.3s ease;
+}
+
+.itens-nf-form .item-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.itens-nf-form .item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 15px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  border-radius: 6px 6px 0 0;
+}
+
+.itens-nf-form .item-number {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.itens-nf-form .item-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.itens-nf-form .btn-duplicate,
+.itens-nf-form .btn-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px 8px;
+  border-radius: 3px;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.itens-nf-form .btn-duplicate:hover {
+  background: #e3f2fd;
+}
+
+.itens-nf-form .btn-remove:hover {
+  background: #ffebee;
+}
+
+.itens-nf-form .item-content {
+  padding: 15px;
+}
+
+.itens-nf-form .form-group {
+  margin-bottom: 15px;
+  flex: 1;
+}
+
+.itens-nf-form .form-group.flex-3 {
+  flex: 3;
+}
+
+.itens-nf-form .form-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.itens-nf-form .form-row .form-group {
+  margin-bottom: 0;
+}
+
+.itens-nf-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #333;
+  font-size: 0.85rem;
+}
+
+.itens-nf-form .required {
+  color: #e74c3c;
+  margin-left: 2px;
+}
+
+.itens-nf-form input,
+.itens-nf-form select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
+}
+
+.itens-nf-form input:focus,
+.itens-nf-form select:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.itens-nf-form input.error {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
+}
+
+.itens-nf-form input.readonly {
+  background: #f8f9fa;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.itens-nf-form .error-message {
+  display: block;
+  color: #e74c3c;
+  font-size: 0.75rem;
+  margin-top: 3px;
+}
+
+.itens-nf-form .impostos-section {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.itens-nf-form .impostos-section h4 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.itens-nf-form .form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 15px;
+  border-top: 2px solid #f0f0f0;
+}
+
+.itens-nf-form .total-section {
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.itens-nf-form .form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.itens-nf-form .btn-validate {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.itens-nf-form .btn-validate:hover {
+  background: #2980b9;
+}
+
+/* Select customizado */
+.itens-nf-form select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px;
+  padding-right: 35px;
+  appearance: none;
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+  .itens-nf-form .form-row {
+    flex-wrap: wrap;
+  }
+  
+  .itens-nf-form .form-group {
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .itens-nf-form .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .itens-nf-form .form-row .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .itens-nf-form .form-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  
+  .itens-nf-form .form-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+  
+  .itens-nf-form .item-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .itens-nf-form .item-actions {
+    align-self: flex-end;
+  }
+}
+
+/* Animações */
+.itens-nf-form .item-card {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Melhorias visuais */
+.itens-nf-form input::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+.itens-nf-form input[type="number"] {
+  text-align: right;
+}
+
+/* Scrollbar customizada */
+.itens-nf-form .items-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.itens-nf-form .items-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.itens-nf-form .items-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.itens-nf-form .items-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Estados de validação */
+.itens-nf-form .form-group.valid input {
+  border-color: #27ae60;
+}
+
+.itens-nf-form .form-group.valid input:focus {
+  box-shadow: 0 0 0 2px rgba(39, 174, 96, 0.2);
+}
+
+/* Destaque para campos obrigatórios */
+.itens-nf-form .form-group:has(.required) label {
+  position: relative;
+}
+
+.itens-nf-form .form-group:has(.required) label::after {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #e74c3c;
+  border-radius: 2px;
+  opacity: 0.3;
+}

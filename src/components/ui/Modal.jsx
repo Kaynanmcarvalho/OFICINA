@@ -19,12 +19,12 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm overflow-y-auto"
       onClick={handleBackdropClick}
     >
-      <div className={`w-full ${sizeClasses[size]} bg-white dark:bg-gray-800 rounded-lg shadow-xl transform transition-all duration-300 scale-100`}>
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+      <div className={`w-full ${sizeClasses[size]} bg-white dark:bg-gray-800 rounded-lg shadow-xl transform transition-all duration-300 scale-100 my-8 max-h-[90vh] flex flex-col`}>
+        {/* Header - Fixo */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
             {title}
           </h2>
@@ -36,8 +36,8 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
           </button>
         </div>
         
-        {/* Content */}
-        <div className="p-6">
+        {/* Content - Com scroll */}
+        <div className="p-6 overflow-y-auto flex-1">
           {children}
         </div>
       </div>
