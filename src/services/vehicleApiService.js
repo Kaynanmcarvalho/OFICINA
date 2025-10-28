@@ -1,204 +1,150 @@
-// API 1: FIPE Parallelum (Principal)
-const FIPE_API_BASE = 'https://parallelum.com.br/fipe/api/v1';
+import { getVehicleFromCache, saveVehicleToCache, incrementCacheHit } from './vehicleCacheService';
+import { correctVehicleType } from './vehicleTypeDetector';
 
-// API 2: Brasil API (Fallback)
-const BRASIL_API_BASE = 'https://brasilapi.com.br/api/fipe';
-
-// API 3: Placa Fipe (Busca por placa)
-const PLACA_FIPE_BASE = 'https://wdapi2.com.br/consulta';
+// URL do backend
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 /**
  * Busca informações do veículo pela placa
+ * 1. Primeiro tenta buscar no cache do Firebase (instantâneo)
+ * 2. Se não encontrar, faz scraping e salva no cache
  */
 export const searchVehicleByPlate = async (plate) => {
     try {
-        // Remove caracteres especiais da placa
-        const cleanPlate = plate.replace(/[^A-Z0-9]/g, '');
+        const cleanPlate = plate.replace(/[^A-Z0-9]/g, '').toUpperCase();
         
-        // Tenta API de consulta de placa (requer token - usar mock para desenvolvimento)
-        // Em produção, você precisará de uma API key válida
+        if (cleanPlate.length !== 7) {
+            return {
+                success: false,
+                error: 'Placa inválida. Use o formato ABC1234 ou ABC1D23'
+            };
+        }
+
+        console.log(`[VEHICLE API] 🔍 Buscando placa: ${cleanPlate}`);
+
+        // 1. Tenta buscar no cache primeiro (RÁPIDO - < 1s)
+        console.log(`[VEHICLE API] 📦 Verificando cache...`);
+        const cachedData = await getVehicleFromCache(cleanPlate);
         
-        // Mock de resposta para desenvolvimento
-        // TODO: Integrar com API real de consulta de placas
-        const mockResponse = {
-            placa: cleanPlate,
-            marca: 'Honda',
-            modelo: 'CB 600F Hornet',
-            ano: '2023',
-            cor: 'Vermelha',
-            tipo: 'moto'
-        };
-        
-        // Simula delay de API
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        return {
-            success: true,
-            data: mockResponse
-        };
+        if (cachedData && cachedData.success) {
+            console.log(`[VEHICLE API] ✅ Cache HIT! Retornando dados instantaneamente`);
+            
+            // Corrige o tipo do veículo se necessário
+            const correctedData = {
+                ...cachedData,
+                data: correctVehicleType(cachedData.data)
+            };
+            
+            // Incrementa contador de hits em background
+            incrementCacheHit(cleanPlate).catch(err => 
+                console.error('Erro ao incrementar hit:', err)
+            );
+            
+            return correctedData;
+        }
+
+        // 2. Não encontrou no cache, faz scraping
+        console.log(`[VEHICLE API] ❌ Cache MISS. Iniciando scraping...`);
+
+        // Cria AbortController para timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 35000); // 35 segundos
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/vehicles/plate/${cleanPlate}`, {
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            
+            const data = await response.json();
+
+            if (data.success && data.data) {
+                // Corrige o tipo do veículo antes de salvar
+                const correctedData = correctVehicleType(data.data);
+                
+                // Salva no cache para próximas consultas
+                console.log(`[VEHICLE API] 💾 Salvando no cache para futuras consultas...`);
+                await saveVehicleToCache(cleanPlate, correctedData);
+                console.log(`[VEHICLE API] ✅ Dados salvos no cache com sucesso!`);
+                
+                // Retorna dados corrigidos
+                return {
+                    ...data,
+                    data: correctedData
+                };
+            }
+
+            return data;
+        } catch (fetchError) {
+            clearTimeout(timeoutId);
+            if (fetchError.name === 'AbortError') {
+                console.error('[VEHICLE API] ⏱️ Timeout ao consultar placa');
+                return {
+                    success: false,
+                    error: 'Tempo esgotado ao consultar placa'
+                };
+            }
+            throw fetchError;
+        }
+
     } catch (error) {
-        console.error('Erro ao buscar veículo por placa:', error);
+        console.error('[VEHICLE API] ❌ Erro ao buscar veículo:', error);
         return {
             success: false,
-            error: 'Não foi possível consultar a placa'
+            error: 'Erro ao consultar placa. Verifique se o backend está rodando.'
         };
     }
 };
 
 /**
- * Busca marcas de veículos
+ * Busca marcas de veículos através do backend
  */
 export const fetchBrands = async (vehicleType = 'motos') => {
     try {
-        // Tenta API principal (FIPE Parallelum)
-        const response = await fetch(`${FIPE_API_BASE}/${vehicleType}/marcas`);
-        
-        if (!response.ok) throw new Error('Erro na API principal');
-        
+        const response = await fetch(`${API_BASE_URL}/vehicles/brands/${vehicleType}`);
         const data = await response.json();
-        return {
-            success: true,
-            data: data.map(brand => ({
-                value: brand.codigo,
-                label: brand.nome
-            }))
-        };
+        return data;
     } catch (error) {
         console.error('Erro ao buscar marcas:', error);
-        
-        // Fallback: retorna lista estática de marcas populares
         return {
-            success: true,
-            data: getFallbackBrands(vehicleType)
+            success: false,
+            error: 'Erro ao buscar marcas'
         };
     }
 };
 
 /**
- * Busca modelos de uma marca específica
+ * Busca modelos de uma marca específica através do backend
  */
 export const fetchModels = async (vehicleType, brandCode) => {
     try {
-        const response = await fetch(`${FIPE_API_BASE}/${vehicleType}/marcas/${brandCode}/modelos`);
-        
-        if (!response.ok) throw new Error('Erro na API');
-        
+        const response = await fetch(`${API_BASE_URL}/vehicles/models/${vehicleType}/${brandCode}`);
         const data = await response.json();
-        return {
-            success: true,
-            data: data.modelos.map(model => ({
-                value: model.codigo,
-                label: model.nome
-            }))
-        };
+        return data;
     } catch (error) {
         console.error('Erro ao buscar modelos:', error);
         return {
             success: false,
-            error: 'Não foi possível carregar os modelos'
+            error: 'Erro ao buscar modelos'
         };
     }
 };
 
 /**
- * Busca anos de um modelo específico
+ * Busca anos de um modelo específico através do backend
  */
 export const fetchYears = async (vehicleType, brandCode, modelCode) => {
     try {
-        const response = await fetch(`${FIPE_API_BASE}/${vehicleType}/marcas/${brandCode}/modelos/${modelCode}/anos`);
-        
-        if (!response.ok) throw new Error('Erro na API');
-        
+        const response = await fetch(`${API_BASE_URL}/vehicles/years/${vehicleType}/${brandCode}/${modelCode}`);
         const data = await response.json();
-        return {
-            success: true,
-            data: data.map(year => ({
-                value: year.codigo,
-                label: year.nome
-            }))
-        };
+        return data;
     } catch (error) {
         console.error('Erro ao buscar anos:', error);
         return {
             success: false,
-            error: 'Não foi possível carregar os anos'
+            error: 'Erro ao buscar anos'
         };
     }
-};
-
-/**
- * Busca detalhes completos do veículo
- */
-export const fetchVehicleDetails = async (vehicleType, brandCode, modelCode, yearCode) => {
-    try {
-        const response = await fetch(`${FIPE_API_BASE}/${vehicleType}/marcas/${brandCode}/modelos/${modelCode}/anos/${yearCode}`);
-        
-        if (!response.ok) throw new Error('Erro na API');
-        
-        const data = await response.json();
-        return {
-            success: true,
-            data: {
-                brand: data.Marca,
-                model: data.Modelo,
-                year: data.AnoModelo,
-                fuel: data.Combustivel,
-                fipeCode: data.CodigoFipe,
-                referenceMonth: data.MesReferencia,
-                value: data.Valor
-            }
-        };
-    } catch (error) {
-        console.error('Erro ao buscar detalhes:', error);
-        return {
-            success: false,
-            error: 'Não foi possível carregar os detalhes'
-        };
-    }
-};
-
-/**
- * Marcas populares como fallback
- */
-const getFallbackBrands = (vehicleType) => {
-    const brands = {
-        motos: [
-            { value: '1', label: 'Honda' },
-            { value: '2', label: 'Yamaha' },
-            { value: '3', label: 'Suzuki' },
-            { value: '4', label: 'Kawasaki' },
-            { value: '5', label: 'BMW' },
-            { value: '6', label: 'Ducati' },
-            { value: '7', label: 'Harley-Davidson' },
-            { value: '8', label: 'Triumph' },
-            { value: '9', label: 'KTM' },
-            { value: '10', label: 'Royal Enfield' }
-        ],
-        carros: [
-            { value: '1', label: 'Chevrolet' },
-            { value: '2', label: 'Volkswagen' },
-            { value: '3', label: 'Fiat' },
-            { value: '4', label: 'Ford' },
-            { value: '5', label: 'Toyota' },
-            { value: '6', label: 'Honda' },
-            { value: '7', label: 'Hyundai' },
-            { value: '8', label: 'Nissan' },
-            { value: '9', label: 'Renault' },
-            { value: '10', label: 'Jeep' }
-        ],
-        caminhoes: [
-            { value: '1', label: 'Mercedes-Benz' },
-            { value: '2', label: 'Volkswagen' },
-            { value: '3', label: 'Scania' },
-            { value: '4', label: 'Volvo' },
-            { value: '5', label: 'Iveco' },
-            { value: '6', label: 'Ford' },
-            { value: '7', label: 'DAF' },
-            { value: '8', label: 'MAN' }
-        ]
-    };
-    
-    return brands[vehicleType] || brands.motos;
 };
 
 /**
@@ -206,9 +152,9 @@ const getFallbackBrands = (vehicleType) => {
  */
 export const getVehicleTypeForApi = (type) => {
     const types = {
-        'moto': 'motos',
-        'carro': 'carros',
-        'caminhao': 'caminhoes'
+        'moto': 'moto',
+        'carro': 'carro',
+        'caminhao': 'caminhao'
     };
-    return types[type] || 'motos';
+    return types[type] || 'moto';
 };

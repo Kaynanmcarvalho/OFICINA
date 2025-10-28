@@ -1,7 +1,8 @@
-import { localDB } from './localStorageService';
+import { useClientStore } from '../store/clientStore';
 
 /**
  * Cria um novo cliente
+ * Delega para o clientStore (Firebase)
  */
 export const createClient = async (clientData) => {
   try {
@@ -10,13 +11,14 @@ export const createClient = async (clientData) => {
       throw new Error('Nome e telefone são obrigatórios');
     }
 
-    const newClient = await localDB.createClient(clientData);
+    const store = useClientStore.getState();
+    const result = await store.createClient(clientData);
     
-    return {
-      ...newClient,
-      createdAt: new Date(newClient.createdAt),
-      updatedAt: new Date(newClient.updatedAt)
-    };
+    if (!result.success) {
+      throw new Error(result.error || 'Falha ao criar cliente');
+    }
+    
+    return result.data;
   } catch (error) {
     console.error('Erro ao criar cliente:', error);
     throw new Error(error.message || 'Falha ao criar cliente');
@@ -24,17 +26,19 @@ export const createClient = async (clientData) => {
 };
 
 /**
- * Busca um cliente por ID
+ * Busca um cliente por ID (Firestore ID)
+ * Delega para o clientStore (Firebase)
  */
 export const getClientById = async (id) => {
   try {
-    const client = await localDB.getClientById(id);
+    const store = useClientStore.getState();
+    const result = await store.getClientById(id);
     
-    if (!client) {
-      throw new Error('Cliente não encontrado');
+    if (!result.success) {
+      throw new Error(result.error || 'Cliente não encontrado');
     }
     
-    return client;
+    return result.data;
   } catch (error) {
     console.error('Erro ao buscar cliente:', error);
     throw error;
@@ -43,10 +47,25 @@ export const getClientById = async (id) => {
 
 /**
  * Lista todos os clientes
+ * Delega para o clientStore (Firebase)
  */
 export const getClients = async () => {
   try {
-    return await localDB.getClients();
+    const store = useClientStore.getState();
+    
+    // Se já temos clientes em cache, retornar
+    if (store.clients.length > 0) {
+      return store.clients;
+    }
+    
+    // Caso contrário, buscar do Firebase
+    const result = await store.fetchClients();
+    
+    if (!result.success) {
+      throw new Error(result.error || 'Erro ao buscar clientes');
+    }
+    
+    return result.data;
   } catch (error) {
     console.error('Erro ao buscar clientes:', error);
     throw error;
@@ -55,6 +74,8 @@ export const getClients = async () => {
 
 /**
  * Busca clientes por termo de pesquisa
+ * Delega para o clientStore (Firebase)
+ * Mantém formato de retorno compatível com código existente
  */
 export const searchClients = async (searchTerm) => {
   try {
@@ -62,47 +83,51 @@ export const searchClients = async (searchTerm) => {
       return [];
     }
     
-    const results = await localDB.searchClients(searchTerm);
+    const store = useClientStore.getState();
+    const result = await store.searchClients(searchTerm);
     
-    // Buscar último check-in de cada cliente
-    const clientsWithHistory = await Promise.all(
-      results.map(async (client) => {
-        try {
-          const history = await localDB.getClientHistory(client.id);
-          
-          if (history.length > 0) {
-            const lastCheckin = history[0];
-            return {
-              ...client,
-              lastCheckin: {
-                motorcycle: lastCheckin.motorcycle,
-                plate: lastCheckin.plate,
-                checkInDate: new Date(lastCheckin.checkInDate)
-              }
-            };
-          }
-          
-          return { ...client, lastCheckin: null };
-        } catch (error) {
-          console.error('Erro ao buscar histórico do cliente:', error);
-          return { ...client, lastCheckin: null };
-        }
-      })
-    );
+    if (!result.success) {
+      console.error('Erro ao buscar clientes:', result.error);
+      return [];
+    }
     
-    return clientsWithHistory.slice(0, 10);
+    // Retornar dados no formato esperado (array simples)
+    // O histórico de check-ins será buscado separadamente se necessário
+    return result.data.map(client => ({
+      id: client.firestoreId,
+      firestoreId: client.firestoreId,
+      clientId: client.clientId,
+      name: client.name,
+      phone: client.phone,
+      cpf: client.cpf,
+      cnpj: client.cnpj,
+      email: client.email,
+      address: client.address,
+      vehicles: client.vehicles || [],
+      totalServices: client.totalServices || 0,
+      lastServiceDate: client.lastServiceDate,
+      lastCheckin: null, // Pode ser populado posteriormente se necessário
+    }));
   } catch (error) {
     console.error('Erro ao buscar clientes:', error);
-    throw error;
+    return [];
   }
 };
 
 /**
  * Atualiza um cliente
+ * Delega para o clientStore (Firebase)
  */
-export const updateClient = async (id) => {
+export const updateClient = async (id, updates) => {
   try {
-    return getClientById(id);
+    const store = useClientStore.getState();
+    const result = await store.updateClient(id, updates);
+    
+    if (!result.success) {
+      throw new Error(result.error || 'Erro ao atualizar cliente');
+    }
+    
+    return await getClientById(id);
   } catch (error) {
     console.error('Erro ao atualizar cliente:', error);
     throw error;
@@ -110,21 +135,40 @@ export const updateClient = async (id) => {
 };
 
 /**
- * Deleta um cliente (soft delete)
+ * Deleta um cliente
+ * Delega para o clientStore (Firebase)
  */
-export const deleteClient = async () => {
-  return true;
+export const deleteClient = async (id) => {
+  try {
+    const store = useClientStore.getState();
+    const result = await store.deleteClient(id);
+    
+    if (!result.success) {
+      throw new Error(result.error || 'Erro ao deletar cliente');
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Erro ao deletar cliente:', error);
+    throw error;
+  }
 };
 
 /**
  * Verifica se CPF já está cadastrado
+ * Usa dados do clientStore (Firebase)
  */
 export const checkDuplicateCPF = async (cpf, excludeId = null) => {
   try {
-    const clients = await localDB.getClients();
+    const store = useClientStore.getState();
+    const clients = store.clients;
     
     if (excludeId) {
-      return clients.some(client => client.cpf === cpf && client.id !== excludeId);
+      return clients.some(client => 
+        client.cpf === cpf && 
+        client.firestoreId !== excludeId && 
+        client.id !== excludeId
+      );
     }
     
     return clients.some(client => client.cpf === cpf);

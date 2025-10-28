@@ -14,6 +14,7 @@ import {
   onSnapshot
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import toast from 'react-hot-toast';
 
 export const useClientStore = create((set, get) => ({
   // State
@@ -22,11 +23,171 @@ export const useClientStore = create((set, get) => ({
   isLoading: false,
   error: null,
   searchResults: [],
+  migrationStatus: null,
 
   // Actions
   setLoading: (loading) => set({ isLoading: loading }),
   setError: (error) => set({ error }),
   clearError: () => set({ error: null }),
+
+  // Migration from localStorage
+  migrateFromLocalStorage: async () => {
+    const STORAGE_KEY = 'oficina_clients';
+    const MIGRATION_KEY = 'migration_status';
+    
+    try {
+      // Check if migration already completed
+      const existingMigration = localStorage.getItem(MIGRATION_KEY);
+      if (existingMigration) {
+        const status = JSON.parse(existingMigration);
+        if (status.isComplete) {
+          console.log('[Migration] Already completed:', status);
+          set({ migrationStatus: status });
+          return status;
+        }
+      }
+
+      // Get clients from localStorage
+      const localClientsStr = localStorage.getItem(STORAGE_KEY);
+      if (!localClientsStr) {
+        console.log('[Migration] No clients found in localStorage');
+        return null;
+      }
+
+      const localClients = JSON.parse(localClientsStr);
+      if (localClients.length === 0) {
+        console.log('[Migration] Empty clients array in localStorage');
+        return null;
+      }
+
+      console.log(`[Migration] Found ${localClients.length} clients in localStorage`);
+
+      const migrationStatus = {
+        isComplete: false,
+        migratedCount: 0,
+        failedCount: 0,
+        skippedCount: 0,
+        errors: [],
+        timestamp: new Date().toISOString()
+      };
+
+      // Fetch existing clients from Firebase
+      const existingClients = get().clients;
+      console.log(`[Migration] Existing clients in Firebase: ${existingClients.length}`);
+      
+      for (const localClient of localClients) {
+        try {
+          console.log(`[Migration] Processing client: ${localClient.name}`, localClient);
+          
+          // Check for duplicates by clientId, phone, or CPF
+          const isDuplicate = existingClients.some(existing => {
+            const match = existing.clientId === localClient.id ||
+              existing.clientId === localClient.clientId ||
+              (localClient.phone && existing.phone === localClient.phone) ||
+              (localClient.cpf && existing.cpf === localClient.cpf);
+            
+            if (match) {
+              console.log(`[Migration] Found duplicate match:`, {
+                existing: { clientId: existing.clientId, phone: existing.phone, cpf: existing.cpf },
+                local: { id: localClient.id, clientId: localClient.clientId, phone: localClient.phone, cpf: localClient.cpf }
+              });
+            }
+            
+            return match;
+          });
+
+          if (isDuplicate) {
+            console.log(`[Migration] Skipping duplicate client: ${localClient.name}`);
+            migrationStatus.skippedCount++;
+            continue;
+          }
+          
+          console.log(`[Migration] Client ${localClient.name} is not a duplicate, migrating...`);
+
+          // Prepare client data for Firebase
+          const clientData = {
+            name: localClient.name,
+            phone: localClient.phone,
+            cpf: localClient.cpf || '',
+            cnpj: localClient.cnpj || '',
+            email: localClient.email || '',
+            address: localClient.address || '',
+            vehicles: localClient.vehicles || [],
+            serviceHistory: localClient.serviceHistory || [],
+            totalServices: localClient.totalServices || 0,
+            lastServiceDate: localClient.lastServiceDate || null,
+          };
+
+          // Create client in Firebase
+          const result = await get().createClient(clientData);
+          
+          if (result.success) {
+            migrationStatus.migratedCount++;
+            console.log(`[Migration] Migrated client: ${localClient.name}`);
+          } else {
+            migrationStatus.failedCount++;
+            migrationStatus.errors.push(`Failed to migrate ${localClient.name}: ${result.error}`);
+          }
+        } catch (error) {
+          migrationStatus.failedCount++;
+          migrationStatus.errors.push(`Error migrating ${localClient.name}: ${error.message}`);
+          console.error(`[Migration] Error migrating client:`, error);
+        }
+      }
+
+      migrationStatus.isComplete = true;
+      
+      // Save migration status
+      localStorage.setItem(MIGRATION_KEY, JSON.stringify(migrationStatus));
+      set({ migrationStatus });
+
+      console.log('[Migration] Complete:', migrationStatus);
+
+      // Show success notification
+      if (migrationStatus.migratedCount > 0) {
+        toast.success(
+          `${migrationStatus.migratedCount} cliente(s) migrado(s) com sucesso!`,
+          { duration: 5000 }
+        );
+      }
+
+      // Show warning if there were failures
+      if (migrationStatus.failedCount > 0) {
+        toast.error(
+          `${migrationStatus.failedCount} cliente(s) falharam na migração. Verifique o console.`,
+          { duration: 7000 }
+        );
+      }
+
+      // Schedule localStorage cleanup after 7 days
+      const cleanupDate = new Date();
+      cleanupDate.setDate(cleanupDate.getDate() + 7);
+      localStorage.setItem('migration_cleanup_date', cleanupDate.toISOString());
+
+      return migrationStatus;
+    } catch (error) {
+      console.error('[Migration] Fatal error:', error);
+      
+      const errorStatus = {
+        isComplete: false,
+        migratedCount: 0,
+        failedCount: 0,
+        skippedCount: 0,
+        errors: [error.message],
+        timestamp: new Date().toISOString()
+      };
+      
+      set({ migrationStatus: errorStatus });
+      
+      // Show error notification
+      toast.error(
+        'Falha ao migrar dados. Seus dados estão seguros no armazenamento local.',
+        { duration: 7000 }
+      );
+      
+      return null;
+    }
+  },
 
   // Create new client
   createClient: async (clientData) => {
@@ -124,8 +285,31 @@ export const useClientStore = create((set, get) => ({
       }));
 
       set({ clients, isLoading: false });
+
+      console.log('[fetchClients] Loaded clients from Firebase:', clients.length);
+
+      // Run migration after fetching clients (only once)
+      const migrationStatus = get().migrationStatus;
+      if (!migrationStatus) {
+        console.log('[fetchClients] Starting migration...');
+        await get().migrateFromLocalStorage();
+        
+        // Fetch again after migration to get newly migrated clients
+        const updatedQuery = await getDocs(q);
+        const updatedClients = updatedQuery.docs.map(doc => ({
+          ...doc.data(),
+          firestoreId: doc.id,
+        }));
+        
+        set({ clients: updatedClients });
+        console.log('[fetchClients] Clients after migration:', updatedClients.length);
+        
+        return { success: true, data: updatedClients };
+      }
+
       return { success: true, data: clients };
     } catch (error) {
+      console.error('[fetchClients] Error:', error);
       set({ error: error.message, isLoading: false });
       return { success: false, error: error.message };
     }
@@ -154,6 +338,7 @@ export const useClientStore = create((set, get) => ({
 
   // Search clients
   searchClients: async (searchTerm) => {
+    const startTime = performance.now();
     set({ isLoading: true, error: null });
     try {
       // Search by name
@@ -215,9 +400,33 @@ export const useClientStore = create((set, get) => ({
       const searchResults = Array.from(allResults.values());
 
       set({ searchResults, isLoading: false });
+      
+      // Log performance
+      const duration = performance.now() - startTime;
+      console.log('[Search Performance]', {
+        term: searchTerm,
+        results: searchResults.length,
+        duration: `${Math.round(duration)}ms`,
+        timestamp: new Date().toISOString()
+      });
+
+      // Warn if search is slow
+      if (duration > 2000) {
+        console.warn('[Search Performance] Search took longer than 2 seconds:', duration);
+        toast.warning('A busca está demorando mais que o esperado. Considere otimizar os índices do Firebase.');
+      }
+
       return { success: true, data: searchResults };
     } catch (error) {
       set({ error: error.message, isLoading: false });
+      
+      // Log error
+      console.error('[Search Error]', {
+        term: searchTerm,
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+      
       return { success: false, error: error.message };
     }
   },

@@ -14,8 +14,13 @@ const ClientsPage = () => {
   const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
+    console.log('[ClientsPage] Mounting, fetching clients...');
     fetchClients();
   }, [fetchClients]);
+
+  useEffect(() => {
+    console.log('[ClientsPage] Clients updated:', clients.length);
+  }, [clients]);
 
   useEffect(() => {
     if (error) {

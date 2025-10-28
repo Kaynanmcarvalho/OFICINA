@@ -70,7 +70,7 @@ function App() {
     <ErrorBoundary>
       <Router>
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-          <Suspense 
+          <Suspense
             fallback={
               <div className="min-h-screen flex items-center justify-center">
                 <LoadingSpinner size="lg" />
@@ -79,32 +79,32 @@ function App() {
           >
             <Routes>
               {/* Public routes */}
-              <Route 
-                path="/login" 
+              <Route
+                path="/login"
                 element={
                   user ? <Navigate to="/dashboard" replace /> : <LoginPage />
-                } 
+                }
               />
-              <Route 
-                path="/register" 
+              <Route
+                path="/register"
                 element={
                   user ? <Navigate to="/dashboard" replace /> : <RegisterPage />
-                } 
+                }
               />
-              
+
               {/* Profile completion route */}
-              <Route 
-                path="/complete-profile" 
+              <Route
+                path="/complete-profile"
                 element={
                   <ProtectedRoute>
                     <CompleteProfilePage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              
+
               {/* Protected routes */}
-              <Route 
-                path="/" 
+              <Route
+                path="/"
                 element={
                   <ProtectedRoute>
                     <Layout />
@@ -129,12 +129,12 @@ function App() {
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="employees" element={<EmployeeManagementPage />} />
               </Route>
-              
+
               {/* Catch all route */}
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Suspense>
-          
+
           {/* Toast notifications */}
           <Toaster
             position="top-right"

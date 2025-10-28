@@ -1,4 +1,3 @@
-import React from 'react';
 
 const DashboardPage = () => {
   return (
@@ -8,7 +7,7 @@ const DashboardPage = () => {
           Dashboard
         </h1>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
@@ -16,21 +15,21 @@ const DashboardPage = () => {
           </h3>
           <p className="text-3xl font-bold text-blue-600">0</p>
         </div>
-        
+
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
             Clientes Ativos
           </h3>
           <p className="text-3xl font-bold text-green-600">0</p>
         </div>
-        
+
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
             Estoque Baixo
           </h3>
           <p className="text-3xl font-bold text-yellow-600">0</p>
         </div>
-        
+
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
             Veículos em Montagem
@@ -38,7 +37,7 @@ const DashboardPage = () => {
           <p className="text-3xl font-bold text-purple-600">0</p>
         </div>
       </div>
-      
+
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
           Bem-vindo ao Sistema de Gestão da Oficina
