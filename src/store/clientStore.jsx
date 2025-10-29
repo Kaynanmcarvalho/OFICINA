@@ -8,9 +8,7 @@ import {
   getDocs, 
   getDoc,
   query, 
-  where, 
   orderBy, 
-  limit,
   onSnapshot
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
@@ -341,63 +339,37 @@ export const useClientStore = create((set, get) => ({
     const startTime = performance.now();
     set({ isLoading: true, error: null });
     try {
-      // Search by name
-      const nameQuery = query(
-        collection(db, 'clients'),
-        where('name', '>=', searchTerm),
-        where('name', '<=', searchTerm + '\uf8ff'),
-        orderBy('name'),
-        limit(10)
-      );
+      // Normalize search term (lowercase, remove accents)
+      const normalizedTerm = searchTerm.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       
-      // Search by client ID
-      const idQuery = query(
-        collection(db, 'clients'),
-        where('clientId', '>=', searchTerm),
-        where('clientId', '<=', searchTerm + '\uf8ff'),
-        limit(10)
-      );
+      // Get all clients from cache or Firebase
+      let allClients = get().clients;
       
-      // Search by phone
-      const phoneQuery = query(
-        collection(db, 'clients'),
-        where('phone', '>=', searchTerm),
-        where('phone', '<=', searchTerm + '\uf8ff'),
-        limit(10)
-      );
+      // If cache is empty, fetch from Firebase
+      if (allClients.length === 0) {
+        const clientsSnapshot = await getDocs(collection(db, 'clients'));
+        allClients = clientsSnapshot.docs.map(doc => ({
+          ...doc.data(),
+          firestoreId: doc.id
+        }));
+        set({ clients: allClients });
+      }
       
-      // Search by CPF
-      const cpfQuery = query(
-        collection(db, 'clients'),
-        where('cpf', '>=', searchTerm),
-        where('cpf', '<=', searchTerm + '\uf8ff'),
-        limit(10)
-      );
-      
-      // Search by CNPJ (if cpf field contains CNPJ)
-      const cnpjQuery = query(
-        collection(db, 'clients'),
-        where('cnpj', '>=', searchTerm),
-        where('cnpj', '<=', searchTerm + '\uf8ff'),
-        limit(10)
-      );
-      
-      const [nameResults, idResults, phoneResults, cpfResults, cnpjResults] = await Promise.all([
-        getDocs(nameQuery),
-        getDocs(idQuery),
-        getDocs(phoneQuery),
-        getDocs(cpfQuery),
-        getDocs(cnpjQuery)
-      ]);
-      
-      const allResults = new Map();
-      
-      // Combine results and remove duplicates
-      [...nameResults.docs, ...idResults.docs, ...phoneResults.docs, ...cpfResults.docs, ...cnpjResults.docs].forEach(doc => {
-        allResults.set(doc.id, { ...doc.data(), firestoreId: doc.id });
-      });
-      
-      const searchResults = Array.from(allResults.values());
+      // Filter clients locally (case-insensitive, accent-insensitive)
+      const searchResults = allClients.filter(client => {
+        const name = (client.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const phone = (client.phone || '').replace(/\D/g, '');
+        const cpf = (client.cpf || '').replace(/\D/g, '');
+        const cnpj = (client.cnpj || '').replace(/\D/g, '');
+        const clientId = (client.clientId || '').toLowerCase();
+        const searchPhone = searchTerm.replace(/\D/g, '');
+        
+        return name.includes(normalizedTerm) ||
+               phone.includes(searchPhone) ||
+               cpf.includes(searchPhone) ||
+               cnpj.includes(searchPhone) ||
+               clientId.includes(normalizedTerm);
+      }).slice(0, 10); // Limit to 10 results
 
       set({ searchResults, isLoading: false });
       

@@ -106,7 +106,7 @@ export const searchClients = async (searchTerm) => {
       vehicles: client.vehicles || [],
       totalServices: client.totalServices || 0,
       lastServiceDate: client.lastServiceDate,
-      lastCheckin: null, // Pode ser populado posteriormente se necessário
+      lastCheckin: client.lastCheckin || null,
     }));
   } catch (error) {
     console.error('Erro ao buscar clientes:', error);

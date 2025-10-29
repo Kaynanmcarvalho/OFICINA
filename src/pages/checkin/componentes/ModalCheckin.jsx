@@ -4,9 +4,10 @@ import toast from 'react-hot-toast';
 import CampoBuscaCliente from './CampoBuscaCliente';
 import UploaderFotos from './UploaderFotos';
 import ModalNovoCliente from './ModalNovoCliente';
-import { createCheckin } from '../../../services/checkinService';
+import { useCheckinStore } from '../../../store';
 
 const ModalCheckin = ({ isOpen, onClose, onSuccess }) => {
+    const { createCheckin, uploadPhotos } = useCheckinStore();
     const [formData, setFormData] = useState({ cliente: null, telefone: '', placa: '', modelo: '', observacoes: '', responsavel: '', fotos: [] });
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,12 +22,31 @@ const ModalCheckin = ({ isOpen, onClose, onSuccess }) => {
             setShowNovoClienteModal(true);
             return;
         }
-        setFormData(prev => ({ ...prev, cliente, telefone: cliente?.phone || '', placa: cliente?.lastCheckin?.plate || '', modelo: cliente?.lastCheckin?.motorcycle || '' })); 
+        
+        // Pegar o primeiro veículo do cliente, se existir
+        const primeiroVeiculo = cliente?.vehicles?.[0];
+        
+        setFormData(prev => ({ 
+            ...prev, 
+            cliente, 
+            telefone: cliente?.phone || '', 
+            placa: primeiroVeiculo?.plate || cliente?.lastCheckin?.plate || '', 
+            modelo: primeiroVeiculo?.model || cliente?.lastCheckin?.motorcycle || '' 
+        })); 
         setErrors(prev => ({ ...prev, cliente: null })); 
     };
 
     const handleNovoClienteSuccess = (newClient) => {
-        setFormData(prev => ({ ...prev, cliente: newClient, telefone: newClient.phone || '' }));
+        // Pegar o primeiro veículo do cliente recém-cadastrado
+        const primeiroVeiculo = newClient?.vehicles?.[0];
+        
+        setFormData(prev => ({ 
+            ...prev, 
+            cliente: newClient, 
+            telefone: newClient.phone || '',
+            placa: primeiroVeiculo?.plate || '',
+            modelo: primeiroVeiculo?.model || ''
+        }));
         setErrors(prev => ({ ...prev, cliente: null }));
         setShowNovoClienteModal(false);
         toast.success('Cliente cadastrado! Continue o check-in.');
@@ -34,7 +54,49 @@ const ModalCheckin = ({ isOpen, onClose, onSuccess }) => {
     
     const validateForm = () => { const newErrors = {}; if (!formData.cliente) newErrors.cliente = 'Selecione um cliente'; if (!formData.telefone.trim()) newErrors.telefone = 'Telefone é obrigatório'; if (!formData.placa.trim()) { newErrors.placa = 'Placa é obrigatória'; } else if (!/^[A-Z]{3}-?\d{4}$|^[A-Z]{3}\d[A-Z]\d{2}$/i.test(formData.placa)) { newErrors.placa = 'Placa inválida'; } if (!formData.modelo.trim()) newErrors.modelo = 'Modelo é obrigatório'; if (!formData.responsavel.trim()) newErrors.responsavel = 'Responsável é obrigatório'; setErrors(newErrors); return Object.keys(newErrors).length === 0; };
     
-    const handleSubmit = async (e) => { e.preventDefault(); if (!validateForm()) { toast.error('Preencha todos os campos obrigatórios'); return; } setIsSubmitting(true); try { const checkinData = { clientId: formData.cliente.id, motorcycle: formData.modelo, plate: formData.placa.toUpperCase(), observations: formData.observacoes, responsible: formData.responsavel, checkInDate: new Date() }; const photoFiles = formData.fotos.map(f => f.file); const newCheckin = await createCheckin(checkinData, photoFiles); toast.success('Check-in realizado com sucesso!'); onSuccess(newCheckin); onClose(); } catch (error) { console.error('Erro ao realizar check-in:', error); toast.error(error.message || 'Erro ao realizar check-in'); } finally { setIsSubmitting(false); } };
+    const handleSubmit = async (e) => { 
+        e.preventDefault(); 
+        
+        if (!validateForm()) { 
+            toast.error('Preencha todos os campos obrigatórios'); 
+            return; 
+        } 
+        
+        setIsSubmitting(true); 
+        
+        try { 
+            const checkinData = { 
+                clientId: formData.cliente.id,
+                clientName: formData.cliente.name,
+                clientPhone: formData.telefone,
+                vehicleModel: formData.modelo, 
+                vehiclePlate: formData.placa.toUpperCase(), 
+                observations: formData.observacoes, 
+                responsible: formData.responsavel
+            }; 
+            
+            const result = await createCheckin(checkinData);
+            
+            if (!result.success) {
+                throw new Error(result.error || 'Erro ao criar check-in');
+            }
+            
+            // Upload photos if any
+            if (formData.fotos.length > 0) {
+                const photoFiles = formData.fotos.map(f => f.file);
+                await uploadPhotos(result.data.firestoreId, photoFiles, 'before');
+            }
+            
+            toast.success('Check-in realizado com sucesso!'); 
+            onSuccess(result.data); 
+            onClose(); 
+        } catch (error) { 
+            console.error('Erro ao realizar check-in:', error); 
+            toast.error(error.message || 'Erro ao realizar check-in'); 
+        } finally { 
+            setIsSubmitting(false); 
+        } 
+    };
     
     if (!isOpen) return null;
     

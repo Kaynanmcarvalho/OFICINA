@@ -5,12 +5,12 @@ import { createClient } from '../../../services/clientService';
 import { searchVehicleByPlate, fetchBrands, fetchModels, getVehicleTypeForApi } from '../../../services/vehicleApiService';
 import { detectVehicleType } from '../../../services/vehicleTypeDetector';
 import SearchableSelect from '../../../components/ui/SearchableSelect';
-import { 
-    validateCPF, 
-    validateCNPJ, 
-    formatCPF as formatCPFUtil, 
+import {
+    validateCPF,
+    validateCNPJ,
+    formatCPF as formatCPFUtil,
     formatCNPJ as formatCNPJUtil,
-    validateBirthDate 
+    validateBirthDate
 } from '../../../services/documentValidationService';
 import { useClientStore } from '../../../store/clientStore';
 import { consultarCNPJ, validarSituacaoEmpresa } from '../../../services/cnpjService';
@@ -110,7 +110,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
 
     const handleCNPJSearch = async () => {
         const cnpjLimpo = formData.cnpj.replace(/\D/g, '');
-        
+
         if (cnpjLimpo.length !== 14) {
             toast.error('CNPJ deve ter 14 dígitos');
             return;
@@ -124,20 +124,20 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
         }
 
         setIsLoadingCNPJ(true);
-        
+
         try {
             const result = await consultarCNPJ(cnpjLimpo);
-            
+
             if (result.success) {
                 const dados = result.data;
-                
+
                 // Verificar se a empresa está ativa
                 if (!validarSituacaoEmpresa(dados.situacaoCadastral)) {
                     toast.error(`Empresa com situação: ${dados.situacaoCadastral}. Verifique os dados.`, {
                         duration: 5000
                     });
                 }
-                
+
                 // Preencher todos os campos automaticamente
                 setFormData(prev => ({
                     ...prev,
@@ -154,89 +154,16 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                     phone: dados.telefone ? formatPhone(dados.telefone) : prev.phone,
                     email: dados.email || prev.email
                 }));
-                
+
                 toast.success('Dados da empresa carregados com sucesso!', {
                     duration: 4000,
                     icon: '🏢'
                 });
-                
+
                 console.log('[CNPJ] Dados carregados:', dados);
             } else {
                 toast.error(result.error || 'Erro ao consultar CNPJ');
             }
-        } catch (error) {
-            console.error('[CNPJ] Erro ao buscar:', error);
-            toast.error('Erro ao consultar CNPJ. Tente novamente.');
-        } finally {
-            setIsLoadingCNPJ(false);
-        }
-    };
-
-    const handleCNPJSearch = async () => {
-        const cnpjLimpo = formData.cnpj.replace(/\D/g, '');
-        
-        if (cnpjLimpo.length !== 14) {
-            toast.error('CNPJ deve ter 14 dígitos');
-            return;
-        }
-
-        // Validar CNPJ antes de buscar
-        const cnpjValidation = validateCNPJ(cnpjLimpo);
-        if (!cnpjValidation.valid) {
-            toast.error(cnpjValidation.message);
-            return;
-        }
-
-        setIsLoadingCNPJ(true);
-        
-        try {
-            const result = await consultarCNPJ(cnpjLimpo);
-            
-            if (result.success) {
-                const dados = result.data;
-                
-                // Verificar se a empresa está ativa
-                if (!validarSituacaoEmpresa(dados.situacaoCadastral)) {
-                    toast.error(`Empresa ${dados.situacaoCadastral}. Verifique a situação cadastral.`, {
-                        duration: 5000
-                    });
-                }
-                
-                // Preencher todos os dados da empresa
-                setFormData(prev => ({
-                    ...prev,
-                    razaoSocial: dados.razaoSocial || prev.razaoSocial,
-                    nomeFantasia: dados.nomeFantasia || prev.nomeFantasia,
-                    email: dados.email || prev.email,
-                    phone: dados.telefone || prev.phone,
-                    zipCode: dados.cep ? formatZipCode(dados.cep) : prev.zipCode,
-                    address: dados.logradouro || prev.address,
-                    number: dados.numero || prev.number,
-                    complement: dados.complemento || prev.complement,
-                    neighborhood: dados.bairro || prev.neighborhood,
-                    city: dados.cidade || prev.city,
-                    state: dados.estado || prev.state
-                }));
-                
-                // Limpar erros dos campos preenchidos
-                setErrors({});
-                
-                toast.success('Dados da empresa carregados com sucesso!', {
-                    duration: 4000,
-                    icon: '✅'
-                });
-                
-                console.log('[CNPJ] Dados carregados:', {
-                    razaoSocial: dados.razaoSocial,
-                    nomeFantasia: dados.nomeFantasia,
-                    situacao: dados.situacaoCadastral,
-                    endereco: `${dados.logradouro}, ${dados.numero} - ${dados.cidade}/${dados.estado}`
-                });
-                
-            } else {
-                toast.error(result.error || 'Erro ao consultar CNPJ');
-            }
-            
         } catch (error) {
             console.error('[CNPJ] Erro ao buscar:', error);
             toast.error('Erro ao consultar CNPJ. Tente novamente.');
@@ -288,7 +215,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
         if (field === 'plate' && value.length === 7) {
             const vehicle = formData.vehicles.find(v => v.id === vehicleId);
             const searchMode = vehicleSearchMode[vehicleId] || 'plate';
-            
+
             // Só faz busca automática se estiver na busca manual
             if (searchMode === 'manual' && !isSearchingPlate[vehicleId]) {
                 console.log('[AUTO-SEARCH] Placa completa detectada na busca manual:', value);
@@ -306,77 +233,77 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
             if (result.success) {
                 const vehicleData = result.data;
                 const searchMode = vehicleSearchMode[vehicleId] || 'plate';
-                
+
                 // Atualiza os dados básicos
                 updateVehicle(vehicleId, 'type', vehicleData.tipo || 'moto');
                 updateVehicle(vehicleId, 'brand', vehicleData.marca || '');
                 updateVehicle(vehicleId, 'model', vehicleData.modelo || '');
                 updateVehicle(vehicleId, 'year', vehicleData.ano || '');
                 updateVehicle(vehicleId, 'color', vehicleData.cor || '');
-                
+
                 // Se estiver na busca manual, carregar e selecionar nos dropdowns
                 if (searchMode === 'manual') {
                     console.log('[AUTO-SEARCH] Carregando marcas e modelos para dropdowns...');
-                    
+
                     // 1. Carregar marcas do tipo
                     const vehicleType = vehicleData.tipo || 'moto';
                     setIsLoadingBrands(prev => ({ ...prev, [vehicleId]: true }));
-                    
+
                     try {
                         const apiType = getVehicleTypeForApi(vehicleType);
                         const brandsResult = await fetchBrands(apiType);
-                        
+
                         if (brandsResult.success && brandsResult.data) {
                             setAvailableBrands(prev => ({ ...prev, [vehicleId]: brandsResult.data }));
-                            
+
                             // 2. Encontrar e selecionar a marca
-                            const brandMatch = brandsResult.data.find(b => 
+                            const brandMatch = brandsResult.data.find(b =>
                                 b.label.toUpperCase().includes(vehicleData.marca.toUpperCase()) ||
                                 vehicleData.marca.toUpperCase().includes(b.label.toUpperCase())
                             );
-                            
+
                             if (brandMatch) {
                                 console.log('[AUTO-SEARCH] Marca encontrada:', brandMatch.label);
                                 updateVehicle(vehicleId, 'brandCode', brandMatch.value);
-                                
+
                                 // 3. Carregar modelos da marca
                                 setIsLoadingModels(prev => ({ ...prev, [vehicleId]: true }));
-                                
+
                                 try {
                                     const modelsResult = await fetchModels(apiType, brandMatch.value);
-                                    
+
                                     if (modelsResult.success && modelsResult.data) {
                                         setAvailableModels(prev => ({ ...prev, [vehicleId]: modelsResult.data }));
-                                        
+
                                         // 4. Encontrar e selecionar o modelo
-                                        const modelMatch = modelsResult.data.find(m => 
+                                        const modelMatch = modelsResult.data.find(m =>
                                             m.label.toUpperCase().includes(vehicleData.modelo.toUpperCase().split(' ')[0]) ||
                                             vehicleData.modelo.toUpperCase().includes(m.label.toUpperCase())
                                         );
-                                        
+
                                         if (modelMatch) {
                                             console.log('[AUTO-SEARCH] Modelo encontrado na lista:', modelMatch.label);
                                             updateVehicle(vehicleId, 'modelCode', modelMatch.value);
                                         } else {
                                             // Modelo não encontrado - adiciona como opção customizada
                                             console.log('[AUTO-SEARCH] ✨ Modelo não encontrado, adicionando como opção customizada:', vehicleData.modelo);
-                                            
+
                                             const customModelCode = `custom_${Date.now()}`;
                                             const customModel = {
                                                 value: customModelCode,
                                                 label: `${vehicleData.modelo} (Encontrado pela placa)`,
                                                 isCustom: true
                                             };
-                                            
+
                                             // Adiciona o modelo customizado ao início da lista
                                             setAvailableModels(prev => ({
                                                 ...prev,
                                                 [vehicleId]: [customModel, ...modelsResult.data]
                                             }));
-                                            
+
                                             // Seleciona o modelo customizado
                                             updateVehicle(vehicleId, 'modelCode', customModelCode);
-                                            
+
                                             toast.success('Modelo adicionado à lista!', { duration: 2000 });
                                         }
                                     }
@@ -395,7 +322,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                         setIsLoadingBrands(prev => ({ ...prev, [vehicleId]: false }));
                     }
                 }
-                
+
                 toast.success('Veículo encontrado!');
             } else {
                 toast.error('Placa não encontrada. Preencha manualmente.');
@@ -433,7 +360,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
     const handleBrandChange = async (vehicleId, brandValue) => {
         const vehicle = formData.vehicles.find(v => v.id === vehicleId);
         const brand = availableBrands[vehicleId]?.find(b => b.value === brandValue);
-        
+
         updateVehicle(vehicleId, 'brandCode', brandValue);
         updateVehicle(vehicleId, 'brand', brand?.label || '');
         updateVehicle(vehicleId, 'model', '');
@@ -477,14 +404,14 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
 
     const validateStep = (step) => {
         const newErrors = {};
-        
+
         if (step === 1) {
             if (personType === 'fisica') {
                 // Validar nome
                 if (!formData.name.trim() || formData.name.trim().length < 3) {
                     newErrors.name = 'Nome completo é obrigatório (mínimo 3 caracteres)';
                 }
-                
+
                 // Validar CPF
                 if (!formData.cpf) {
                     newErrors.cpf = 'CPF é obrigatório';
@@ -500,7 +427,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                         }
                     }
                 }
-                
+
                 // Validar data de nascimento
                 if (!formData.birthDate) {
                     newErrors.birthDate = 'Data de nascimento é obrigatória';
@@ -515,12 +442,12 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                 if (!formData.razaoSocial.trim() || formData.razaoSocial.trim().length < 3) {
                     newErrors.razaoSocial = 'Razão social é obrigatória';
                 }
-                
+
                 // Validar nome fantasia
                 if (!formData.nomeFantasia.trim() || formData.nomeFantasia.trim().length < 3) {
                     newErrors.nomeFantasia = 'Nome fantasia é obrigatório';
                 }
-                
+
                 // Validar CNPJ
                 if (!formData.cnpj) {
                     newErrors.cnpj = 'CNPJ é obrigatório';
@@ -536,25 +463,25 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                         }
                     }
                 }
-                
+
                 // Validar Indicador de IE
                 if (!formData.indicadorIE) {
                     newErrors.indicadorIE = 'Indicador de IE é obrigatório';
                 }
-                
+
                 // Validar Inscrição Estadual (obrigatória apenas para Contribuinte ICMS)
                 if (formData.indicadorIE === '1') {
                     if (!formData.inscricaoEstadual || formData.inscricaoEstadual.trim().length === 0) {
                         newErrors.inscricaoEstadual = 'Inscrição Estadual é obrigatória para Contribuinte ICMS';
                     }
                 }
-                
+
                 // Se for Isento, preencher automaticamente com ISENTO
                 if (formData.indicadorIE === '2' && !formData.inscricaoEstadual) {
                     setFormData(prev => ({ ...prev, inscricaoEstadual: 'ISENTO' }));
                 }
             }
-            
+
             // Validar telefone (obrigatório para ambos)
             if (!formData.phone.trim()) {
                 newErrors.phone = 'Telefone é obrigatório';
@@ -562,7 +489,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                 newErrors.phone = 'Telefone inválido';
             }
         }
-        
+
         if (step === 2) {
             // Validar CEP
             if (!formData.zipCode) {
@@ -570,40 +497,40 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
             } else if (formData.zipCode.replace(/\D/g, '').length !== 8) {
                 newErrors.zipCode = 'CEP inválido';
             }
-            
+
             // Validar endereço
             if (!formData.address.trim() || formData.address.trim().length < 3) {
                 newErrors.address = 'Endereço é obrigatório';
             }
-            
+
             // Validar número
             if (!formData.number.trim()) {
                 newErrors.number = 'Número é obrigatório';
             }
-            
+
             // Validar bairro
             if (!formData.neighborhood.trim() || formData.neighborhood.trim().length < 2) {
                 newErrors.neighborhood = 'Bairro é obrigatório';
             }
-            
+
             // Validar cidade
             if (!formData.city.trim() || formData.city.trim().length < 2) {
                 newErrors.city = 'Cidade é obrigatória';
             }
-            
+
             // Validar estado
             if (!formData.state) {
                 newErrors.state = 'Estado é obrigatório';
             }
         }
-        
+
         if (step === 3) {
             // Validar pelo menos 1 veículo
             if (formData.vehicles.length === 0) {
                 newErrors.vehicles = 'Cadastre pelo menos 1 veículo';
             }
         }
-        
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -626,7 +553,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
             toast.error('Verifique todos os campos obrigatórios');
             return;
         }
-        
+
         setIsSubmitting(true);
         try {
             const clientData = {
@@ -658,7 +585,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                 observations: formData.observations.trim(),
                 personType
             };
-            
+
             const newClient = await createClient(clientData);
             toast.success('Cliente cadastrado com sucesso!');
             onSuccess(newClient);
@@ -723,37 +650,31 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                     <button
                                         type="button"
                                         onClick={() => setPersonType('fisica')}
-                                        className={`p-4 rounded-xl border-2 transition-all duration-300 ${
-                                            personType === 'fisica'
-                                                ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                                                : 'border-neutral-200 dark:border-neutral-700 hover:border-neutral-300'
-                                        }`}
+                                        className={`p-4 rounded-xl border-2 transition-all duration-300 ${personType === 'fisica'
+                                            ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                                            : 'border-neutral-200 dark:border-neutral-700 hover:border-neutral-300'
+                                            }`}
                                     >
-                                        <User className={`w-8 h-8 mx-auto mb-2 ${
-                                            personType === 'fisica' ? 'text-blue-600' : 'text-neutral-400'
-                                        }`} />
-                                        <span className={`block text-sm font-medium ${
-                                            personType === 'fisica' ? 'text-blue-600' : 'text-neutral-600 dark:text-neutral-400'
-                                        }`}>
+                                        <User className={`w-8 h-8 mx-auto mb-2 ${personType === 'fisica' ? 'text-blue-600' : 'text-neutral-400'
+                                            }`} />
+                                        <span className={`block text-sm font-medium ${personType === 'fisica' ? 'text-blue-600' : 'text-neutral-600 dark:text-neutral-400'
+                                            }`}>
                                             Pessoa Física
                                         </span>
                                     </button>
-                                    
+
                                     <button
                                         type="button"
                                         onClick={() => setPersonType('juridica')}
-                                        className={`p-4 rounded-xl border-2 transition-all duration-300 ${
-                                            personType === 'juridica'
-                                                ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                                                : 'border-neutral-200 dark:border-neutral-700 hover:border-neutral-300'
-                                        }`}
+                                        className={`p-4 rounded-xl border-2 transition-all duration-300 ${personType === 'juridica'
+                                            ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                                            : 'border-neutral-200 dark:border-neutral-700 hover:border-neutral-300'
+                                            }`}
                                     >
-                                        <Building2 className={`w-8 h-8 mx-auto mb-2 ${
-                                            personType === 'juridica' ? 'text-blue-600' : 'text-neutral-400'
-                                        }`} />
-                                        <span className={`block text-sm font-medium ${
-                                            personType === 'juridica' ? 'text-blue-600' : 'text-neutral-600 dark:text-neutral-400'
-                                        }`}>
+                                        <Building2 className={`w-8 h-8 mx-auto mb-2 ${personType === 'juridica' ? 'text-blue-600' : 'text-neutral-400'
+                                            }`} />
+                                        <span className={`block text-sm font-medium ${personType === 'juridica' ? 'text-blue-600' : 'text-neutral-600 dark:text-neutral-400'
+                                            }`}>
                                             Pessoa Jurídica
                                         </span>
                                     </button>
@@ -839,6 +760,55 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                             {/* Campos para Pessoa Jurídica */}
                             {personType === 'juridica' && (
                                 <>
+                                    {/* CNPJ com botão de busca */}
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <CreditCard className="w-4 h-4 text-neutral-400" />
+                                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">CNPJ *</label>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={formatCNPJ(formData.cnpj)}
+                                                onChange={(e) => {
+                                                    setFormData({ ...formData, cnpj: e.target.value.replace(/\D/g, '') });
+                                                    setErrors({ ...errors, cnpj: null });
+                                                }}
+                                                placeholder="00.000.000/0000-00"
+                                                maxLength={18}
+                                                className={'flex-1 px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-800 border ' + (errors.cnpj ? 'border-red-500' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out'}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={handleCNPJSearch}
+                                                disabled={formData.cnpj.replace(/\D/g, '').length !== 14 || isLoadingCNPJ}
+                                                className="px-4 py-3 bg-green-600 hover:bg-green-700 disabled:bg-neutral-400 text-white rounded-xl text-sm font-medium transition-all duration-300 ease-out shadow-lg shadow-green-600/30 flex items-center gap-2"
+                                                title="Buscar dados da empresa na Receita Federal"
+                                            >
+                                                {isLoadingCNPJ ? (
+                                                    <>
+                                                        <Loader className="w-4 h-4 animate-spin" />
+                                                        Buscando...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Download className="w-4 h-4" />
+                                                        Buscar
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+                                        {errors.cnpj && (
+                                            <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                                                <AlertCircle className="w-3 h-3" />
+                                                {errors.cnpj}
+                                            </p>
+                                        )}
+                                        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                                            Digite o CNPJ e clique em "Buscar" para preencher automaticamente
+                                        </p>
+                                    </div>
+
                                     <div>
                                         <div className="flex items-center gap-2 mb-2">
                                             <Building2 className="w-4 h-4 text-neutral-400" />
@@ -885,30 +855,6 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                         )}
                                     </div>
 
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <CreditCard className="w-4 h-4 text-neutral-400" />
-                                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">CNPJ *</label>
-                                        </div>
-                                        <input
-                                            type="text"
-                                            value={formatCNPJ(formData.cnpj)}
-                                            onChange={(e) => {
-                                                setFormData({ ...formData, cnpj: e.target.value.replace(/\D/g, '') });
-                                                setErrors({ ...errors, cnpj: null });
-                                            }}
-                                            placeholder="00.000.000/0000-00"
-                                            maxLength={18}
-                                            className={'w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-800 border ' + (errors.cnpj ? 'border-red-500' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out'}
-                                        />
-                                        {errors.cnpj && (
-                                            <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
-                                                <AlertCircle className="w-3 h-3" />
-                                                {errors.cnpj}
-                                            </p>
-                                        )}
-                                    </div>
-
                                     {/* Indicador de Inscrição Estadual */}
                                     <div>
                                         <div className="flex items-center gap-2 mb-2">
@@ -921,8 +867,8 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                             value={formData.indicadorIE}
                                             onChange={(e) => {
                                                 const value = e.target.value;
-                                                setFormData({ 
-                                                    ...formData, 
+                                                setFormData({
+                                                    ...formData,
                                                     indicadorIE: value,
                                                     // Limpa IE se for Não Contribuinte
                                                     inscricaoEstadual: value === '9' ? '' : formData.inscricaoEstadual
@@ -1493,8 +1439,8 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                     <div className="flex justify-between">
                                         <span className="font-medium">Endereço:</span>
                                         <span className="text-right">
-                                            {formData.address ? 
-                                                `${formData.address}${formData.number ? ', ' + formData.number : ''}${formData.city ? ' - ' + formData.city : ''}${formData.state ? '/' + formData.state : ''}` 
+                                            {formData.address ?
+                                                `${formData.address}${formData.number ? ', ' + formData.number : ''}${formData.city ? ' - ' + formData.city : ''}${formData.state ? '/' + formData.state : ''}`
                                                 : '-'}
                                         </span>
                                     </div>
