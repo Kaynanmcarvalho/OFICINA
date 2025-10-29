@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore, useThemeStore } from '../../store/index.jsx';
+import Logo from '../Logo';
 import {
   MdDashboard,
   MdCheckCircle,
@@ -17,7 +18,6 @@ import {
   MdDarkMode,
   MdPerson,
   MdLogout,
-  MdGarage,
   MdSupervisorAccount,
   MdExpandMore,
   MdExpandLess,
@@ -110,11 +110,15 @@ const Layout = () => {
       {/* Sidebar */}
       <div className={`fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0`}>
-        <div className="flex items-center justify-center h-16 px-4 bg-blue-600 dark:bg-blue-700">
-          <MdGarage className="text-white text-2xl mr-2" />
-          <h1 className="text-xl font-bold text-white">
-            Oficina ReparoFácil
-          </h1>
+        <div className="flex items-center justify-center h-16 px-4 bg-gradient-to-r from-blue-600 to-blue-700 dark:from-gray-800 dark:to-gray-900">
+          <Logo 
+            size="medium"
+            onClick={() => {
+              navigate('/dashboard');
+              setSidebarOpen(false);
+            }}
+            className="cursor-pointer"
+          />
         </div>
 
         <nav className="mt-8">
