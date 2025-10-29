@@ -24,14 +24,15 @@ const CampoBuscaCliente = ({ value, onSelect, error }) => {
     const buscarClientes = async () => {
       if (query.length < 2) {
         setResults([]);
+        setIsOpen(false);
         return;
       }
 
       setIsLoading(true);
+      setIsOpen(true);
       try {
         const clientes = await searchClients(query);
         setResults(clientes || []);
-        setIsOpen(true);
       } catch (error) {
         console.error('Erro ao buscar clientes:', error);
         setResults([]);
@@ -78,9 +79,8 @@ const CampoBuscaCliente = ({ value, onSelect, error }) => {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => results.length > 0 && setIsOpen(true)}
           placeholder="Buscar por nome, CPF ou telefone..."
-          className={`w-full pl-10 pr-10 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-800 border ${
-            error ? 'border-red-500' : 'border-neutral-200 dark:border-neutral-700'
-          } text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out`}
+          className={`w-full pl-10 pr-10 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-800 border ${error ? 'border-red-500' : 'border-neutral-200 dark:border-neutral-700'
+            } text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out`}
         />
 
         {query && (
@@ -99,57 +99,63 @@ const CampoBuscaCliente = ({ value, onSelect, error }) => {
 
       {isOpen && query.length >= 2 && (
         <div className="absolute z-50 w-full mt-2 bg-white dark:bg-neutral-800 rounded-xl shadow-2xl border border-neutral-200 dark:border-neutral-700 overflow-hidden">
-
+          {isLoading ? (
+            <div className="px-4 py-8 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+              <span className="ml-3 text-sm text-neutral-500 dark:text-neutral-400">Buscando...</span>
+            </div>
+          ) : (
             <div className="max-h-64 overflow-y-auto">
-              {results.length > 0 ? (
-                results.map((cliente) => (
-                  <button
-                    key={cliente.id}
-                    type="button"
-                    onClick={() => handleSelect(cliente)}
-                    className="w-full px-4 py-3 flex items-center gap-3 hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-all duration-200 text-left"
-                  >
-                    <div className="flex-shrink-0 w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                      <User className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate">
-                        {cliente.name}
-                      </p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
-                        {cliente.phone} {cliente.cpf && `• ${cliente.cpf}`}
-                      </p>
-                    </div>
-                  </button>
-                ))
-              ) : !isLoading && (
+              {results.length > 0 && results.map((cliente) => (
                 <button
+                  key={cliente.id}
                   type="button"
-                  onClick={handleNovoCliente}
-                  className="w-full px-4 py-3 flex items-center gap-3 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200 text-left border-t-2 border-green-500"
+                  onClick={() => handleSelect(cliente)}
+                  className="w-full px-4 py-3 flex items-center gap-3 hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-all duration-200 text-left"
                 >
-                  <div className="flex-shrink-0 w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                    <Plus className="w-5 h-5 text-green-600 dark:text-green-400" />
+                  <div className="flex-shrink-0 w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                    <User className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-                      Cadastrar novo cliente: <span className="text-blue-600 dark:text-blue-400">{query}</span>
+                    <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate">
+                      {cliente.name}
                     </p>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                      Clique para adicionar este cliente
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
+                      {cliente.phone} {cliente.cpf && `• ${cliente.cpf}`}
                     </p>
                   </div>
                 </button>
-              )}
-            </div>
-          </div>
-        )}
+              ))}
 
-      {isLoading && (
-        <div className="absolute right-3 top-11 flex items-center">
-          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              {results.length === 0 && (
+                <div className="px-4 py-2 text-sm text-neutral-500 dark:text-neutral-400">
+                  Nenhum cliente encontrado
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={handleNovoCliente}
+                className="w-full px-4 py-3 flex items-center gap-3 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200 text-left border-t-2 border-green-500"
+              >
+                <div className="flex-shrink-0 w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                  <Plus className="w-5 h-5 text-green-600 dark:text-green-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                    Cadastrar novo cliente: <span className="text-blue-600 dark:text-blue-400">{query}</span>
+                  </p>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                    Clique para adicionar este cliente
+                  </p>
+                </div>
+              </button>
+            </div>
+          )}
         </div>
       )}
+
+
     </div>
   );
 };

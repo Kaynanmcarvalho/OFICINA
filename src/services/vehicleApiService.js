@@ -2,7 +2,7 @@ import { getVehicleFromCache, saveVehicleToCache, incrementCacheHit } from './ve
 import { correctVehicleType } from './vehicleTypeDetector';
 
 // URL do backend
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://torq.up.railway.app/api';
 
 /**
  * Busca informações do veículo pela placa
@@ -12,7 +12,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
 export const searchVehicleByPlate = async (plate) => {
     try {
         const cleanPlate = plate.replace(/[^A-Z0-9]/g, '').toUpperCase();
-        
+
         if (cleanPlate.length !== 7) {
             return {
                 success: false,
@@ -25,21 +25,21 @@ export const searchVehicleByPlate = async (plate) => {
         // 1. Tenta buscar no cache primeiro (RÁPIDO - < 1s)
         console.log(`[VEHICLE API] 📦 Verificando cache...`);
         const cachedData = await getVehicleFromCache(cleanPlate);
-        
+
         if (cachedData && cachedData.success) {
             console.log(`[VEHICLE API] ✅ Cache HIT! Retornando dados instantaneamente`);
-            
+
             // Corrige o tipo do veículo se necessário
             const correctedData = {
                 ...cachedData,
                 data: correctVehicleType(cachedData.data)
             };
-            
+
             // Incrementa contador de hits em background
-            incrementCacheHit(cleanPlate).catch(err => 
+            incrementCacheHit(cleanPlate).catch(err =>
                 console.error('Erro ao incrementar hit:', err)
             );
-            
+
             return correctedData;
         }
 
@@ -55,18 +55,18 @@ export const searchVehicleByPlate = async (plate) => {
                 signal: controller.signal
             });
             clearTimeout(timeoutId);
-            
+
             const data = await response.json();
 
             if (data.success && data.data) {
                 // Corrige o tipo do veículo antes de salvar
                 const correctedData = correctVehicleType(data.data);
-                
+
                 // Salva no cache para próximas consultas
                 console.log(`[VEHICLE API] 💾 Salvando no cache para futuras consultas...`);
                 await saveVehicleToCache(cleanPlate, correctedData);
                 console.log(`[VEHICLE API] ✅ Dados salvos no cache com sucesso!`);
-                
+
                 // Retorna dados corrigidos
                 return {
                     ...data,
