@@ -1,37 +1,95 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
-import { Users, Package, Wrench } from 'lucide-react';
+import { Users, Package, Wrench, Car } from 'lucide-react';
 import CartaoIndicador from './componentes/CartaoIndicador';
 import LoaderAnimado from './componentes/LoaderAnimado';
-import GraficoFinanceiro from './componentes/GraficoFinanceiro';
 import CentralAlertas from './componentes/CentralAlertas';
-import InsightsClientes from './componentes/InsightsClientes';
 import WidgetClima from './componentes/WidgetClima';
-import { buscarEstatisticasGerais, buscarAlertas, calcularInsightsClientes } from './servicos/dashboardService';
+import ListaClientesRecentes from './componentes/ListaClientesRecentes';
+import EstoqueCritico from './componentes/EstoqueCritico';
+import FerramentasEmUso from './componentes/FerramentasEmUso';
+import VeiculosAtivos from './componentes/VeiculosAtivos';
+import ErrorBoundary from './componentes/ErrorBoundary';
+import {
+  buscarEstatisticasGerais,
+  buscarAlertas,
+  buscarClientesRecentes,
+  buscarEstoqueCritico,
+  buscarFerramentasEmUso,
+  buscarVeiculosAtivos,
+  calcularInsightsClientes,
+  gerarDadosGraficoMovimentacao,
+  calcularTendencias,
+  subscribeToAllCollections
+} from './servicos/dashboardService';
 import './estilos/dashboard.css';
+
+// Lazy loading para componentes de gráficos
+const GraficoFinanceiro = lazy(() => import('./componentes/GraficoFinanceiro'));
+const InsightsClientes = lazy(() => import('./componentes/InsightsClientes'));
+const GraficoMovimentacao = lazy(() => import('./componentes/GraficoMovimentacao'));
 
 const DashboardPage = () => {
   const [estatisticas, setEstatisticas] = useState(null);
+  const [tendencias, setTendencias] = useState(null);
   const [alertas, setAlertas] = useState([]);
   const [insights, setInsights] = useState(null);
+  const [clientesRecentes, setClientesRecentes] = useState([]);
+  const [estoqueCritico, setEstoqueCritico] = useState([]);
+  const [ferramentasEmUso, setFerramentasEmUso] = useState([]);
+  const [veiculosAtivos, setVeiculosAtivos] = useState([]);
+  const [dadosGrafico, setDadosGrafico] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     carregarDadosDashboard();
+
+    // Configurar listeners em tempo real
+    const unsubscribe = subscribeToAllCollections((collection) => {
+      console.log(`[Dashboard] Atualização detectada em: ${collection}`);
+      carregarDadosDashboard();
+    });
+
+    // Cleanup: cancelar listeners ao desmontar
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   const carregarDadosDashboard = async () => {
     setIsLoading(true);
     try {
-      const [stats, alerts, clientInsights] = await Promise.all([
+      const [
+        stats,
+        trends,
+        alerts,
+        clientInsights,
+        recentClients,
+        criticalStock,
+        toolsInUse,
+        activeVehicles,
+        chartData
+      ] = await Promise.all([
         buscarEstatisticasGerais(),
+        calcularTendencias(),
         buscarAlertas(),
-        calcularInsightsClientes()
+        calcularInsightsClientes(),
+        buscarClientesRecentes(),
+        buscarEstoqueCritico(),
+        buscarFerramentasEmUso(),
+        buscarVeiculosAtivos(),
+        gerarDadosGraficoMovimentacao()
       ]);
 
       setEstatisticas(stats);
+      setTendencias(trends);
       setAlertas(alerts);
       setInsights(clientInsights);
+      setClientesRecentes(recentClients);
+      setEstoqueCritico(criticalStock);
+      setFerramentasEmUso(toolsInUse);
+      setVeiculosAtivos(activeVehicles);
+      setDadosGrafico(chartData);
     } catch (error) {
       console.error('[Dashboard] Erro ao carregar dados:', error);
     } finally {
@@ -55,8 +113,9 @@ const DashboardPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 md:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 md:p-6 lg:p-8">
+        <div className="max-w-7xl mx-auto space-y-6 dashboard-no-transform">
         
         {/* Header */}
         <motion.div
@@ -88,15 +147,17 @@ const DashboardPage = () => {
             valor={estatisticas?.totalClientes || 0}
             icone={Users}
             cor="blue"
-            tendencia={estatisticas?.tendenciaClientes}
+            tendencia={tendencias?.tendenciaClientes}
+            percentual={tendencias?.percentualClientes}
           />
           
           <CartaoIndicador
             titulo="Veículos"
             valor={estatisticas?.totalVeiculos || 0}
-            icone={Package}
+            icone={Car}
             cor="purple"
-            tendencia={estatisticas?.tendenciaVeiculos}
+            tendencia={tendencias?.tendenciaVeiculos}
+            percentual={tendencias?.percentualVeiculos}
           />
           
           <CartaoIndicador
@@ -104,7 +165,8 @@ const DashboardPage = () => {
             valor={estatisticas?.totalFerramentas || 0}
             icone={Wrench}
             cor="orange"
-            tendencia={estatisticas?.tendenciaFerramentas}
+            tendencia={tendencias?.tendenciaFerramentas}
+            percentual={tendencias?.percentualFerramentas}
           />
           
           <CartaoIndicador
@@ -112,7 +174,8 @@ const DashboardPage = () => {
             valor={estatisticas?.totalEstoque || 0}
             icone={Package}
             cor="green"
-            tendencia={estatisticas?.tendenciaEstoque}
+            tendencia={tendencias?.tendenciaEstoque}
+            percentual={tendencias?.percentualEstoque}
           />
         </motion.div>
 
@@ -134,12 +197,50 @@ const DashboardPage = () => {
           transition={{ delay: 0.3 }}
           className="grid grid-cols-1 lg:grid-cols-2 gap-6"
         >
-          <GraficoFinanceiro />
-          <InsightsClientes insights={insights} />
+          <Suspense fallback={<LoaderAnimado tipo="chart" />}>
+            <GraficoMovimentacao dados={dadosGrafico} isLoading={isLoading} />
+          </Suspense>
+          <Suspense fallback={<LoaderAnimado tipo="chart" />}>
+            <InsightsClientes insights={insights} />
+          </Suspense>
         </motion.div>
 
+        {/* Gráfico Financeiro */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <Suspense fallback={<LoaderAnimado tipo="chart" />}>
+            <GraficoFinanceiro />
+          </Suspense>
+        </motion.div>
+
+        {/* Listas de Dados */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        >
+          <ListaClientesRecentes clientes={clientesRecentes} isLoading={isLoading} />
+          <EstoqueCritico produtos={estoqueCritico} isLoading={isLoading} />
+        </motion.div>
+
+        {/* Ferramentas e Veículos */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        >
+          <FerramentasEmUso ferramentas={ferramentasEmUso} isLoading={isLoading} />
+          <VeiculosAtivos veiculos={veiculosAtivos} isLoading={isLoading} />
+        </motion.div>
+
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 };
 

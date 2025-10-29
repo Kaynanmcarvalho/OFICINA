@@ -80,6 +80,28 @@ const GraficoFinanceiro = () => {
     return calcularTotal() / dados.length;
   };
 
+  // Calcular tendência
+  const calcularTendencia = () => {
+    if (dados.length < 2) return { tipo: 'stable', percentual: 0 };
+    
+    const metadeInicial = dados.slice(0, Math.floor(dados.length / 2));
+    const metadeFinal = dados.slice(Math.floor(dados.length / 2));
+    
+    const mediaInicial = metadeInicial.reduce((acc, item) => acc + item.receita, 0) / metadeInicial.length;
+    const mediaFinal = metadeFinal.reduce((acc, item) => acc + item.receita, 0) / metadeFinal.length;
+    
+    if (mediaInicial === 0) return { tipo: 'stable', percentual: 0 };
+    
+    const diferenca = ((mediaFinal - mediaInicial) / mediaInicial) * 100;
+    
+    return {
+      tipo: diferenca > 5 ? 'up' : diferenca < -5 ? 'down' : 'stable',
+      percentual: Math.abs(diferenca).toFixed(1)
+    };
+  };
+
+  const tendencia = calcularTendencia();
+
   if (isLoading) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
@@ -90,20 +112,33 @@ const GraficoFinanceiro = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.5 }}
       className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
             <DollarSign className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Receita
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Receita
+              </h3>
+              {tendencia.tipo !== 'stable' && (
+                <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full ${
+                  tendencia.tipo === 'up' 
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' 
+                    : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                }`}>
+                  <TrendingUp className={`w-3 h-3 ${tendencia.tipo === 'down' ? 'rotate-180' : ''}`} />
+                  <span className="text-xs font-medium">{tendencia.percentual}%</span>
+                </div>
+              )}
+            </div>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Últimos {periodo === '7dias' ? '7' : periodo === '30dias' ? '30' : '90'} dias
             </p>
@@ -172,19 +207,35 @@ const GraficoFinanceiro = () => {
               tickFormatter={(value) => `R$ ${value}`}
             />
             <Tooltip
-              contentStyle={{
-                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                border: 'none',
-                borderRadius: '12px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+              content={({ active, payload, label }) => {
+                if (active && payload && payload.length) {
+                  return (
+                    <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg rounded-xl p-4 shadow-xl border border-gray-200/50 dark:border-gray-700/50">
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                        {label}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-green-500" />
+                        <span className="text-sm text-gray-600 dark:text-gray-300">
+                          Receita:
+                        </span>
+                        <span className="text-sm font-bold text-gray-900 dark:text-white">
+                          {new Intl.NumberFormat('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL'
+                          }).format(payload[0].value)}
+                        </span>
+                      </div>
+                      {payload[0].payload.servicos && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          {payload[0].payload.servicos} serviço{payload[0].payload.servicos !== 1 ? 's' : ''}
+                        </p>
+                      )}
+                    </div>
+                  );
+                }
+                return null;
               }}
-              formatter={(value) => [
-                new Intl.NumberFormat('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL'
-                }).format(value),
-                'Receita'
-              ]}
             />
             <Area
               type="monotone"
@@ -192,6 +243,8 @@ const GraficoFinanceiro = () => {
               stroke="#10b981"
               strokeWidth={3}
               fill="url(#colorReceita)"
+              animationDuration={1000}
+              animationEasing="ease-in-out"
             />
           </AreaChart>
         </ResponsiveContainer>

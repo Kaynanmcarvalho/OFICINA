@@ -79,70 +79,142 @@ const InsightsClientes = ({ insights }) => {
               outerRadius={80}
               paddingAngle={5}
               dataKey="value"
+              animationBegin={0}
+              animationDuration={800}
+              animationEasing="ease-out"
             >
               {dadosGrafico.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index]} />
               ))}
             </Pie>
             <Tooltip
-              contentStyle={{
-                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                border: 'none',
-                borderRadius: '12px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+              content={({ active, payload }) => {
+                if (active && payload && payload.length) {
+                  const data = payload[0];
+                  const percentual = ((data.value / insights.totalClientes) * 100).toFixed(1);
+                  return (
+                    <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg rounded-xl p-4 shadow-xl border border-gray-200/50 dark:border-gray-700/50">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: data.payload.color }}
+                        />
+                        <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {data.name}
+                        </span>
+                      </div>
+                      <p className="text-lg font-bold text-gray-900 dark:text-white">
+                        {data.value} cliente{data.value !== 1 ? 's' : ''}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {percentual}% do total
+                      </p>
+                    </div>
+                  );
+                }
+                return null;
               }}
             />
           </PieChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Legenda Customizada */}
+      {/* Legenda Customizada com Percentuais */}
       <div className="space-y-3">
-        {dadosGrafico.map((item, index) => (
-          <div key={index} className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: item.color }}
-              />
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                {item.name}
-              </span>
+        {dadosGrafico.map((item, index) => {
+          const percentual = ((item.value / insights.totalClientes) * 100).toFixed(1);
+          return (
+            <div key={index} className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: item.color }}
+                />
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  {item.name}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                  {item.value}
+                </span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  ({percentual}%)
+                </span>
+              </div>
             </div>
-            <span className="text-sm font-semibold text-gray-900 dark:text-white">
-              {item.value}
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Clientes Mais Recorrentes */}
       {insights.clientesMaisRecorrentes && insights.clientesMaisRecorrentes.length > 0 && (
-        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700"
+        >
           <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
             Top Clientes
           </h4>
-          <div className="space-y-2">
-            {insights.clientesMaisRecorrentes.slice(0, 3).map((cliente, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-700/50"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
-                    {index + 1}
+          <motion.div
+            className="space-y-2"
+            variants={{
+              animate: {
+                transition: {
+                  staggerChildren: 0.1
+                }
+              }
+            }}
+            initial="initial"
+            animate="animate"
+          >
+            {insights.clientesMaisRecorrentes.slice(0, 3).map((cliente, index) => {
+              // Cores de badge para ranking
+              const getBadgeGradient = (pos) => {
+                if (pos === 0) return 'from-yellow-400 to-yellow-600'; // Ouro
+                if (pos === 1) return 'from-gray-300 to-gray-500'; // Prata
+                if (pos === 2) return 'from-orange-400 to-orange-600'; // Bronze
+                return 'from-blue-500 to-purple-600';
+              };
+
+              return (
+                <motion.div
+                  key={index}
+                  variants={{
+                    initial: { opacity: 0, x: -10 },
+                    animate: { opacity: 1, x: 0 }
+                  }}
+                  whileHover={{ scale: 1.02, x: 4 }}
+                  className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${getBadgeGradient(index)} flex items-center justify-center text-white text-xs font-bold shadow-md`}>
+                      {index + 1}º
+                    </div>
+                    <div>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white block">
+                        {cliente.name}
+                      </span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        Última visita: {cliente.lastVisit}
+                      </span>
+                    </div>
                   </div>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    {cliente.name}
-                  </span>
-                </div>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {cliente.totalServices} serviços
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+                  <div className="text-right">
+                    <span className="text-sm font-bold text-gray-900 dark:text-white block">
+                      {cliente.totalServices}
+                    </span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      serviços
+                    </span>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </motion.div>
       )}
     </motion.div>
   );
