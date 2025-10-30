@@ -50,9 +50,9 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
     const [vehicleSearchMode, setVehicleSearchMode] = useState({});
     const [isSearchingPlate, setIsSearchingPlate] = useState({});
     const [availableBrands, setAvailableBrands] = useState({});
-    const [availableModels, setAvailableModels] = useState({});
+    const [, setAvailableModels] = useState({});
     const [isLoadingBrands, setIsLoadingBrands] = useState({});
-    const [isLoadingModels, setIsLoadingModels] = useState({});
+    const [, setIsLoadingModels] = useState({});
 
     const steps = [
         { number: 1, title: 'Tipo e Identificação', icon: personType === 'fisica' ? User : Building2 },
@@ -78,6 +78,12 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
     const formatPhone = (value) => value.replace(/\D/g, '').replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{4,5})(\d{4})/, '$1-$2').replace(/(-\d{4})\d+?$/, '$1');
     const formatZipCode = (value) => value.replace(/\D/g, '').replace(/(\d{5})(\d)/, '$1-$2').replace(/(-\d{3})\d+?$/, '$1');
     const formatPlate = (value) => value.replace(/[^A-Za-z0-9]/g, '').toUpperCase().substring(0, 7);
+    const formatBirthDate = (value) => {
+        const clean = value.replace(/\D/g, '');
+        if (clean.length <= 2) return clean;
+        if (clean.length <= 4) return `${clean.slice(0, 2)}/${clean.slice(2)}`;
+        return `${clean.slice(0, 2)}/${clean.slice(2, 4)}/${clean.slice(4, 8)}`;
+    };
 
     const handleZipCodeChange = async (e) => {
         const formatted = formatZipCode(e.target.value);
@@ -213,7 +219,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
 
         // Busca automática quando placa tiver 7 caracteres na busca manual
         if (field === 'plate' && value.length === 7) {
-            const vehicle = formData.vehicles.find(v => v.id === vehicleId);
+            
             const searchMode = vehicleSearchMode[vehicleId] || 'plate';
 
             // Só faz busca automática se estiver na busca manual
@@ -230,16 +236,98 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
         setIsSearchingPlate(prev => ({ ...prev, [vehicleId]: true }));
         try {
             const result = await searchVehicleByPlate(plate);
+            console.log('[PLATE SEARCH] Resultado da busca:', result);
+            
             if (result.success) {
                 const vehicleData = result.data;
+                console.log('[PLATE SEARCH] Dados do veículo:', vehicleData);
+                
                 const searchMode = vehicleSearchMode[vehicleId] || 'plate';
+                console.log('[PLATE SEARCH] Modo de busca:', searchMode);
 
-                // Atualiza os dados básicos
-                updateVehicle(vehicleId, 'type', vehicleData.tipo || 'moto');
-                updateVehicle(vehicleId, 'brand', vehicleData.marca || '');
-                updateVehicle(vehicleId, 'model', vehicleData.modelo || '');
-                updateVehicle(vehicleId, 'year', vehicleData.ano || '');
-                updateVehicle(vehicleId, 'color', vehicleData.cor || '');
+                // Detecta o tipo de veículo baseado nos dados
+                let vehicleType = 'moto'; // padrão
+                if (vehicleData.tipo && ['moto', 'carro', 'caminhao'].includes(vehicleData.tipo.toLowerCase())) {
+                    vehicleType = vehicleData.tipo.toLowerCase();
+                } else {
+                    // Tenta detectar pelo modelo
+                    const modeloLower = (vehicleData.modelo || '').toLowerCase();
+                    if (modeloLower.includes('carro') || modeloLower.includes('sedan') || modeloLower.includes('suv')) {
+                        vehicleType = 'carro';
+                    } else if (modeloLower.includes('caminhao') || modeloLower.includes('truck')) {
+                        vehicleType = 'caminhao';
+                    }
+                    // Se não detectar, mantém 'moto' como padrão
+                }
+
+                // Processa marca e modelo
+                let marca = vehicleData.marca || '';
+                let modelo = vehicleData.modelo || '';
+                let ano = vehicleData.ano || '';
+                
+                // Se marca ou modelo estiverem vazios, tenta extrair
+                if (!marca || !modelo) {
+                    // Lista de marcas conhecidas (maiúsculas)
+                    const marcasConhecidas = [
+                        'YAMAHA', 'HONDA', 'SUZUKI', 'KAWASAKI', 'BMW', 'DUCATI', 'HARLEY', 'TRIUMPH', 'KTM',
+                        'CHEVROLET', 'FORD', 'FIAT', 'VOLKSWAGEN', 'VW', 'TOYOTA', 'HYUNDAI', 'NISSAN', 'RENAULT',
+                        'MERCEDES', 'MERCEDES-BENZ', 'AUDI', 'VOLVO', 'SCANIA', 'IVECO', 'JEEP', 'MITSUBISHI', 'PEUGEOT', 'CITROEN'
+                    ];
+                    
+                    // Se marca está vazia e modelo contém tudo junto
+                    if (!marca && modelo) {
+                        // Remove o ano do final do modelo se ele já estiver no campo ano
+                        if (ano && modelo.endsWith(ano)) {
+                            modelo = modelo.substring(0, modelo.length - ano.length).trim();
+                        }
+                        
+                        // Tenta encontrar marca conhecida no início do modelo
+                        const modeloUpper = modelo.toUpperCase();
+                        let marcaEncontrada = null;
+                        
+                        for (const marcaConhecida of marcasConhecidas) {
+                            if (modeloUpper.startsWith(marcaConhecida)) {
+                                marcaEncontrada = marcaConhecida;
+                                break;
+                            }
+                        }
+                        
+                        if (marcaEncontrada) {
+                            // Encontrou marca conhecida
+                            marca = marcaEncontrada;
+                            modelo = modelo.substring(marcaEncontrada.length).trim();
+                        } else {
+                            // Não encontrou marca conhecida
+                            marca = 'Marca não identificada';
+                        }
+                    }
+                }
+
+                // Atualiza os dados básicos de forma síncrona
+                setFormData(prev => ({
+                    ...prev,
+                    vehicles: prev.vehicles.map(v =>
+                        v.id === vehicleId ? {
+                            ...v,
+                            type: vehicleType,
+                            brand: marca,
+                            model: modelo,
+                            year: ano,
+                            color: vehicleData.cor || ''
+                        } : v
+                    )
+                }));
+                
+                console.log('[PLATE SEARCH] Dados processados:', {
+                    original: vehicleData,
+                    processado: {
+                        tipo: vehicleType,
+                        marca: marca,
+                        modelo: modelo,
+                        ano: ano,
+                        cor: vehicleData.cor
+                    }
+                });
 
                 // Se estiver na busca manual, carregar e selecionar nos dropdowns
                 if (searchMode === 'manual') {
@@ -381,11 +469,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
         }
     };
 
-    const handleModelChange = (vehicleId, modelValue) => {
-        const model = availableModels[vehicleId]?.find(m => m.value === modelValue);
-        updateVehicle(vehicleId, 'modelCode', modelValue);
-        updateVehicle(vehicleId, 'model', model?.label || '');
-    };
+    
 
     const toggleSearchMode = async (vehicleId) => {
         const currentMode = vehicleSearchMode[vehicleId] || 'plate';
@@ -556,6 +640,18 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
 
         setIsSubmitting(true);
         try {
+            // Converte data de DD/MM/AAAA para AAAA-MM-DD
+            let birthDateISO = '';
+            if (personType === 'fisica' && formData.birthDate) {
+                const digits = formData.birthDate.replace(/\D/g, '');
+                if (digits.length === 8) {
+                    const day = digits.substring(0, 2);
+                    const month = digits.substring(2, 4);
+                    const year = digits.substring(4, 8);
+                    birthDateISO = `${year}-${month}-${day}`;
+                }
+            }
+
             const clientData = {
                 name: personType === 'fisica' ? formData.name.trim() : formData.nomeFantasia.trim(),
                 cpf: personType === 'fisica' ? formData.cpf.replace(/\D/g, '') : '',
@@ -564,7 +660,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                 indicadorIE: personType === 'juridica' ? formData.indicadorIE : '',
                 razaoSocial: personType === 'juridica' ? formData.razaoSocial.trim() : '',
                 nomeFantasia: personType === 'juridica' ? formData.nomeFantasia.trim() : '',
-                birthDate: personType === 'fisica' ? formData.birthDate : '',
+                birthDate: birthDateISO,
                 phone: formData.phone.replace(/\D/g, ''),
                 email: formData.email.trim(),
                 address: formData.address.trim(),
@@ -717,18 +813,41 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                                 type="text"
                                                 value={formatCPF(formData.cpf)}
                                                 onChange={(e) => {
-                                                    setFormData({ ...formData, cpf: e.target.value.replace(/\D/g, '') });
-                                                    setErrors({ ...errors, cpf: null });
+                                                    const cpfDigits = e.target.value.replace(/\D/g, '');
+                                                    setFormData({ ...formData, cpf: cpfDigits });
+                                                    
+                                                    // Validar automaticamente quando atingir 11 dígitos
+                                                    if (cpfDigits.length === 11) {
+                                                        const cpfValidation = validateCPF(cpfDigits);
+                                                        if (!cpfValidation.valid) {
+                                                            setErrors({ ...errors, cpf: cpfValidation.message });
+                                                        } else {
+                                                            // Verificar duplicata
+                                                            const isDuplicate = clients.some(c => c.cpf === cpfDigits);
+                                                            if (isDuplicate) {
+                                                                setErrors({ ...errors, cpf: 'CPF já cadastrado' });
+                                                            } else {
+                                                                setErrors({ ...errors, cpf: null });
+                                                            }
+                                                        }
+                                                    } else {
+                                                        setErrors({ ...errors, cpf: null });
+                                                    }
                                                 }}
                                                 placeholder="123.456.789-00"
                                                 maxLength={14}
-                                                className={'w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-800 border ' + (errors.cpf ? 'border-red-500' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out'}
+                                                className={'w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-800 border ' + (errors.cpf ? 'border-red-500 ring-2 ring-red-500/20' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out'}
                                             />
                                             {errors.cpf && (
-                                                <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
-                                                    <AlertCircle className="w-3 h-3" />
-                                                    {errors.cpf}
-                                                </p>
+                                                <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                                                    <p className="text-xs text-red-600 dark:text-red-400 flex items-center gap-2">
+                                                        <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                                                        <span className="font-medium">{errors.cpf}</span>
+                                                    </p>
+                                                    <p className="text-xs text-red-500 dark:text-red-400 mt-1 ml-6">
+                                                        Verifique se o CPF foi digitado corretamente
+                                                    </p>
+                                                </div>
                                             )}
                                         </div>
 
@@ -738,13 +857,16 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Data de Nascimento *</label>
                                             </div>
                                             <input
-                                                type="date"
-                                                value={formData.birthDate}
+                                                type="text"
+                                                value={formatBirthDate(formData.birthDate)}
                                                 onChange={(e) => {
-                                                    setFormData({ ...formData, birthDate: e.target.value });
+                                                    const digits = e.target.value.replace(/\D/g, '');
+                                                    setFormData({ ...formData, birthDate: digits });
                                                     setErrors({ ...errors, birthDate: null });
                                                 }}
-                                                className={'w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-800 border ' + (errors.birthDate ? 'border-red-500' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out'}
+                                                placeholder="DD/MM/AAAA"
+                                                maxLength={10}
+                                                className={'w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-800 border ' + (errors.birthDate ? 'border-red-500' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out'}
                                             />
                                             {errors.birthDate && (
                                                 <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
@@ -771,12 +893,30 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                                 type="text"
                                                 value={formatCNPJ(formData.cnpj)}
                                                 onChange={(e) => {
-                                                    setFormData({ ...formData, cnpj: e.target.value.replace(/\D/g, '') });
-                                                    setErrors({ ...errors, cnpj: null });
+                                                    const cnpjDigits = e.target.value.replace(/\D/g, '');
+                                                    setFormData({ ...formData, cnpj: cnpjDigits });
+                                                    
+                                                    // Validar automaticamente quando atingir 14 dígitos
+                                                    if (cnpjDigits.length === 14) {
+                                                        const cnpjValidation = validateCNPJ(cnpjDigits);
+                                                        if (!cnpjValidation.valid) {
+                                                            setErrors({ ...errors, cnpj: cnpjValidation.message });
+                                                        } else {
+                                                            // Verificar duplicata
+                                                            const isDuplicate = clients.some(c => c.cnpj === cnpjDigits);
+                                                            if (isDuplicate) {
+                                                                setErrors({ ...errors, cnpj: 'CNPJ já cadastrado' });
+                                                            } else {
+                                                                setErrors({ ...errors, cnpj: null });
+                                                            }
+                                                        }
+                                                    } else {
+                                                        setErrors({ ...errors, cnpj: null });
+                                                    }
                                                 }}
                                                 placeholder="00.000.000/0000-00"
                                                 maxLength={18}
-                                                className={'flex-1 px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-800 border ' + (errors.cnpj ? 'border-red-500' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out'}
+                                                className={'flex-1 px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-800 border ' + (errors.cnpj ? 'border-red-500 ring-2 ring-red-500/20' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out'}
                                             />
                                             <button
                                                 type="button"
@@ -798,15 +938,22 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                                 )}
                                             </button>
                                         </div>
-                                        {errors.cnpj && (
-                                            <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
-                                                <AlertCircle className="w-3 h-3" />
-                                                {errors.cnpj}
+                                        {errors.cnpj ? (
+                                            <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                                                <p className="text-xs text-red-600 dark:text-red-400 flex items-center gap-2">
+                                                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                                                    <span className="font-medium">{errors.cnpj}</span>
+                                                </p>
+                                                <p className="text-xs text-red-500 dark:text-red-400 mt-1 ml-6">
+                                                    Verifique se o CNPJ foi digitado corretamente
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5">
+                                                <AlertCircle className="w-3.5 h-3.5 text-blue-500" />
+                                                Digite o CNPJ e clique em "Buscar" para preencher automaticamente
                                             </p>
                                         )}
-                                        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-                                            Digite o CNPJ e clique em "Buscar" para preencher automaticamente
-                                        </p>
                                     </div>
 
                                     <div>
@@ -1208,9 +1355,9 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                         const searchMode = vehicleSearchMode[vehicle.id] || 'plate';
                                         const isSearching = isSearchingPlate[vehicle.id];
                                         const brands = availableBrands[vehicle.id] || [];
-                                        const models = availableModels[vehicle.id] || [];
+                                        
                                         const loadingBrands = isLoadingBrands[vehicle.id];
-                                        const loadingModels = isLoadingModels[vehicle.id];
+                                        
 
                                         return (
                                             <div key={vehicle.id} className="p-5 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700">

@@ -121,7 +121,7 @@ async function scrapeKeplaca(plate) {
         console.log('[KEPLACA] ⏳ Aguardando conteúdo...');
         await new Promise(resolve => setTimeout(resolve, 5000));
 
-        // Extrai dados da página
+        // Extrai dados da página com seletores mais precisos
         const data = await page.evaluate(() => {
             const result = {
                 marca: '',
@@ -134,44 +134,37 @@ async function scrapeKeplaca(plate) {
                 uf: ''
             };
 
-            const bodyText = document.body.innerText;
+            // Função auxiliar para extrair valor após label
+            const extractValue = (labelText) => {
+                // Tenta encontrar o elemento com o label
+                const allText = document.body.innerText;
+                const regex = new RegExp(`${labelText}:\\s*([^\\n]+)`, 'i');
+                const match = allText.match(regex);
+                return match ? match[1].trim() : '';
+            };
+
+            // Extrai cada campo individualmente
+            result.marca = extractValue('Marca');
+            result.modelo = extractValue('Modelo');
             
-            // Extrai Marca
-            const marcaMatch = bodyText.match(/Marca:\s*([A-Z\/\s]+?)(?=\s*Modelo:|$)/i);
-            if (marcaMatch) result.marca = marcaMatch[1].trim();
+            // Para o ano, pega apenas os 4 dígitos
+            const anoText = extractValue('Ano');
+            const anoMatch = anoText.match(/(\d{4})/);
+            result.ano = anoMatch ? anoMatch[1] : '';
             
-            // Extrai Modelo
-            const modeloMatch = bodyText.match(/Modelo:\s*([A-Z0-9\/\s\-\.]+?)(?=\s*Importado:|Ano:|$)/i);
-            if (modeloMatch) result.modelo = modeloMatch[1].trim();
-            
-            // Extrai Ano
-            const anoMatch = bodyText.match(/Ano:\s*(\d{4})/i);
-            if (anoMatch) result.ano = anoMatch[1];
-            
-            // Extrai Cor
-            const corMatch = bodyText.match(/Cor:\s*([A-Za-z]+?)(?=\s*Combustível:|Chassi:|$)/i);
-            if (corMatch) result.cor = corMatch[1].trim();
+            result.cor = extractValue('Cor');
+            result.tipo = extractValue('Combustível');
+            result.chassi = extractValue('Chassi');
+            result.uf = extractValue('UF');
+            result.municipio = extractValue('Município');
 
-            // Extrai Combustível
-            const combustivelMatch = bodyText.match(/Combustível:\s*([A-Za-z]+?)(?=\s*Chassi:|UF:|$)/i);
-            if (combustivelMatch) result.tipo = combustivelMatch[1].trim();
-
-            // Extrai Chassi
-            const chassiMatch = bodyText.match(/Chassi:\s*([A-Z0-9\*]+?)(?=\s*UF:|Município:|$)/i);
-            if (chassiMatch) result.chassi = chassiMatch[1].trim();
-
-            // Extrai UF
-            const ufMatch = bodyText.match(/UF:\s*([A-Z]{2})/i);
-            if (ufMatch) result.uf = ufMatch[1];
-
-            // Extrai Município
-            const municipioMatch = bodyText.match(/Município:\s*([A-Z\s]+?)(?=\s*Esta placa|Valores FIPE|$)/i);
-            if (municipioMatch) result.municipio = municipioMatch[1].trim();
-
-            // Limpa dados
+            // Limpa dados - remove quebras de linha e espaços extras
             Object.keys(result).forEach(key => {
                 if (typeof result[key] === 'string') {
-                    result[key] = result[key].replace(/\s+/g, ' ').trim();
+                    result[key] = result[key]
+                        .replace(/\n/g, ' ')
+                        .replace(/\s+/g, ' ')
+                        .trim();
                 }
             });
 
@@ -191,21 +184,27 @@ async function scrapeKeplaca(plate) {
             };
         }
 
-        // Monta o modelo completo
-        let modeloCompleto = '';
-        if (data.marca) modeloCompleto += data.marca;
-        if (data.modelo) modeloCompleto += (modeloCompleto ? ' ' : '') + data.modelo;
-        if (data.ano) modeloCompleto += (modeloCompleto ? ' ' : '') + data.ano;
+        // Limpa campos específicos
+        // Remove texto extra que pode vir após o valor
+        if (data.marca) {
+            data.marca = data.marca.split(/Modelo:|Importado:/i)[0].trim();
+        }
+        if (data.modelo) {
+            data.modelo = data.modelo.split(/Importado:|Ano:|Cor:/i)[0].trim();
+        }
+        if (data.cor) {
+            data.cor = data.cor.split(/Combustível:|Chassi:/i)[0].trim();
+        }
 
         console.log('[KEPLACA] ✅ Dados extraídos!');
-        console.log(`[KEPLACA] 📦 ${data.marca} ${data.modelo} ${data.ano}`);
+        console.log(`[KEPLACA] 📦 Marca: ${data.marca} | Modelo: ${data.modelo} | Ano: ${data.ano} | Cor: ${data.cor}`);
 
         return {
             success: true,
             data: {
                 placa: cleanPlate,
                 marca: data.marca,
-                modelo: modeloCompleto || data.modelo,
+                modelo: data.modelo,
                 ano: data.ano,
                 cor: data.cor,
                 tipo: data.tipo,

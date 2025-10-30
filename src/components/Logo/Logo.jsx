@@ -97,7 +97,7 @@ const Logo = ({
   const computedAriaLabel = useMemo(() => {
     if (ariaLabel) return ariaLabel;
     const themeText = isDarkMode ? 'tema escuro' : 'tema claro';
-    return `ReparoFácil - Sistema de Gestão de Oficina - ${themeText}`;
+    return `TORQ - Sistema de Gestão de Oficina - ${themeText}`;
   }, [ariaLabel, isDarkMode]);
 
   // Classes CSS combinadas

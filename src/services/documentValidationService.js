@@ -138,14 +138,38 @@ export const formatCEP = (cep) => {
 
 /**
  * Valida data de nascimento (deve ser maior de idade)
+ * Aceita formato DD/MM/AAAA ou AAAA-MM-DD
  */
 export const validateBirthDate = (birthDate) => {
   if (!birthDate) {
     return { valid: false, message: 'Data de nascimento é obrigatória' };
   }
   
+  let birth;
+  
+  // Se for string com apenas dígitos (formato DD/MM/AAAA sem barras)
+  if (typeof birthDate === 'string' && /^\d{8}$/.test(birthDate)) {
+    const day = birthDate.substring(0, 2);
+    const month = birthDate.substring(2, 4);
+    const year = birthDate.substring(4, 8);
+    birth = new Date(`${year}-${month}-${day}`);
+  } 
+  // Se for formato DD/MM/AAAA com barras
+  else if (typeof birthDate === 'string' && birthDate.includes('/')) {
+    const [day, month, year] = birthDate.split('/');
+    birth = new Date(`${year}-${month}-${day}`);
+  }
+  // Formato ISO (AAAA-MM-DD)
+  else {
+    birth = new Date(birthDate);
+  }
+  
+  // Verifica se a data é válida
+  if (isNaN(birth.getTime())) {
+    return { valid: false, message: 'Data inválida' };
+  }
+  
   const today = new Date();
-  const birth = new Date(birthDate);
   
   if (birth > today) {
     return { valid: false, message: 'Data de nascimento não pode ser futura' };
@@ -160,6 +184,10 @@ export const validateBirthDate = (birthDate) => {
   
   if (age < 18) {
     return { valid: false, message: 'Cliente deve ser maior de 18 anos' };
+  }
+  
+  if (age > 120) {
+    return { valid: false, message: 'Data de nascimento inválida' };
   }
   
   return { valid: true, message: 'Data válida' };

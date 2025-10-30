@@ -66,7 +66,7 @@ const ModalCheckin = ({ isOpen, onClose, onSuccess }) => {
         
         try { 
             const checkinData = { 
-                clientId: formData.cliente.id,
+                clientId: formData.cliente.firestoreId || formData.cliente.id || formData.cliente.clientId,
                 clientName: formData.cliente.name,
                 clientPhone: formData.telefone,
                 vehicleModel: formData.modelo, 

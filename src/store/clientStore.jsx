@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import toast from 'react-hot-toast';
+import { smartClientSearch } from '../utils/searchUtils';
 
 export const useClientStore = create((set, get) => ({
   // State
@@ -334,14 +335,11 @@ export const useClientStore = create((set, get) => ({
     }
   },
 
-  // Search clients
+  // Search clients with intelligent fuzzy matching
   searchClients: async (searchTerm) => {
     const startTime = performance.now();
     set({ isLoading: true, error: null });
     try {
-      // Normalize search term (lowercase, remove accents)
-      const normalizedTerm = searchTerm.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-      
       // Get all clients from cache or Firebase
       let allClients = get().clients;
       
@@ -355,28 +353,20 @@ export const useClientStore = create((set, get) => ({
         set({ clients: allClients });
       }
       
-      // Filter clients locally (case-insensitive, accent-insensitive)
-      const searchResults = allClients.filter(client => {
-        const name = (client.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        const phone = (client.phone || '').replace(/\D/g, '');
-        const cpf = (client.cpf || '').replace(/\D/g, '');
-        const cnpj = (client.cnpj || '').replace(/\D/g, '');
-        const clientId = (client.clientId || '').toLowerCase();
-        const searchPhone = searchTerm.replace(/\D/g, '');
-        
-        return name.includes(normalizedTerm) ||
-               phone.includes(searchPhone) ||
-               cpf.includes(searchPhone) ||
-               cnpj.includes(searchPhone) ||
-               clientId.includes(normalizedTerm);
-      }).slice(0, 10); // Limit to 10 results
+      // Use intelligent search with relevance scoring
+      const searchResults = smartClientSearch(allClients, searchTerm, {
+        maxResults: 10,
+        minScore: 10,
+        includeScore: false
+      });
 
       set({ searchResults, isLoading: false });
       
       // Log performance
       const duration = performance.now() - startTime;
-      console.log('[Search Performance]', {
+      console.log('[Smart Search]', {
         term: searchTerm,
+        totalClients: allClients.length,
         results: searchResults.length,
         duration: `${Math.round(duration)}ms`,
         timestamp: new Date().toISOString()

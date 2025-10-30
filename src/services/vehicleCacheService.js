@@ -1,5 +1,5 @@
 import { db } from '../config/firebase';
-import { collection, doc, getDoc, setDoc, query, where, getDocs, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, getDoc, setDoc, deleteDoc, query, where, getDocs, serverTimestamp } from 'firebase/firestore';
 
 /**
  * Service para gerenciar cache de placas no Firebase
@@ -47,6 +47,7 @@ export const getVehicleFromCache = async (plate) => {
 
 /**
  * Salva dados da placa no cache do Firebase
+ * APENAS se todos os campos obrigatórios estiverem preenchidos
  * @param {string} plate - Placa do veículo
  * @param {Object} vehicleData - Dados do veículo
  * @returns {Promise<boolean>} True se salvou com sucesso
@@ -55,7 +56,20 @@ export const saveVehicleToCache = async (plate, vehicleData) => {
     try {
         const cleanPlate = plate.replace(/[^A-Z0-9]/g, '').toUpperCase();
         
-        console.log(`[CACHE] 💾 Salvando placa ${cleanPlate} no cache...`);
+        console.log(`[CACHE] 💾 Validando dados antes de salvar placa ${cleanPlate}...`);
+        
+        // ✅ VALIDAÇÃO: Só salva se TODOS os campos obrigatórios estiverem preenchidos
+        const requiredFields = ['marca', 'modelo', 'ano', 'cor'];
+        const missingFields = requiredFields.filter(field => !vehicleData[field] || vehicleData[field].trim() === '');
+        
+        if (missingFields.length > 0) {
+            console.log(`[CACHE] ⚠️  Dados incompletos! Campos faltando: ${missingFields.join(', ')}`);
+            console.log(`[CACHE] ❌ NÃO salvando no cache - dados incompletos`);
+            return false;
+        }
+        
+        console.log(`[CACHE] ✅ Validação OK! Todos os campos obrigatórios preenchidos`);
+        console.log(`[CACHE] 📦 Marca: ${vehicleData.marca} | Modelo: ${vehicleData.modelo} | Ano: ${vehicleData.ano} | Cor: ${vehicleData.cor}`);
         
         const docRef = doc(db, VEHICLES_CACHE_COLLECTION, cleanPlate);
         
@@ -67,10 +81,10 @@ export const saveVehicleToCache = async (plate, vehicleData) => {
             placa: cleanPlate,
             vehicleData: {
                 placa: cleanPlate,
-                marca: vehicleData.marca || '',
-                modelo: vehicleData.modelo || '',
-                ano: vehicleData.ano || '',
-                cor: vehicleData.cor || '',
+                marca: vehicleData.marca,
+                modelo: vehicleData.modelo,
+                ano: vehicleData.ano,
+                cor: vehicleData.cor,
                 tipo: vehicleData.tipo || '',
                 chassi: vehicleData.chassi || '',
                 municipio: vehicleData.municipio || '',
@@ -79,7 +93,8 @@ export const saveVehicleToCache = async (plate, vehicleData) => {
             lastUpdated: serverTimestamp(),
             createdAt: existingDoc.exists() ? existingDoc.data().createdAt : serverTimestamp(),
             hitCount: hitCount,
-            source: 'keplaca' // Origem dos dados
+            source: 'keplaca', // Origem dos dados
+            isComplete: true // Flag indicando que tem todos os campos
         });
         
         console.log(`[CACHE] ✅ Placa salva no cache com sucesso! (Hit count: ${hitCount})`);
@@ -207,5 +222,34 @@ export const needsCacheUpdate = async (plate) => {
     } catch (error) {
         console.error('[CACHE] ❌ Erro ao verificar necessidade de atualização:', error);
         return true; // Em caso de erro, busca novamente
+    }
+};
+
+/**
+ * Deleta uma placa específica do cache
+ * @param {string} plate - Placa do veículo
+ * @returns {Promise<boolean>} True se deletou com sucesso
+ */
+export const deletePlateFromCache = async (plate) => {
+    try {
+        const cleanPlate = plate.replace(/[^A-Z0-9]/g, '').toUpperCase();
+        
+        console.log(`[CACHE] 🗑️  Deletando placa ${cleanPlate} do cache...`);
+        
+        const docRef = doc(db, VEHICLES_CACHE_COLLECTION, cleanPlate);
+        const docSnap = await getDoc(docRef);
+        
+        if (!docSnap.exists()) {
+            console.log(`[CACHE] ⚠️  Placa ${cleanPlate} não existe no cache`);
+            return false;
+        }
+        
+        await deleteDoc(docRef);
+        console.log(`[CACHE] ✅ Placa ${cleanPlate} deletada do cache com sucesso!`);
+        return true;
+        
+    } catch (error) {
+        console.error('[CACHE] ❌ Erro ao deletar do cache:', error);
+        return false;
     }
 };
