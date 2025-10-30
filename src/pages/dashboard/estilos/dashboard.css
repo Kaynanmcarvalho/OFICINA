@@ -1,4 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 /* Dashboard Apple-Like Styles */
+
+/* Prevenir overflow horizontal global - FORÇADO */
+.dashboard-no-transform,
+.dashboard-no-transform *,
+.dashboard-no-transform *::before,
+.dashboard-no-transform *::after {
+  box-sizing: border-box !important;
+}
+
+.dashboard-no-transform {
+  overflow-x: hidden !important;
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+.dashboard-no-transform > * {
+  max-width: 100% !important;
+}
+
+/* Forçar todos os grids a respeitarem o container */
+.dashboard-no-transform .grid {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+/* Forçar todos os motion.div a respeitarem o container */
+.dashboard-no-transform [class*="motion"] {
+  max-width: 100% !important;
+}
 
 /* Glassmorphism Effect */
 .glass-effect {
@@ -132,13 +163,12 @@
   background: rgba(75, 85, 99, 0.7);
 }
 
-/* Typography */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
 }
 
 /* Number Animation */
@@ -287,10 +317,17 @@ body {
    Aplicado em telas até 1366px de largura
    ======================================== */
 @media (max-width: 1366px) {
-  /* Base font-size reduction */
+  /* Prevenir overflow horizontal */
   .dashboard-no-transform {
     font-size: 0.8rem !important; /* 12.8px ao invés de 16px */
     line-height: 1.4 !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Garantir que o container pai também não cause overflow */
+  .dashboard-no-transform > * {
+    max-width: 100% !important;
   }
   
   /* ===== TÍTULOS ===== */
@@ -766,18 +803,36 @@ body {
   
   /* ===== MAX WIDTH ===== */
   .dashboard-no-transform .max-w-7xl {
-    max-width: 64rem !important; /* 1024px ao invés de 1280px */
+    max-width: 100% !important; /* Usa 100% da largura disponível */
+    width: 100% !important;
   }
   
   .dashboard-no-transform .max-w-6xl {
-    max-width: 57.6rem !important;
+    max-width: 100% !important;
+    width: 100% !important;
   }
   
   .dashboard-no-transform .max-w-5xl {
-    max-width: 51.2rem !important;
+    max-width: 100% !important;
+    width: 100% !important;
   }
   
   .dashboard-no-transform .max-w-4xl {
-    max-width: 44.8rem !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  
+  /* Garantir que grids não ultrapassem */
+  .dashboard-no-transform .grid {
+    max-width: 100% !important;
+  }
+  
+  /* Ajustar gaps para telas menores */
+  .dashboard-no-transform .gap-6 {
+    gap: 0.8rem !important; /* Reduzir gap para economizar espaço */
+  }
+  
+  .dashboard-no-transform .gap-4 {
+    gap: 0.5rem !important;
   }
 }

@@ -1,4 +1,4 @@
-import { Calendar, Clock, User, Car, Phone } from 'lucide-react';
+import { Calendar, Clock, User, Car, Phone } from '@/utils/icons';
 
 const ResumoCheckin = ({ checkin }) => {
   if (!checkin) return null;

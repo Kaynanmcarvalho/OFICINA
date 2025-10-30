@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, DollarSign, FileText, CreditCard, Upload } from 'lucide-react';
+import { X, DollarSign, FileText, CreditCard, Upload } from '@/utils/icons';
 import toast from 'react-hot-toast';
 import UploaderFotos from './UploaderFotos';
 import { checkoutCheckin } from '../../../services/checkinService';

@@ -130,11 +130,11 @@ const ProfilePage = () => {
         <div className="lg:col-span-1">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
             <div className="flex flex-col items-center text-center mb-6">
-              <div className="relative w-32 h-32 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mb-4 overflow-hidden group">
+              <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center mb-4 overflow-hidden group">
                 {photoURL ? (
                   <img src={photoURL} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-5xl text-blue-600 dark:text-blue-400">{user.displayName?.[0] || 'U'}</span>
+                  <span className="text-5xl text-white font-bold">{user.displayName?.[0] || 'U'}</span>
                 )}
 
                 {/* Upload overlay */}

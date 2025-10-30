@@ -1,0 +1,50 @@
+/* 
+ * Redução proporcional de 20% em todos os elementos da página de check-in
+ * CENTRALIZADO HORIZONTALMENTE com margin auto
+ */
+
+.checkin-page-container {
+  transform-origin: top center;
+  transform: scale(0.8);
+  width: 100%;
+  max-width: 1536px; /* Equivalente a max-w-6xl do Tailwind (72rem = 1152px), mas compensado pelo scale */
+  margin-left: auto;
+  margin-right: auto;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ajustes responsivos progressivos para telas menores */
+@media (max-width: 1280px) {
+  .checkin-page-container {
+    transform: scale(0.82);
+    max-width: 1400px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .checkin-page-container {
+    transform: scale(0.85);
+    max-width: 1280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .checkin-page-container {
+    transform: scale(0.9);
+    max-width: 1024px;
+  }
+}
+
+@media (max-width: 640px) {
+  .checkin-page-container {
+    transform: scale(0.95);
+    max-width: 768px;
+  }
+}
+
+@media (max-width: 480px) {
+  .checkin-page-container {
+    transform: scale(1);
+    max-width: 100%;
+  }
+}

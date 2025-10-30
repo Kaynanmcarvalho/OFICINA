@@ -27,25 +27,41 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
+    /* Apple Premium Dark Mode - macOS Sonoma / VisionOS inspired */
+    --background: 222 15% 5%;        /* #0C0D11 */
+    --foreground: 240 5% 91%;        /* #E8E8EA */
+    --card: 222 15% 9%;              /* #181A20 */
+    --card-foreground: 240 5% 91%;   /* #E8E8EA */
+    --popover: 222 15% 8%;           /* #14161D */
+    --popover-foreground: 240 5% 91%;
+    --primary: 211 100% 52%;         /* #0A84FF - Apple Blue */
+    --primary-foreground: 240 5% 91%;
+    --secondary: 222 15% 11%;        /* #1C1E26 */
+    --secondary-foreground: 240 5% 91%;
+    --muted: 240 3% 66%;             /* #A7A8AE */
+    --muted-foreground: 240 3% 66%;
+    --accent: 211 100% 52%;          /* #0A84FF */
+    --accent-foreground: 240 5% 91%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 240 5% 91%;
+    --border: 0 0% 100% / 0.08;      /* rgba(255,255,255,0.08) */
+    --input: 222 15% 9%;
+    --ring: 211 100% 52%;
+    
+    /* Apple Premium Extended Variables */
+    --dark-bg: #0C0D11;
+    --dark-surface: #14161D;
+    --dark-card: #181A20;
+    --dark-elevated: #1C1E26;
+    --dark-text: #E8E8EA;
+    --dark-muted: #A7A8AE;
+    --dark-subtle: #6E6F76;
+    --dark-accent: #0A84FF;
+    --dark-accent-alt: #64D2FF;
+    --dark-purple: #8B5CF6;
+    --dark-border: rgba(255, 255, 255, 0.08);
+    --dark-glass: rgba(0, 0, 0, 0.3);
+    --dark-hover: rgba(255, 255, 255, 0.05);
   }
 
   * {
@@ -57,15 +73,34 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  
+  /* Apple Premium Dark Mode - Background com profundidade */
+  .dark body {
+    background: #0C0D11;
+    background-image: radial-gradient(ellipse at top, rgba(16, 18, 24, 0.8) 0%, #0C0D11 50%);
+    color: #E8E8EA;
   }
 
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  
+  /* Smooth scrolling para dark mode */
+  .dark html {
+    background: #0C0D11;
   }
 }
 
 @layer components {
-  /* Glass morphism effect */
+  /* ========================================
+     APPLE PREMIUM GLASSMORPHISM
+     ======================================== */
+  
   .glass {
     @apply backdrop-blur-md bg-white/10 border border-white/20;
   }
@@ -73,15 +108,46 @@
   .glass-dark {
     @apply backdrop-blur-md bg-black/10 border border-white/10;
   }
+  
+  /* Apple Premium Glass - Dark Mode */
+  .glass-apple {
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.06);
+  }
+  
+  .glass-apple:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+  }
 
-  /* macOS style buttons */
+  /* ========================================
+     APPLE PREMIUM BUTTONS
+     ======================================== */
+  
   .btn-macos {
     @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 ease-out;
     @apply bg-white/80 hover:bg-white/90 text-gray-800;
     @apply border border-gray-200/50 hover:border-gray-300/50;
     @apply shadow-sm hover:shadow-md;
-    @apply dark:bg-gray-800/80 dark:hover:bg-gray-700/90 dark:text-gray-200;
-    @apply dark:border-gray-700/50 dark:hover:border-gray-600/50;
+  }
+  
+  .dark .btn-macos {
+    background: rgba(24, 26, 32, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #E8E8EA;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  .dark .btn-macos:hover {
+    background: rgba(28, 30, 38, 0.9);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    transform: translateY(-1px);
   }
 
   .btn-primary {
@@ -89,41 +155,139 @@
     @apply border-primary-500 hover:border-primary-600;
     @apply shadow-lg hover:shadow-xl;
   }
+  
+  .dark .btn-primary {
+    background: #0A84FF;
+    border: 1px solid rgba(10, 132, 255, 0.3);
+    box-shadow: 0 4px 20px rgba(10, 132, 255, 0.3);
+  }
+  
+  .dark .btn-primary:hover {
+    background: #0070E0;
+    box-shadow: 0 8px 32px rgba(10, 132, 255, 0.4);
+    transform: translateY(-1px);
+  }
 
-  /* Card styles */
+  /* ========================================
+     APPLE PREMIUM CARDS
+     ======================================== */
+  
   .card-macos {
     @apply bg-white/80 backdrop-blur-md border border-gray-200/50;
     @apply rounded-xl shadow-card hover:shadow-card-hover;
     @apply transition-all duration-300 ease-out;
-    @apply dark:bg-gray-800/80 dark:border-gray-700/50;
+  }
+  
+  .dark .card-macos {
+    background: rgba(24, 26, 32, 0.6);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.06);
+  }
+  
+  .dark .card-macos:hover {
+    background: rgba(28, 30, 38, 0.7);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+  }
+  
+  /* Card elevado - para elementos que precisam mais destaque */
+  .card-elevated {
+    @apply card-macos;
+  }
+  
+  .dark .card-elevated {
+    background: rgba(28, 30, 38, 0.8);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.08);
   }
 
-  /* Input styles */
+  /* ========================================
+     APPLE PREMIUM INPUTS
+     ======================================== */
+  
   .input-macos {
     @apply w-full px-4 py-3 rounded-lg border border-gray-200/50;
     @apply bg-white/80 backdrop-blur-sm;
     @apply focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500;
     @apply transition-all duration-200 ease-out;
-    @apply dark:bg-gray-800/80 dark:border-gray-700/50;
-    @apply dark:focus:ring-primary-400/50 dark:focus:border-primary-400;
+  }
+  
+  .dark .input-macos {
+    background: rgba(24, 26, 32, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #E8E8EA;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dark .input-macos:focus {
+    background: rgba(28, 30, 38, 0.8);
+    border-color: rgba(10, 132, 255, 0.5);
+    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.1), inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dark .input-macos::placeholder {
+    color: #6E6F76;
   }
 
-  /* Sidebar styles */
+  /* ========================================
+     APPLE PREMIUM SIDEBAR
+     ======================================== */
+  
   .sidebar-macos {
     @apply bg-gray-50/80 backdrop-blur-md border-r border-gray-200/50;
-    @apply dark:bg-gray-900/80 dark:border-gray-800/50;
+  }
+  
+  .dark .sidebar-macos {
+    background: rgba(20, 22, 29, 0.8);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
   }
 
-  /* Navigation styles */
+  /* ========================================
+     APPLE PREMIUM NAVIGATION
+     ======================================== */
+  
   .nav-item {
     @apply flex items-center px-4 py-3 rounded-lg transition-all duration-200;
     @apply hover:bg-white/50 hover:shadow-sm;
-    @apply dark:hover:bg-gray-800/50;
+  }
+  
+  .dark .nav-item {
+    color: #A7A8AE;
+  }
+  
+  .dark .nav-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #E8E8EA;
   }
 
   .nav-item.active {
     @apply bg-primary-500/10 text-primary-600 border-r-2 border-primary-500;
-    @apply dark:bg-primary-400/10 dark:text-primary-400 dark:border-primary-400;
+  }
+  
+  .dark .nav-item.active {
+    background: rgba(10, 132, 255, 0.15);
+    color: #0A84FF;
+    border-right-color: #0A84FF;
+    box-shadow: 0 0 20px rgba(10, 132, 255, 0.2);
+  }
+  
+  /* ========================================
+     APPLE PREMIUM DIVIDERS
+     ======================================== */
+  
+  .divider-apple {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.1);
+  }
+  
+  .dark .divider-apple {
+    background: rgba(255, 255, 255, 0.06);
   }
 }
 
@@ -162,5 +326,35 @@
 
   .scrollbar-custom::-webkit-scrollbar-thumb:hover {
     background-color: rgb(107 114 128);
+  }
+
+  /* iOS-like smooth transitions */
+  .transition-ios {
+    transition-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
+    transition-duration: 300ms;
+  }
+
+  .transition-ios-fast {
+    transition-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
+    transition-duration: 200ms;
+  }
+
+  .transition-ios-slow {
+    transition-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
+    transition-duration: 400ms;
+  }
+
+  /* GPU acceleration */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+    will-change: transform;
+  }
+
+  /* Smooth content transitions */
+  .content-transition {
+    transition: all 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+    transform: translateZ(0);
   }
 }

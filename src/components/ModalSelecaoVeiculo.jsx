@@ -1,4 +1,4 @@
-import { X, Plus } from 'lucide-react';
+import { X, Plus } from '@/utils/icons';
 import VehicleCard from './VehicleCard';
 
 const ModalSelecaoVeiculo = ({ isOpen, onClose, vehicles, onSelectVehicle, onAddNew, title = 'Selecione o Veículo', showCheckInTime = false }) => {

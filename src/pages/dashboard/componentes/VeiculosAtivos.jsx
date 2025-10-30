@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Car, User, Calendar, Clock } from 'lucide-react';
+import { Car, User, Calendar, Clock } from '@/utils/icons';
 import LoaderAnimado from './LoaderAnimado';
 
 /**

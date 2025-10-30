@@ -7,6 +7,7 @@ import ModalCheckin from './checkin/componentes/ModalCheckin';
 import ModalCheckout from './checkin/componentes/ModalCheckout';
 import RegistroCard from './checkin/componentes/RegistroCard';
 import { useCheckinStore } from '../store';
+import './checkin/estilos/checkin.css';
 
 const CheckInPage = () => {
   const navigate = useNavigate();
@@ -76,7 +77,7 @@ const CheckInPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-black dark:to-gray-800 transition-colors duration-500">
       {/* Fundo animado sutil */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none checkin-page-container">
         <motion.div
           animate={{
             backgroundPosition: ['0% 0%', '100% 100%'],
@@ -94,7 +95,7 @@ const CheckInPage = () => {
         />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+      <div className="relative px-6 sm:px-8 lg:px-12 py-12 space-y-12 checkin-page-container">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -242,9 +243,12 @@ const CheckInPage = () => {
           transition={{ duration: 0.6, delay: 0.6 }}
           className="relative"
         >
-          {/* Container branco elegante estilo Apple - com sombra profunda */}
-          <div className="bg-white dark:bg-white rounded-[2rem] p-8 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_10px_10px_-5px_rgba(0,0,0,0.04)] dark:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] border border-gray-300/50 dark:border-gray-300/20">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 tracking-tight">
+          {/* Container Premium Apple-like com glassmorphism */}
+          <div className="bg-white/90 dark:bg-[#0C0D11]/90 backdrop-blur-2xl rounded-[2rem] p-8 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_10px_10px_-5px_rgba(0,0,0,0.04)] dark:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] border border-gray-300/50 dark:border-white/10 transition-colors duration-500">
+            {/* Reflexo de vidro no topo */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent rounded-t-[2rem]" />
+            
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 tracking-tight">
               Registros Recentes
             </h2>
 

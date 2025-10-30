@@ -32,10 +32,12 @@ const CAMINHAO_BRANDS = [
 ];
 
 // Palavras-chave no modelo que indicam moto
+// IMPORTANTE: Evitar siglas genéricas como "CG" sozinho (ex: SANTANA CG é carro)
 const MOTO_KEYWORDS = [
     'MOTO', 'MOTOCICLETA', 'CICLOMOTOR', 'SCOOTER', 'TRAIL', 'ENDURO',
     'CROSS', 'CUSTOM', 'CHOPPER', 'CRUISER', 'SPORT', 'NAKED', 'TOURING',
-    'CG', 'CB', 'CBR', 'XRE', 'FAZER', 'YBR', 'FACTOR', 'TITAN', 'BIZ',
+    'CG 125', 'CG 150', 'CG 160', 'CG125', 'CG150', 'CG160', // CG específico com números
+    'CB', 'CBR', 'XRE', 'FAZER', 'YBR', 'FACTOR', 'TITAN', 'BIZ',
     'PCX', 'NMAX', 'BURGMAN', 'BOULEVARD', 'NINJA', 'Z', 'VERSYS',
     'STREET', 'ROAD', 'SOFTAIL', 'SPORTSTER', 'ELECTRA GLIDE',
     'MT', 'R1', 'R3', 'R6', 'GSX', 'HAYABUSA', 'V-STROM', 'VSTROM',
@@ -212,7 +214,10 @@ export const detectVehicleType = (marca, modelo, tipoOriginal = '') => {
     }
 
     // 5. Verifica palavras-chave no modelo para motos
-    if (MOTO_KEYWORDS.some(keyword => modeloUpper.includes(keyword))) {
+    // MAS ignora se for uma marca exclusiva de carros (evita falsos positivos como "SANTANA CG")
+    const isCarBrand = CARRO_BRANDS.some(brand => marcaUpper.includes(brand) || brand.includes(marcaUpper));
+    
+    if (!isCarBrand && MOTO_KEYWORDS.some(keyword => modeloUpper.includes(keyword))) {
         console.log('[VEHICLE TYPE DETECTOR] ✅ Palavra-chave de MOTO detectada no modelo');
         return 'moto';
     }

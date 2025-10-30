@@ -13,10 +13,12 @@ import {
     validateBirthDate
 } from '../../../services/documentValidationService';
 import { useClientStore } from '../../../store/clientStore';
+import { useVehicleStore } from '../../../store/vehicleStore';
 import { consultarCNPJ, validarSituacaoEmpresa } from '../../../services/cnpjService';
 
 const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
     const { clients } = useClientStore();
+    const { createVehicle } = useVehicleStore();
     const [currentStep, setCurrentStep] = useState(1);
     const [personType, setPersonType] = useState('fisica'); // 'fisica' ou 'juridica'
     const [formData, setFormData] = useState({
@@ -219,7 +221,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
 
         // Busca automática quando placa tiver 7 caracteres na busca manual
         if (field === 'plate' && value.length === 7) {
-            
+
             const searchMode = vehicleSearchMode[vehicleId] || 'plate';
 
             // Só faz busca automática se estiver na busca manual
@@ -237,11 +239,11 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
         try {
             const result = await searchVehicleByPlate(plate);
             console.log('[PLATE SEARCH] Resultado da busca:', result);
-            
+
             if (result.success) {
                 const vehicleData = result.data;
                 console.log('[PLATE SEARCH] Dados do veículo:', vehicleData);
-                
+
                 const searchMode = vehicleSearchMode[vehicleId] || 'plate';
                 console.log('[PLATE SEARCH] Modo de busca:', searchMode);
 
@@ -264,7 +266,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                 let marca = vehicleData.marca || '';
                 let modelo = vehicleData.modelo || '';
                 let ano = vehicleData.ano || '';
-                
+
                 // Se marca ou modelo estiverem vazios, tenta extrair
                 if (!marca || !modelo) {
                     // Lista de marcas conhecidas (maiúsculas)
@@ -273,25 +275,25 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                         'CHEVROLET', 'FORD', 'FIAT', 'VOLKSWAGEN', 'VW', 'TOYOTA', 'HYUNDAI', 'NISSAN', 'RENAULT',
                         'MERCEDES', 'MERCEDES-BENZ', 'AUDI', 'VOLVO', 'SCANIA', 'IVECO', 'JEEP', 'MITSUBISHI', 'PEUGEOT', 'CITROEN'
                     ];
-                    
+
                     // Se marca está vazia e modelo contém tudo junto
                     if (!marca && modelo) {
                         // Remove o ano do final do modelo se ele já estiver no campo ano
                         if (ano && modelo.endsWith(ano)) {
                             modelo = modelo.substring(0, modelo.length - ano.length).trim();
                         }
-                        
+
                         // Tenta encontrar marca conhecida no início do modelo
                         const modeloUpper = modelo.toUpperCase();
                         let marcaEncontrada = null;
-                        
+
                         for (const marcaConhecida of marcasConhecidas) {
                             if (modeloUpper.startsWith(marcaConhecida)) {
                                 marcaEncontrada = marcaConhecida;
                                 break;
                             }
                         }
-                        
+
                         if (marcaEncontrada) {
                             // Encontrou marca conhecida
                             marca = marcaEncontrada;
@@ -317,7 +319,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                         } : v
                     )
                 }));
-                
+
                 console.log('[PLATE SEARCH] Dados processados:', {
                     original: vehicleData,
                     processado: {
@@ -469,7 +471,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
         }
     };
 
-    
+
 
     const toggleSearchMode = async (vehicleId) => {
         const currentMode = vehicleSearchMode[vehicleId] || 'plate';
@@ -683,7 +685,35 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
             };
 
             const newClient = await createClient(clientData);
-            toast.success('Cliente cadastrado com sucesso!');
+            
+            // Salvar veículos no Firestore
+            const vehicleSavePromises = formData.vehicles.map(async (vehicle) => {
+                const vehicleData = {
+                    plate: vehicle.plate.toUpperCase(),
+                    brand: vehicle.brand,
+                    model: vehicle.model,
+                    year: vehicle.year,
+                    color: vehicle.color,
+                    type: vehicle.type,
+                    clientId: newClient.clientId || newClient.id,
+                    clientName: personType === 'fisica' ? formData.name.trim() : formData.nomeFantasia.trim(),
+                    notes: `Veículo cadastrado junto com o cliente ${personType === 'fisica' ? formData.name.trim() : formData.nomeFantasia.trim()}`,
+                };
+                
+                return await createVehicle(vehicleData);
+            });
+            
+            // Aguarda todos os veículos serem salvos
+            const vehicleResults = await Promise.all(vehicleSavePromises);
+            const successfulVehicles = vehicleResults.filter(r => r.success).length;
+            
+            if (successfulVehicles > 0) {
+                toast.success(`Cliente e ${successfulVehicles} veículo(s) cadastrados com sucesso!`);
+            } else {
+                toast.success('Cliente cadastrado com sucesso!');
+                toast.warning('Alguns veículos não foram salvos. Verifique a listagem de veículos.');
+            }
+            
             onSuccess(newClient);
             onClose();
         } catch (error) {
@@ -815,7 +845,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                                 onChange={(e) => {
                                                     const cpfDigits = e.target.value.replace(/\D/g, '');
                                                     setFormData({ ...formData, cpf: cpfDigits });
-                                                    
+
                                                     // Validar automaticamente quando atingir 11 dígitos
                                                     if (cpfDigits.length === 11) {
                                                         const cpfValidation = validateCPF(cpfDigits);
@@ -895,7 +925,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                                 onChange={(e) => {
                                                     const cnpjDigits = e.target.value.replace(/\D/g, '');
                                                     setFormData({ ...formData, cnpj: cnpjDigits });
-                                                    
+
                                                     // Validar automaticamente quando atingir 14 dígitos
                                                     if (cnpjDigits.length === 14) {
                                                         const cnpjValidation = validateCNPJ(cnpjDigits);
@@ -1355,9 +1385,9 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                         const searchMode = vehicleSearchMode[vehicle.id] || 'plate';
                                         const isSearching = isSearchingPlate[vehicle.id];
                                         const brands = availableBrands[vehicle.id] || [];
-                                        
+
                                         const loadingBrands = isLoadingBrands[vehicle.id];
-                                        
+
 
                                         return (
                                             <div key={vehicle.id} className="p-5 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700">

@@ -1,16 +1,7 @@
-import { Car, Bike, Truck, Clock } from 'lucide-react';
+import { VehicleTypeIcon, Clock } from '@/utils/icons';
+import { detectVehicleType } from '../services/vehicleTypeDetector';
 
 const VehicleCard = ({ vehicle, onClick, showCheckInTime = false }) => {
-    const getVehicleIcon = (type) => {
-        switch (type?.toLowerCase()) {
-            case 'moto':
-                return <Bike className="w-8 h-8" />;
-            case 'caminhao':
-                return <Truck className="w-8 h-8" />;
-            default:
-                return <Car className="w-8 h-8" />;
-        }
-    };
 
     const getTimeAgo = (timestamp) => {
         if (!timestamp) return '';
@@ -36,7 +27,11 @@ const VehicleCard = ({ vehicle, onClick, showCheckInTime = false }) => {
             <div className="flex items-start gap-4">
                 {/* Ícone do Veículo */}
                 <div className="flex-shrink-0 w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform duration-300">
-                    {getVehicleIcon(vehicle.type)}
+                    <VehicleTypeIcon 
+                        type={vehicle.type || detectVehicleType(vehicle.brand, vehicle.model)}
+                        className="w-8 h-8"
+                        size={32}
+                    />
                 </div>
 
                 {/* Informações do Veículo */}

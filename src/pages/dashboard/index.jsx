@@ -1,6 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
-import { Users, Package, Wrench, Car } from 'lucide-react';
+import { Users, Package, Wrench, Car } from '@/utils/icons';
 import CartaoIndicador from './componentes/CartaoIndicador';
 import LoaderAnimado from './componentes/LoaderAnimado';
 import CentralAlertas from './componentes/CentralAlertas';
@@ -114,8 +114,8 @@ const DashboardPage = () => {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 md:p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto space-y-6 dashboard-no-transform">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-x-hidden" style={{ width: '100%', maxWidth: '100vw' }}>
+        <div className="w-full mx-auto space-y-4 md:space-y-6 dashboard-no-transform px-3 md:px-4 lg:px-6 py-4 md:py-6" style={{ maxWidth: '100%', boxSizing: 'border-box' }}>
         
         {/* Header */}
         <motion.div
@@ -140,7 +140,8 @@ const DashboardPage = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4"
+          style={{ width: '100%', maxWidth: '100%' }}
         >
           <CartaoIndicador
             titulo="Clientes"
@@ -195,7 +196,8 @@ const DashboardPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4"
+          style={{ width: '100%', maxWidth: '100%' }}
         >
           <Suspense fallback={<LoaderAnimado tipo="chart" />}>
             <GraficoMovimentacao dados={dadosGrafico} isLoading={isLoading} />
@@ -221,7 +223,8 @@ const DashboardPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4"
+          style={{ width: '100%', maxWidth: '100%' }}
         >
           <ListaClientesRecentes clientes={clientesRecentes} isLoading={isLoading} />
           <EstoqueCritico produtos={estoqueCritico} isLoading={isLoading} />
@@ -232,7 +235,8 @@ const DashboardPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4"
+          style={{ width: '100%', maxWidth: '100%' }}
         >
           <FerramentasEmUso ferramentas={ferramentasEmUso} isLoading={isLoading} />
           <VeiculosAtivos veiculos={veiculosAtivos} isLoading={isLoading} />

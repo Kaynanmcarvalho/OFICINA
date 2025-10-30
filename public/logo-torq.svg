@@ -1,0 +1,48 @@
+<svg width="400" height="120" viewBox="0 0 400 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Letra T -->
+  <path d="M20 25 L90 25 L90 40 L65 40 L65 95 L45 95 L45 40 L20 40 Z" fill="#1F2937"/>
+  
+  <!-- Letra O com Engrenagem -->
+  <g>
+    <!-- Círculo externo do O -->
+    <circle cx="125" cy="60" r="32" fill="none" stroke="#1F2937" stroke-width="12"/>
+    
+    <!-- Engrenagem dentro do O -->
+    <g transform="translate(125, 60)">
+      <!-- Dentes da engrenagem -->
+      <line x1="15" y1="0" x2="22" y2="0" stroke="#1F2937" stroke-width="4" stroke-linecap="round"/>
+      <line x1="10.6" y1="10.6" x2="15.6" y2="15.6" stroke="#1F2937" stroke-width="4" stroke-linecap="round"/>
+      <line x1="0" y1="15" x2="0" y2="22" stroke="#1F2937" stroke-width="4" stroke-linecap="round"/>
+      <line x1="-10.6" y1="10.6" x2="-15.6" y2="15.6" stroke="#1F2937" stroke-width="4" stroke-linecap="round"/>
+      <line x1="-15" y1="0" x2="-22" y2="0" stroke="#1F2937" stroke-width="4" stroke-linecap="round"/>
+      <line x1="-10.6" y1="-10.6" x2="-15.6" y2="-15.6" stroke="#1F2937" stroke-width="4" stroke-linecap="round"/>
+      <line x1="0" y1="-15" x2="0" y2="-22" stroke="#1F2937" stroke-width="4" stroke-linecap="round"/>
+      <line x1="10.6" y1="-10.6" x2="15.6" y2="-15.6" stroke="#1F2937" stroke-width="4" stroke-linecap="round"/>
+      <!-- Círculo central da engrenagem -->
+      <circle cx="0" cy="0" r="8" fill="#1F2937"/>
+    </g>
+  </g>
+  
+  <!-- Letra R -->
+  <path d="M180 25 L210 25 Q235 25 235 45 Q235 60 220 63 L240 95 L218 95 L200 65 L195 65 L195 95 L180 95 Z M195 40 L195 52 L210 52 Q220 52 220 46 Q220 40 210 40 Z" fill="#1F2937"/>
+  
+  <!-- Letra Q com Chave -->
+  <g>
+    <!-- Círculo do Q -->
+    <circle cx="285" cy="60" r="32" fill="none" stroke="#1F2937" stroke-width="12"/>
+    
+    <!-- Chave atravessando o Q -->
+    <g transform="translate(285, 60) rotate(-30)">
+      <!-- Cabo da chave -->
+      <rect x="-3" y="-25" width="6" height="50" fill="#FF8C42" rx="3"/>
+      <!-- Cabeça da chave (círculo) -->
+      <circle cx="0" cy="-28" r="8" fill="none" stroke="#FF8C42" stroke-width="3"/>
+      <!-- Dentes da chave -->
+      <g transform="translate(0, 25)">
+        <rect x="-3" y="0" width="8" height="4" fill="#FF8C42"/>
+        <rect x="-3" y="6" width="6" height="4" fill="#FF8C42"/>
+        <rect x="-3" y="12" width="8" height="4" fill="#FF8C42"/>
+      </g>
+    </g>
+  </g>
+</svg>

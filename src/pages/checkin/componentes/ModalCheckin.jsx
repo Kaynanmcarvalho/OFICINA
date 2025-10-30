@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect } from 'react';
-import { X, Upload, User, Phone, Car, FileText, UserCircle } from 'lucide-react';
+import { X, Upload, User, Phone, Car, FileText, UserCircle } from '@/utils/icons';
 import toast from 'react-hot-toast';
 import CampoBuscaCliente from './CampoBuscaCliente';
 import UploaderFotos from './UploaderFotos';
