@@ -87,7 +87,7 @@ const EstoqueCritico = ({ produtos, isLoading = false }) => {
                   initial: { opacity: 0, y: 10 },
                   animate: { opacity: 1, y: 0 }
                 }}
-                className="p-4 rounded-xl bg-gray-50 dark:bg-gray-700/50 border-l-4 border-transparent hover:border-red-500 dark:hover:border-red-400 transition-all duration-200"
+                className="p-4 rounded-xl bg-gray-50 dark:bg-gray-700 border-l-4 border-transparent hover:border-red-500 dark:hover:border-red-400 transition-all duration-200"
                 style={{
                   borderLeftColor: produto.status === 'esgotado' ? '#ef4444' : '#f59e0b'
                 }}

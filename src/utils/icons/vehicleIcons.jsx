@@ -6,23 +6,73 @@
 import { Car, Truck, TruckIcon } from 'lucide-react';
 
 /**
- * Custom Motorcycle Icon - Design Realista v2
+ * Custom Motorcycle Icon - Design Esportivo Realista v3
  * Ícone SVG profissional de motocicleta esportiva
  */
 const MotorcycleIcon = ({ className = 'w-6 h-6', size = 24 }) => (
   <svg
     width={size}
     height={size}
-    viewBox="0 0 1024 1024"
+    viewBox="0 0 24 24"
     fill="currentColor"
     className={className}
-    key="motorcycle-icon-v2"
+    key="motorcycle-icon-v3"
   >
-    <path d="M142.222 731.733c-78.222 0-142.222-64-142.222-142.222s64-142.222 142.222-142.222 142.222 64 142.222 142.222-64 142.222-142.222 142.222zM142.222 504.889c-46.933 0-84.622 37.689-84.622 84.622s37.689 84.622 84.622 84.622 84.622-37.689 84.622-84.622-37.689-84.622-84.622-84.622z"/>
-    <path d="M881.778 731.733c-78.222 0-142.222-64-142.222-142.222s64-142.222 142.222-142.222 142.222 64 142.222 142.222-64 142.222-142.222 142.222zM881.778 504.889c-46.933 0-84.622 37.689-84.622 84.622s37.689 84.622 84.622 84.622 84.622-37.689 84.622-84.622-37.689-84.622-84.622-84.622z"/>
-    <path d="M881.778 618.311h-56.889l-113.778-227.556c-5.689-11.378-17.067-18.489-29.867-18.489h-227.556v-56.889h-56.889v56.889h-113.778c-15.644 0-28.444 12.8-28.444 28.444v113.778h-113.778v56.889h113.778v28.444c0 15.644 12.8 28.444 28.444 28.444h113.778v-56.889h-85.333v-85.333h170.667v227.556h56.889v-227.556h184.889l96.711 193.422h-56.889v56.889h113.778c15.644 0 28.444-12.8 28.444-28.444v-56.889c0-15.644-12.8-28.444-28.444-28.444z"/>
-    <path d="M568.889 315.378h-56.889v-113.778c0-15.644-12.8-28.444-28.444-28.444h-170.667v56.889h142.222v85.333z"/>
-    <path d="M739.556 372.267h-56.889v-56.889h56.889z"/>
+    {/* Motocicleta Esportiva Realista */}
+    
+    {/* Roda traseira com detalhes */}
+    <circle cx="5.5" cy="17" r="3" fill="currentColor" opacity="0.9"/>
+    <circle cx="5.5" cy="17" r="2" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.6"/>
+    <circle cx="5.5" cy="17" r="0.8" fill="currentColor"/>
+    
+    {/* Roda dianteira com detalhes */}
+    <circle cx="18.5" cy="17" r="3" fill="currentColor" opacity="0.9"/>
+    <circle cx="18.5" cy="17" r="2" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.6"/>
+    <circle cx="18.5" cy="17" r="0.8" fill="currentColor"/>
+    
+    {/* Chassi principal - formato de moto esportiva */}
+    <path d="M8.5 17L10 14L12 11L14 10L16 14L15.5 17" 
+          stroke="currentColor" 
+          strokeWidth="2.5" 
+          fill="none" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"/>
+    
+    {/* Tanque de combustível esportivo */}
+    <ellipse cx="12" cy="10.5" rx="3" ry="1.8" fill="currentColor" opacity="0.8"/>
+    <ellipse cx="12" cy="10" rx="2.5" ry="1.2" fill="currentColor"/>
+    
+    {/* Guidão esportivo */}
+    <path d="M9.5 7.5L12 8.5L14.5 7.5" 
+          stroke="currentColor" 
+          strokeWidth="2.5" 
+          strokeLinecap="round"/>
+    <circle cx="9.5" cy="7.5" r="0.8" fill="currentColor"/>
+    <circle cx="14.5" cy="7.5" r="0.8" fill="currentColor"/>
+    
+    {/* Farol esportivo */}
+    <ellipse cx="12" cy="6.5" rx="1.5" ry="1" fill="currentColor"/>
+    <ellipse cx="12" cy="6.2" rx="1" ry="0.6" fill="currentColor" opacity="0.7"/>
+    
+    {/* Assento esportivo */}
+    <ellipse cx="10.5" cy="12" rx="2" ry="1" fill="currentColor" opacity="0.9"/>
+    
+    {/* Escapamento esportivo */}
+    <path d="M14.5 15L17 16.5" 
+          stroke="currentColor" 
+          strokeWidth="3" 
+          strokeLinecap="round"/>
+    <ellipse cx="17.2" cy="16.8" rx="0.8" ry="0.4" fill="currentColor"/>
+    
+    {/* Para-brisa esportivo */}
+    <path d="M11 8.5L12 6L13 8.5" 
+          stroke="currentColor" 
+          strokeWidth="1.5" 
+          fill="none" 
+          opacity="0.6"/>
+    
+    {/* Detalhes do motor */}
+    <rect x="11" y="13" width="2" height="2" rx="0.5" fill="currentColor" opacity="0.7"/>
   </svg>
 );
 

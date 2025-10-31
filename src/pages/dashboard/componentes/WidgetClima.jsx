@@ -77,7 +77,7 @@ const WidgetClima = () => {
 
   if (isLoading) {
     return (
-      <div className="w-64 h-24 bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg rounded-2xl animate-pulse" />
+      <div className="w-64 h-24 bg-white dark:bg-gray-800 rounded-2xl animate-pulse" />
     );
   }
 
@@ -86,7 +86,7 @@ const WidgetClima = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-4 shadow-lg border border-white/20 dark:border-gray-700/20"
+        className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg border border-gray-200 dark:border-gray-700"
       >
         <p className="text-sm text-gray-500 dark:text-gray-400">
           Clima indisponível
@@ -102,7 +102,7 @@ const WidgetClima = () => {
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
-      className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-4 shadow-lg border border-white/20 dark:border-gray-700/20 hover:shadow-xl transition-shadow duration-300"
+      className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow duration-300"
     >
       <div className="flex items-start gap-4">
         {/* Ícone e Temperatura Principal */}

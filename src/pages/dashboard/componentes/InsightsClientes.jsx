@@ -93,7 +93,7 @@ const InsightsClientes = ({ insights }) => {
                   const data = payload[0];
                   const percentual = ((data.value / insights.totalClientes) * 100).toFixed(1);
                   return (
-                    <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg rounded-xl p-4 shadow-xl border border-gray-200/50 dark:border-gray-700/50">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-xl border border-gray-200 dark:border-gray-700">
                       <div className="flex items-center gap-2 mb-2">
                         <div
                           className="w-3 h-3 rounded-full"

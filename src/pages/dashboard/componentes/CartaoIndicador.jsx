@@ -97,8 +97,7 @@ const CartaoIndicador = ({
       {/* Card principal com glassmorphism */}
       <div className={`
         relative overflow-hidden rounded-[1.75rem]
-        bg-white/80 dark:bg-gray-900/60
-        backdrop-blur-xl backdrop-saturate-150
+        bg-white dark:bg-gray-900
         border ${config.border}
         shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]
         transition-all duration-300
@@ -155,8 +154,7 @@ const CartaoIndicador = ({
                 className={`
                   flex items-center gap-1.5 px-3 py-1.5 rounded-xl
                   ${getTendenciaColor()}
-                  bg-white/60 dark:bg-gray-800/60
-                  backdrop-blur-sm
+                  bg-white dark:bg-gray-800
                   border border-gray-200/50 dark:border-gray-700/50
                   shadow-sm
                 `}
@@ -173,8 +171,8 @@ const CartaoIndicador = ({
           <div className="space-y-2">
             {loading ? (
               <div className="space-y-2">
-                <div className="h-10 w-28 bg-gray-200/60 dark:bg-gray-700/60 rounded-xl animate-pulse backdrop-blur-sm" />
-                <div className="h-4 w-20 bg-gray-200/60 dark:bg-gray-700/60 rounded-lg animate-pulse backdrop-blur-sm" />
+                <div className="h-10 w-28 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse" />
+                <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
               </div>
             ) : (
               <>

@@ -100,7 +100,7 @@ const VeiculosAtivos = ({ veiculos, isLoading = false }) => {
                   animate: { opacity: 1, x: 0 }
                 }}
                 whileHover={{ scale: 1.02, x: 4 }}
-                className="p-4 rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 cursor-pointer group"
+                className="p-4 rounded-xl bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200 cursor-pointer group"
               >
                 {/* Header do Veículo */}
                 <div className="flex items-start justify-between mb-3">

@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogIn, LogOut, AlertCircle, Sparkles } from 'lucide-react';
+import { LogIn, LogOut } from 'lucide-react';
 import ModalCheckin from './checkin/componentes/ModalCheckin';
 import ModalCheckout from './checkin/componentes/ModalCheckout';
-import RegistroCard from './checkin/componentes/RegistroCard';
+import ModalEditarCheckin from './checkin/componentes/ModalEditarCheckin';
+import RecentSectionThemeAware from '../components/recent/RecentSectionThemeAware';
+
 import { useCheckinStore } from '../store';
 import './checkin/estilos/checkin.css';
 
@@ -14,8 +16,10 @@ const CheckInPage = () => {
   const { checkins, fetchCheckins, isLoading } = useCheckinStore();
   const [isCheckInModalOpen, setIsCheckInModalOpen] = useState(false);
   const [isCheckOutModalOpen, setIsCheckOutModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedCheckin, setSelectedCheckin] = useState(null);
   const [selectedForCheckout, setSelectedForCheckout] = useState(null);
+  const [checkinToEdit, setCheckinToEdit] = useState(null);
 
   useEffect(() => {
     fetchCheckins();
@@ -35,6 +39,68 @@ const CheckInPage = () => {
     } catch (error) {
       console.error('Erro ao atualizar lista:', error);
     }
+  };
+
+  // Convert checkin data to RecentItem format
+  const convertCheckinToRecordItem = (checkin) => {
+    const getVehicleType = () => {
+      if (checkin.vehicleType) return checkin.vehicleType;
+      // Enhanced detection based on model/brand
+      const model = (checkin.vehicleModel || '').toLowerCase();
+      const brand = (checkin.vehicleBrand || '').toLowerCase();
+      const fullText = `${brand} ${model}`.toLowerCase();
+      
+      // Motorcycle detection - more comprehensive
+      if (
+        model.includes('moto') || 
+        model.includes('fazer') || 
+        model.includes('cb') || 
+        model.includes('ninja') || 
+        model.includes('hornet') || 
+        model.includes('titan') || 
+        model.includes('biz') || 
+        model.includes('pop') || 
+        model.includes('fan') || 
+        model.includes('bros') ||
+        brand.includes('yamaha') && (model.includes('250') || model.includes('150') || model.includes('blueflex')) ||
+        brand.includes('honda') && (model.includes('cb') || model.includes('titan') || model.includes('biz')) ||
+        brand.includes('kawasaki') ||
+        brand.includes('suzuki') && (model.includes('yes') || model.includes('intruder')) ||
+        fullText.includes('motocicleta') ||
+        fullText.includes('scooter')
+      ) return 'motorcycle';
+      
+      if (model.includes('truck') || model.includes('caminhão')) return 'truck';
+      if (model.includes('van') || model.includes('furgão')) return 'van';
+      return 'car';
+    };
+
+    const getStatus = () => {
+      switch (checkin.status) {
+        case 'completed': return 'completed';
+        case 'pending': return 'pending';
+        case 'cancelled': return 'cancelled';
+        default: return 'in_progress';
+      }
+    };
+
+    return {
+      id: checkin.firestoreId || checkin.id,
+      type: getVehicleType(),
+      status: getStatus(),
+      primaryText: checkin.clientName || 'Cliente não identificado',
+      secondaryText: `${checkin.vehicleBrand || ''} ${checkin.vehicleModel || 'Veículo não especificado'}`.trim(),
+      plate: checkin.vehiclePlate || '---',
+      model: checkin.vehicleModel || 'Modelo não especificado',
+      date: new Date(checkin.createdAt || Date.now()),
+      tags: checkin.services ? [checkin.services] : [],
+      metadata: {
+        clientId: checkin.clientId,
+        vehicleId: checkin.vehicleId,
+        serviceType: checkin.services,
+        notes: checkin.observations,
+      },
+    };
   };
 
   const handleCheckoutClick = () => {
@@ -60,19 +126,36 @@ const CheckInPage = () => {
     }
   };
 
-  // Skeleton Loader Component
-  const SkeletonCard = () => (
-    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-gray-200/50 dark:border-gray-700/50 animate-pulse">
-      <div className="flex items-center space-x-4">
-        <div className="w-14 h-14 bg-gray-200 dark:bg-gray-700 rounded-2xl" />
-        <div className="flex-1 space-y-3">
-          <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded-lg w-1/3" />
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-lg w-1/2" />
-          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-lg w-1/4" />
-        </div>
-      </div>
-    </div>
-  );
+  // Handle item actions
+  const handleItemAction = (action) => {
+    const checkin = checkins.find(c => (c.firestoreId || c.id) === action.itemId);
+    if (!checkin) return;
+
+    switch (action.type) {
+      case 'open':
+        handleCheckinClick(checkin);
+        break;
+      case 'edit':
+        setCheckinToEdit(checkin);
+        setIsEditModalOpen(true);
+        break;
+      case 'complete':
+        handleSelectForCheckout(checkin);
+        break;
+      case 'delete':
+        if (window.confirm('Tem certeza que deseja excluir este registro?')) {
+          // TODO: Implement delete functionality
+          console.log('Delete checkin:', checkin);
+        }
+        break;
+      case 'duplicate':
+        // TODO: Implement duplicate functionality
+        console.log('Duplicate checkin:', checkin);
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-black dark:to-gray-800 transition-colors duration-500 w-full">
@@ -144,7 +227,7 @@ const CheckInPage = () => {
             className="group relative"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-[2rem] blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100" />
-            <div className="relative bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 backdrop-blur-2xl rounded-[2rem] p-8 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_50px_-10px_rgba(0,0,0,0.15)] dark:shadow-2xl border border-gray-300/50 dark:border-gray-700/30 overflow-hidden">
+            <div className="relative bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 rounded-[2rem] p-8 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_50px_-10px_rgba(0,0,0,0.15)] dark:shadow-2xl border border-gray-300/50 dark:border-gray-700/30 overflow-hidden">
               {/* Gradiente de fundo */}
               <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent dark:from-blue-900/10 dark:to-transparent" />
               
@@ -189,7 +272,7 @@ const CheckInPage = () => {
                 ? 'bg-gradient-to-br from-emerald-400/20 to-emerald-500/20 opacity-100' 
                 : 'bg-gradient-to-br from-gray-400/20 to-gray-500/20 opacity-0 group-hover:opacity-100'
             }`} />
-            <div className="relative bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 backdrop-blur-2xl rounded-[2rem] p-8 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_50px_-10px_rgba(0,0,0,0.15)] dark:shadow-2xl border border-gray-300/50 dark:border-gray-700/30 overflow-hidden">
+            <div className="relative bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 rounded-[2rem] p-8 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_50px_-10px_rgba(0,0,0,0.15)] dark:shadow-2xl border border-gray-300/50 dark:border-gray-700/30 overflow-hidden">
               {/* Gradiente de fundo */}
               <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent dark:from-gray-700/10 dark:to-transparent" />
               
@@ -236,81 +319,23 @@ const CheckInPage = () => {
           </motion.div>
         </motion.div>
 
-        {/* Lista de Registros */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="relative"
-        >
-          {/* Container Premium Apple-like com glassmorphism */}
-          <div className="bg-white/90 dark:bg-[#0C0D11]/90 backdrop-blur-2xl rounded-[2rem] p-8 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_10px_10px_-5px_rgba(0,0,0,0.04)] dark:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] border border-gray-300/50 dark:border-white/10 transition-colors duration-500">
-            {/* Reflexo de vidro no topo */}
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent rounded-t-[2rem]" />
-            
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 tracking-tight">
-              Registros Recentes
-            </h2>
 
-            <AnimatePresence mode="wait">
-              {isLoading ? (
-                <motion.div
-                  key="loading"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="space-y-4"
-                >
-                  {[...Array(3)].map((_, i) => (
-                    <SkeletonCard key={i} />
-                  ))}
-                </motion.div>
-              ) : checkins.length === 0 ? (
-                <motion.div
-                  key="empty"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  className="text-center py-16 space-y-4"
-                >
-                  <motion.div
-                    animate={{ y: [0, -10, 0] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    <AlertCircle className="w-16 h-16 mx-auto text-gray-400 dark:text-gray-600" />
-                  </motion.div>
-                  <p className="text-xl text-gray-500 dark:text-gray-400 font-light">
-                    Nenhum registro ainda. Comece um novo check-in.
-                  </p>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="list"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="space-y-4"
-                >
-                  {checkins.slice(0, 10).map((checkin, index) => (
-                    <motion.div
-                      key={checkin.firestoreId}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                    >
-                      <RegistroCard
-                        checkin={checkin}
-                        onViewDetails={handleCheckinClick}
-                        onSelect={handleSelectForCheckout}
-                        isSelected={selectedForCheckout?.firestoreId === checkin.firestoreId}
-                      />
-                    </motion.div>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </motion.div>
+        {/* Lista de Registros com Tema Inteligente */}
+        <RecentSectionThemeAware
+          items={checkins.slice(0, 10).map(convertCheckinToRecordItem)}
+          isLoading={isLoading}
+          onItemClick={(item) => {
+            const checkin = checkins.find(c => (c.firestoreId || c.id) === item.id);
+            if (checkin) handleCheckinClick(checkin);
+          }}
+          onItemAction={handleItemAction}
+          onItemSelect={(id) => {
+            const checkin = checkins.find(c => (c.firestoreId || c.id) === id);
+            if (checkin) handleSelectForCheckout(checkin);
+          }}
+          selectedItems={new Set(selectedForCheckout ? [selectedForCheckout.firestoreId || selectedForCheckout.id] : [])}
+          title="Registros Recentes"
+        />
       </div>
 
       {/* Modais */}
@@ -332,6 +357,20 @@ const CheckInPage = () => {
           setSelectedForCheckout(null);
         }}
         checkinData={selectedCheckin}
+      />
+
+      <ModalEditarCheckin
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setCheckinToEdit(null);
+        }}
+        checkinData={checkinToEdit}
+        onSave={(updatedCheckin) => {
+          console.log('Checkin atualizado:', updatedCheckin);
+          // TODO: Implementar salvamento real
+          fetchCheckins(); // Recarregar lista
+        }}
       />
     </div>
   );

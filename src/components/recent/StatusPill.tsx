@@ -1,86 +1,90 @@
 import React from 'react';
 
-export type StatusType = 'in_progress' | 'completed' | 'pending' | 'cancelled';
-export type PillSize = 'sm' | 'md';
-
-export interface StatusPillProps {
-  /** Current status */
-  status: StatusType;
-  /** Show glow effect */
+interface StatusPillProps {
+  status: 'in_progress' | 'completed' | 'pending' | 'cancelled';
   showGlow?: boolean;
-  /** Size variant */
-  size?: PillSize;
+  size?: 'sm' | 'md';
 }
 
-// Status configuration
-const statusConfig: Record<StatusType, {
-  label: string;
-  color: string;
-  bgColor: string;
-  glowColor: string;
-}> = {
-  in_progress: {
-    label: 'Em andamento',
-    color: 'text-amber-700 dark:text-amber-300',
-    bgColor: 'bg-amber-100 dark:bg-amber-500/20',
-    glowColor: 'shadow-[0_0_0_4px_rgba(245,158,11,0.15),0_2px_8px_rgba(245,158,11,0.3)]',
-  },
-  completed: {
-    label: 'Concluído',
-    color: 'text-emerald-700 dark:text-emerald-300',
-    bgColor: 'bg-emerald-100 dark:bg-emerald-500/20',
-    glowColor: 'shadow-[0_0_0_4px_rgba(16,185,129,0.15),0_2px_8px_rgba(16,185,129,0.3)]',
-  },
-  pending: {
-    label: 'Pendente',
-    color: 'text-blue-700 dark:text-blue-300',
-    bgColor: 'bg-blue-100 dark:bg-blue-500/20',
-    glowColor: 'shadow-[0_0_0_4px_rgba(59,130,246,0.15),0_2px_8px_rgba(59,130,246,0.3)]',
-  },
-  cancelled: {
-    label: 'Cancelado',
-    color: 'text-red-700 dark:text-red-300',
-    bgColor: 'bg-red-100 dark:bg-red-500/20',
-    glowColor: 'shadow-[0_0_0_4px_rgba(239,68,68,0.15),0_2px_8px_rgba(239,68,68,0.3)]',
-  },
-};
-
-/**
- * StatusPill - Badge component displaying current status with color coding
- * 
- * @example
- * <StatusPill status="in_progress" />
- * <StatusPill status="completed" showGlow />
- * <StatusPill status="pending" size="sm" />
- */
-const StatusPill: React.FC<StatusPillProps> = ({
-  status,
-  showGlow = false,
-  size = 'md',
+const StatusPill: React.FC<StatusPillProps> = ({ 
+  status, 
+  showGlow = false, 
+  size = 'md' 
 }) => {
-  const config = statusConfig[status];
-
   const sizeClasses = {
-    sm: 'h-6 px-2.5 text-[11px]', // 24px height
-    md: 'h-7 px-3 text-[13px]',   // 28px height
+    sm: 'h-6 px-2 text-xs',
+    md: 'h-7 px-3 text-sm',
   };
+
+  // Status configuration
+  const getStatusConfig = () => {
+    switch (status) {
+      case 'in_progress':
+        return {
+          text: 'Em andamento',
+          bgColor: 'bg-amber-100 dark:bg-amber-900/30',
+          textColor: 'text-amber-800 dark:text-amber-200',
+          borderColor: 'border-amber-200 dark:border-amber-700',
+          glowColor: showGlow ? 'shadow-amber-500/30' : '',
+        };
+      case 'completed':
+        return {
+          text: 'Concluído',
+          bgColor: 'bg-emerald-100 dark:bg-emerald-900/30',
+          textColor: 'text-emerald-800 dark:text-emerald-200',
+          borderColor: 'border-emerald-200 dark:border-emerald-700',
+          glowColor: showGlow ? 'shadow-emerald-500/30' : '',
+        };
+      case 'pending':
+        return {
+          text: 'Pendente',
+          bgColor: 'bg-blue-100 dark:bg-blue-900/30',
+          textColor: 'text-blue-800 dark:text-blue-200',
+          borderColor: 'border-blue-200 dark:border-blue-700',
+          glowColor: showGlow ? 'shadow-blue-500/30' : '',
+        };
+      case 'cancelled':
+        return {
+          text: 'Cancelado',
+          bgColor: 'bg-red-100 dark:bg-red-900/30',
+          textColor: 'text-red-800 dark:text-red-200',
+          borderColor: 'border-red-200 dark:border-red-700',
+          glowColor: showGlow ? 'shadow-red-500/30' : '',
+        };
+      default:
+        return {
+          text: 'Desconhecido',
+          bgColor: 'bg-gray-100 dark:bg-gray-900/30',
+          textColor: 'text-gray-800 dark:text-gray-200',
+          borderColor: 'border-gray-200 dark:border-gray-700',
+          glowColor: '',
+        };
+    }
+  };
+
+  const config = getStatusConfig();
 
   return (
     <span
-      className={`
-        inline-flex items-center justify-center
-        ${sizeClasses[size]}
-        rounded-[14px]
-        ${config.bgColor}
-        ${config.color}
-        font-medium
-        transition-all duration-200
-        ${showGlow ? config.glowColor : ''}
-      `}
       role="status"
-      aria-label={`Status: ${config.label}`}
+      aria-label={`Status: ${config.text}`}
+      className={`
+        inline-flex 
+        items-center 
+        justify-center 
+        rounded-full 
+        font-medium 
+        border 
+        transition-all 
+        duration-200
+        ${sizeClasses[size]}
+        ${config.bgColor}
+        ${config.textColor}
+        ${config.borderColor}
+        ${showGlow ? `shadow-lg ${config.glowColor}` : ''}
+      `}
     >
-      {config.label}
+      {config.text}
     </span>
   );
 };

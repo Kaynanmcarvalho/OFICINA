@@ -146,9 +146,13 @@ const LoginPage = () => {
               <label htmlFor="password" className="block text-sm font-medium text-gray-200">
                 Senha
               </label>
-              <Link to="/forgot-password" className="text-sm text-blue-400 hover:text-blue-300 transition duration-200">
+              <button 
+                type="button"
+                onClick={() => alert('Funcionalidade em desenvolvimento. Entre em contato com o administrador.')}
+                className="text-sm text-blue-400 hover:text-blue-300 transition duration-200"
+              >
                 Esqueceu a senha?
-              </Link>
+              </button>
             </div>
             <input
               id="password"

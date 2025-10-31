@@ -136,6 +136,7 @@ export default {
         'scale-in': 'scaleIn 0.2s ease-out',
         'bounce-subtle': 'bounceSubtle 0.6s ease-out',
         'glow-pulse': 'glowPulse 2s ease-in-out infinite',
+        'shimmer': 'shimmer 1.5s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
@@ -163,6 +164,10 @@ export default {
         glowPulse: {
           '0%, 100%': { boxShadow: '0 0 10px rgba(59, 130, 246, 0.3)' },
           '50%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)' },
+        },
+        shimmer: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
         },
       },
       boxShadow: {

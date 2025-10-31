@@ -1,56 +1,24 @@
 import React from 'react';
 import IconLoader from './IconLoader';
+import VehicleIcons from './VehicleIcons';
 
-export type EntityType = 'car' | 'motorcycle' | 'truck' | 'van' | 'client';
-export type AvatarSize = 'sm' | 'md' | 'lg';
-
-export interface ItemAvatarProps {
-  /** Type of entity */
-  type: EntityType;
-  /** Status - shows completed badge if 'completed' */
+interface ItemAvatarProps {
+  type: 'car' | 'motorcycle' | 'truck' | 'van' | 'client';
   status?: 'completed';
-  /** Size variant */
-  size?: AvatarSize;
-  /** Show completed badge overlay */
+  size?: 'sm' | 'md' | 'lg';
   showBadge?: boolean;
 }
 
-// Type-specific gradient backgrounds
-const typeGradients: Record<EntityType, string> = {
-  car: 'bg-gradient-to-br from-blue-500/10 to-blue-600/20',
-  motorcycle: 'bg-gradient-to-br from-orange-500/10 to-orange-600/20',
-  truck: 'bg-gradient-to-br from-purple-500/10 to-purple-600/20',
-  van: 'bg-gradient-to-br from-green-500/10 to-green-600/20',
-  client: 'bg-gradient-to-br from-neutral-400/10 to-neutral-500/20',
-};
-
-// Type-specific icon colors
-const typeColors: Record<EntityType, string> = {
-  car: 'text-blue-500',
-  motorcycle: 'text-orange-500',
-  truck: 'text-purple-500',
-  van: 'text-green-500',
-  client: 'text-neutral-500',
-};
-
-/**
- * ItemAvatar - Visual indicator for entity type and status
- * 
- * @example
- * <ItemAvatar type="car" />
- * <ItemAvatar type="motorcycle" status="completed" showBadge />
- * <ItemAvatar type="client" size="lg" />
- */
-const ItemAvatar: React.FC<ItemAvatarProps> = ({
-  type,
-  status,
-  size = 'md',
-  showBadge = true,
+const ItemAvatar: React.FC<ItemAvatarProps> = ({ 
+  type, 
+  status, 
+  size = 'md', 
+  showBadge = true 
 }) => {
   const sizeClasses = {
-    sm: 'w-12 h-12', // 48px
-    md: 'w-14 h-14', // 56px
-    lg: 'w-16 h-16', // 64px
+    sm: 'w-12 h-12',
+    md: 'w-14 h-14',
+    lg: 'w-16 h-16',
   };
 
   const iconSizes = {
@@ -59,44 +27,71 @@ const ItemAvatar: React.FC<ItemAvatarProps> = ({
     lg: 'lg' as const,
   };
 
-  const showCompletedBadge = status === 'completed' && showBadge;
+  // Type-specific gradient backgrounds
+  const getTypeStyles = () => {
+    switch (type) {
+      case 'car':
+        return {
+          background: 'bg-gradient-to-br from-blue-500/10 to-blue-600/20',
+          iconColor: 'text-blue-600 dark:text-blue-400',
+        };
+      case 'motorcycle':
+        return {
+          background: 'bg-gradient-to-br from-red-500/15 to-orange-500/25 dark:from-red-400/20 dark:to-orange-400/30',
+          iconColor: 'text-red-600 dark:text-red-400',
+        };
+      case 'truck':
+        return {
+          background: 'bg-gradient-to-br from-purple-500/10 to-purple-600/20',
+          iconColor: 'text-purple-600 dark:text-purple-400',
+        };
+      case 'van':
+        return {
+          background: 'bg-gradient-to-br from-emerald-500/10 to-emerald-600/20',
+          iconColor: 'text-emerald-600 dark:text-emerald-400',
+        };
+      case 'client':
+        return {
+          background: 'bg-gradient-to-br from-neutral-500/10 to-neutral-600/20',
+          iconColor: 'text-neutral-600 dark:text-neutral-400',
+        };
+      default:
+        return {
+          background: 'bg-gradient-to-br from-neutral-500/10 to-neutral-600/20',
+          iconColor: 'text-neutral-600 dark:text-neutral-400',
+        };
+    }
+  };
+
+  const typeStyles = getTypeStyles();
 
   return (
-    <div className="relative flex-shrink-0">
-      <div
+    <div className="relative">
+      <div 
         className={`
-          ${sizeClasses[size]}
-          rounded-[14px]
-          ${typeGradients[type]}
-          flex items-center justify-center
-          transition-all duration-200
+          ${sizeClasses[size]} 
+          ${typeStyles.background}
+          rounded-2xl 
+          flex 
+          items-center 
+          justify-center 
+          transition-all 
+          duration-200
         `}
       >
-        <IconLoader
-          name={type}
-          size={iconSizes[size]}
-          className={typeColors[type]}
-          aria-label={`${type} icon`}
+        <VehicleIcons 
+          type={type} 
+          size={iconSizes[size]} 
+          className={typeStyles.iconColor}
         />
       </div>
-
-      {/* Completed Badge Overlay */}
-      {showCompletedBadge && (
-        <div
-          className="
-            absolute -top-1 -right-1
-            w-5 h-5
-            rounded-full
-            bg-emerald-500
-            border-2 border-white dark:border-neutral-900
-            flex items-center justify-center
-            shadow-elevation-2
-          "
-          aria-label="Completed"
-        >
-          <IconLoader
-            name="check"
-            size="sm"
+      
+      {/* Completed Badge */}
+      {status === 'completed' && showBadge && (
+        <div className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center border-2 border-white dark:border-gray-800">
+          <IconLoader 
+            name="check" 
+            size="sm" 
             className="text-white w-3 h-3"
           />
         </div>

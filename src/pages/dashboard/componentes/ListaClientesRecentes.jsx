@@ -32,7 +32,9 @@ const ListaClientesRecentes = ({ clientes, isLoading = false }) => {
 
   // Handler de click no cliente
   const handleClienteClick = (clienteId) => {
-    navigate(`/clients/${clienteId}`);
+    // Por enquanto, navega para a página de clientes
+    // TODO: Implementar página de detalhes do cliente
+    navigate('/clients');
   };
 
   if (isLoading) {
@@ -88,7 +90,7 @@ const ListaClientesRecentes = ({ clientes, isLoading = false }) => {
               }}
               whileHover={{ scale: 1.02, x: 4 }}
               onClick={() => handleClienteClick(cliente.id)}
-              className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 cursor-pointer group"
+              className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200 cursor-pointer group"
             >
               {/* Avatar */}
               <div className="relative flex-shrink-0">

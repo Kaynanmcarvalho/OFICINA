@@ -55,7 +55,7 @@ const FerramentasEmUso = ({ ferramentas, isLoading = false }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-white/20 dark:border-gray-700/20"
+      className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-200 dark:border-gray-700"
     >
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
@@ -94,7 +94,7 @@ const FerramentasEmUso = ({ ferramentas, isLoading = false }) => {
                 animate: { opacity: 1, scale: 1 }
               }}
               whileHover={{ scale: 1.03, y: -2 }}
-              className="bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50 dark:border-gray-600/50 hover:border-orange-300 dark:hover:border-orange-600 transition-all duration-200"
+              className="bg-white dark:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600 hover:border-orange-300 dark:hover:border-orange-600 transition-all duration-200"
             >
               {/* Header da Ferramenta */}
               <div className="flex items-start justify-between mb-3">
