@@ -113,27 +113,11 @@ export function SidebarAppleLike({
         className={`
           fixed left-0 top-0 h-screen z-30
           flex flex-col
-          bg-white/70 dark:bg-gray-950/70
-          backdrop-blur-2xl backdrop-saturate-200
-          border-r border-gray-200/30 dark:border-gray-800/30
-          shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]
+          sidebar-premium
           focus-within:ring-2 focus-within:ring-orange-500/20
           ${className}
         `}
       >
-      {/* Efeito glassmorphism adicional - macOS Sonoma style */}
-      <div className="
-        absolute inset-0 -z-10
-        bg-gradient-to-br from-white/95 via-gray-50/90 to-gray-100/85
-        dark:from-gray-950/95 dark:via-gray-900/90 dark:to-gray-950/85
-      " />
-      
-      {/* Subtle gradient overlay */}
-      <div className="
-        absolute inset-0 -z-10
-        bg-gradient-to-b from-transparent via-transparent to-gray-50/50
-        dark:to-gray-950/50
-      " />
 
       {/* Botão de toggle */}
       <SidebarToggleButton 

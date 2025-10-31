@@ -51,12 +51,7 @@ const Navbar = ({ onMenuClick, onLogout }) => {
       className="sticky top-0 z-40 w-full"
     >
       {/* Glassmorphism Container */}
-      <div className="relative w-full">
-        {/* Background com blur */}
-        <div className="absolute inset-0 bg-white/70 dark:bg-[#14161D]/80 backdrop-blur-2xl border-b border-gray-200/50 dark:border-white/[0.08]" />
-        
-        {/* Gradient overlay sutil */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/50 to-transparent dark:from-[#181A20]/50 dark:to-transparent pointer-events-none" />
+      <div className="relative w-full navbar-premium">
 
         {/* Content */}
         <div className="relative w-full px-4 sm:px-6 lg:px-8">
@@ -218,7 +213,7 @@ const Navbar = ({ onMenuClick, onLogout }) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="relative p-2 sm:p-2.5 lg:p-3 rounded-xl bg-gray-100/80 dark:bg-[#181A20]/80 hover:bg-gray-200/80 dark:hover:bg-[#1C1E26]/90 backdrop-blur-sm transition-all duration-300 group border border-transparent dark:border-white/[0.08]"
+                className="relative p-2 sm:p-2.5 lg:p-3 rounded-xl navbar-pill-button group"
                 aria-label="Pesquisar"
               >
                 <Search className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-[#A7A8AE] group-hover:text-gray-900 dark:group-hover:text-[#E8E8EA] transition-colors" />
@@ -232,7 +227,7 @@ const Navbar = ({ onMenuClick, onLogout }) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleTheme}
-                className="relative p-2 sm:p-2.5 lg:p-3 rounded-xl bg-gray-100/80 dark:bg-[#181A20]/80 hover:bg-gray-200/80 dark:hover:bg-[#1C1E26]/90 backdrop-blur-sm transition-all duration-300 group overflow-hidden border border-transparent dark:border-white/[0.08]"
+                className="relative p-2 sm:p-2.5 lg:p-3 rounded-xl navbar-pill-button group overflow-hidden"
                 aria-label="Alternar tema"
               >
                 <AnimatePresence mode="wait">

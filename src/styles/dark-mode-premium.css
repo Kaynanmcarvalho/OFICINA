@@ -1,0 +1,457 @@
+/* ========================================
+   TORQ DARK MODE PREMIUM
+   Apple-inspired Dark Theme
+   ======================================== */
+
+:root.dark {
+  /* Background Layers */
+  --bg-base: #0C0D10;
+  --bg-elevated: #15171B;
+  --bg-surface: #1D1F24;
+  --bg-glass: rgba(25, 26, 31, 0.75);
+  
+  /* Surface Layers */
+  --surface-primary: #15171B;
+  --surface-secondary: #1D1F24;
+  --surface-tertiary: #25272C;
+  --surface-glass: rgba(29, 31, 36, 0.85);
+  --surface-elevated: #2A2C31;
+  
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.12);
+  --border-focus: rgba(0, 122, 255, 0.5);
+  
+  /* Accent Colors */
+  --accent-primary: #007AFF;
+  --accent-primary-hover: #0070E0;
+  --accent-primary-pressed: #0062CC;
+  --accent-glow: rgba(0, 122, 255, 0.35);
+  --accent-glow-strong: rgba(0, 122, 255, 0.5);
+  
+  /* Text Colors */
+  --text-primary: #EAEAEA;
+  --text-secondary: #9DA0A6;
+  --text-tertiary: #6E7178;
+  --text-muted: #5A5D63;
+  --text-disabled: #3F4147;
+  
+  /* Semantic Colors */
+  --success: #32D74B;
+  --success-glow: rgba(50, 215, 75, 0.3);
+  --warning: #FFD60A;
+  --warning-glow: rgba(255, 214, 10, 0.3);
+  --error: #FF453A;
+  --error-glow: rgba(255, 69, 58, 0.3);
+  --info: #64D2FF;
+  --info-glow: rgba(100, 210, 255, 0.3);
+  
+  /* Orange Brand */
+  --orange-primary: #F28C1D;
+  --orange-hover: #E07D15;
+  --orange-pressed: #CC6F12;
+  --orange-glow: rgba(242, 140, 29, 0.35);
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 12px rgba(0, 122, 255, 0.3);
+  --shadow-glow-strong: 0 0 24px rgba(0, 122, 255, 0.5);
+  --shadow-inner: inset 0 1px 2px rgba(255, 255, 255, 0.06);
+}
+
+/* ========================================
+   DARK MODE BODY & BACKGROUND
+   ======================================== */
+
+.dark body {
+  background: var(--bg-base);
+  background-image: 
+    radial-gradient(ellipse at 20% 10%, rgba(0, 122, 255, 0.08) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 90%, rgba(242, 140, 29, 0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 50%, rgba(21, 23, 27, 0.9) 0%, var(--bg-base) 60%);
+  color: var(--text-primary);
+}
+
+/* ========================================
+   GLASSMORPHISM PREMIUM
+   ======================================== */
+
+.dark .glass-premium {
+  background: var(--surface-glass);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-md), var(--shadow-inner);
+}
+
+.dark .glass-premium:hover {
+  background: rgba(29, 31, 36, 0.9);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-lg), var(--shadow-inner);
+}
+
+.dark .glass-premium-elevated {
+  background: rgba(42, 44, 49, 0.9);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-lg), inset 0 1px 2px rgba(255, 255, 255, 0.08);
+}
+
+/* ========================================
+   BUTTONS PREMIUM
+   ======================================== */
+
+.dark .btn-premium {
+  background: var(--surface-secondary);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+  transition: all 160ms cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.dark .btn-premium:hover {
+  background: var(--surface-tertiary);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.dark .btn-premium:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.dark .btn-premium-primary {
+  background: var(--accent-primary);
+  border: 1px solid rgba(0, 122, 255, 0.3);
+  color: white;
+  box-shadow: 0 4px 16px var(--accent-glow);
+}
+
+.dark .btn-premium-primary:hover {
+  background: var(--accent-primary-hover);
+  box-shadow: 0 6px 24px var(--accent-glow-strong);
+  transform: translateY(-1px);
+}
+
+.dark .btn-premium-primary:active {
+  background: var(--accent-primary-pressed);
+  transform: translateY(0);
+}
+
+/* ========================================
+   CARDS PREMIUM
+   ======================================== */
+
+.dark .card-premium {
+  background: var(--surface-glass);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md), var(--shadow-inner);
+  transition: all 300ms cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.dark .card-premium:hover {
+  background: rgba(29, 31, 36, 0.9);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-lg), inset 0 1px 2px rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.dark .card-premium-elevated {
+  background: rgba(42, 44, 49, 0.85);
+  box-shadow: var(--shadow-lg), inset 0 1px 2px rgba(255, 255, 255, 0.08);
+}
+
+/* Reflexo de vidro no topo dos cards */
+.dark .card-premium::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  border-radius: 16px 16px 0 0;
+}
+
+/* ========================================
+   INPUTS PREMIUM
+   ======================================== */
+
+.dark .input-premium {
+  background: var(--surface-primary);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: all 160ms cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.dark .input-premium:hover {
+  border-color: var(--border-strong);
+}
+
+.dark .input-premium:focus {
+  background: var(--surface-secondary);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1), inset 0 1px 2px rgba(0, 0, 0, 0.2);
+  outline: none;
+}
+
+.dark .input-premium::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* ========================================
+   NAVBAR PREMIUM
+   ======================================== */
+
+.dark .navbar-premium {
+  background: rgba(21, 23, 27, 0.8);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-bottom: 1px solid var(--border-default);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04), 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Gradiente sutil no topo */
+.dark .navbar-premium::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+}
+
+/* ========================================
+   SIDEBAR PREMIUM
+   ======================================== */
+
+.dark .sidebar-premium {
+  background: rgba(18, 20, 25, 0.85);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-right: 1px solid var(--border-default);
+  box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.dark .sidebar-item {
+  color: var(--text-secondary);
+  transition: all 160ms cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.dark .sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.dark .sidebar-item.active {
+  background: rgba(0, 122, 255, 0.15);
+  color: var(--accent-primary);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* ========================================
+   SCROLLBAR PREMIUM
+   ======================================== */
+
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.15));
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.2));
+}
+
+/* ========================================
+   GLOW EFFECTS
+   ======================================== */
+
+.dark .glow-blue {
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.dark .glow-blue-strong {
+  box-shadow: 0 0 24px var(--accent-glow-strong);
+}
+
+.dark .glow-orange {
+  box-shadow: 0 0 12px var(--orange-glow);
+}
+
+.dark .glow-success {
+  box-shadow: 0 0 12px var(--success-glow);
+}
+
+.dark .glow-error {
+  box-shadow: 0 0 12px var(--error-glow);
+}
+
+/* ========================================
+   DIVIDERS PREMIUM
+   ======================================== */
+
+.dark .divider-premium {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-default), transparent);
+}
+
+.dark .divider-premium-vertical {
+  width: 1px;
+  background: linear-gradient(180deg, transparent, var(--border-default), transparent);
+}
+
+/* ========================================
+   TOOLTIPS & POPOVERS
+   ======================================== */
+
+.dark .tooltip-premium {
+  background: rgba(42, 44, 49, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-lg), var(--shadow-inner);
+}
+
+.dark .popover-premium {
+  background: rgba(29, 31, 36, 0.95);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-xl), var(--shadow-inner);
+}
+
+/* ========================================
+   MODALS PREMIUM
+   ======================================== */
+
+.dark .modal-overlay {
+  background: rgba(12, 13, 16, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.dark .modal-premium {
+  background: var(--surface-glass);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-xl), var(--shadow-inner);
+}
+
+/* ========================================
+   BADGES & TAGS
+   ======================================== */
+
+.dark .badge-premium {
+  background: var(--surface-tertiary);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.dark .badge-premium-primary {
+  background: rgba(0, 122, 255, 0.15);
+  border: 1px solid rgba(0, 122, 255, 0.3);
+  color: var(--accent-primary);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* ========================================
+   TABLES PREMIUM
+   ======================================== */
+
+.dark .table-premium {
+  background: var(--surface-glass);
+  border: 1px solid var(--border-default);
+}
+
+.dark .table-premium thead {
+  background: var(--surface-secondary);
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.dark .table-premium tbody tr {
+  border-bottom: 1px solid var(--border-subtle);
+  transition: all 160ms cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.dark .table-premium tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* ========================================
+   ANIMATIONS & TRANSITIONS
+   ======================================== */
+
+.dark .fade-in {
+  animation: fadeIn 300ms cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dark .scale-in {
+  animation: scaleIn 200ms cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ========================================
+   FOCUS STATES
+   ======================================== */
+
+.dark *:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ========================================
+   SELECTION
+   ======================================== */
+
+.dark ::selection {
+  background: rgba(0, 122, 255, 0.3);
+  color: var(--text-primary);
+}

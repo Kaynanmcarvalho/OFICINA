@@ -114,7 +114,7 @@ const DashboardPage = () => {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-x-hidden" style={{ width: '100%', maxWidth: '100vw' }}>
+      <div className="min-h-screen dashboard-premium-bg overflow-x-hidden" style={{ width: '100%', maxWidth: '100vw' }}>
         <div className="w-full mx-auto space-y-4 md:space-y-6 dashboard-no-transform px-3 md:px-4 lg:px-6 py-4 md:py-6" style={{ maxWidth: '100%', boxSizing: 'border-box' }}>
         
         {/* Header */}
