@@ -11,6 +11,8 @@ This implementation plan breaks down the premium redesign of "Registros Recentes
 
 
 
+
+
   - Create directory structure `/src/components/recent/` for all new components
   - Create `/src/components/recent/design-tokens.json` with complete color, typography, spacing, radius, shadow, and animation token definitions
   - Create `/src/components/recent/tailwind.config.recent.js` extending base Tailwind config with custom tokens
@@ -20,6 +22,8 @@ This implementation plan breaks down the premium redesign of "Registros Recentes
 
   - Create `/src/icons/recent/` directory for optimized SVG icons
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
+
+
 
 
 
@@ -45,9 +49,11 @@ This implementation plan breaks down the premium redesign of "Registros Recentes
 
 
 
+
   
   - [ ] 2.2 Create action and UI icons
     - Create icons for: search, filter, more-vertical, external-link, edit, trash, check, x-close
+
 
 
 
@@ -63,12 +69,18 @@ This implementation plan breaks down the premium redesign of "Registros Recentes
     - Support size prop (sm: 20px, md: 24px, lg: 28px)
 
 
+
+
+
+
     - Support className prop for custom styling
     - _Requirements: 5.1, 5.2_
 
 - [ ] 3. Build primitive components
   - [ ] 3.1 Create ItemAvatar component
     - Write `/src/components/recent/ItemAvatar.tsx` with props: type, status, size, showBadge
+
+
 
 
     - Implement 56px container with 14px border radius and gradient background
@@ -79,6 +91,8 @@ This implementation plan breaks down the premium redesign of "Registros Recentes
   
   - [-] 3.2 Create StatusPill component
 
+
+
     - Write `/src/components/recent/StatusPill.tsx` with props: status, showGlow, size
     - Implement pill shape (14px border radius, 12px horizontal padding, 6px vertical padding)
     - Map status to colors: in_progress (amber #F59E0B), completed (emerald #10B981), pending (blue #3B82F6), cancelled (red #EF4444)
@@ -87,24 +101,33 @@ This implementation plan breaks down the premium redesign of "Registros Recentes
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6_
 
 
+
+
+
   
   - [ ] 3.3 Create ItemMetaRow component
     - Write `/src/components/recent/ItemMetaRow.tsx` with props: plate, model, date, tags, showRelativeTime
     - Display metadata items separated by "•" with 12px gap
     - Format plate in uppercase with monospace font
+
+
     - Format date using Intl.DateTimeFormat with pt-BR locale
     - Display relative time ("há 5 minutos") for dates within last 24 hours when showRelativeTime is true
     - Render tags as small pills with 6px border radius
     - _Requirements: 18.1, 18.2, 18.3, 18.5_
 
 
-- [ ] 4. Build ItemActions component with context menu
+- [x] 4. Build ItemActions component with context menu
+
   - [ ] 4.1 Create ItemActions component
     - Write `/src/components/recent/ItemActions.tsx` with props: onOpen, onEdit, onMore, disabled
     - Render three icon buttons (36px × 36px, 10px border radius) for open, edit, and more actions
     - Apply hover state: background visible, scale(1.1), 150ms transition
     - Apply active state: scale(0.95)
+
     - Add tooltips with 500ms delay showing action labels
+
+
     - _Requirements: 10.1, 10.2, 10.3, 10.5_
   
   - [ ] 4.2 Create ContextMenu component
@@ -112,6 +135,7 @@ This implementation plan breaks down the premium redesign of "Registros Recentes
     - Implement 200px width menu with 12px border radius
     - Apply glassmorphism: backdrop-blur 16px, translucent background
     - Render menu items (40px height, 12px padding) with hover states
+
     - Support keyboard navigation (arrow keys, enter, escape)
     - Position menu at cursor or relative to trigger element
     - _Requirements: 10.4, 17.1, 17.2_
@@ -121,6 +145,7 @@ This implementation plan breaks down the premium redesign of "Registros Recentes
     - Populate menu with options: "Duplicar", "Marcar como concluído", "Excluir"
     - Close menu when clicking outside or pressing Escape
     - Invoke appropriate callbacks when menu items are selected
+
     - _Requirements: 10.3, 10.4_
 
 - [ ] 5. Build RecentItem card component
@@ -128,6 +153,7 @@ This implementation plan breaks down the premium redesign of "Registros Recentes
     - Write `/src/components/recent/RecentItem.tsx` with props: item, isSelected, onSelect, onClick, onAction, variant, showCheckbox, delay
     - Implement 88px height card with 20px border radius
     - Apply glassmorphism: rgba(255,255,255,0.8) background (light), rgba(28,28,30,0.8) (dark), 12px backdrop-blur
+
     - Apply 1px border with rgba(0,0,0,0.06) (light), rgba(255,255,255,0.1) (dark)
     - Apply shadow: 0 4px 12px rgba(0,0,0,0.08)
     - Layout: flex row with 16px horizontal padding, 12px vertical padding
@@ -135,13 +161,16 @@ This implementation plan breaks down the premium redesign of "Registros Recentes
   
   - [ ] 5.2 Add content sections to RecentItem
     - Render SelectionCheckbox (24px) on left when showCheckbox is true
+
     - Render ItemAvatar (56px) with item.type and item.status
+
     - Render content column (flex-1) with primaryText (16px semibold), secondaryText (14px regular)
     - Render ItemMetaRow with plate, model, date, tags
     - Render StatusPill with item.status
     - Render ItemActions with callbacks
     - Apply text truncation with ellipsis to prevent overflow
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
+
   
   - [ ] 5.3 Implement RecentItem interactions
     - Add hover state: translateY(-2px), shadow 0 8px 24px rgba(0,0,0,0.12), 200ms transition with apple easing
@@ -150,7 +179,9 @@ This implementation plan breaks down the premium redesign of "Registros Recentes
     - Add keyboard support: Enter/Space to activate
     - Apply ARIA attributes: role="article", aria-label with item description
     - _Requirements: 7.1, 7.2, 17.1, 17.2, 17.3_
+
   
+
   - [ ] 5.4 Add Framer Motion animations to RecentItem
     - Wrap component with motion.div
     - Apply entry animation: opacity 0 → 1, translateY(8px) → 0, 260ms duration with apple easing
@@ -158,6 +189,7 @@ This implementation plan breaks down the premium redesign of "Registros Recentes
     - Apply exit animation: opacity 1 → 0, translateY(-8px), 150ms duration
     - Respect prefers-reduced-motion by disabling animations when set
     - _Requirements: 7.3, 7.5_
+
 
 
 - [ ] 6. Create loading and empty states
@@ -170,11 +202,14 @@ This implementation plan breaks down the premium redesign of "Registros Recentes
   
   - [ ] 6.2 Create EmptyState component
     - Write `/src/components/recent/EmptyState.tsx` with props: searchQuery, hasFilters, onClearFilters, onCreateNew
+
     - Center content vertically and horizontally with flex layout
     - Display icon (64px) with muted color (0.2 opacity)
     - Display title (20px, semibold, 0.8 opacity) and description (15px, regular, 0.5 opacity)
     - Show "Nenhum registro encontrado" when no data and no filters
+
     - Show "Nenhum resultado para os filtros aplicados" with "Limpar filtros" button when filters are active
+
     - Show "Criar novo registro" button when appropriate
     - _Requirements: 14.1, 14.2, 14.3, 14.4, 14.5_
 
@@ -183,30 +218,36 @@ This implementation plan breaks down the premium redesign of "Registros Recentes
     - Write `/src/components/recent/SearchBar.tsx` with props: value, onChange, placeholder, debounceMs
     - Implement 48px height input with 12px border radius
     - Apply glassmorphism background and 12px backdrop-blur
+
     - Position search icon (20px) at left with 16px offset
     - Implement debounced onChange with 300ms default delay using useMemo or custom hook
     - Apply focus state: accent border color, ring with 0.1 opacity
     - Add ARIA attributes: role="searchbox", aria-label="Buscar registros"
     - _Requirements: 8.1, 15.4, 17.3_
+
   
   - [ ] 7.2 Create RecentFilters component
     - Write `/src/components/recent/RecentFilters.tsx` with props: filters, onChange, onClose
     - Implement responsive grid: 3 columns on desktop (lg+), 1 column on mobile
     - Create three filter dropdowns: status, type, period
     - Status options: "Todos", "Em andamento", "Concluído", "Pendente", "Cancelado"
+
     - Type options: "Todos", "Carro", "Moto", "Caminhão", "Van"
+
     - Period options: "Todos", "Hoje", "Ontem", "Últimos 7 dias", "Últimos 30 dias"
     - Apply glassmorphism: 0.9 opacity background, 16px backdrop-blur
     - Add "Aplicar" and "Limpar" action buttons
     - _Requirements: 8.2, 8.3, 8.4_
   
-  - [ ] 7.3 Add animations to RecentFilters
+  - [x] 7.3 Add animations to RecentFilters
+
     - Wrap with AnimatePresence and motion.div
     - Entry animation: opacity 0 → 1, translateY(-10px) → 0, 200ms
     - Exit animation: opacity 1 → 0, translateY(0) → -10px, 150ms
     - _Requirements: 7.3_
 
-- [ ] 8. Implement bulk selection and actions
+- [x] 8. Implement bulk selection and actions
+
   - [ ] 8.1 Create BulkActions toolbar component
     - Write `/src/components/recent/BulkActions.tsx` with props: selectedCount, onMarkComplete, onDelete, onCancel
     - Implement 64px height toolbar with 16px border radius
@@ -214,6 +255,7 @@ This implementation plan breaks down the premium redesign of "Registros Recentes
     - Display selection count: "X itens selecionados"
     - Render action buttons: "Marcar como concluído" (primary), "Excluir" (secondary)
     - Layout: flex with space-between, align-center
+
     - _Requirements: 11.3, 11.4_
   
   - [ ] 8.2 Add animations to BulkActions
@@ -258,13 +300,16 @@ This implementation plan breaks down the premium redesign of "Registros Recentes
     - When items.length is 0 and not loading, render EmptyState component
     - Pass searchQuery and hasFilters props to EmptyState
     - Animate transition from skeleton to content with 200ms fade
+
     - _Requirements: 13.5_
+
 
 - [ ] 10. Create PreviewPanel component
   - [ ] 10.1 Create PreviewPanel structure
     - Write `/src/components/recent/PreviewPanel.tsx` with props: item, onClose, onEdit, onDelete, onDuplicate
     - Implement fixed positioning on right side with 38% width (min 400px, max 600px)
     - Apply glassmorphism: 0.95 opacity background, 20px backdrop-blur
+
     - Add 1px left border and shadow: -8px 0 32px rgba(0,0,0,0.1)
     - Create three sections: header, content (scrollable), footer with actions
     - _Requirements: 12.1, 12.2_
@@ -274,6 +319,7 @@ This implementation plan breaks down the premium redesign of "Registros Recentes
     - Content: display all item metadata, status history, related entities
     - Use ItemAvatar, StatusPill, and ItemMetaRow components for consistency
     - Footer: render action buttons (Editar, Duplicar, Marcar como concluído, Excluir)
+
     - _Requirements: 12.2, 12.3_
   
   - [ ] 10.3 Add PreviewPanel animations
@@ -283,6 +329,7 @@ This implementation plan breaks down the premium redesign of "Registros Recentes
     - Backdrop animation: opacity 0 → 1 (200ms) on enter, 1 → 0 (150ms) on exit
     - _Requirements: 12.1, 12.5_
   
+
   - [ ] 10.4 Implement PreviewPanel interactions
     - Close panel when clicking backdrop overlay
     - Close panel when pressing Escape key
