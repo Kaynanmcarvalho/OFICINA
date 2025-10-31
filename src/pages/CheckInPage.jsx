@@ -75,7 +75,7 @@ const CheckInPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-black dark:to-gray-800 transition-colors duration-500">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-black dark:to-gray-800 transition-colors duration-500 w-full">
       {/* Fundo animado sutil */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none checkin-page-container">
         <motion.div
@@ -95,7 +95,7 @@ const CheckInPage = () => {
         />
       </div>
 
-      <div className="relative px-6 sm:px-8 lg:px-12 py-12 space-y-12 checkin-page-container">
+      <div className="relative px-6 sm:px-8 lg:px-12 py-12 space-y-12 checkin-page-container w-full">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Moon, Sun, User, LogOut, Settings, UserCircle, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -59,7 +60,7 @@ const Navbar = ({ onMenuClick, onLogout }) => {
 
         {/* Content */}
         <div className="relative w-full px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-20 max-w-full">
+          <div className="flex items-center justify-between h-16 lg:h-20 w-full">
             
             {/* Logo Section - Esquerda */}
             <motion.div
@@ -210,7 +211,6 @@ const Navbar = ({ onMenuClick, onLogout }) => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
               className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3 flex-shrink-0 relative z-50"
-              style={{ overflow: 'visible' }}
             >
               
               {/* Search Button */}

@@ -67,14 +67,27 @@
   * {
     @apply border-gray-200 dark:border-gray-800;
   }
+  
+  #root {
+    overflow-x: hidden !important;
+    width: 100vw;
+    max-width: 100vw;
+  }
+  
+  /* Garantir que todos os containers principais ocupem 100% da largura */
+  #root > * {
+    width: 100%;
+    max-width: 100%;
+  }
 
   body {
     @apply bg-background text-foreground font-sans;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+    overflow-x: hidden !important;
     max-width: 100vw;
+    width: 100%;
   }
   
   /* Apple Premium Dark Mode - Background com profundidade */
@@ -86,8 +99,9 @@
 
   html {
     scroll-behavior: smooth;
-    overflow-x: hidden;
+    overflow-x: hidden !important;
     max-width: 100vw;
+    width: 100%;
   }
   
   /* Smooth scrolling para dark mode */
@@ -292,6 +306,12 @@
 }
 
 @layer utilities {
+  /* Prevent horizontal overflow */
+  .prevent-overflow {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  
   .text-balance {
     text-wrap: balance;
   }

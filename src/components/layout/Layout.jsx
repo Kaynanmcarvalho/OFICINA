@@ -60,7 +60,7 @@ const Layout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-dark-bg overflow-x-hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-bg overflow-x-hidden max-w-full w-full">
       {/* Gradient radial sutil para profundidade no dark mode */}
       <div className="fixed inset-0 pointer-events-none dark:block hidden">
         <div className="absolute inset-0 bg-gradient-radial from-dark-surface/20 via-transparent to-transparent" />
@@ -82,14 +82,14 @@ const Layout = () => {
         variants={contentVariants}
         initial={isExpanded ? 'expanded' : 'collapsed'}
         animate={isExpanded ? 'expanded' : 'collapsed'}
-        className="min-h-screen w-full flex flex-col overflow-x-hidden"
+        className="min-h-screen flex flex-col"
         style={{
           // Força aceleração por GPU
           transform: 'translateZ(0)',
           backfaceVisibility: 'hidden',
           perspective: 1000,
           willChange: 'margin-left',
-          maxWidth: '100vw'
+          width: isExpanded ? 'calc(100vw - 240px)' : 'calc(100vw - 72px)'
         }}
       >
         {/* Navbar Premium */}
@@ -104,7 +104,7 @@ const Layout = () => {
           variants={innerContentVariants}
           initial="expanded"
           animate={isExpanded ? 'expanded' : 'collapsed'}
-          className="flex-1 p-6 overflow-auto"
+          className="flex-1 p-6 overflow-auto w-full"
           style={{
             transformOrigin: 'left center'
           }}
