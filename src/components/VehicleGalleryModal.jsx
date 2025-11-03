@@ -122,7 +122,7 @@ const VehicleGalleryModal = ({ isOpen, onClose, client, vehicles = [] }) => {
                       Veículos de {client?.name}
                     </h2>
                     <p className="text-neutral-500 dark:text-neutral-400">
-                      {vehicles.length} {vehicles.length === 1 ? 'veículo cadastrado' : 'veículos cadastrados'}
+                      {String(vehicles.length)} {vehicles.length === 1 ? 'veículo cadastrado' : 'veículos cadastrados'}
                     </p>
                   </div>
                 </div>
@@ -138,7 +138,7 @@ const VehicleGalleryModal = ({ isOpen, onClose, client, vehicles = [] }) => {
                         <ChevronLeft className="w-5 h-5" />
                       </button>
                       <span className="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
-                        {currentIndex + 1} / {vehicles.length}
+                        {String(currentIndex + 1)} / {String(vehicles.length)}
                       </span>
                       <button
                         onClick={nextVehicle}
@@ -182,10 +182,7 @@ const VehicleGalleryModal = ({ isOpen, onClose, client, vehicles = [] }) => {
                           className="transform scale-150"
                         />
                         <motion.div
-                          className="absolute -inset-4 rounded-3xl opacity-20"
-                          style={{
-                            background: `linear-gradient(135deg, ${getTypeColor(selectedVehicle?.type).replace('from-', '').replace(' to-', ', ')})`,
-                          }}
+                          className={`absolute -inset-4 rounded-3xl opacity-20 bg-gradient-to-br ${getTypeColor(selectedVehicle?.type)}`}
                           animate={{
                             scale: [1, 1.05, 1],
                           }}
@@ -226,7 +223,7 @@ const VehicleGalleryModal = ({ isOpen, onClose, client, vehicles = [] }) => {
                               {info.label}
                             </p>
                             <p className="text-sm font-bold text-neutral-900 dark:text-neutral-100 mt-1">
-                              {info.value}
+                              {String(info.value || '')}
                             </p>
                           </motion.div>
                         ))}
@@ -272,7 +269,7 @@ const VehicleGalleryModal = ({ isOpen, onClose, client, vehicles = [] }) => {
                                 {vehicle.brand} {vehicle.model}
                               </p>
                               <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                                {vehicle.plate} • {vehicle.year}
+                                {vehicle.plate || 'Sem placa'} • {vehicle.year || 'Ano não informado'}
                               </p>
                             </div>
                             {currentIndex === index && (
@@ -306,7 +303,7 @@ const VehicleGalleryModal = ({ isOpen, onClose, client, vehicles = [] }) => {
                 </div>
                 
                 <div className="text-sm text-neutral-500 dark:text-neutral-400">
-                  {vehicles.length} {vehicles.length === 1 ? 'veículo' : 'veículos'} • {client?.name}
+                  {String(vehicles.length)} {vehicles.length === 1 ? 'veículo' : 'veículos'} • {client?.name}
                 </div>
               </div>
             </div>
