@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, User, Phone, Mail, CreditCard, MapPin, Car, FileText, ChevronRight, ChevronLeft, Check, Search as SearchIcon, Loader, Building2, AlertCircle, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createClient } from '../../../services/clientService';
@@ -16,37 +16,97 @@ import { useClientStore } from '../../../store/clientStore';
 import { useVehicleStore } from '../../../store/vehicleStore';
 import { consultarCNPJ, validarSituacaoEmpresa } from '../../../services/cnpjService';
 
-const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
+const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existingClient = null }) => {
     const { clients } = useClientStore();
     const { createVehicle } = useVehicleStore();
     const [currentStep, setCurrentStep] = useState(1);
-    const [personType, setPersonType] = useState('fisica'); // 'fisica' ou 'juridica'
+    const [personType, setPersonType] = useState(existingClient?.personType || 'fisica'); // 'fisica' ou 'juridica'
     const [formData, setFormData] = useState({
-        name: initialName,
-        phone: '',
-        cpf: '',
-        cnpj: '',
-        inscricaoEstadual: '',
-        indicadorIE: '1', // 1=Contribuinte ICMS, 2=Isento, 9=Não Contribuinte
-        razaoSocial: '',
-        nomeFantasia: '',
-        email: '',
-        birthDate: '',
-        address: '',
-        number: '',
-        complement: '',
-        neighborhood: '',
-        city: '',
-        state: '',
-        zipCode: '',
-        vehicles: [],
-        observations: ''
+        name: existingClient?.name || initialName,
+        phone: existingClient?.phone || '',
+        cpf: existingClient?.cpf || '',
+        cnpj: existingClient?.cnpj || '',
+        inscricaoEstadual: existingClient?.inscricaoEstadual || '',
+        indicadorIE: existingClient?.indicadorIE || '1', // 1=Contribuinte ICMS, 2=Isento, 9=Não Contribuinte
+        razaoSocial: existingClient?.razaoSocial || '',
+        nomeFantasia: existingClient?.nomeFantasia || '',
+        email: existingClient?.email || '',
+        birthDate: existingClient?.birthDate || '',
+        address: existingClient?.address || '',
+        number: existingClient?.number || '',
+        hasNumber: existingClient?.hasNumber !== false, // true por padrão
+        complement: existingClient?.complement || '',
+        neighborhood: existingClient?.neighborhood || '',
+        city: existingClient?.city || '',
+        state: existingClient?.state || '',
+        zipCode: existingClient?.zipCode || '',
+        vehicles: existingClient?.vehicles || [],
+        observations: existingClient?.observations || ''
     });
 
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoadingCep, setIsLoadingCep] = useState(false);
     const [isLoadingCNPJ, setIsLoadingCNPJ] = useState(false);
+
+    // Atualizar dados quando existingClient mudar
+    useEffect(() => {
+        console.log('🔄 ModalNovoCliente - existingClient mudou:', existingClient);
+        if (existingClient) {
+            console.log('📝 Preenchendo dados do cliente:', existingClient);
+            setPersonType(existingClient.personType || 'fisica');
+            setFormData({
+                name: existingClient.name || '',
+                phone: existingClient.phone || '',
+                cpf: existingClient.cpf || '',
+                cnpj: existingClient.cnpj || '',
+                inscricaoEstadual: existingClient.inscricaoEstadual || '',
+                indicadorIE: existingClient.indicadorIE || '1',
+                razaoSocial: existingClient.razaoSocial || '',
+                nomeFantasia: existingClient.nomeFantasia || '',
+                email: existingClient.email || '',
+                birthDate: existingClient.birthDate || '',
+                address: existingClient.address || '',
+                number: existingClient.number || '',
+                hasNumber: existingClient.hasNumber !== false, // true por padrão, false apenas se explicitamente definido
+                complement: existingClient.complement || '',
+                neighborhood: existingClient.neighborhood || '',
+                city: existingClient.city || '',
+                state: existingClient.state || '',
+                zipCode: existingClient.zipCode || '',
+                vehicles: existingClient.vehicles || [],
+                observations: existingClient.observations || ''
+            });
+            setCurrentStep(1);
+            setErrors({});
+        } else if (initialName) {
+            // Reset para novo cliente com nome inicial
+            setPersonType('fisica');
+            setFormData({
+                name: initialName,
+                phone: '',
+                cpf: '',
+                cnpj: '',
+                inscricaoEstadual: '',
+                indicadorIE: '1',
+                razaoSocial: '',
+                nomeFantasia: '',
+                email: '',
+                birthDate: '',
+                address: '',
+                number: '',
+                complement: '',
+                neighborhood: '',
+                city: '',
+                state: '',
+                zipCode: '',
+                vehicles: [],
+                observations: ''
+            });
+            setCurrentStep(1);
+            setErrors({});
+        }
+    }, [existingClient, initialName]);
 
     // Estados para veículos
     const [vehicleSearchMode, setVehicleSearchMode] = useState({});
@@ -506,8 +566,11 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                     if (!cpfValidation.valid) {
                         newErrors.cpf = cpfValidation.message;
                     } else {
-                        // Verificar duplicata
-                        const isDuplicate = clients.some(c => c.cpf === formData.cpf.replace(/\D/g, ''));
+                        // Verificar duplicata (exceto o próprio cliente se estiver editando)
+                        const isDuplicate = clients.some(c => 
+                            c.cpf === formData.cpf.replace(/\D/g, '') && 
+                            (!existingClient || (c.id !== existingClient.id && c.firestoreId !== existingClient.id))
+                        );
                         if (isDuplicate) {
                             newErrors.cpf = 'CPF já cadastrado';
                         }
@@ -542,8 +605,11 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                     if (!cnpjValidation.valid) {
                         newErrors.cnpj = cnpjValidation.message;
                     } else {
-                        // Verificar duplicata
-                        const isDuplicate = clients.some(c => c.cnpj === formData.cnpj.replace(/\D/g, ''));
+                        // Verificar duplicata (exceto o próprio cliente se estiver editando)
+                        const isDuplicate = clients.some(c => 
+                            c.cnpj === formData.cnpj.replace(/\D/g, '') && 
+                            (!existingClient || (c.id !== existingClient.id && c.firestoreId !== existingClient.id))
+                        );
                         if (isDuplicate) {
                             newErrors.cnpj = 'CNPJ já cadastrado';
                         }
@@ -589,9 +655,9 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                 newErrors.address = 'Endereço é obrigatório';
             }
 
-            // Validar número
-            if (!formData.number.trim()) {
-                newErrors.number = 'Número é obrigatório';
+            // Validar número (só obrigatório se hasNumber for true)
+            if (formData.hasNumber && !formData.number.trim()) {
+                newErrors.number = 'Número é obrigatório quando o endereço possui numeração';
             }
 
             // Validar bairro
@@ -684,8 +750,17 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                 personType
             };
 
-            const newClient = await createClient(clientData);
-            
+            let clientResult;
+            if (existingClient) {
+                // Importar updateClient
+                const { updateClient } = await import('../../../services/clientService');
+                const clientId = existingClient.firestoreId || existingClient.id;
+                console.log('🔄 Atualizando cliente com ID:', clientId);
+                clientResult = await updateClient(clientId, clientData);
+            } else {
+                clientResult = await createClient(clientData);
+            }
+
             // Salvar veículos no Firestore
             const vehicleSavePromises = formData.vehicles.map(async (vehicle) => {
                 const vehicleData = {
@@ -695,30 +770,32 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                     year: vehicle.year,
                     color: vehicle.color,
                     type: vehicle.type,
-                    clientId: newClient.clientId || newClient.id,
+                    clientId: clientResult.clientId || clientResult.id || existingClient?.id,
                     clientName: personType === 'fisica' ? formData.name.trim() : formData.nomeFantasia.trim(),
-                    notes: `Veículo cadastrado junto com o cliente ${personType === 'fisica' ? formData.name.trim() : formData.nomeFantasia.trim()}`,
+                    notes: `Veículo ${existingClient ? 'atualizado' : 'cadastrado'} junto com o cliente ${personType === 'fisica' ? formData.name.trim() : formData.nomeFantasia.trim()}`,
                 };
-                
+
                 return await createVehicle(vehicleData);
             });
-            
+
             // Aguarda todos os veículos serem salvos
             const vehicleResults = await Promise.all(vehicleSavePromises);
             const successfulVehicles = vehicleResults.filter(r => r.success).length;
-            
+
             if (successfulVehicles > 0) {
-                toast.success(`Cliente e ${successfulVehicles} veículo(s) cadastrados com sucesso!`);
+                toast.success(`Cliente ${existingClient ? 'atualizado' : 'cadastrado'} e ${successfulVehicles} veículo(s) ${existingClient ? 'atualizados' : 'cadastrados'} com sucesso!`);
             } else {
-                toast.success('Cliente cadastrado com sucesso!');
-                toast.warning('Alguns veículos não foram salvos. Verifique a listagem de veículos.');
+                toast.success(`Cliente ${existingClient ? 'atualizado' : 'cadastrado'} com sucesso!`);
+                if (formData.vehicles.length > 0) {
+                    toast.warning('Alguns veículos não foram salvos. Verifique a listagem de veículos.');
+                }
             }
-            
-            onSuccess(newClient);
+
+            onSuccess(clientResult);
             onClose();
         } catch (error) {
             console.error('Erro ao cadastrar cliente:', error);
-            toast.error(error.message || 'Erro ao cadastrar cliente');
+            toast.error(error.message || `Erro ao ${existingClient ? 'atualizar' : 'cadastrar'} cliente`);
         } finally {
             setIsSubmitting(false);
         }
@@ -727,21 +804,32 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md">
-            <div className="w-full max-w-4xl bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl dark:shadow-neutral-950/50 border border-neutral-200 dark:border-neutral-800 flex flex-col overflow-hidden max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 bg-black/40 backdrop-blur-md">
+            <div 
+                className="w-full max-w-6xl bg-white dark:bg-neutral-900 rounded-lg shadow-2xl dark:shadow-neutral-950/50 border border-neutral-200 dark:border-neutral-800 flex flex-col overflow-hidden max-h-[90vh]" 
+                style={{ 
+                    transform: 'scale(0.95)',
+                    fontSmooth: 'always',
+                    WebkitFontSmoothing: 'antialiased',
+                    MozOsxFontSmoothing: 'grayscale',
+                    textRendering: 'optimizeLegibility'
+                }}
+            >
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-5 border-b border-neutral-200 dark:border-neutral-800">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 dark:border-neutral-800">
                     <div>
-                        <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">Novo Cliente</h2>
-                        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">Etapa {currentStep} de {steps.length}: {steps[currentStep - 1].title}</p>
+                        <h2 className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 antialiased">
+                            {existingClient ? 'Editar Cliente' : 'Novo Cliente'}
+                        </h2>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 antialiased font-medium">Etapa {currentStep} de {steps.length}: {steps[currentStep - 1].title}</p>
                     </div>
-                    <button onClick={onClose} className="p-2 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-300 ease-out text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100" aria-label="Fechar">
-                        <X className="w-5 h-5" />
+                    <button onClick={onClose} className="p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-300 ease-out text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100" aria-label="Fechar">
+                        <X className="w-4 h-4" />
                     </button>
                 </div>
 
                 {/* Progress Steps */}
-                <div className="px-6 py-4 border-b border-neutral-200 dark:border-neutral-800">
+                <div className="px-4 py-2 border-b border-neutral-200 dark:border-neutral-800">
                     <div className="flex items-center justify-between">
                         {steps.map((step, index) => {
                             const Icon = step.icon;
@@ -750,12 +838,12 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                             return (
                                 <div key={step.number} className="flex items-center flex-1">
                                     <div className="flex flex-col items-center flex-1">
-                                        <div className={'w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ' + (isCompleted ? 'bg-green-600 text-white' : isActive ? 'bg-blue-600 text-white' : 'bg-neutral-200 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400')}>
-                                            {isCompleted ? <Check className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
+                                        <div className={'w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ' + (isCompleted ? 'bg-green-600 text-white' : isActive ? 'bg-blue-600 text-white' : 'bg-neutral-200 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400')}>
+                                            {isCompleted ? <Check className="w-3.5 h-3.5" /> : <Icon className="w-3.5 h-3.5" />}
                                         </div>
-                                        <span className={'text-xs mt-2 font-medium hidden sm:block ' + (isActive ? 'text-blue-600 dark:text-blue-400' : 'text-neutral-500 dark:text-neutral-400')}>{step.title}</span>
+                                        <span className={'text-xs mt-1 font-medium hidden sm:block ' + (isActive ? 'text-blue-600 dark:text-blue-400' : 'text-neutral-500 dark:text-neutral-400')}>{step.title}</span>
                                     </div>
-                                    {index < steps.length - 1 && <div className={'h-0.5 flex-1 mx-2 ' + (isCompleted ? 'bg-green-600' : 'bg-neutral-200 dark:bg-neutral-700')} />}
+                                    {index < steps.length - 1 && <div className={'h-0.5 flex-1 mx-1 ' + (isCompleted ? 'bg-green-600' : 'bg-neutral-200 dark:bg-neutral-700')} />}
                                 </div>
                             );
                         })}
@@ -763,27 +851,27 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto px-6 py-6">
+                <div className="flex-1 overflow-y-auto px-5 py-4">
                     {/* Etapa 1: Tipo e Identificação */}
                     {currentStep === 1 && (
-                        <div className="space-y-5">
+                        <div className="space-y-4">
                             {/* Seletor de Tipo de Pessoa */}
                             <div>
-                                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">
+                                <label className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3 antialiased">
                                     Tipo de Pessoa *
                                 </label>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-2 gap-3">
                                     <button
                                         type="button"
                                         onClick={() => setPersonType('fisica')}
-                                        className={`p-4 rounded-xl border-2 transition-all duration-300 ${personType === 'fisica'
+                                        className={`p-3 rounded-lg border-2 transition-all duration-300 ${personType === 'fisica'
                                             ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
                                             : 'border-neutral-200 dark:border-neutral-700 hover:border-neutral-300'
                                             }`}
                                     >
-                                        <User className={`w-8 h-8 mx-auto mb-2 ${personType === 'fisica' ? 'text-blue-600' : 'text-neutral-400'
+                                        <User className={`w-7 h-7 mx-auto mb-1.5 ${personType === 'fisica' ? 'text-blue-600' : 'text-neutral-400'
                                             }`} />
-                                        <span className={`block text-sm font-medium ${personType === 'fisica' ? 'text-blue-600' : 'text-neutral-600 dark:text-neutral-400'
+                                        <span className={`block text-sm font-semibold antialiased ${personType === 'fisica' ? 'text-blue-600' : 'text-neutral-600 dark:text-neutral-400'
                                             }`}>
                                             Pessoa Física
                                         </span>
@@ -792,14 +880,14 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                     <button
                                         type="button"
                                         onClick={() => setPersonType('juridica')}
-                                        className={`p-4 rounded-xl border-2 transition-all duration-300 ${personType === 'juridica'
+                                        className={`p-3 rounded-lg border-2 transition-all duration-300 ${personType === 'juridica'
                                             ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
                                             : 'border-neutral-200 dark:border-neutral-700 hover:border-neutral-300'
                                             }`}
                                     >
-                                        <Building2 className={`w-8 h-8 mx-auto mb-2 ${personType === 'juridica' ? 'text-blue-600' : 'text-neutral-400'
+                                        <Building2 className={`w-7 h-7 mx-auto mb-1.5 ${personType === 'juridica' ? 'text-blue-600' : 'text-neutral-400'
                                             }`} />
-                                        <span className={`block text-sm font-medium ${personType === 'juridica' ? 'text-blue-600' : 'text-neutral-600 dark:text-neutral-400'
+                                        <span className={`block text-sm font-semibold antialiased ${personType === 'juridica' ? 'text-blue-600' : 'text-neutral-600 dark:text-neutral-400'
                                             }`}>
                                             Pessoa Jurídica
                                         </span>
@@ -813,7 +901,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                     <div>
                                         <div className="flex items-center gap-2 mb-2">
                                             <User className="w-4 h-4 text-neutral-400" />
-                                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Nome Completo *</label>
+                                            <label className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200 antialiased">Nome Completo *</label>
                                         </div>
                                         <input
                                             type="text"
@@ -823,7 +911,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                                 setErrors({ ...errors, name: null });
                                             }}
                                             placeholder="João da Silva"
-                                            className={'w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-800 border ' + (errors.name ? 'border-red-500' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out'}
+                                            className={'w-full px-3 py-2.5 rounded-lg bg-neutral-50 dark:bg-neutral-800 border ' + (errors.name ? 'border-red-500' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out antialiased font-medium'}
                                         />
                                         {errors.name && (
                                             <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
@@ -833,11 +921,11 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                         )}
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <div className="flex items-center gap-2 mb-2">
                                                 <CreditCard className="w-4 h-4 text-neutral-400" />
-                                                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">CPF *</label>
+                                                <label className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200 antialiased">CPF *</label>
                                             </div>
                                             <input
                                                 type="text"
@@ -852,8 +940,11 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                                         if (!cpfValidation.valid) {
                                                             setErrors({ ...errors, cpf: cpfValidation.message });
                                                         } else {
-                                                            // Verificar duplicata
-                                                            const isDuplicate = clients.some(c => c.cpf === cpfDigits);
+                                                            // Verificar duplicata (exceto o próprio cliente se estiver editando)
+                                                            const isDuplicate = clients.some(c => 
+                                                                c.cpf === cpfDigits && 
+                                                                (!existingClient || (c.id !== existingClient.id && c.firestoreId !== existingClient.id))
+                                                            );
                                                             if (isDuplicate) {
                                                                 setErrors({ ...errors, cpf: 'CPF já cadastrado' });
                                                             } else {
@@ -866,7 +957,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                                 }}
                                                 placeholder="123.456.789-00"
                                                 maxLength={14}
-                                                className={'w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-800 border ' + (errors.cpf ? 'border-red-500 ring-2 ring-red-500/20' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out'}
+                                                className={'w-full px-3 py-2.5 rounded-lg bg-neutral-50 dark:bg-neutral-800 border ' + (errors.cpf ? 'border-red-500 ring-2 ring-red-500/20' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out antialiased font-medium'}
                                             />
                                             {errors.cpf && (
                                                 <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
@@ -884,7 +975,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                         <div>
                                             <div className="flex items-center gap-2 mb-2">
                                                 <User className="w-4 h-4 text-neutral-400" />
-                                                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Data de Nascimento *</label>
+                                                <label className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200 antialiased">Data de Nascimento *</label>
                                             </div>
                                             <input
                                                 type="text"
@@ -896,7 +987,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                                 }}
                                                 placeholder="DD/MM/AAAA"
                                                 maxLength={10}
-                                                className={'w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-800 border ' + (errors.birthDate ? 'border-red-500' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out'}
+                                                className={'w-full px-3 py-2.5 rounded-lg bg-neutral-50 dark:bg-neutral-800 border ' + (errors.birthDate ? 'border-red-500' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out'}
                                             />
                                             {errors.birthDate && (
                                                 <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
@@ -932,8 +1023,11 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                                         if (!cnpjValidation.valid) {
                                                             setErrors({ ...errors, cnpj: cnpjValidation.message });
                                                         } else {
-                                                            // Verificar duplicata
-                                                            const isDuplicate = clients.some(c => c.cnpj === cnpjDigits);
+                                                            // Verificar duplicata (exceto o próprio cliente se estiver editando)
+                                                            const isDuplicate = clients.some(c => 
+                                                                c.cnpj === cnpjDigits && 
+                                                                (!existingClient || (c.id !== existingClient.id && c.firestoreId !== existingClient.id))
+                                                            );
                                                             if (isDuplicate) {
                                                                 setErrors({ ...errors, cnpj: 'CNPJ já cadastrado' });
                                                             } else {
@@ -1113,11 +1207,11 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                             )}
 
                             {/* Telefone e Email (comuns para ambos) */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
                                         <Phone className="w-4 h-4 text-neutral-400" />
-                                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Telefone *</label>
+                                        <label className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200 antialiased">Telefone *</label>
                                     </div>
                                     <input
                                         type="tel"
@@ -1127,7 +1221,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                             setErrors({ ...errors, phone: null });
                                         }}
                                         placeholder="(11) 98765-4321"
-                                        className={'w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-800 border ' + (errors.phone ? 'border-red-500' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out'}
+                                        className={'w-full px-3 py-2.5 rounded-lg bg-neutral-50 dark:bg-neutral-800 border ' + (errors.phone ? 'border-red-500' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out antialiased font-medium'}
                                     />
                                     {errors.phone && (
                                         <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
@@ -1140,14 +1234,14 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
                                         <Mail className="w-4 h-4 text-neutral-400" />
-                                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Email <span className="text-neutral-400">(opcional)</span></label>
+                                        <label className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200 antialiased">Email <span className="text-neutral-500 font-medium">(opcional)</span></label>
                                     </div>
                                     <input
                                         type="email"
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                         placeholder="cliente@email.com"
-                                        className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out"
+                                        className="w-full px-3 py-2.5 rounded-lg bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out antialiased font-medium"
                                     />
                                 </div>
                             </div>
@@ -1286,18 +1380,42 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
                                         <MapPin className="w-4 h-4 text-neutral-400" />
-                                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Número *</label>
+                                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                                            Número {formData.hasNumber ? '*' : '(Opcional)'}
+                                        </label>
                                     </div>
-                                    <input
-                                        type="text"
-                                        value={formData.number}
-                                        onChange={(e) => {
-                                            setFormData({ ...formData, number: e.target.value });
-                                            setErrors({ ...errors, number: null });
-                                        }}
-                                        placeholder="123"
-                                        className={'w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-800 border ' + (errors.number ? 'border-red-500' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out'}
-                                    />
+                                    <div className="space-y-3">
+                                        <input
+                                            type="text"
+                                            value={formData.number}
+                                            onChange={(e) => {
+                                                setFormData({ ...formData, number: e.target.value });
+                                                setErrors({ ...errors, number: null });
+                                            }}
+                                            placeholder="123"
+                                            disabled={!formData.hasNumber}
+                                            className={`w-full px-4 py-3 rounded-xl border text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out ${
+                                                formData.hasNumber 
+                                                    ? `bg-neutral-50 dark:bg-neutral-800 ${errors.number ? 'border-red-500' : 'border-neutral-200 dark:border-neutral-700'}` 
+                                                    : 'bg-neutral-100 dark:bg-neutral-700 border-neutral-300 dark:border-neutral-600 opacity-60 cursor-not-allowed'
+                                            }`}
+                                        />
+                                        <label className="flex items-center gap-2 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.hasNumber}
+                                                onChange={(e) => setFormData({ 
+                                                    ...formData, 
+                                                    hasNumber: e.target.checked,
+                                                    number: e.target.checked ? formData.number : ''
+                                                })}
+                                                className="w-4 h-4 text-blue-600 bg-neutral-100 border-neutral-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-neutral-800 focus:ring-2 dark:bg-neutral-700 dark:border-neutral-600"
+                                            />
+                                            <span className="text-sm text-neutral-600 dark:text-neutral-400">
+                                                Este endereço possui número
+                                            </span>
+                                        </label>
+                                    </div>
                                     {errors.number && (
                                         <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
                                             <AlertCircle className="w-3 h-3" />
@@ -1641,12 +1759,12 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                 </div>
 
                 {/* Footer - Navigation Buttons */}
-                <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50">
+                <div className="flex items-center justify-between gap-3 px-5 py-3 border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50">
                     <button
                         type="button"
                         onClick={onClose}
                         disabled={isSubmitting}
-                        className="px-6 py-2.5 rounded-xl font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all duration-300 ease-out disabled:opacity-50"
+                        className="px-5 py-2 rounded-lg font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all duration-300 ease-out disabled:opacity-50 antialiased"
                     >
                         Cancelar
                     </button>
@@ -1656,7 +1774,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                 type="button"
                                 onClick={handlePrevious}
                                 disabled={isSubmitting}
-                                className="px-6 py-2.5 rounded-xl font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all duration-300 ease-out disabled:opacity-50 flex items-center gap-2"
+                                className="px-5 py-2 rounded-lg font-semibold text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all duration-300 ease-out disabled:opacity-50 flex items-center gap-2 antialiased"
                             >
                                 <ChevronLeft className="w-4 h-4" />
                                 Voltar
@@ -1666,7 +1784,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                             <button
                                 type="button"
                                 onClick={handleNext}
-                                className="px-6 py-2.5 rounded-xl font-medium bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 transition-all duration-300 ease-out flex items-center gap-2"
+                                className="px-5 py-2 rounded-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 transition-all duration-300 ease-out flex items-center gap-2 antialiased"
                             >
                                 Avançar
                                 <ChevronRight className="w-4 h-4" />
@@ -1676,7 +1794,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                 type="button"
                                 onClick={handleSubmit}
                                 disabled={isSubmitting}
-                                className="px-6 py-2.5 rounded-xl font-medium bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/30 hover:shadow-xl hover:shadow-green-600/40 transition-all duration-300 ease-out disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                className="px-5 py-2 rounded-lg font-semibold bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/30 hover:shadow-xl hover:shadow-green-600/40 transition-all duration-300 ease-out disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 antialiased"
                             >
                                 {isSubmitting ? (
                                     <>
@@ -1685,7 +1803,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '' }) => {
                                     </>
                                 ) : (
                                     <>
-                                        Finalizar Cadastro
+                                        {existingClient ? 'Atualizar Cliente' : 'Finalizar Cadastro'}
                                         <Check className="w-4 h-4" />
                                     </>
                                 )}

@@ -101,7 +101,7 @@ const ListaClientesRecentes = ({ clientes, isLoading = false }) => {
                     className="w-12 h-12 rounded-full object-cover ring-2 ring-white dark:ring-gray-800"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white font-bold text-lg shadow-md" style={{ background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)' }}>
                     {getInitials(cliente.nome)}
                   </div>
                 )}

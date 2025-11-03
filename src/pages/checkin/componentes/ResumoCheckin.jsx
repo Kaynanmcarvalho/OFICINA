@@ -1,4 +1,5 @@
 import { Calendar, Clock, User, Car, Phone } from '@/utils/icons';
+import VehicleThumbnail from '../../../components/VehicleThumbnail';
 
 const ResumoCheckin = ({ checkin }) => {
   if (!checkin) return null;
@@ -99,8 +100,17 @@ const ResumoCheckin = ({ checkin }) => {
         </div>
 
         <div className="flex items-start gap-3">
-          <div className="flex-shrink-0 w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-            <Car className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+          <div className="flex-shrink-0">
+            <VehicleThumbnail 
+              vehicle={{
+                brand: checkin.motorcycle?.split(' ')[0] || '',
+                model: checkin.motorcycle || '',
+                plate: checkin.plate,
+                type: 'moto'
+              }}
+              size="md"
+              showLabel={false}
+            />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs text-neutral-500 dark:text-neutral-400">Veículo</p>

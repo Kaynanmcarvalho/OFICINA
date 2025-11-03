@@ -206,6 +206,7 @@ const ClientForm = ({
           onChange={(e) => handleChange('notes', e.target.value)}
           placeholder="Informações adicionais sobre o cliente..."
           rows={4}
+          className="apple-textarea-field"
           style={{
             width: '100%',
             padding: '12px 16px',
@@ -228,6 +229,29 @@ const ClientForm = ({
             e.target.style.boxShadow = 'none';
           }}
         />
+
+        {/* CSS para placeholder do textarea */}
+        <style>{`
+          .apple-textarea-field::placeholder {
+            color: var(--apple-text-tertiary) !important;
+            opacity: 1 !important;
+          }
+          
+          .apple-textarea-field::-webkit-input-placeholder {
+            color: var(--apple-text-tertiary) !important;
+            opacity: 1 !important;
+          }
+          
+          .apple-textarea-field::-moz-placeholder {
+            color: var(--apple-text-tertiary) !important;
+            opacity: 1 !important;
+          }
+          
+          .apple-textarea-field:-ms-input-placeholder {
+            color: var(--apple-text-tertiary) !important;
+            opacity: 1 !important;
+          }
+        `}</style>
       </motion.div>
 
       {/* Botões */}

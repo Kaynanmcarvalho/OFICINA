@@ -60,7 +60,13 @@ const Layout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-dark-bg overflow-x-hidden max-w-full w-full">
+    <div 
+      className="min-h-screen overflow-x-hidden max-w-full w-full"
+      style={{
+        background: 'var(--apple-bg-primary)',
+        color: 'var(--apple-text-primary)',
+      }}
+    >
       {/* Gradient radial sutil para profundidade no dark mode */}
       <div className="fixed inset-0 pointer-events-none dark:block hidden">
         <div className="absolute inset-0 bg-gradient-radial from-dark-surface/20 via-transparent to-transparent" />

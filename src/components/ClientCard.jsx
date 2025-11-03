@@ -10,19 +10,34 @@ const ClientCard = ({ client, onEdit }) => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -2 }}
-      className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow hover:shadow-lg transition-all duration-200 w-full"
+      className="rounded-xl p-4 shadow hover:shadow-lg transition-all duration-200 w-full apple-glass-card"
       style={{ maxWidth: '100%', boxSizing: 'border-box' }}
     >
       <div className="flex items-center gap-3 mb-3">
-        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0">
-          <User className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+        <div 
+          className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+          style={{
+            background: 'var(--apple-accent-blue)',
+            opacity: 0.1,
+          }}
+        >
+          <User 
+            className="w-6 h-6" 
+            style={{ color: 'var(--apple-accent-blue)' }}
+          />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+          <h3 
+            className="font-semibold truncate"
+            style={{ color: 'var(--apple-text-primary)' }}
+          >
             {client.name}
           </h3>
           {client.cpf && (
-            <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+            <p 
+              className="text-sm truncate"
+              style={{ color: 'var(--apple-text-tertiary)' }}
+            >
               CPF: {client.cpf}
             </p>
           )}
@@ -31,25 +46,45 @@ const ClientCard = ({ client, onEdit }) => {
 
       <div className="space-y-2 text-sm mb-4">
         <div className="flex items-center gap-2">
-          <Phone className="w-4 h-4 text-gray-400 flex-shrink-0" />
-          <span className="text-gray-700 dark:text-gray-300">{client.phone}</span>
+          <Phone 
+            className="w-4 h-4 flex-shrink-0" 
+            style={{ color: 'var(--apple-text-quaternary)' }}
+          />
+          <span style={{ color: 'var(--apple-text-secondary)' }}>{client.phone}</span>
         </div>
         {client.email && (
           <div className="flex items-center gap-2">
-            <Mail className="w-4 h-4 text-gray-400 flex-shrink-0" />
-            <span className="text-gray-700 dark:text-gray-300 truncate">{client.email}</span>
+            <Mail 
+              className="w-4 h-4 flex-shrink-0" 
+              style={{ color: 'var(--apple-text-quaternary)' }}
+            />
+            <span 
+              className="truncate"
+              style={{ color: 'var(--apple-text-secondary)' }}
+            >
+              {client.email}
+            </span>
           </div>
         )}
         <div className="flex items-center gap-2">
-          <Car className="w-4 h-4 text-gray-400 flex-shrink-0" />
-          <span className="text-gray-700 dark:text-gray-300">
+          <Car 
+            className="w-4 h-4 flex-shrink-0" 
+            style={{ color: 'var(--apple-text-quaternary)' }}
+          />
+          <span style={{ color: 'var(--apple-text-secondary)' }}>
             {client.vehicles?.length || 0} veículo(s)
           </span>
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
-        <div className="text-xs text-gray-500 dark:text-gray-400">
+      <div 
+        className="flex items-center justify-between pt-3 border-t"
+        style={{ borderColor: 'var(--apple-border-light)' }}
+      >
+        <div 
+          className="text-xs"
+          style={{ color: 'var(--apple-text-tertiary)' }}
+        >
           {client.lastServiceDate 
             ? `Última visita: ${new Date(client.lastServiceDate).toLocaleDateString('pt-BR')}`
             : 'Nunca visitou'
@@ -57,7 +92,8 @@ const ClientCard = ({ client, onEdit }) => {
         </div>
         <button 
           onClick={() => onEdit(client)}
-          className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+          className="text-sm font-medium transition-colors duration-200 hover:opacity-80"
+          style={{ color: 'var(--apple-accent-blue)' }}
         >
           Editar
         </button>

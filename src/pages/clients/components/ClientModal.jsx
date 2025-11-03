@@ -1,13 +1,9 @@
 /**
- * ClientModal - Modal para criar/editar clientes
- * Design Apple-like com glassmorphism e animações suaves
+ * ClientModal - Usando o mesmo modal da aba /checkin para consistência
+ * Modal completo com wizard de 4 etapas e campos detalhados
  */
 
-import { useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
-import AppleButton from './base/AppleButton';
-import ClientForm from './ClientForm';
+import ModalNovoCliente from '../../checkin/componentes/ModalNovoCliente';
 
 const ClientModal = ({
   isOpen = false,
@@ -17,187 +13,73 @@ const ClientModal = ({
   isLoading = false,
 }) => {
   
-  // Fechar com ESC
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose?.();
-      }
-    };
-    
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [isOpen, onClose]);
-
-  // Prevenir scroll do body quando modal aberto
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
-
-  // Backdrop variants
-  const backdropVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { duration: 0.2 }
-    },
-    exit: { 
-      opacity: 0,
-      transition: { duration: 0.2 }
+  // Adaptar o callback de sucesso para o formato esperado
+  const handleSuccess = (newClient) => {
+    if (onSave) {
+      // Converter o formato do cliente do checkin para o formato esperado
+      const adaptedClient = {
+        name: newClient.name,
+        email: newClient.email || '',
+        phone: newClient.phone,
+        cpf: newClient.cpf || '',
+        cnpj: newClient.cnpj || '',
+        address: newClient.address || '',
+        notes: newClient.observations || '',
+        // Campos adicionais do checkin
+        razaoSocial: newClient.razaoSocial || '',
+        nomeFantasia: newClient.nomeFantasia || '',
+        inscricaoEstadual: newClient.inscricaoEstadual || '',
+        indicadorIE: newClient.indicadorIE || '',
+        birthDate: newClient.birthDate || '',
+        number: newClient.number || '',
+        complement: newClient.complement || '',
+        neighborhood: newClient.neighborhood || '',
+        city: newClient.city || '',
+        state: newClient.state || '',
+        zipCode: newClient.zipCode || '',
+        vehicles: newClient.vehicles || [],
+        personType: newClient.personType || 'fisica'
+      };
+      
+      onSave(adaptedClient);
     }
   };
 
-  // Modal variants
-  const modalVariants = {
-    hidden: { 
-      opacity: 0,
-      scale: 0.95,
-      y: 20
-    },
-    visible: { 
-      opacity: 1,
-      scale: 1,
-      y: 0,
-      transition: {
-        type: 'spring',
-        stiffness: 300,
-        damping: 30,
-        mass: 0.8
-      }
-    },
-    exit: { 
-      opacity: 0,
-      scale: 0.95,
-      y: 20,
-      transition: { duration: 0.2 }
-    }
-  };
+  // Adaptar o cliente para o formato do modal do checkin
+  const adaptedClient = client ? {
+    id: client.firestoreId || client.id,
+    firestoreId: client.firestoreId || client.id,
+    name: client.name || '',
+    email: client.email || '',
+    phone: client.phone || '',
+    cpf: client.cpf || '',
+    cnpj: client.cnpj || '',
+    razaoSocial: client.razaoSocial || '',
+    nomeFantasia: client.nomeFantasia || client.name || '',
+    inscricaoEstadual: client.inscricaoEstadual || '',
+    indicadorIE: client.indicadorIE || '1',
+    birthDate: client.birthDate || '',
+    address: client.address || '',
+    number: client.number || '',
+    complement: client.complement || '',
+    neighborhood: client.neighborhood || '',
+    city: client.city || '',
+    state: client.state || '',
+    zipCode: client.zipCode || '',
+    vehicles: client.vehicles || [],
+    observations: client.notes || client.observations || '',
+    personType: client.personType || (client.cnpj ? 'juridica' : 'fisica')
+  } : null;
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            variants={backdropVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            onClick={onClose}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'var(--apple-backdrop)',
-              backdropFilter: 'var(--apple-backdrop-blur)',
-              WebkitBackdropFilter: 'var(--apple-backdrop-blur)',
-              zIndex: 9998,
-            }}
-          />
-
-          {/* Modal Container */}
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '16px',
-              zIndex: 9999,
-              pointerEvents: 'none',
-            }}
-          >
-            <motion.div
-              variants={modalVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                width: '100%',
-                maxWidth: '600px',
-                maxHeight: '90vh',
-                borderRadius: '24px',
-                background: 'var(--apple-glass-bg)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '1px solid var(--apple-glass-border)',
-                boxShadow: 'var(--apple-shadow-xl)',
-                overflow: 'hidden',
-                pointerEvents: 'auto',
-              }}
-            >
-              {/* Header */}
-              <div
-                style={{
-                  padding: '24px',
-                  borderBottom: '1px solid var(--apple-border-light)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <h2
-                  style={{
-                    fontSize: '24px',
-                    fontWeight: '700',
-                    color: 'var(--apple-text-primary)',
-                    letterSpacing: '-0.02em',
-                  }}
-                >
-                  {client ? 'Editar Cliente' : 'Novo Cliente'}
-                </h2>
-                
-                <motion.button
-                  whileHover={{ scale: 1.1, rotate: 90 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={onClose}
-                  style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: 'var(--apple-bg-tertiary)',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: 'var(--apple-text-secondary)',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <X size={20} strokeWidth={2.5} />
-                </motion.button>
-              </div>
-
-              {/* Body */}
-              <div
-                style={{
-                  padding: '24px',
-                  maxHeight: 'calc(90vh - 180px)',
-                  overflowY: 'auto',
-                }}
-              >
-                <ClientForm
-                  client={client}
-                  onSave={onSave}
-                  onCancel={onClose}
-                  isLoading={isLoading}
-                />
-              </div>
-            </motion.div>
-          </div>
-        </>
-      )}
-    </AnimatePresence>
+    <ModalNovoCliente
+      isOpen={isOpen}
+      onClose={onClose}
+      onSuccess={handleSuccess}
+      initialName={adaptedClient?.name || ''}
+      // Passar o cliente adaptado como prop adicional se necessário
+      existingClient={adaptedClient}
+    />
   );
 };
 

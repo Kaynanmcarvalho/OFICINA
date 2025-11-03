@@ -6,7 +6,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Loader2, X } from 'lucide-react';
-import { useTheme } from '../../../hooks/useTheme';
+import { useThemeStore } from '../../../store';
 import '../styles/theme-tokens.css';
 
 const SearchBar = ({
@@ -19,7 +19,7 @@ const SearchBar = ({
   debounceMs = 300,
   showKeyboardHint = true,
 }) => {
-  const { isDark } = useTheme();
+  const { isDarkMode } = useThemeStore();
   const [localValue, setLocalValue] = useState(value);
   const [isFocused, setIsFocused] = useState(false);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
@@ -106,21 +106,13 @@ const SearchBar = ({
   const containerStyle = {
     height: '56px',
     borderRadius: '16px',
-    background: isDark 
-      ? 'rgba(28, 28, 30, 0.8)' 
-      : 'rgba(255, 255, 255, 0.8)',
-    backdropFilter: 'blur(20px)',
-    WebkitBackdropFilter: 'blur(20px)',
+    background: 'var(--apple-glass-bg)',
     border: isFocused
-      ? `2px solid ${isDark ? '#0a84ff' : '#007aff'}`
-      : `1px solid ${isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'}`,
+      ? `2px solid var(--apple-accent-blue)`
+      : `1px solid var(--apple-glass-border)`,
     boxShadow: isFocused
-      ? isDark
-        ? '0 4px 16px rgba(10, 132, 255, 0.3), 0 0 0 4px rgba(10, 132, 255, 0.1)'
-        : '0 4px 16px rgba(0, 122, 255, 0.2), 0 0 0 4px rgba(0, 122, 255, 0.05)'
-      : isDark
-        ? '0 2px 8px rgba(0, 0, 0, 0.3)'
-        : '0 2px 8px rgba(0, 0, 0, 0.08)',
+      ? 'var(--apple-shadow-blue-hover)'
+      : 'var(--apple-shadow-sm)',
     transition: 'all 0.2s cubic-bezier(0.2, 0.9, 0.2, 1)',
   };
 
@@ -133,7 +125,7 @@ const SearchBar = ({
     outline: 'none',
     fontSize: '16px',
     fontWeight: 400,
-    color: isDark ? '#f5f5f7' : '#1d1d1f',
+    color: 'var(--apple-text-primary)',
     padding: '0 16px',
   };
 
@@ -156,8 +148,8 @@ const SearchBar = ({
             animate={{
               scale: isFocused ? 1.1 : 1,
               color: isFocused 
-                ? (isDark ? '#0a84ff' : '#007aff')
-                : (isDark ? '#98989d' : '#6e6e73'),
+                ? 'var(--apple-accent-blue)'
+                : 'var(--apple-text-secondary)',
             }}
             transition={{ duration: 0.2 }}
           >
@@ -175,7 +167,7 @@ const SearchBar = ({
               onBlur={handleBlur}
               style={inputStyle}
               placeholder={isFocused ? placeholder : placeholders[currentPlaceholder]}
-              className="placeholder:transition-opacity placeholder:duration-300"
+              className="placeholder:transition-opacity placeholder:duration-300 apple-search-input"
             />
           </div>
 
@@ -199,7 +191,7 @@ const SearchBar = ({
                   <Loader2 
                     size={18} 
                     strokeWidth={2.5}
-                    style={{ color: isDark ? '#0a84ff' : '#007aff' }}
+                    style={{ color: 'var(--apple-accent-blue)' }}
                   />
                 </motion.div>
               </motion.div>
@@ -218,10 +210,8 @@ const SearchBar = ({
                 onClick={handleClear}
                 className="flex items-center justify-center w-6 h-6 rounded-full transition-colors"
                 style={{
-                  background: isDark 
-                    ? 'rgba(255, 255, 255, 0.1)' 
-                    : 'rgba(0, 0, 0, 0.05)',
-                  color: isDark ? '#98989d' : '#6e6e73',
+                  background: 'var(--apple-overlay-medium)',
+                  color: 'var(--apple-text-secondary)',
                 }}
               >
                 <X size={14} strokeWidth={2.5} />
@@ -237,11 +227,9 @@ const SearchBar = ({
               transition={{ delay: 0.3 }}
               className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-mono font-semibold"
               style={{
-                background: isDark 
-                  ? 'rgba(255, 255, 255, 0.05)' 
-                  : 'rgba(0, 0, 0, 0.03)',
-                color: isDark ? '#636366' : '#86868b',
-                border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)'}`,
+                background: 'var(--apple-overlay-light)',
+                color: 'var(--apple-text-tertiary)',
+                border: '1px solid var(--apple-border-light)',
               }}
             >
               ⌘K
@@ -260,13 +248,35 @@ const SearchBar = ({
             transition={{ duration: 0.2 }}
             className="absolute inset-0 rounded-2xl pointer-events-none"
             style={{
-              background: isDark
-                ? 'radial-gradient(circle at center, rgba(10, 132, 255, 0.05) 0%, transparent 70%)'
-                : 'radial-gradient(circle at center, rgba(0, 122, 255, 0.03) 0%, transparent 70%)',
+              background: 'radial-gradient(circle at center, var(--apple-accent-blue) 0%, transparent 70%)',
+              opacity: isDarkMode ? 0.05 : 0.03,
             }}
           />
         )}
       </AnimatePresence>
+
+      {/* CSS para placeholder */}
+      <style>{`
+        .apple-search-input::placeholder {
+          color: var(--apple-text-tertiary) !important;
+          opacity: 1 !important;
+        }
+        
+        .apple-search-input::-webkit-input-placeholder {
+          color: var(--apple-text-tertiary) !important;
+          opacity: 1 !important;
+        }
+        
+        .apple-search-input::-moz-placeholder {
+          color: var(--apple-text-tertiary) !important;
+          opacity: 1 !important;
+        }
+        
+        .apple-search-input:-ms-input-placeholder {
+          color: var(--apple-text-tertiary) !important;
+          opacity: 1 !important;
+        }
+      `}</style>
     </motion.div>
   );
 };

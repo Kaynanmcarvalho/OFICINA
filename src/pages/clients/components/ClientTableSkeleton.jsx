@@ -3,7 +3,7 @@
  * Skeleton loader com animação shimmer
  */
 
-
+import { motion } from 'framer-motion';
 
 const ClientTableSkeleton = ({ rows = 5 }) => {
   

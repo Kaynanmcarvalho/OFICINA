@@ -23,7 +23,7 @@ const InsightsClientes = ({ insights }) => {
     >
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)' }}>
           <Users className="w-6 h-6 text-white" />
         </div>
         <div>

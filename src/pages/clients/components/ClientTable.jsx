@@ -13,7 +13,9 @@ const ClientTable = ({
   clients = [], 
   isLoading = false,
   onEditClient,
-  onDeleteClient,
+  onToggleClientStatus,
+  onViewClient,
+  onViewVehicles,
 }) => {
 
   return (
@@ -46,9 +48,9 @@ const ClientTable = ({
                   style={{ color: 'var(--apple-text-secondary)' }}>
                 Total Serviços
               </th>
-              <th className="text-right px-6 py-4 text-xs font-semibold uppercase tracking-wider"
+              <th className="text-center px-6 py-4 text-xs font-semibold uppercase tracking-wider"
                   style={{ color: 'var(--apple-text-secondary)' }}>
-                Ações
+                Status
               </th>
             </tr>
           </thead>
@@ -70,7 +72,9 @@ const ClientTable = ({
                   client={client}
                   index={index}
                   onEdit={() => onEditClient?.(client)}
-                  onDelete={() => onDeleteClient?.(client)}
+                  onToggleStatus={(clientId, newStatus) => onToggleClientStatus?.(clientId, newStatus)}
+                  onView={() => onViewClient?.(client)}
+                  onViewVehicles={() => onViewVehicles?.(client)}
                 />
               ))
             )}

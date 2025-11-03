@@ -102,8 +102,6 @@ const PageHeader = ({ clientCount = 0, onNewClient }) => {
                 background: isDark 
                   ? 'rgba(255, 255, 255, 0.1)' 
                   : 'rgba(0, 0, 0, 0.05)',
-                backdropFilter: 'blur(10px)',
-                WebkitBackdropFilter: 'blur(10px)',
                 border: isDark
                   ? '1px solid rgba(255, 255, 255, 0.15)'
                   : '1px solid rgba(0, 0, 0, 0.1)',
@@ -141,7 +139,6 @@ const PageHeader = ({ clientCount = 0, onNewClient }) => {
               className="absolute -top-8 right-0 px-2 py-1 rounded-lg text-xs font-mono opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
               style={{
                 background: isDark ? 'rgba(28, 28, 30, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-                backdropFilter: 'blur(10px)',
                 border: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
                 color: isDark ? '#98989d' : '#6e6e73',
                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',

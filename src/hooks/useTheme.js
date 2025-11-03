@@ -34,11 +34,16 @@ export function useTheme() {
   // Aplicar tema ao documento
   useEffect(() => {
     const root = document.documentElement;
+    const body = document.body;
     
     if (theme === 'dark') {
       root.classList.add('dark');
+      body.style.background = 'var(--apple-bg-primary, #000000)';
+      body.style.color = 'var(--apple-text-primary, #f5f5f7)';
     } else {
       root.classList.remove('dark');
+      body.style.background = 'var(--apple-bg-primary, #ffffff)';
+      body.style.color = 'var(--apple-text-primary, #1d1d1f)';
     }
 
     // Salvar preferência

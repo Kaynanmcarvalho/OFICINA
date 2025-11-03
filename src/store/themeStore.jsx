@@ -12,6 +12,7 @@ export const themeStore = (set, get) => ({
     
     // Apply theme to document
     const root = document.documentElement;
+    const body = document.body;
     
     if (theme === 'auto') {
       // Use system preference
@@ -20,15 +21,23 @@ export const themeStore = (set, get) => ({
       
       if (prefersDark) {
         root.classList.add('dark');
+        body.style.background = 'var(--apple-bg-primary, #000000)';
+        body.style.color = 'var(--apple-text-primary, #f5f5f7)';
       } else {
         root.classList.remove('dark');
+        body.style.background = 'var(--apple-bg-primary, #ffffff)';
+        body.style.color = 'var(--apple-text-primary, #1d1d1f)';
       }
     } else if (theme === 'dark') {
       set({ isDarkMode: true });
       root.classList.add('dark');
+      body.style.background = 'var(--apple-bg-primary, #000000)';
+      body.style.color = 'var(--apple-text-primary, #f5f5f7)';
     } else {
       set({ isDarkMode: false });
       root.classList.remove('dark');
+      body.style.background = 'var(--apple-bg-primary, #ffffff)';
+      body.style.color = 'var(--apple-text-primary, #1d1d1f)';
     }
   },
 
@@ -62,11 +71,16 @@ export const themeStore = (set, get) => ({
       if (theme === 'auto') {
         set({ isDarkMode: e.matches });
         const root = document.documentElement;
+        const body = document.body;
         
         if (e.matches) {
           root.classList.add('dark');
+          body.style.background = 'var(--apple-bg-primary, #000000)';
+          body.style.color = 'var(--apple-text-primary, #f5f5f7)';
         } else {
           root.classList.remove('dark');
+          body.style.background = 'var(--apple-bg-primary, #ffffff)';
+          body.style.color = 'var(--apple-text-primary, #1d1d1f)';
         }
       }
     };

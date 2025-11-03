@@ -19,18 +19,18 @@ const ClientAvatar = ({ name, size = 'md' }) => {
     return Math.abs(hash);
   };
 
-  // Paleta de gradientes Apple-like
+  // Paleta de gradientes com foco na cor laranja vibrante
   const gradients = [
-    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-    'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-    'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-    'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-    'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
-    'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-    'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
-    'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-    'linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)',
+    'linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)', // Laranja vibrante principal
+    'linear-gradient(135deg, #ff8a50 0%, #ff6b35 100%)', // Laranja suave
+    'linear-gradient(135deg, #ff7043 0%, #ff5722 100%)', // Laranja intenso
+    'linear-gradient(135deg, #ffab40 0%, #ff9800 100%)', // Laranja dourado
+    'linear-gradient(135deg, #ff6f00 0%, #ff8f00 100%)', // Laranja puro
+    'linear-gradient(135deg, #ff9500 0%, #ff6200 100%)', // Laranja energético
+    'linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%)', // Laranja coral
+    'linear-gradient(135deg, #ff7849 0%, #ff5722 100%)', // Laranja vermelho
+    'linear-gradient(135deg, #ffb74d 0%, #ff9800 100%)', // Laranja claro
+    'linear-gradient(135deg, #ff6b35 0%, #e65100 100%)', // Laranja escuro
   ];
 
   const hash = generateHash(name);

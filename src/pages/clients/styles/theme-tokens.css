@@ -76,7 +76,6 @@
   --apple-overlay-strong: rgba(0, 0, 0, 0.08);
   
   --apple-backdrop: rgba(0, 0, 0, 0.4);
-  --apple-backdrop-blur: blur(40px);
 }
 
 /* ========================================
@@ -84,20 +83,20 @@
    ======================================== */
 .dark {
   /* Backgrounds */
-  --apple-bg-primary: #000000;
-  --apple-bg-secondary: rgba(28, 28, 30, 0.8);
-  --apple-bg-tertiary: #1c1c1e;
-  --apple-bg-quaternary: #2c2c2e;
+  --apple-bg-primary: #000000 !important;
+  --apple-bg-secondary: rgba(28, 28, 30, 0.8) !important;
+  --apple-bg-tertiary: #1c1c1e !important;
+  --apple-bg-quaternary: #2c2c2e !important;
   
   /* Glassmorphism */
-  --apple-glass-bg: rgba(28, 28, 30, 0.8);
-  --apple-glass-border: rgba(255, 255, 255, 0.08);
+  --apple-glass-bg: rgba(28, 28, 30, 0.8) !important;
+  --apple-glass-border: rgba(255, 255, 255, 0.08) !important;
   
   /* Text */
-  --apple-text-primary: #f5f5f7;
-  --apple-text-secondary: #98989d;
-  --apple-text-tertiary: #636366;
-  --apple-text-quaternary: #48484a;
+  --apple-text-primary: #f5f5f7 !important;
+  --apple-text-secondary: #98989d !important;
+  --apple-text-tertiary: #636366 !important;
+  --apple-text-quaternary: #48484a !important;
   
   /* Borders */
   --apple-border-light: rgba(255, 255, 255, 0.06);
@@ -141,7 +140,6 @@
   --apple-overlay-strong: rgba(255, 255, 255, 0.08);
   
   --apple-backdrop: rgba(0, 0, 0, 0.6);
-  --apple-backdrop-blur: blur(40px);
 }
 
 /* ========================================
@@ -151,8 +149,6 @@
 /* Glassmorphism Card */
 .apple-glass-card {
   background: var(--apple-glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--apple-glass-border);
   box-shadow: var(--apple-shadow-md);
 }
@@ -185,9 +181,4 @@
   outline-offset: 2px;
 }
 
-/* Backdrop blur support check */
-@supports not (backdrop-filter: blur(20px)) {
-  .apple-glass-card {
-    background: var(--apple-bg-secondary);
-  }
-}
+/* Backdrop blur support check - removed blur effects */

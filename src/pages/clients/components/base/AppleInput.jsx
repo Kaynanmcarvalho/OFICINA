@@ -119,6 +119,7 @@ const AppleInput = ({
           onBlur={handleBlur}
           disabled={disabled}
           style={inputStyle}
+          className="apple-input-field"
           {...props}
         />
         
@@ -147,6 +148,29 @@ const AppleInput = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* CSS para placeholder */}
+      <style>{`
+        .apple-input-field::placeholder {
+          color: var(--apple-text-tertiary) !important;
+          opacity: 1 !important;
+        }
+        
+        .apple-input-field::-webkit-input-placeholder {
+          color: var(--apple-text-tertiary) !important;
+          opacity: 1 !important;
+        }
+        
+        .apple-input-field::-moz-placeholder {
+          color: var(--apple-text-tertiary) !important;
+          opacity: 1 !important;
+        }
+        
+        .apple-input-field:-ms-input-placeholder {
+          color: var(--apple-text-tertiary) !important;
+          opacity: 1 !important;
+        }
+      `}</style>
     </div>
   );
 };
