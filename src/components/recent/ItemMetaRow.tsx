@@ -89,12 +89,12 @@ const ItemMetaRow: React.FC<ItemMetaRowProps> = ({
   ].filter(Boolean);
 
   return (
-    <div className="flex items-center gap-3 text-xs text-neutral-600 dark:text-neutral-400">
+    <div className="flex items-center gap-3 text-xs font-bold text-gray-700 dark:text-neutral-400">
       {metaItems.map((item, index) => (
         <React.Fragment key={index}>
           {item}
           {index < metaItems.length - 1 && (
-            <span className="opacity-40">•</span>
+            <span className="opacity-50 font-extrabold">•</span>
           )}
         </React.Fragment>
       ))}
@@ -102,7 +102,7 @@ const ItemMetaRow: React.FC<ItemMetaRowProps> = ({
       {/* Tags */}
       {tags.length > 0 && (
         <>
-          <span className="opacity-40">•</span>
+          <span className="opacity-50 font-extrabold">•</span>
           <div className="flex items-center gap-1.5">
             {tags.map((tag, index) => (
               <span
@@ -111,9 +111,10 @@ const ItemMetaRow: React.FC<ItemMetaRowProps> = ({
                   inline-flex items-center
                   px-2 py-0.5
                   rounded-md
-                  bg-neutral-100 dark:bg-neutral-800
+                  bg-gray-200 dark:bg-neutral-800
                   text-[11px]
-                  font-medium
+                  font-bold
+                  text-gray-800 dark:text-neutral-300
                 "
               >
                 {tag}

@@ -1,0 +1,240 @@
+/**
+ * Dashboard SUAVE - Design Minimalista
+ * Sombreamentos sutis e contornos suaves
+ * Inspirado em Apple Design Language
+ */
+
+/* ========================================
+   CARTÕES INDICADORES (KPIs) - SUAVE
+   ======================================== */
+
+.dashboard-no-transform [class*="CartaoIndicador"],
+.dashboard-no-transform [class*="card-indicator"],
+.dashboard-no-transform .kpi-card {
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.2s ease !important;
+}
+
+.dashboard-no-transform [class*="CartaoIndicador"]:hover,
+.dashboard-no-transform [class*="card-indicator"]:hover,
+.dashboard-no-transform .kpi-card:hover {
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.07),
+    0 2px 4px -1px rgba(0, 0, 0, 0.04) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* ========================================
+   ÍCONES DOS CARDS - SUAVE
+   ======================================== */
+
+.dashboard-no-transform [class*="CartaoIndicador"] svg,
+.dashboard-no-transform .kpi-card svg,
+.dashboard-no-transform [class*="icon-container"] {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.04)) !important;
+}
+
+/* ========================================
+   NÚMEROS E VALORES - LIMPO
+   ======================================== */
+
+.dashboard-no-transform [class*="valor"],
+.dashboard-no-transform [class*="value"],
+.dashboard-no-transform .kpi-value {
+  text-shadow: none !important;
+  font-weight: 600 !important;
+}
+
+/* ========================================
+   GRÁFICOS - SUAVE
+   ======================================== */
+
+.dashboard-no-transform [class*="Grafico"],
+.dashboard-no-transform [class*="chart"],
+.dashboard-no-transform .recharts-wrapper {
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  border-radius: 12px !important;
+  padding: 16px !important;
+}
+
+/* ========================================
+   LISTAS - SUAVE
+   ======================================== */
+
+.dashboard-no-transform [class*="Lista"],
+.dashboard-no-transform [class*="list"],
+.dashboard-no-transform ul li,
+.dashboard-no-transform ol li {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.04) !important;
+  border-radius: 8px !important;
+  margin-bottom: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+.dashboard-no-transform [class*="Lista"]:hover,
+.dashboard-no-transform [class*="list"]:hover,
+.dashboard-no-transform ul li:hover,
+.dashboard-no-transform ol li:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06) !important;
+  transform: translateX(2px) !important;
+}
+
+/* ========================================
+   ALERTAS - SUAVE
+   ======================================== */
+
+.dashboard-no-transform [class*="CentralAlertas"],
+.dashboard-no-transform [class*="alert"],
+.dashboard-no-transform [role="alert"] {
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+/* Alertas por tipo - cores suaves */
+.dashboard-no-transform [class*="alert-success"] {
+  border-color: rgba(16, 185, 129, 0.15) !important;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.08) !important;
+}
+
+.dashboard-no-transform [class*="alert-warning"] {
+  border-color: rgba(245, 158, 11, 0.15) !important;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.08) !important;
+}
+
+.dashboard-no-transform [class*="alert-danger"],
+.dashboard-no-transform [class*="alert-error"] {
+  border-color: rgba(239, 68, 68, 0.15) !important;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.08) !important;
+}
+
+/* ========================================
+   WIDGETS - SUAVE
+   ======================================== */
+
+.dashboard-no-transform [class*="Widget"],
+.dashboard-no-transform [class*="widget"] {
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+/* ========================================
+   TABELAS - SUAVE
+   ======================================== */
+
+.dashboard-no-transform table {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+.dashboard-no-transform table thead {
+  box-shadow: none !important;
+  background: rgba(249, 250, 251, 0.5) !important;
+}
+
+.dashboard-no-transform table tbody tr {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.15s ease !important;
+}
+
+.dashboard-no-transform table tbody tr:hover {
+  background: rgba(59, 130, 246, 0.02) !important;
+  box-shadow: inset 2px 0 0 0 rgba(59, 130, 246, 0.3) !important;
+}
+
+/* ========================================
+   INPUTS E SELECTS - SUAVE
+   ======================================== */
+
+.dashboard-no-transform input:not(.dark *),
+.dashboard-no-transform select:not(.dark *),
+.dashboard-no-transform textarea:not(.dark *) {
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    inset 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+.dashboard-no-transform input:not(.dark *):focus,
+.dashboard-no-transform select:not(.dark *):focus,
+.dashboard-no-transform textarea:not(.dark *):focus {
+  box-shadow: 
+    0 0 0 3px rgba(59, 130, 246, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+/* ========================================
+   DIVISORES - SUAVE
+   ======================================== */
+
+.dashboard-no-transform hr:not(.dark *),
+.dashboard-no-transform .divider:not(.dark *) {
+  height: 1px !important;
+  background: rgba(0, 0, 0, 0.06) !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* ========================================
+   SCROLLBARS - SUAVE
+   ======================================== */
+
+.dashboard-no-transform:not(.dark *)::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15) !important;
+  border: 2px solid transparent !important;
+  background-clip: padding-box !important;
+  border-radius: 8px !important;
+}
+
+.dashboard-no-transform:not(.dark *)::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.02) !important;
+  border-radius: 8px !important;
+}
+
+/* ========================================
+   TOOLTIPS - SUAVE
+   ======================================== */
+
+.dashboard-no-transform [role="tooltip"]:not(.dark *),
+.dashboard-no-transform .tooltip:not(.dark *) {
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.08),
+    0 2px 4px -1px rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+/* ========================================
+   MODO ESCURO - SUAVE
+   ======================================== */
+
+.dark .dashboard-no-transform .bg-white {
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark .dashboard-no-transform .bg-white:hover {
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.4),
+    0 2px 4px -1px rgba(0, 0, 0, 0.3) !important;
+}

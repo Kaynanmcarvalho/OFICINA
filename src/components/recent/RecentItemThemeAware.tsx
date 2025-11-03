@@ -38,6 +38,24 @@ const RecentItemThemeAware: React.FC<RecentItemThemeAwareProps> = ({
     setForceUpdate(prev => prev + 1);
   }, [isDark]);
 
+  // Observer para mudanças na classe 'dark' do documento
+  useEffect(() => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          setForceUpdate(prev => prev + 1);
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const handleMouseMove = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -109,8 +127,6 @@ const RecentItemThemeAware: React.FC<RecentItemThemeAwareProps> = ({
       variants={cardVariants}
       initial="hidden"
       animate="visible"
-      whileHover={{ y: -2, scale: 1.01 }}
-      whileTap={{ scale: 0.99 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
     >
       <div 
@@ -120,54 +136,33 @@ const RecentItemThemeAware: React.FC<RecentItemThemeAwareProps> = ({
         onMouseLeave={() => setIsHovered(false)}
         onClick={handleClick}
       >
-        {/* Outer glow effect for selected items */}
-        {isSelected && (
-          <div 
-            className="absolute inset-0 rounded-2xl blur-lg opacity-30"
-            style={{
-              background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, #3B82F6, transparent 70%)`,
-            }}
-          />
-        )}
-
-        {/* Main card container - TEMA INTELIGENTE */}
+        {/* Main card container - BORDAS ULTRA REALÇADAS SOMENTE NO MODO CLARO */}
         <div
           className={`
             relative overflow-hidden rounded-2xl h-28 transition-all duration-300 ease-out
+            bg-white dark:bg-slate-900
             ${isSelected 
-              ? (isDark 
-                  ? 'ring-2 ring-blue-400 ring-offset-2 ring-offset-transparent' 
-                  : 'ring-2 ring-blue-500 ring-offset-2 ring-offset-transparent'
-                ) 
-              : ''
-            }
-            ${isHovered 
-              ? (isDark 
-                  ? 'border-slate-600 shadow-2xl transform scale-[1.015]' 
-                  : 'border-gray-300 shadow-2xl transform scale-[1.015] bg-gray-50'
-                ) 
-              : ''
+              ? 'border-[4px] border-blue-700 dark:border-blue-500 bg-blue-50 dark:bg-slate-800' 
+              : isHovered
+                ? 'border-[4px] border-gray-950 dark:border-slate-600 bg-gray-50 dark:bg-slate-800'
+                : 'border-[4px] border-gray-900 dark:border-slate-700'
             }
           `}
           style={{
-            backgroundColor: isDark 
-              ? (isSelected 
-                  ? '#1e293b'
-                  : '#0f172a'
-                )
-              : (isSelected
-                  ? '#eff6ff' // blue-50
-                  : '#ffffff' // white
-                ),
             boxShadow: isSelected
               ? (isDark 
-                  ? '0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(59, 130, 246, 0.5)'
-                  : '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(59, 130, 246, 0.3)'
+                  ? '0 10px 20px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(59, 130, 246, 0.6), inset 0 1px 0 rgba(255,255,255,0.1)'
+                  : '0 8px 20px rgba(0, 0, 0, 0.2), 0 4px 10px rgba(0, 0, 0, 0.15), 0 0 0 2px rgba(29, 78, 216, 0.5), inset 0 2px 4px rgba(255,255,255,0.8)'
                 )
-              : (isDark
-                  ? '0 10px 25px -5px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(30, 41, 59, 0.3)'
-                  : '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05)'
-                )
+              : isHovered
+                ? (isDark
+                    ? '0 8px 16px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.08)'
+                    : '0 6px 16px rgba(0, 0, 0, 0.18), 0 3px 8px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.15), inset 0 1px 3px rgba(255,255,255,0.6)'
+                  )
+                : (isDark
+                    ? '0 4px 12px rgba(0, 0, 0, 0.3), 0 1px 4px rgba(0, 0, 0, 0.2)'
+                    : '0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(255,255,255,0.5)'
+                  )
           }}
         >
           {/* Top highlight for selected items */}
@@ -234,7 +229,7 @@ const RecentItemThemeAware: React.FC<RecentItemThemeAwareProps> = ({
               </AnimatePresence>
 
               {/* Avatar */}
-              <div className="flex-shrink-0 relative hover:scale-105 transition-transform duration-200">
+              <div className="flex-shrink-0 relative">
                 <ItemAvatar 
                   type={item.type} 
                   status={item.status === 'completed' ? 'completed' : undefined}
@@ -242,31 +237,23 @@ const RecentItemThemeAware: React.FC<RecentItemThemeAwareProps> = ({
                 />
               </div>
 
-              {/* Content - ULTRA NÍTIDO E LEGÍVEL */}
+              {/* Content - ULTRA NÍTIDO COM TEXT-SHADOW */}
               <div className="flex-1 min-w-0 py-1">
                 <h3 
-                  className={`
-                    text-lg font-bold truncate leading-tight mb-2
-                    ${isDark ? 'text-white drop-shadow-sm' : 'text-gray-900'}
-                    tracking-tight
-                  `}
+                  className="text-lg font-extrabold truncate leading-tight mb-2 text-gray-950 dark:text-white"
                   style={{
-                    textShadow: isDark ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
-                    fontWeight: '700',
-                    letterSpacing: '-0.025em'
+                    textShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                    letterSpacing: '-0.02em'
                   }}
                 >
                   {item.primaryText}
                 </h3>
                 
-                <p className={`
-                  text-sm font-semibold truncate leading-tight mb-2
-                  ${isDark ? 'text-gray-200 drop-shadow-sm' : 'text-gray-700'}
-                  tracking-tight
-                `}
+                <p 
+                  className="text-sm font-bold truncate leading-tight mb-2 text-gray-800 dark:text-gray-100"
                   style={{
-                    textShadow: isDark ? '0 1px 1px rgba(0,0,0,0.3)' : 'none',
-                    fontWeight: '600'
+                    textShadow: '0 1px 1px rgba(0,0,0,0.08)',
+                    letterSpacing: '-0.01em'
                   }}
                 >
                   {item.secondaryText}
@@ -284,7 +271,7 @@ const RecentItemThemeAware: React.FC<RecentItemThemeAwareProps> = ({
               </div>
 
               {/* Status pill */}
-              <div className="flex-shrink-0 relative hover:scale-105 transition-transform duration-200">
+              <div className="flex-shrink-0 relative">
                 <StatusPill 
                   status={item.status} 
                   showGlow={false}
@@ -293,7 +280,7 @@ const RecentItemThemeAware: React.FC<RecentItemThemeAwareProps> = ({
               </div>
 
               {/* Actions */}
-              <div className="flex-shrink-0 hover:scale-105 transition-transform duration-200">
+              <div className="flex-shrink-0">
                 <ItemActions
                   onOpen={() => onAction?.({ type: 'open', itemId: item.id })}
                   onEdit={() => onAction?.({ type: 'edit', itemId: item.id })}

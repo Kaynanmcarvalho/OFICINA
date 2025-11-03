@@ -1,0 +1,193 @@
+/**
+ * Apple-like Theme Tokens
+ * Sistema de cores premium para light e dark mode
+ */
+
+:root {
+  /* ========================================
+     LIGHT MODE - Backgrounds
+     ======================================== */
+  --apple-bg-primary: #ffffff;
+  --apple-bg-secondary: rgba(255, 255, 255, 0.8);
+  --apple-bg-tertiary: #f5f5f7;
+  --apple-bg-quaternary: #fafafa;
+  
+  /* Glassmorphism */
+  --apple-glass-bg: rgba(255, 255, 255, 0.8);
+  --apple-glass-border: rgba(0, 0, 0, 0.08);
+  
+  /* ========================================
+     LIGHT MODE - Text
+     ======================================== */
+  --apple-text-primary: #1d1d1f;
+  --apple-text-secondary: #6e6e73;
+  --apple-text-tertiary: #86868b;
+  --apple-text-quaternary: #a1a1a6;
+  
+  /* ========================================
+     LIGHT MODE - Borders
+     ======================================== */
+  --apple-border-light: rgba(0, 0, 0, 0.06);
+  --apple-border-medium: rgba(0, 0, 0, 0.12);
+  --apple-border-strong: rgba(0, 0, 0, 0.18);
+  
+  /* ========================================
+     LIGHT MODE - Accents
+     ======================================== */
+  --apple-accent-blue: #007aff;
+  --apple-accent-blue-hover: #0051d5;
+  --apple-accent-blue-active: #004bb8;
+  
+  --apple-accent-green: #34c759;
+  --apple-accent-green-hover: #2fb350;
+  
+  --apple-accent-red: #ff3b30;
+  --apple-accent-red-hover: #e6342a;
+  
+  --apple-accent-amber: #ff9500;
+  --apple-accent-amber-hover: #e68600;
+  
+  /* ========================================
+     LIGHT MODE - Shadows
+     ======================================== */
+  --apple-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --apple-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --apple-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --apple-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+  --apple-shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.20);
+  
+  /* Colored shadows */
+  --apple-shadow-blue: 0 4px 12px rgba(0, 122, 255, 0.3);
+  --apple-shadow-blue-hover: 0 6px 16px rgba(0, 122, 255, 0.4);
+  
+  /* ========================================
+     LIGHT MODE - Gradients
+     ======================================== */
+  --apple-gradient-blue: linear-gradient(135deg, #007aff 0%, #0051d5 100%);
+  --apple-gradient-blue-hover: linear-gradient(135deg, #0051d5 0%, #004bb8 100%);
+  
+  --apple-gradient-subtle: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 100%);
+  
+  /* ========================================
+     LIGHT MODE - Overlays
+     ======================================== */
+  --apple-overlay-light: rgba(0, 0, 0, 0.02);
+  --apple-overlay-medium: rgba(0, 0, 0, 0.04);
+  --apple-overlay-strong: rgba(0, 0, 0, 0.08);
+  
+  --apple-backdrop: rgba(0, 0, 0, 0.4);
+  --apple-backdrop-blur: blur(40px);
+}
+
+/* ========================================
+   DARK MODE
+   ======================================== */
+.dark {
+  /* Backgrounds */
+  --apple-bg-primary: #000000;
+  --apple-bg-secondary: rgba(28, 28, 30, 0.8);
+  --apple-bg-tertiary: #1c1c1e;
+  --apple-bg-quaternary: #2c2c2e;
+  
+  /* Glassmorphism */
+  --apple-glass-bg: rgba(28, 28, 30, 0.8);
+  --apple-glass-border: rgba(255, 255, 255, 0.08);
+  
+  /* Text */
+  --apple-text-primary: #f5f5f7;
+  --apple-text-secondary: #98989d;
+  --apple-text-tertiary: #636366;
+  --apple-text-quaternary: #48484a;
+  
+  /* Borders */
+  --apple-border-light: rgba(255, 255, 255, 0.06);
+  --apple-border-medium: rgba(255, 255, 255, 0.12);
+  --apple-border-strong: rgba(255, 255, 255, 0.18);
+  
+  /* Accents */
+  --apple-accent-blue: #0a84ff;
+  --apple-accent-blue-hover: #409cff;
+  --apple-accent-blue-active: #66b0ff;
+  
+  --apple-accent-green: #30d158;
+  --apple-accent-green-hover: #5de07a;
+  
+  --apple-accent-red: #ff453a;
+  --apple-accent-red-hover: #ff6961;
+  
+  --apple-accent-amber: #ff9f0a;
+  --apple-accent-amber-hover: #ffb340;
+  
+  /* Shadows */
+  --apple-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --apple-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --apple-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --apple-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --apple-shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.6);
+  
+  /* Colored shadows */
+  --apple-shadow-blue: 0 4px 12px rgba(10, 132, 255, 0.4);
+  --apple-shadow-blue-hover: 0 6px 16px rgba(10, 132, 255, 0.5);
+  
+  /* Gradients */
+  --apple-gradient-blue: linear-gradient(135deg, #0a84ff 0%, #0066cc 100%);
+  --apple-gradient-blue-hover: linear-gradient(135deg, #409cff 0%, #0a84ff 100%);
+  
+  --apple-gradient-subtle: linear-gradient(180deg, rgba(28, 28, 30, 0.8) 0%, rgba(28, 28, 30, 0.4) 100%);
+  
+  /* Overlays */
+  --apple-overlay-light: rgba(255, 255, 255, 0.02);
+  --apple-overlay-medium: rgba(255, 255, 255, 0.04);
+  --apple-overlay-strong: rgba(255, 255, 255, 0.08);
+  
+  --apple-backdrop: rgba(0, 0, 0, 0.6);
+  --apple-backdrop-blur: blur(40px);
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+/* Glassmorphism Card */
+.apple-glass-card {
+  background: var(--apple-glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--apple-glass-border);
+  box-shadow: var(--apple-shadow-md);
+}
+
+/* Smooth transitions */
+.apple-transition {
+  transition: all 0.3s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.apple-transition-fast {
+  transition: all 0.15s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.apple-transition-slow {
+  transition: all 0.5s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+/* Hover effects */
+.apple-hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+.apple-hover-scale:hover {
+  transform: scale(1.02);
+}
+
+/* Focus states */
+.apple-focus-ring:focus {
+  outline: 2px solid var(--apple-accent-blue);
+  outline-offset: 2px;
+}
+
+/* Backdrop blur support check */
+@supports not (backdrop-filter: blur(20px)) {
+  .apple-glass-card {
+    background: var(--apple-bg-secondary);
+  }
+}

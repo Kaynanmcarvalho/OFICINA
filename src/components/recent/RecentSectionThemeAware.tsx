@@ -33,6 +33,24 @@ const RecentSectionThemeAware: React.FC<RecentSectionThemeAwareProps> = ({
     setForceUpdate(prev => prev + 1);
   }, [isDark]);
 
+  // Observer para mudanças na classe 'dark' do documento
+  useEffect(() => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          setForceUpdate(prev => prev + 1);
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   // Stats calculation
   const stats = {
     total: items.length,
@@ -73,17 +91,11 @@ const RecentSectionThemeAware: React.FC<RecentSectionThemeAwareProps> = ({
 
   return (
     <div
-      className="relative transition-all duration-500 ease-out rounded-2xl p-6"
+      className="relative transition-all duration-500 ease-out rounded-2xl p-6 bg-white dark:bg-black border-[3px] border-gray-700 dark:border-gray-700"
       style={{
-        background: isDark 
-          ? '#000000'
-          : '#ffffff',
-        border: isDark 
-          ? '1px solid #333333'
-          : '1px solid rgba(229, 231, 235, 0.5)',
         boxShadow: isDark
-          ? '0 4px 20px -4px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1)'
-          : '0 4px 20px -4px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05)',
+          ? '0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.08)'
+          : '0 6px 18px rgba(0, 0, 0, 0.12), 0 3px 9px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.1)',
       }}
     >
       {/* Main content container */}
@@ -100,21 +112,31 @@ const RecentSectionThemeAware: React.FC<RecentSectionThemeAwareProps> = ({
           >
             <div className="mb-8">
               <div className="relative">
-                {/* Title with theme-aware styling */}
+                {/* Title with enhanced styling */}
                 <div className="relative mb-3">
-                  <h1 className={`
-                    text-4xl font-bold
-                    ${isDark ? 'text-white' : 'text-gray-900'}
-                  `}>
+                  <h1 
+                    className="text-4xl font-extrabold text-gray-950 dark:text-white"
+                    style={{
+                      textShadow: isDark 
+                        ? '0 2px 4px rgba(0,0,0,0.5)' 
+                        : '0 1px 2px rgba(0,0,0,0.1)',
+                      letterSpacing: '-0.03em'
+                    }}
+                  >
                     {title}
                   </h1>
                 </div>
                 
-                {/* Subtitle - theme aware */}
-                <p className={`
-                  text-base font-medium mb-6
-                  ${isDark ? 'text-gray-400' : 'text-gray-600'}
-                `}>
+                {/* Subtitle - enhanced */}
+                <p 
+                  className="text-base font-bold mb-6 text-gray-800 dark:text-gray-300"
+                  style={{
+                    textShadow: isDark 
+                      ? '0 1px 2px rgba(0,0,0,0.3)' 
+                      : '0 1px 2px rgba(0,0,0,0.1)',
+                    letterSpacing: '-0.01em'
+                  }}
+                >
                   Gerencie suas atividades com eficiência e estilo
                 </p>
 
@@ -126,76 +148,72 @@ const RecentSectionThemeAware: React.FC<RecentSectionThemeAwareProps> = ({
                       transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     >
                       <div className="text-center">
-                        <div className={`
-                          text-xl font-bold
-                          ${isDark ? 'text-white' : 'text-gray-900'}
-                        `}>
+                        <div 
+                          className="text-xl font-extrabold text-gray-950 dark:text-white"
+                          style={{
+                            textShadow: isDark ? '0 1px 2px rgba(0,0,0,0.4)' : '0 1px 1px rgba(0,0,0,0.08)'
+                          }}
+                        >
                           {stats.total}
                         </div>
-                        <div className={`
-                          text-xs uppercase tracking-wider
-                          ${isDark ? 'text-gray-500' : 'text-gray-500'}
-                        `}>
+                        <div className="text-xs uppercase tracking-wider font-bold text-gray-700 dark:text-gray-400">
                           Total
                         </div>
                       </div>
                     </motion.div>
-                    <div className={`
-                      w-px h-6
-                      ${isDark ? 'bg-gray-700' : 'bg-gray-300'}
-                    `} />
+                    <div className="w-px h-6 bg-gray-300 dark:bg-gray-700" />
                     <motion.div 
                       whileHover={{ scale: 1.05 }}
                       transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     >
                       <div className="text-center">
-                        <div className="text-xl font-bold text-emerald-500">
+                        <div 
+                          className="text-xl font-extrabold text-emerald-600 dark:text-emerald-400"
+                          style={{
+                            textShadow: '0 1px 2px rgba(0,0,0,0.15)'
+                          }}
+                        >
                           {stats.completed}
                         </div>
-                        <div className={`
-                          text-xs uppercase tracking-wider
-                          ${isDark ? 'text-gray-500' : 'text-gray-500'}
-                        `}>
+                        <div className="text-xs uppercase tracking-wider font-bold text-gray-700 dark:text-gray-400">
                           Concluídos
                         </div>
                       </div>
                     </motion.div>
-                    <div className={`
-                      w-px h-6
-                      ${isDark ? 'bg-gray-700' : 'bg-gray-300'}
-                    `} />
+                    <div className="w-px h-6 bg-gray-300 dark:bg-gray-700" />
                     <motion.div 
                       whileHover={{ scale: 1.05 }}
                       transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     >
                       <div className="text-center">
-                        <div className="text-xl font-bold text-amber-500">
+                        <div 
+                          className="text-xl font-extrabold text-amber-600 dark:text-amber-400"
+                          style={{
+                            textShadow: '0 1px 2px rgba(0,0,0,0.15)'
+                          }}
+                        >
                           {stats.inProgress}
                         </div>
-                        <div className={`
-                          text-xs uppercase tracking-wider
-                          ${isDark ? 'text-gray-500' : 'text-gray-500'}
-                        `}>
+                        <div className="text-xs uppercase tracking-wider font-bold text-gray-700 dark:text-gray-400">
                           Em Andamento
                         </div>
                       </div>
                     </motion.div>
-                    <div className={`
-                      w-px h-6
-                      ${isDark ? 'bg-gray-700' : 'bg-gray-300'}
-                    `} />
+                    <div className="w-px h-6 bg-gray-300 dark:bg-gray-700" />
                     <motion.div 
                       whileHover={{ scale: 1.05 }}
                       transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     >
                       <div className="text-center">
-                        <div className="text-xl font-bold text-blue-500">
+                        <div 
+                          className="text-xl font-extrabold text-blue-600 dark:text-blue-400"
+                          style={{
+                            textShadow: '0 1px 2px rgba(0,0,0,0.15)'
+                          }}
+                        >
                           {stats.pending}
                         </div>
-                        <div className={`
-                          text-xs uppercase tracking-wider
-                          ${isDark ? 'text-gray-500' : 'text-gray-500'}
-                        `}>
+                        <div className="text-xs uppercase tracking-wider font-bold text-gray-700 dark:text-gray-400">
                           Pendentes
                         </div>
                       </div>

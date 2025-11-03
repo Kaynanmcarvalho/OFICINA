@@ -1,5 +1,10 @@
+/**
+ * ItemActions - BOTÕES DE AÇÃO REFEITOS DO ZERO
+ * Botões simples, limpos e funcionais
+ */
+
 import React, { useState } from 'react';
-import IconLoader from './IconLoader';
+import { ExternalLink, Edit3, MoreVertical } from 'lucide-react';
 import ContextMenu from './ContextMenu';
 
 interface ItemActionsProps {
@@ -21,53 +26,16 @@ const ItemActions: React.FC<ItemActionsProps> = ({
   onDelete,
   disabled = false 
 }) => {
-  const [hoveredButton, setHoveredButton] = useState<string | null>(null);
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
-  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
-
-  const handleButtonHover = (buttonType: string, event: React.MouseEvent) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    setTooltipPosition({
-      x: rect.left + rect.width / 2,
-      y: rect.top - 8
-    });
-    setHoveredButton(buttonType);
-  };
-
-  const buttonBaseClasses = `
-    w-10 h-10 
-    rounded-xl 
-    flex 
-    items-center 
-    justify-center 
-    transition-all 
-    duration-200 
-    ease-out
-    border-2
-    font-medium
-    shadow-sm
-    ${disabled 
-      ? 'opacity-30 cursor-not-allowed border-transparent bg-gray-100 dark:bg-gray-800' 
-      : 'hover:bg-blue-500 dark:hover:bg-blue-600 hover:border-blue-500 dark:hover:border-blue-600 hover:scale-110 active:scale-95 cursor-pointer border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 hover:shadow-lg hover:shadow-blue-500/25'
-    }
-  `;
-
-  const iconClasses = `
-    transition-all 
-    duration-200
-    ${disabled 
-      ? 'opacity-30 text-gray-400' 
-      : 'opacity-90 hover:opacity-100 text-gray-700 dark:text-gray-200 hover:text-white dark:hover:text-white'
-    }
-  `;
 
   const handleMoreClick = (event: React.MouseEvent) => {
     if (disabled) return;
+    event.stopPropagation();
     
     const rect = event.currentTarget.getBoundingClientRect();
     setContextMenuPosition({
-      x: rect.right - 200, // Align menu to the right of button
+      x: rect.right - 200,
       y: rect.bottom + 4,
     });
     setShowContextMenu(true);
@@ -75,6 +43,12 @@ const ItemActions: React.FC<ItemActionsProps> = ({
     if (onMore) {
       onMore();
     }
+  };
+
+  const handleButtonClick = (callback?: () => void) => (event: React.MouseEvent) => {
+    if (disabled) return;
+    event.stopPropagation();
+    callback?.();
   };
 
   const contextMenuItems = [
@@ -97,33 +71,6 @@ const ItemActions: React.FC<ItemActionsProps> = ({
       onClick: () => onComplete?.(),
     },
     {
-      id: 'print',
-      label: 'Imprimir',
-      icon: 'printer',
-      onClick: () => {
-        console.log('Imprimir registro');
-        // TODO: Implementar impressão
-      },
-    },
-    {
-      id: 'export',
-      label: 'Exportar PDF',
-      icon: 'download',
-      onClick: () => {
-        console.log('Exportar PDF');
-        // TODO: Implementar exportação
-      },
-    },
-    {
-      id: 'share',
-      label: 'Compartilhar',
-      icon: 'share',
-      onClick: () => {
-        console.log('Compartilhar registro');
-        // TODO: Implementar compartilhamento
-      },
-    },
-    {
       id: 'separator-1',
       label: '---',
       icon: '',
@@ -140,110 +87,89 @@ const ItemActions: React.FC<ItemActionsProps> = ({
   ];
 
   return (
-    <div className="flex items-center gap-2">
-      {/* Open Button */}
+    <div className="flex items-center gap-2 min-w-[136px] justify-end">
+      {/* Botão Abrir */}
       {onOpen && (
-        <div className="relative">
-          <button
-            onClick={disabled ? undefined : onOpen}
-            onMouseEnter={(e) => handleButtonHover('open', e)}
-            onMouseLeave={() => setHoveredButton(null)}
-            className={buttonBaseClasses}
-            disabled={disabled}
-            aria-label="Abrir registro"
-          >
-            <IconLoader 
-              name="external-link" 
-              size="sm" 
-              className={iconClasses}
-            />
-          </button>
-          
-          {/* Tooltip - POSICIONAMENTO ABSOLUTO LIVRE */}
-          {hoveredButton === 'open' && !disabled && (
-            <div 
-              className="fixed z-[9999] px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-sm font-medium rounded-lg whitespace-nowrap shadow-xl border border-gray-700 dark:border-gray-600 animate-fade-in pointer-events-none"
-              style={{
-                left: tooltipPosition.x,
-                top: tooltipPosition.y,
-                transform: 'translateX(-50%) translateY(-100%)',
-              }}
-            >
-              Abrir Detalhes
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-800"></div>
-            </div>
-          )}
-        </div>
+        <button
+          onClick={handleButtonClick(onOpen)}
+          disabled={disabled}
+          className={`
+            group relative
+            w-10 h-10 
+            rounded-xl 
+            flex items-center justify-center 
+            transition-all duration-200
+            ${disabled 
+              ? 'opacity-40 cursor-not-allowed bg-gray-100 dark:bg-gray-800' 
+              : 'bg-blue-500 hover:bg-blue-600 active:bg-blue-700 hover:scale-105 active:scale-95'
+            }
+            shadow-md hover:shadow-lg
+          `}
+          aria-label="Abrir registro"
+          title="Abrir Detalhes"
+        >
+          <ExternalLink 
+            size={18} 
+            className={disabled ? 'text-gray-400' : 'text-white'}
+            strokeWidth={2.5}
+          />
+        </button>
       )}
 
-      {/* Edit Button */}
+      {/* Botão Editar */}
       {onEdit && (
-        <div className="relative">
-          <button
-            onClick={disabled ? undefined : onEdit}
-            onMouseEnter={(e) => handleButtonHover('edit', e)}
-            onMouseLeave={() => setHoveredButton(null)}
-            className={buttonBaseClasses}
-            disabled={disabled}
-            aria-label="Editar registro"
-          >
-            <IconLoader 
-              name="edit" 
-              size="sm" 
-              className={iconClasses}
-            />
-          </button>
-          
-          {/* Tooltip - POSICIONAMENTO ABSOLUTO LIVRE */}
-          {hoveredButton === 'edit' && !disabled && (
-            <div 
-              className="fixed z-[9999] px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-sm font-medium rounded-lg whitespace-nowrap shadow-xl border border-gray-700 dark:border-gray-600 animate-fade-in pointer-events-none"
-              style={{
-                left: tooltipPosition.x,
-                top: tooltipPosition.y,
-                transform: 'translateX(-50%) translateY(-100%)',
-              }}
-            >
-              Editar Registro
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-800"></div>
-            </div>
-          )}
-        </div>
+        <button
+          onClick={handleButtonClick(onEdit)}
+          disabled={disabled}
+          className={`
+            group relative
+            w-10 h-10 
+            rounded-xl 
+            flex items-center justify-center 
+            transition-all duration-200
+            ${disabled 
+              ? 'opacity-40 cursor-not-allowed bg-gray-100 dark:bg-gray-800' 
+              : 'bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 hover:scale-105 active:scale-95'
+            }
+            shadow-md hover:shadow-lg
+          `}
+          aria-label="Editar registro"
+          title="Editar Registro"
+        >
+          <Edit3 
+            size={18} 
+            className={disabled ? 'text-gray-400' : 'text-white'}
+            strokeWidth={2.5}
+          />
+        </button>
       )}
 
-      {/* More Button */}
+      {/* Botão Mais Opções */}
       {(onMore || contextMenuItems.length > 0) && (
-        <div className="relative">
-          <button
-            onClick={handleMoreClick}
-            onMouseEnter={(e) => handleButtonHover('more', e)}
-            onMouseLeave={() => setHoveredButton(null)}
-            className={buttonBaseClasses}
-            disabled={disabled}
-            aria-label="Mais opções"
-          >
-            <IconLoader 
-              name="more-vertical" 
-              size="sm" 
-              className={iconClasses}
-            />
-          </button>
-          
-          {/* Tooltip - POSICIONAMENTO ABSOLUTO LIVRE */}
-          {hoveredButton === 'more' && !disabled && !showContextMenu && (
-            <div 
-              className="fixed z-[9999] px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-sm font-medium rounded-lg whitespace-nowrap shadow-xl border border-gray-700 dark:border-gray-600 animate-fade-in pointer-events-none"
-              style={{
-                left: tooltipPosition.x,
-                top: tooltipPosition.y,
-                transform: 'translateX(-50%) translateY(-100%)',
-              }}
-            >
-              Mais Opções
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-800"></div>
-            </div>
-          )}
-        </div>
+        <button
+          onClick={handleMoreClick}
+          disabled={disabled}
+          className={`
+            group relative
+            w-10 h-10 
+            rounded-xl 
+            flex items-center justify-center 
+            transition-all duration-200
+            ${disabled 
+              ? 'opacity-40 cursor-not-allowed bg-gray-100 dark:bg-gray-800' 
+              : 'bg-gray-600 hover:bg-gray-700 active:bg-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:active:bg-gray-500 hover:scale-105 active:scale-95'
+            }
+            shadow-md hover:shadow-lg
+          `}
+          aria-label="Mais opções"
+          title="Mais Opções"
+        >
+          <MoreVertical 
+            size={18} 
+            className={disabled ? 'text-gray-400' : 'text-white'}
+            strokeWidth={2.5}
+          />
+        </button>
       )}
 
       {/* Context Menu */}

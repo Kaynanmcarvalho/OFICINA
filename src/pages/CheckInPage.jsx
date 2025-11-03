@@ -7,6 +7,7 @@ import ModalCheckin from './checkin/componentes/ModalCheckin';
 import ModalCheckout from './checkin/componentes/ModalCheckout';
 import ModalEditarCheckin from './checkin/componentes/ModalEditarCheckin';
 import RecentSectionThemeAware from '../components/recent/RecentSectionThemeAware';
+import OperationalDashboard from './checkin/componentes/dashboard/OperationalDashboard';
 
 import { useCheckinStore } from '../store';
 import './checkin/estilos/checkin.css';
@@ -186,19 +187,23 @@ const CheckInPage = () => {
           transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
           className="text-center space-y-4 relative"
         >
-          {/* Linha de destaque animada */}
+          {/* Linha de destaque animada - SEM BLUR */}
           <motion.div
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-1 bg-gradient-to-r from-transparent via-orange-500/50 to-transparent blur-sm"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-1 bg-gradient-to-r from-transparent via-orange-500/70 to-transparent"
           />
           
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-5xl sm:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white"
+            className="text-5xl sm:text-6xl lg:text-7xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-gray-950 via-gray-900 to-gray-950 dark:from-white dark:via-gray-50 dark:to-white"
+            style={{
+              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+              letterSpacing: '-0.04em'
+            }}
           >
             Check-in / Check-out
           </motion.h1>
@@ -207,10 +212,30 @@ const CheckInPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 font-light max-w-2xl mx-auto"
+            className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 font-semibold max-w-2xl mx-auto"
+            style={{
+              textShadow: '0 1px 2px rgba(0,0,0,0.08)',
+              letterSpacing: '-0.01em'
+            }}
           >
             Gerencie entradas e saídas com elegância e eficiência
           </motion.p>
+        </motion.div>
+
+        {/* Dashboard Operacional */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+        >
+          <OperationalDashboard
+            checkins={checkins}
+            dailyTarget={10}
+            onFilterChange={(filters) => {
+              console.log('Filtros aplicados:', filters);
+              // Aqui você pode adicionar lógica adicional de filtro se necessário
+            }}
+          />
         </motion.div>
 
         {/* Cards de Ação */}
@@ -226,10 +251,10 @@ const CheckInPage = () => {
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             className="group relative"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-[2rem] blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100" />
-            <div className="relative bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 rounded-[2rem] p-8 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_50px_-10px_rgba(0,0,0,0.15)] dark:shadow-2xl border border-gray-300/50 dark:border-gray-700/30 overflow-hidden">
-              {/* Gradiente de fundo */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent dark:from-blue-900/10 dark:to-transparent" />
+            {/* Card nítido sem blur - BORDAS REALÇADAS 50% NO MODO CLARO */}
+            <div className="relative bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 rounded-[2rem] p-8 shadow-[0_6px_18px_rgba(0,0,0,0.12)] hover:shadow-[0_12px_30px_rgba(0,0,0,0.18)] dark:shadow-2xl border-[3px] border-gray-700 dark:border-gray-700 overflow-hidden">
+              {/* Gradiente de fundo sutil */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-50/70 to-transparent dark:from-blue-900/10 dark:to-transparent" />
               
               <div className="relative space-y-6">
                 <div className="flex items-center space-x-4">
@@ -240,12 +265,23 @@ const CheckInPage = () => {
                   >
                     <LogIn className="w-8 h-8 text-white" />
                   </motion.div>
-                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                  <h2 
+                    className="text-3xl font-extrabold text-gray-950 dark:text-white"
+                    style={{
+                      textShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                      letterSpacing: '-0.02em'
+                    }}
+                  >
                     Check-in
                   </h2>
                 </div>
                 
-                <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
+                <p 
+                  className="text-gray-800 dark:text-gray-200 text-lg leading-relaxed font-bold"
+                  style={{
+                    textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                  }}
+                >
                   Registre a entrada de veículos com agilidade e precisão
                 </p>
                 
@@ -267,14 +303,10 @@ const CheckInPage = () => {
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             className="group relative"
           >
-            <div className={`absolute inset-0 rounded-[2rem] blur-xl transition-all duration-500 ${
-              selectedForCheckout 
-                ? 'bg-gradient-to-br from-emerald-400/20 to-emerald-500/20 opacity-100' 
-                : 'bg-gradient-to-br from-gray-400/20 to-gray-500/20 opacity-0 group-hover:opacity-100'
-            }`} />
-            <div className="relative bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 rounded-[2rem] p-8 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_50px_-10px_rgba(0,0,0,0.15)] dark:shadow-2xl border border-gray-300/50 dark:border-gray-700/30 overflow-hidden">
-              {/* Gradiente de fundo */}
-              <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent dark:from-gray-700/10 dark:to-transparent" />
+            {/* Card nítido sem blur - BORDAS REALÇADAS 50% NO MODO CLARO */}
+            <div className="relative bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 rounded-[2rem] p-8 shadow-[0_6px_18px_rgba(0,0,0,0.12)] hover:shadow-[0_12px_30px_rgba(0,0,0,0.18)] dark:shadow-2xl border-[3px] border-gray-700 dark:border-gray-700 overflow-hidden">
+              {/* Gradiente de fundo sutil */}
+              <div className="absolute inset-0 bg-gradient-to-br from-gray-50/70 to-transparent dark:from-gray-700/10 dark:to-transparent" />
               
               <div className="relative space-y-6">
                 <div className="flex items-center space-x-4">
@@ -289,12 +321,23 @@ const CheckInPage = () => {
                   >
                     <LogOut className="w-8 h-8 text-white" />
                   </motion.div>
-                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                  <h2 
+                    className="text-3xl font-extrabold text-gray-950 dark:text-white"
+                    style={{
+                      textShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                      letterSpacing: '-0.02em'
+                    }}
+                  >
                     Check-out
                   </h2>
                 </div>
                 
-                <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
+                <p 
+                  className="text-gray-800 dark:text-gray-200 text-lg leading-relaxed font-bold"
+                  style={{
+                    textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                  }}
+                >
                   {selectedForCheckout 
                     ? `Selecionado: ${selectedForCheckout.clientName}`
                     : 'Finalize o atendimento selecionando um registro ativo abaixo'

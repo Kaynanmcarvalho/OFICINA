@@ -23,6 +23,8 @@ import {
   subscribeToAllCollections
 } from './servicos/dashboardService';
 import './estilos/dashboard.css';
+import './estilos/dashboard-light-premium.css';
+import './estilos/dashboard-ultra-depth.css';
 
 // Lazy loading para componentes de gráficos
 const GraficoFinanceiro = lazy(() => import('./componentes/GraficoFinanceiro'));

@@ -1,0 +1,270 @@
+/* 
+ * ESTÁGIO 3: PROFUNDIDADE ULTRA AGRESSIVA
+ * Sombras dramáticas e contornos muito definidos
+ * Efeito 3D máximo com múltiplas camadas
+ */
+
+.checkin-page-container {
+  transform-origin: top center;
+  transform: scale(0.8);
+  width: 100%;
+  max-width: 1536px;
+  margin-left: auto;
+  margin-right: auto;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Cards com profundidade ultra agressiva */
+.checkin-page-container [class*="rounded-"] {
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.18),
+    0 12px 32px rgba(0, 0, 0, 0.14),
+    0 6px 16px rgba(0, 0, 0, 0.10),
+    0 3px 8px rgba(0, 0, 0, 0.06),
+    inset 0 2px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.08),
+    inset 1px 0 0 rgba(255, 255, 255, 0.1),
+    inset -1px 0 0 rgba(0, 0, 0, 0.05);
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  position: relative;
+}
+
+/* Brilho intenso no topo */
+.checkin-page-container [class*="rounded-"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.5) 30%,
+    rgba(255, 255, 255, 0.7) 50%, 
+    rgba(255, 255, 255, 0.5) 70%,
+    transparent
+  );
+  border-radius: inherit;
+  filter: blur(0.5px);
+}
+
+/* Sombra interna adicional */
+.checkin-page-container [class*="rounded-"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 
+    inset 0 0 20px rgba(0, 0, 0, 0.03),
+    inset 0 4px 8px rgba(0, 0, 0, 0.05);
+  pointer-events: none;
+}
+
+/* Dark mode - Estágio 3 */
+.dark .checkin-page-container [class*="rounded-"] {
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.7),
+    0 12px 32px rgba(0, 0, 0, 0.6),
+    0 6px 16px rgba(0, 0, 0, 0.5),
+    0 3px 8px rgba(0, 0, 0, 0.4),
+    inset 0 2px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.5),
+    inset 1px 0 0 rgba(255, 255, 255, 0.08),
+    inset -1px 0 0 rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.dark .checkin-page-container [class*="rounded-"]::before {
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.2) 30%,
+    rgba(255, 255, 255, 0.3) 50%, 
+    rgba(255, 255, 255, 0.2) 70%,
+    transparent
+  );
+}
+
+.dark .checkin-page-container [class*="rounded-"]::after {
+  box-shadow: 
+    inset 0 0 20px rgba(0, 0, 0, 0.4),
+    inset 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Hover - Elevação dramática */
+.checkin-page-container [class*="rounded-"]:hover {
+  box-shadow: 
+    0 32px 80px rgba(0, 0, 0, 0.24),
+    0 20px 48px rgba(0, 0, 0, 0.18),
+    0 12px 28px rgba(0, 0, 0, 0.14),
+    0 6px 14px rgba(0, 0, 0, 0.10),
+    inset 0 2px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.1),
+    inset 1px 0 0 rgba(255, 255, 255, 0.15),
+    inset -1px 0 0 rgba(0, 0, 0, 0.08);
+  transform: translateY(-6px) scale(1.01);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.dark .checkin-page-container [class*="rounded-"]:hover {
+  box-shadow: 
+    0 32px 80px rgba(0, 0, 0, 0.9),
+    0 20px 48px rgba(0, 0, 0, 0.8),
+    0 12px 28px rgba(0, 0, 0, 0.7),
+    0 6px 14px rgba(0, 0, 0, 0.6),
+    inset 0 2px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.6),
+    inset 1px 0 0 rgba(255, 255, 255, 0.12),
+    inset -1px 0 0 rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Botões com profundidade ultra agressiva */
+.checkin-page-container button {
+  box-shadow: 
+    0 8px 20px rgba(0, 0, 0, 0.2),
+    0 4px 10px rgba(0, 0, 0, 0.15),
+    0 2px 5px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.checkin-page-container button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 0.15), 
+    transparent
+  );
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.checkin-page-container button:hover {
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.25),
+    0 6px 16px rgba(0, 0, 0, 0.2),
+    0 3px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px) scale(1.02);
+}
+
+.checkin-page-container button:active {
+  box-shadow: 
+    0 4px 10px rgba(0, 0, 0, 0.25),
+    inset 0 3px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 2px rgba(0, 0, 0, 0.2);
+  transform: translateY(0) scale(0.98);
+}
+
+/* Inputs com profundidade ultra */
+.checkin-page-container input,
+.checkin-page-container textarea,
+.checkin-page-container select {
+  box-shadow: 
+    inset 0 4px 12px rgba(0, 0, 0, 0.12),
+    inset 0 2px 6px rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(255, 255, 255, 0.6),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  border: 2px solid rgba(0, 0, 0, 0.15);
+}
+
+.checkin-page-container input:focus,
+.checkin-page-container textarea:focus,
+.checkin-page-container select:focus {
+  box-shadow: 
+    inset 0 4px 12px rgba(0, 0, 0, 0.1),
+    inset 0 2px 6px rgba(0, 0, 0, 0.06),
+    0 0 0 3px rgba(59, 130, 246, 0.3),
+    0 4px 12px rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+.dark .checkin-page-container input,
+.dark .checkin-page-container textarea,
+.dark .checkin-page-container select {
+  box-shadow: 
+    inset 0 4px 12px rgba(0, 0, 0, 0.5),
+    inset 0 2px 6px rgba(0, 0, 0, 0.4),
+    0 1px 2px rgba(255, 255, 255, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Modais com profundidade extrema */
+.checkin-page-container [role="dialog"],
+.checkin-page-container .modal {
+  box-shadow: 
+    0 40px 100px rgba(0, 0, 0, 0.3),
+    0 24px 60px rgba(0, 0, 0, 0.25),
+    0 12px 32px rgba(0, 0, 0, 0.2),
+    0 6px 16px rgba(0, 0, 0, 0.15),
+    inset 0 2px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(0, 0, 0, 0.15);
+}
+
+.dark .checkin-page-container [role="dialog"],
+.dark .checkin-page-container .modal {
+  box-shadow: 
+    0 40px 100px rgba(0, 0, 0, 0.95),
+    0 24px 60px rgba(0, 0, 0, 0.9),
+    0 12px 32px rgba(0, 0, 0, 0.85),
+    0 6px 16px rgba(0, 0, 0, 0.8),
+    inset 0 2px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Ajustes responsivos */
+@media (max-width: 1280px) {
+  .checkin-page-container {
+    transform: scale(0.82);
+    max-width: 1400px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .checkin-page-container {
+    transform: scale(0.85);
+    max-width: 1280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .checkin-page-container {
+    transform: scale(0.9);
+    max-width: 1024px;
+  }
+  
+  /* Reduzir intensidade em mobile */
+  .checkin-page-container [class*="rounded-"] {
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.15),
+      0 6px 20px rgba(0, 0, 0, 0.12),
+      0 3px 10px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.06);
+  }
+}
+
+@media (max-width: 640px) {
+  .checkin-page-container {
+    transform: scale(0.95);
+    max-width: 768px;
+  }
+}
+
+@media (max-width: 480px) {
+  .checkin-page-container {
+    transform: scale(1);
+    max-width: 100%;
+  }
+}
