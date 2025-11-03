@@ -1,3 +1,4 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
@@ -5,7 +6,7 @@ import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
  * Cartão de Indicador (KPI Card) - Apple Premium Design
  * Design inspirado em macOS Sonoma e Apple Music
  * Features:
- * - Glassmorphism com blur 40px
+ * - Design nítido sem blur para máxima legibilidade
  * - Gradientes sutis e profundidade
  * - Animações fluidas
  * - Glow effects em hover
@@ -88,7 +89,7 @@ const CartaoIndicador = ({
     >
       {/* Glow effect externo */}
       <div 
-        className="absolute -inset-0.5 rounded-[1.75rem] opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl"
+        className="absolute -inset-0.5 rounded-[1.75rem] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
         style={{
           background: `radial-gradient(circle at 50% 0%, ${config.glow}, transparent 70%)`
         }}
@@ -129,7 +130,7 @@ const CartaoIndicador = ({
             >
               {/* Glow do ícone */}
               <div 
-                className="absolute inset-0 rounded-2xl blur-lg opacity-40 group-hover:opacity-60 transition-opacity"
+                className="absolute inset-0 rounded-2xl opacity-40 group-hover:opacity-60 transition-opacity"
                 style={{ background: config.glow }}
               />
               
@@ -203,4 +204,15 @@ const CartaoIndicador = ({
   );
 };
 
-export default CartaoIndicador;
+// Memorizar o componente para evitar re-renderizações desnecessárias
+export default React.memo(CartaoIndicador, (prevProps, nextProps) => {
+  // Só re-renderizar se os valores importantes mudaram
+  return (
+    prevProps.titulo === nextProps.titulo &&
+    prevProps.valor === nextProps.valor &&
+    prevProps.tendencia === nextProps.tendencia &&
+    prevProps.percentual === nextProps.percentual &&
+    prevProps.cor === nextProps.cor &&
+    prevProps.loading === nextProps.loading
+  );
+});

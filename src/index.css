@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Importar estilos customizados de scrollbar */
+@import './styles/custom-scrollbar.css';
+
+/* Importar estilos de backdrop de modal */
+@import './styles/modal-backdrop.css';
+
+/* Importar forçar centralização do modal */
+@import './styles/modal-force-center.css';
+
+/* Importar estilos de escala para clientes */
+@import './styles/clients-scale.css';
+
 /* Import Premium Styles */
 @import './styles/dark-mode-premium.css';
 @import './styles/apple-premium.css';

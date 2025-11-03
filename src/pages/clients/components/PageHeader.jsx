@@ -136,7 +136,7 @@ const PageHeader = ({ clientCount = 0, onNewClient }) => {
             
             {/* Hint de atalho de teclado */}
             <motion.div
-              className="absolute -top-8 right-0 px-2 py-1 rounded-lg text-xs font-mono opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+              className="absolute -top-8 right-0 px-2 py-1 rounded-lg text-xs font-mono opacity-0 pointer-events-none"
               style={{
                 background: isDark ? 'rgba(28, 28, 30, 0.95)' : 'rgba(255, 255, 255, 0.95)',
                 border: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',

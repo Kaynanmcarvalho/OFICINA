@@ -145,8 +145,7 @@ const SearchBar = ({
           
           {/* Search Icon */}
           <motion.div
-            animate={{
-              scale: isFocused ? 1.1 : 1,
+            style={{
               color: isFocused 
                 ? 'var(--apple-accent-blue)'
                 : 'var(--apple-text-secondary)',
@@ -205,7 +204,7 @@ const SearchBar = ({
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                whileHover={{ scale: 1.1 }}
+
                 whileTap={{ scale: 0.9 }}
                 onClick={handleClear}
                 className="flex items-center justify-center w-6 h-6 rounded-full transition-colors"

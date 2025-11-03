@@ -1,0 +1,127 @@
+/* 
+ * Remoção completa de efeitos de blur na página de clientes
+ * Este arquivo remove todos os efeitos de backdrop-filter e blur
+ */
+
+/* FORÇA REMOÇÃO TOTAL DE BLUR - MÁXIMA PRIORIDADE */
+.clients-page-container,
+.clients-page-container *,
+.clients-page-container *::before,
+.clients-page-container *::after,
+.clients-page-container *:hover,
+.clients-page-container *:focus,
+.clients-page-container *:active,
+.clients-page-container tr,
+.clients-page-container tr:hover,
+.clients-page-container td,
+.clients-page-container td:hover,
+.clients-page-container .group,
+.clients-page-container .group:hover,
+.clients-page-container .group:hover *,
+.clients-page-container .client-row-optimized,
+.clients-page-container .client-row-optimized:hover,
+.clients-page-container .client-row-optimized:hover *,
+.clients-page-container .apple-glass-card,
+.clients-page-container .apple-glass-card:hover,
+.clients-page-container button,
+.clients-page-container button:hover,
+.clients-page-container button:focus,
+.clients-page-container button:active,
+.clients-page-container input,
+.clients-page-container textarea,
+.clients-page-container select,
+.clients-page-container div,
+.clients-page-container div:hover,
+.clients-page-container span,
+.clients-page-container span:hover {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  will-change: auto !important;
+}
+
+/* REMOVER TRANSFORMAÇÕES QUE CAUSAM BLUR */
+.clients-page-container *:hover,
+.clients-page-container .group:hover,
+.clients-page-container .group:hover *,
+.clients-page-container tr:hover,
+.clients-page-container td:hover {
+  transform: none !important;
+  -webkit-transform: none !important;
+  -moz-transform: none !important;
+  -ms-transform: none !important;
+  -o-transform: none !important;
+}
+
+/* DESABILITAR TRANSIÇÕES QUE PODEM CAUSAR BLUR */
+.clients-page-container .transition-all,
+.clients-page-container .transition-colors,
+.clients-page-container .transition-opacity,
+.clients-page-container .transition-transform,
+.clients-page-container .group,
+.clients-page-container .client-row-optimized {
+  transition: none !important;
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -ms-transition: none !important;
+  -o-transition: none !important;
+}
+
+/* FORÇAR BACKGROUND SÓLIDO */
+.clients-page-container .apple-glass-card {
+  background: var(--apple-bg-primary) !important;
+  border: 1px solid var(--apple-border-light) !important;
+}
+
+/* REMOVER EFEITOS DE FRAMER MOTION QUE CAUSAM BLUR */
+.clients-page-container [data-framer-component],
+.clients-page-container .motion-div,
+.clients-page-container [style*="transform"],
+.clients-page-container [style*="filter"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+}
+
+/* GARANTIR QUE MODAIS NÃO TENHAM BLUR */
+div[class*="modal"],
+div[class*="backdrop"],
+.modal-backdrop,
+.modal-overlay {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* DESABILITAR WILL-CHANGE QUE PODE CAUSAR BLUR */
+.clients-page-container * {
+  will-change: auto !important;
+}
+
+/* FORÇAR HARDWARE ACCELERATION OFF */
+.clients-page-container * {
+  -webkit-transform: translateZ(0) !important;
+  transform: translateZ(0) !important;
+  -webkit-backface-visibility: hidden !important;
+  backface-visibility: hidden !important;
+}
+
+/* REMOVER QUALQUER EFEITO DE GLASSMORPHISM */
+.clients-page-container .glass,
+.clients-page-container .glass-effect,
+.clients-page-container .glassmorphism,
+.clients-page-container [class*="glass"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: var(--apple-bg-primary) !important;
+}
+
+/* APLICAR TAMBÉM AO CLIENTCARD */
+.apple-glass-card,
+.apple-glass-card:hover,
+.apple-glass-card * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  transform: none !important;
+  transition: none !important;
+}

@@ -1,0 +1,315 @@
+/**
+ * Dashboard Theme Colors - Correção de Cores para Temas
+ * Garante que todos os textos tenham contraste adequado
+ */
+
+/* ========================================
+   CORREÇÕES DE FUNDO PARA DASHBOARD
+   ======================================== */
+
+/* Fundo principal do dashboard - tema claro */
+.dashboard-premium-bg {
+  background: linear-gradient(
+    135deg,
+    #f8fafc 0%,
+    #f1f5f9 25%,
+    #e2e8f0 50%,
+    #f1f5f9 75%,
+    #f8fafc 100%
+  ) !important;
+  background-size: 400% 400% !important;
+  animation: gradient-shift 15s ease infinite !important;
+}
+
+/* Fundo principal do dashboard - tema escuro */
+.dark .dashboard-premium-bg {
+  background: linear-gradient(
+    135deg,
+    #0f172a 0%,
+    #1e293b 25%,
+    #334155 50%,
+    #1e293b 75%,
+    #0f172a 100%
+  ) !important;
+  background-size: 400% 400% !important;
+  animation: gradient-shift 15s ease infinite !important;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ========================================
+   CORREÇÕES DE CORES PARA TEMA CLARO
+   ======================================== */
+
+/* Textos principais - tema claro */
+.dashboard-no-transform h1,
+.dashboard-no-transform h2,
+.dashboard-no-transform h3,
+.dashboard-no-transform h4,
+.dashboard-no-transform h5,
+.dashboard-no-transform h6 {
+  color: rgb(17, 24, 39) !important; /* gray-900 */
+}
+
+.dashboard-no-transform p,
+.dashboard-no-transform span:not([class*="bg-"]):not([class*="text-"]) {
+  color: rgb(75, 85, 99) !important; /* gray-600 */
+}
+
+/* Labels e textos secundários - tema claro */
+.dashboard-no-transform .text-sm:not([class*="text-"]),
+.dashboard-no-transform .text-xs:not([class*="text-"]) {
+  color: rgb(107, 114, 128) !important; /* gray-500 */
+}
+
+/* ========================================
+   CORREÇÕES DE CORES PARA TEMA ESCURO
+   ======================================== */
+
+/* Textos principais - tema escuro */
+.dark .dashboard-no-transform h1,
+.dark .dashboard-no-transform h2,
+.dark .dashboard-no-transform h3,
+.dark .dashboard-no-transform h4,
+.dark .dashboard-no-transform h5,
+.dark .dashboard-no-transform h6 {
+  color: rgb(255, 255, 255) !important; /* white */
+}
+
+.dark .dashboard-no-transform p,
+.dark .dashboard-no-transform span:not([class*="bg-"]):not([class*="text-"]) {
+  color: rgb(209, 213, 219) !important; /* gray-300 */
+}
+
+/* Labels e textos secundários - tema escuro */
+.dark .dashboard-no-transform .text-sm:not([class*="text-"]),
+.dark .dashboard-no-transform .text-xs:not([class*="text-"]) {
+  color: rgb(156, 163, 175) !important; /* gray-400 */
+}
+
+/* ========================================
+   CORREÇÕES ESPECÍFICAS PARA COMPONENTES
+   ======================================== */
+
+/* CartaoIndicador - valores principais */
+.dashboard-no-transform [class*="CartaoIndicador"] h3,
+.dashboard-no-transform .kpi-value {
+  color: rgb(17, 24, 39) !important; /* gray-900 */
+}
+
+.dark .dashboard-no-transform [class*="CartaoIndicador"] h3,
+.dark .dashboard-no-transform .kpi-value {
+  color: rgb(255, 255, 255) !important; /* white */
+}
+
+/* CartaoIndicador - títulos/labels */
+.dashboard-no-transform [class*="CartaoIndicador"] p {
+  color: rgb(107, 114, 128) !important; /* gray-500 */
+}
+
+.dark .dashboard-no-transform [class*="CartaoIndicador"] p {
+  color: rgb(156, 163, 175) !important; /* gray-400 */
+}
+
+/* Listas - títulos principais */
+.dashboard-no-transform [class*="Lista"] h3,
+.dashboard-no-transform [class*="Lista"] h4 {
+  color: rgb(17, 24, 39) !important; /* gray-900 */
+}
+
+.dark .dashboard-no-transform [class*="Lista"] h3,
+.dark .dashboard-no-transform [class*="Lista"] h4 {
+  color: rgb(255, 255, 255) !important; /* white */
+}
+
+/* Listas - textos secundários */
+.dashboard-no-transform [class*="Lista"] .text-sm,
+.dashboard-no-transform [class*="Lista"] .text-xs {
+  color: rgb(107, 114, 128) !important; /* gray-500 */
+}
+
+.dark .dashboard-no-transform [class*="Lista"] .text-sm,
+.dark .dashboard-no-transform [class*="Lista"] .text-xs {
+  color: rgb(156, 163, 175) !important; /* gray-400 */
+}
+
+/* ========================================
+   BADGES E ELEMENTOS COLORIDOS
+   ======================================== */
+
+/* Manter cores específicas dos badges (não sobrescrever) */
+.dashboard-no-transform [class*="bg-blue"] {
+  color: inherit !important;
+}
+
+.dashboard-no-transform [class*="bg-green"] {
+  color: inherit !important;
+}
+
+.dashboard-no-transform [class*="bg-red"] {
+  color: inherit !important;
+}
+
+.dashboard-no-transform [class*="bg-yellow"] {
+  color: inherit !important;
+}
+
+.dashboard-no-transform [class*="bg-purple"] {
+  color: inherit !important;
+}
+
+.dashboard-no-transform [class*="bg-orange"] {
+  color: inherit !important;
+}
+
+/* ========================================
+   ELEMENTOS ESPECÍFICOS
+   ======================================== */
+
+/* Placas de veículos */
+.dashboard-no-transform .placa {
+  color: rgb(255, 255, 255) !important; /* sempre branco */
+  background: rgb(17, 24, 39) !important; /* sempre escuro */
+}
+
+.dark .dashboard-no-transform .placa {
+  color: rgb(255, 255, 255) !important; /* sempre branco */
+  background: rgb(75, 85, 99) !important; /* cinza mais claro no dark */
+}
+
+/* Empty states */
+.dashboard-no-transform .empty-state h4 {
+  color: rgb(17, 24, 39) !important; /* gray-900 */
+}
+
+.dark .dashboard-no-transform .empty-state h4 {
+  color: rgb(255, 255, 255) !important; /* white */
+}
+
+.dashboard-no-transform .empty-state p {
+  color: rgb(107, 114, 128) !important; /* gray-500 */
+}
+
+.dark .dashboard-no-transform .empty-state p {
+  color: rgb(156, 163, 175) !important; /* gray-400 */
+}
+
+/* ========================================
+   CORREÇÕES PARA DROPDOWNS E FILTROS
+   ======================================== */
+
+/* Dropdowns - tema claro */
+.bg-white {
+  background-color: rgb(255, 255, 255) !important;
+}
+
+.dark .bg-white {
+  background-color: rgb(31, 41, 55) !important; /* gray-800 */
+}
+
+/* Dropdowns com backdrop - tema claro */
+[style*="backdrop-filter"] {
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+
+.dark [style*="backdrop-filter"] {
+  background: rgba(31, 41, 55, 0.95) !important;
+}
+
+/* Botões de filtro - tema claro */
+.bg-neutral-800 {
+  background-color: rgb(255, 255, 255) !important;
+  border: 1px solid rgb(229, 231, 235) !important; /* gray-200 */
+}
+
+.dark .bg-neutral-800 {
+  background-color: rgb(31, 41, 55) !important; /* gray-800 */
+  border: 1px solid rgb(75, 85, 99) !important; /* gray-600 */
+}
+
+/* Hover states para botões */
+.hover\:bg-neutral-50:hover {
+  background-color: rgb(249, 250, 251) !important; /* gray-50 */
+}
+
+.dark .hover\:bg-neutral-700:hover {
+  background-color: rgb(55, 65, 81) !important; /* gray-700 */
+}
+
+/* Bordas dos dropdowns */
+.border-neutral-200 {
+  border-color: rgb(229, 231, 235) !important; /* gray-200 */
+}
+
+.dark .border-neutral-700 {
+  border-color: rgb(75, 85, 99) !important; /* gray-600 */
+}
+
+/* Textos dos dropdowns */
+.text-neutral-900 {
+  color: rgb(17, 24, 39) !important; /* gray-900 */
+}
+
+.dark .text-neutral-100 {
+  color: rgb(255, 255, 255) !important;
+}
+
+.text-neutral-700 {
+  color: rgb(55, 65, 81) !important; /* gray-700 */
+}
+
+.dark .text-neutral-300 {
+  color: rgb(209, 213, 219) !important; /* gray-300 */
+}
+
+.text-neutral-600 {
+  color: rgb(75, 85, 99) !important; /* gray-600 */
+}
+
+.dark .text-neutral-400 {
+  color: rgb(156, 163, 175) !important; /* gray-400 */
+}
+
+.text-neutral-500 {
+  color: rgb(107, 114, 128) !important; /* gray-500 */
+}
+
+/* ========================================
+   FORÇA APLICAÇÃO DAS CORES
+   ======================================== */
+
+/* Garantir que as classes Tailwind sejam respeitadas */
+.dashboard-no-transform .text-gray-900 {
+  color: rgb(17, 24, 39) !important;
+}
+
+.dashboard-no-transform .text-gray-600 {
+  color: rgb(75, 85, 99) !important;
+}
+
+.dashboard-no-transform .text-gray-500 {
+  color: rgb(107, 114, 128) !important;
+}
+
+.dashboard-no-transform .text-gray-400 {
+  color: rgb(156, 163, 175) !important;
+}
+
+.dark .dashboard-no-transform .dark\:text-white {
+  color: rgb(255, 255, 255) !important;
+}
+
+.dark .dashboard-no-transform .dark\:text-gray-300 {
+  color: rgb(209, 213, 219) !important;
+}
+
+.dark .dashboard-no-transform .dark\:text-gray-400 {
+  color: rgb(156, 163, 175) !important;
+}
+
+.dark .dashboard-no-transform .dark\:text-gray-500 {
+  color: rgb(107, 114, 128) !important;
+}

@@ -97,15 +97,12 @@ const ClientRow = ({ client, index, onEdit, onToggleStatus, onView, onViewVehicl
 
   return (
     <motion.tr
+      key={`client-${client.firestoreId || client.id}`}
       variants={rowVariants}
-      className="group transition-all duration-200"
+      className="group transition-all duration-200 client-row-optimized"
       style={{
         borderBottom: '1px solid var(--apple-border-light)',
         height: '72px',
-      }}
-      whileHover={{
-        backgroundColor: 'var(--apple-overlay-light)',
-        y: -1,
       }}
     >
       {/* Cliente */}
@@ -145,13 +142,13 @@ const ClientRow = ({ client, index, onEdit, onToggleStatus, onView, onViewVehicl
             {hasWhatsApp(client.phone) && (
               <motion.button
                 onClick={() => openWhatsApp(client.phone)}
-                className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all duration-200 hover:scale-105"
+                className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium"
                 style={{
                   background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
                   color: 'white',
                   boxShadow: '0 2px 8px rgba(37, 211, 102, 0.3)'
                 }}
-                whileHover={{ boxShadow: '0 4px 12px rgba(37, 211, 102, 0.4)' }}
+
                 whileTap={{ scale: 0.95 }}
                 title="Conversar no WhatsApp"
               >
@@ -173,12 +170,12 @@ const ClientRow = ({ client, index, onEdit, onToggleStatus, onView, onViewVehicl
       <td className="px-6 py-4 text-center">
         <motion.button
           onClick={() => onViewVehicles && onViewVehicles(client)}
-          className="inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-semibold transition-all duration-200 hover:scale-110 hover:shadow-lg"
+          className="inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-semibold"
           style={{
             background: 'var(--apple-accent-blue)',
             color: 'white',
           }}
-          whileHover={{ scale: 1.1 }}
+
           whileTap={{ scale: 0.95 }}
           disabled={!client.vehicles || client.vehicles.length === 0}
         >
@@ -201,15 +198,11 @@ const ClientRow = ({ client, index, onEdit, onToggleStatus, onView, onViewVehicl
         <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <motion.button
             onClick={() => onView?.(client)}
-            className="w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200"
+            className="w-9 h-9 rounded-lg flex items-center justify-center"
             style={{
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               color: 'white',
               boxShadow: '0 2px 8px rgba(102, 126, 234, 0.3)'
-            }}
-            whileHover={{ 
-              scale: 1.1,
-              boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)'
             }}
             whileTap={{ scale: 0.95 }}
             title="Visualizar dados do cliente"
@@ -218,15 +211,11 @@ const ClientRow = ({ client, index, onEdit, onToggleStatus, onView, onViewVehicl
           </motion.button>
           <motion.button
             onClick={onEdit}
-            className="w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200"
+            className="w-9 h-9 rounded-lg flex items-center justify-center"
             style={{
               background: 'var(--apple-accent-blue)',
               color: 'white',
               boxShadow: '0 2px 8px rgba(0, 122, 255, 0.3)'
-            }}
-            whileHover={{ 
-              scale: 1.1,
-              boxShadow: '0 4px 12px rgba(0, 122, 255, 0.4)'
             }}
             whileTap={{ scale: 0.95 }}
             title="Editar cliente"
@@ -240,7 +229,7 @@ const ClientRow = ({ client, index, onEdit, onToggleStatus, onView, onViewVehicl
               size="sm"
               className="mr-1"
             />
-            <span className="text-xs text-neutral-500 dark:text-neutral-400 min-w-[45px]">
+            <span className="text-xs text-neutral-500 dark:text-neutral-400 min-w-[50px] text-center">
               {client.active !== false ? 'Ativo' : 'Inativo'}
             </span>
           </div>

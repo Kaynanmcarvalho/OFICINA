@@ -1,0 +1,259 @@
+/**
+ * Dashboard Backgrounds - Correção de Fundos para Temas
+ * Garante que todos os fundos se adaptem corretamente ao tema
+ */
+
+/* ========================================
+   FUNDO PRINCIPAL DO DASHBOARD
+   ======================================== */
+
+/* Container principal - tema claro */
+.dashboard-container {
+  background: linear-gradient(
+    135deg,
+    rgb(248, 250, 252) 0%,
+    rgb(241, 245, 249) 25%,
+    rgb(226, 232, 240) 50%,
+    rgb(241, 245, 249) 75%,
+    rgb(248, 250, 252) 100%
+  ) !important;
+  min-height: 100vh !important;
+}
+
+/* Container principal - tema escuro */
+.dark .dashboard-container {
+  background: linear-gradient(
+    135deg,
+    rgb(15, 23, 42) 0%,
+    rgb(30, 41, 59) 25%,
+    rgb(51, 65, 85) 50%,
+    rgb(30, 41, 59) 75%,
+    rgb(15, 23, 42) 100%
+  ) !important;
+  min-height: 100vh !important;
+}
+
+/* ========================================
+   CARDS E COMPONENTES
+   ======================================== */
+
+/* Cards principais - tema claro */
+.dashboard-card {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+/* Cards principais - tema escuro */
+.dark .dashboard-card {
+  background: rgba(31, 41, 55, 0.95) !important;
+  border: 1px solid rgba(75, 85, 99, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+/* ========================================
+   DROPDOWNS E MODAIS
+   ======================================== */
+
+/* Dropdowns - tema claro */
+.dropdown-bg {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+}
+
+/* Dropdowns - tema escuro */
+.dark .dropdown-bg {
+  background: rgba(31, 41, 55, 0.98) !important;
+  border: 1px solid rgba(75, 85, 99, 0.8) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+}
+
+/* ========================================
+   BOTÕES E ELEMENTOS INTERATIVOS
+   ======================================== */
+
+/* Botões secundários - tema claro */
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  color: rgb(55, 65, 81) !important;
+}
+
+.btn-secondary:hover {
+  background: rgba(249, 250, 251, 1) !important;
+  border-color: rgba(203, 213, 225, 1) !important;
+}
+
+/* Botões secundários - tema escuro */
+.dark .btn-secondary {
+  background: rgba(31, 41, 55, 0.9) !important;
+  border: 1px solid rgba(75, 85, 99, 0.8) !important;
+  color: rgb(209, 213, 219) !important;
+}
+
+.dark .btn-secondary:hover {
+  background: rgba(55, 65, 81, 1) !important;
+  border-color: rgba(107, 114, 128, 1) !important;
+}
+
+/* ========================================
+   CORREÇÕES ESPECÍFICAS PARA TAILWIND
+   ======================================== */
+
+/* Forçar fundos corretos */
+.bg-white {
+  background-color: rgb(255, 255, 255) !important;
+}
+
+.dark .bg-white {
+  background-color: rgb(31, 41, 55) !important;
+}
+
+.bg-gray-50 {
+  background-color: rgb(249, 250, 251) !important;
+}
+
+.dark .bg-gray-50 {
+  background-color: rgb(55, 65, 81) !important;
+}
+
+.bg-gray-100 {
+  background-color: rgb(243, 244, 246) !important;
+}
+
+.dark .bg-gray-100 {
+  background-color: rgb(75, 85, 99) !important;
+}
+
+.bg-gray-800 {
+  background-color: rgb(31, 41, 55) !important;
+}
+
+.dark .bg-gray-800 {
+  background-color: rgb(31, 41, 55) !important;
+}
+
+.bg-gray-900 {
+  background-color: rgb(17, 24, 39) !important;
+}
+
+.dark .bg-gray-900 {
+  background-color: rgb(17, 24, 39) !important;
+}
+
+/* ========================================
+   ELEMENTOS ESPECÍFICOS DO DASHBOARD
+   ======================================== */
+
+/* Widget do clima */
+.weather-widget {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+}
+
+.dark .weather-widget {
+  background: rgba(31, 41, 55, 0.95) !important;
+  border: 1px solid rgba(75, 85, 99, 0.8) !important;
+}
+
+/* Alertas centrais */
+.alert-container {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+}
+
+.dark .alert-container {
+  background: rgba(31, 41, 55, 0.95) !important;
+  border: 1px solid rgba(75, 85, 99, 0.8) !important;
+}
+
+/* Gráficos */
+.chart-container {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+}
+
+.dark .chart-container {
+  background: rgba(31, 41, 55, 0.95) !important;
+  border: 1px solid rgba(75, 85, 99, 0.8) !important;
+}
+
+/* ========================================
+   SCROLLBARS TEMÁTICOS
+   ======================================== */
+
+/* Scrollbar - tema claro */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.7);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.8);
+}
+
+/* Scrollbar - tema escuro */
+.dark ::-webkit-scrollbar-track {
+  background: rgba(30, 41, 59, 0.5);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.7);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.8);
+}
+
+/* ========================================
+   ANIMAÇÕES DE FUNDO
+   ======================================== */
+
+@keyframes dashboard-gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animated-bg {
+  background-size: 400% 400%;
+  animation: dashboard-gradient 20s ease infinite;
+}
+
+/* ========================================
+   RESPONSIVIDADE
+   ======================================== */
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    background: rgb(248, 250, 252) !important;
+  }
+  
+  .dark .dashboard-container {
+    background: rgb(15, 23, 42) !important;
+  }
+  
+  .dropdown-bg {
+    background: rgba(255, 255, 255, 1) !important;
+  }
+  
+  .dark .dropdown-bg {
+    background: rgba(31, 41, 55, 1) !important;
+  }
+}

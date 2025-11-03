@@ -8,6 +8,9 @@ import { motion } from 'framer-motion';
 import { useThemeStore } from '../store';
 import { useClientStore } from '../store';
 import toast from 'react-hot-toast';
+import '../styles/clients-scale.css';
+import '../styles/clients-no-blur.css';
+import '../styles/clients-force-no-blur.css';
 
 // Componentes
 import PageHeader from './clients/components/PageHeader';
@@ -118,10 +121,8 @@ const ClientsPage = () => {
     }
   };
 
-  // Nova função para toggle de status
+  // Nova função para toggle de status - otimizada
   const handleToggleClientStatus = async (clientId, newStatus) => {
-    console.log('Toggle status:', { clientId, newStatus }); // Debug
-    
     try {
       const client = clients.find(c => c.id === clientId || c.firestoreId === clientId);
       if (!client) {
@@ -129,22 +130,24 @@ const ClientsPage = () => {
         return;
       }
 
-      console.log('Cliente encontrado:', client); // Debug
-      
+      // Atualização otimizada - apenas os campos necessários
       const updateData = { 
-        ...client, 
         active: newStatus,
         updatedAt: new Date().toISOString()
       };
-      
-      console.log('Dados para atualizar:', updateData); // Debug
 
       await updateClient(client.firestoreId || client.id, updateData);
       
+      // Toast mais discreto
       toast.success(
-        newStatus 
-          ? 'Cliente ativado com sucesso!' 
-          : 'Cliente desativado com sucesso!'
+        newStatus ? 'Cliente ativado' : 'Cliente desativado',
+        { 
+          duration: 2000,
+          style: {
+            fontSize: '14px',
+            padding: '8px 12px'
+          }
+        }
       );
     } catch (error) {
       console.error('Erro ao alterar status do cliente:', error);
@@ -195,7 +198,7 @@ const ClientsPage = () => {
   
   return (
     <div
-      className="min-h-screen transition-colors duration-300 px-6 pb-12"
+      className="transition-colors duration-300 px-6 pb-12 clients-page-container"
       style={{
         background: isDarkMode 
           ? 'var(--apple-bg-primary, #000000)'

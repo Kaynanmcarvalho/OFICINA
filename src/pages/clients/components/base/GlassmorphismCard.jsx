@@ -47,17 +47,8 @@ const GlassmorphismCard = ({
     xl: { boxShadow: 'var(--apple-shadow-xl)' },
   };
 
-  // Hover variants para Framer Motion
-  const hoverVariants = hover ? {
-    scale: 1.02,
-    y: -4,
-    boxShadow: 'var(--apple-shadow-lg)',
-    transition: {
-      type: "spring",
-      stiffness: 300,
-      damping: 20
-    }
-  } : {};
+  // Hover variants para Framer Motion - REMOVIDO PARA EVITAR BLUR
+  const hoverVariants = {};
 
   // Animation variants
   const cardVariants = {

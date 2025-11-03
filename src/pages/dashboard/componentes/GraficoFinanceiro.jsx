@@ -16,7 +16,10 @@ const GraficoFinanceiro = () => {
   }, [periodo]);
 
   const carregarDadosFinanceiros = async () => {
-    setIsLoading(true);
+    // Não mostrar loading se já temos dados (evita piscar)
+    if (dados.length === 0) {
+      setIsLoading(true);
+    }
     try {
       // Calcular data inicial baseada no período
       const hoje = new Date();

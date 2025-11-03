@@ -1,0 +1,90 @@
+/* 
+ * Correção de posicionamento do ToggleSwitch
+ * Garante que o ícone fique perfeitamente centralizado
+ */
+
+.toggle-optimized {
+  position: relative;
+  overflow: hidden;
+}
+
+.toggle-optimized .absolute {
+  position: absolute !important;
+}
+
+/* Garantir que o thumb fique perfeitamente posicionado */
+.toggle-optimized > div:first-child {
+  top: 2px !important;
+  left: 2px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Centralizar o ícone dentro do thumb */
+.toggle-optimized .absolute.inset-0 {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+}
+
+/* Garantir que o ícone não seja cortado */
+.toggle-optimized svg {
+  display: block !important;
+  margin: auto !important;
+}
+
+/* Melhorar a transição */
+.toggle-optimized > div:first-child {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Garantir que o container tenha o tamanho correto */
+.toggle-optimized.w-10 {
+  width: 2.5rem !important; /* 40px */
+  height: 1.5rem !important; /* 24px */
+}
+
+.toggle-optimized.w-12 {
+  width: 3rem !important; /* 48px */
+  height: 1.75rem !important; /* 28px */
+}
+
+.toggle-optimized.w-14 {
+  width: 3.5rem !important; /* 56px */
+  height: 2rem !important; /* 32px */
+}
+
+/* Garantir que o thumb tenha o tamanho correto */
+.toggle-optimized .w-4 {
+  width: 1rem !important; /* 16px */
+  height: 1rem !important; /* 16px */
+}
+
+.toggle-optimized .w-5 {
+  width: 1.25rem !important; /* 20px */
+  height: 1.25rem !important; /* 20px */
+}
+
+.toggle-optimized .w-6 {
+  width: 1.5rem !important; /* 24px */
+  height: 1.5rem !important; /* 24px */
+}
+
+/* Remover qualquer overflow que possa cortar o ícone */
+.toggle-optimized,
+.toggle-optimized * {
+  overflow: visible !important;
+}
+
+/* Garantir que o ícone seja visível */
+.toggle-optimized svg {
+  opacity: 1 !important;
+  visibility: visible !important;
+}

@@ -3,17 +3,13 @@
  * Com opções de filtrar por status (ativo/inativo) e outros critérios
  */
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Filter, 
   Users, 
-  UserCheck, 
-  UserX, 
   ChevronDown,
-  X,
-  Calendar,
-  MapPin
+  X
 } from 'lucide-react';
 
 const ClientFilter = ({ 
@@ -25,6 +21,9 @@ const ClientFilter = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState(activeFilters);
+  const [dropdownPosition, setDropdownPosition] = useState('left');
+  const buttonRef = useRef(null);
+  const dropdownRef = useRef(null);
 
   // Opções de filtro
   const filterOptions = [
@@ -36,28 +35,6 @@ const ClientFilter = ({
         { value: 'all', label: 'Todos os clientes', count: totalClients, color: 'text-blue-600' },
         { value: 'active', label: 'Clientes ativos', count: activeClients, color: 'text-green-600' },
         { value: 'inactive', label: 'Clientes inativos', count: inactiveClients, color: 'text-red-600' }
-      ]
-    },
-    {
-      id: 'period',
-      label: 'Período de cadastro',
-      icon: Calendar,
-      options: [
-        { value: 'all', label: 'Todos os períodos' },
-        { value: 'today', label: 'Hoje' },
-        { value: 'week', label: 'Esta semana' },
-        { value: 'month', label: 'Este mês' },
-        { value: 'year', label: 'Este ano' }
-      ]
-    },
-    {
-      id: 'location',
-      label: 'Localização',
-      icon: MapPin,
-      options: [
-        { value: 'all', label: 'Todas as cidades' },
-        { value: 'local', label: 'Cidade local' },
-        { value: 'other', label: 'Outras cidades' }
       ]
     }
   ];
@@ -72,24 +49,74 @@ const ClientFilter = ({
   };
 
   const clearFilters = () => {
-    const clearedFilters = { status: 'all', period: 'all', location: 'all' };
+    const clearedFilters = { status: 'all' };
     setSelectedFilters(clearedFilters);
     onFilterChange(clearedFilters);
   };
 
   const hasActiveFilters = Object.values(selectedFilters).some(value => value !== 'all');
 
+  // Calcular posição do dropdown para evitar overflow
+  useEffect(() => {
+    if (isOpen && buttonRef.current) {
+      const buttonRect = buttonRef.current.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const dropdownWidth = Math.min(320, viewportWidth - 40); // Adaptar à viewport
+      
+      // Para telas muito pequenas, centralizar
+      if (viewportWidth < 400) {
+        setDropdownPosition('center');
+      }
+      // Se o dropdown ultrapassar a borda direita, posicionar à direita
+      else if (buttonRect.left + dropdownWidth > viewportWidth - 20) {
+        setDropdownPosition('right');
+      } 
+      // Se posicionar à direita faria ultrapassar a borda esquerda, manter à esquerda
+      else if (buttonRect.right - dropdownWidth < 20) {
+        setDropdownPosition('left');
+      }
+      else {
+        setDropdownPosition('left');
+      }
+    }
+  }, [isOpen]);
+
+  // Fechar dropdown ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownRef.current && 
+        !dropdownRef.current.contains(event.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isOpen]);
+
   return (
     <div className="relative">
       {/* Botão do filtro */}
       <motion.button
+        ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
         className={`
           flex items-center gap-2 px-4 py-2.5 rounded-xl
           transition-all duration-300 ease-out
           ${isOpen || hasActiveFilters
             ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
-            : 'bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700'
+            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
           }
         `}
         whileHover={{ scale: 1.02 }}
@@ -116,19 +143,25 @@ const ClientFilter = ({
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            ref={dropdownRef}
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 mt-2 w-80 bg-white dark:bg-neutral-800 rounded-xl shadow-xl border border-neutral-200 dark:border-neutral-700 z-50"
+            className={`
+              absolute top-full mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50
+              ${dropdownPosition === 'center' ? 'left-1/2 transform -translate-x-1/2' : 
+                dropdownPosition === 'right' ? 'right-0' : 'left-0'}
+            `}
             style={{
-              backdropFilter: 'blur(20px)',
-              background: 'rgba(255, 255, 255, 0.95)',
+              width: dropdownPosition === 'center' ? 'calc(100vw - 40px)' : '320px',
+              maxWidth: 'calc(100vw - 20px)',
+              minWidth: '280px'
             }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-700">
-              <h3 className="font-semibold text-neutral-900 dark:text-neutral-100">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="font-semibold text-gray-900 dark:text-white">
                 Filtrar clientes
               </h3>
               <div className="flex items-center gap-2">
@@ -142,7 +175,7 @@ const ClientFilter = ({
                 )}
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-500"
+                  className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"
                 >
                   <X size={16} />
                 </button>
@@ -150,14 +183,14 @@ const ClientFilter = ({
             </div>
 
             {/* Opções de filtro */}
-            <div className="p-4 space-y-4">
+            <div className="p-4 space-y-3 max-h-72 overflow-y-auto dropdown-scrollbar">
               {filterOptions.map((filter) => {
                 const Icon = filter.icon;
                 return (
                   <div key={filter.id}>
                     <div className="flex items-center gap-2 mb-2">
-                      <Icon size={16} className="text-neutral-500" />
-                      <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                      <Icon size={16} className="text-gray-500 dark:text-gray-400" />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         {filter.label}
                       </span>
                     </div>
@@ -165,23 +198,29 @@ const ClientFilter = ({
                       {filter.options.map((option) => (
                         <motion.button
                           key={option.value}
-                          onClick={() => handleFilterChange(filter.id, option.value)}
+                          onClick={() => {
+                            handleFilterChange(filter.id, option.value);
+                            // Fechar dropdown em telas pequenas após seleção
+                            if (window.innerWidth < 640) {
+                              setTimeout(() => setIsOpen(false), 150);
+                            }
+                          }}
                           className={`
-                            w-full flex items-center justify-between p-2 rounded-lg text-left
-                            transition-all duration-200
+                            w-full flex items-center justify-between p-3 rounded-lg text-left
+                            transition-all duration-200 touch-manipulation
                             ${selectedFilters[filter.id] === option.value
-                              ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                              : 'hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-400'
+                              ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 ring-2 ring-blue-200 dark:ring-blue-800'
+                              : 'hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
                             }
                           `}
                           whileHover={{ scale: 1.01 }}
-                          whileTap={{ scale: 0.99 }}
+                          whileTap={{ scale: 0.98 }}
                         >
-                          <span className={`text-sm ${option.color || ''}`}>
+                          <span className={`text-sm font-medium ${option.color || ''}`}>
                             {option.label}
                           </span>
                           {option.count !== undefined && (
-                            <span className="text-xs bg-neutral-200 dark:bg-neutral-600 text-neutral-600 dark:text-neutral-300 px-2 py-1 rounded-full">
+                            <span className="text-xs bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-full font-medium">
                               {option.count}
                             </span>
                           )}

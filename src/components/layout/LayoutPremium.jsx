@@ -30,7 +30,7 @@ const LayoutPremium = () => {
           className={`
             flex-1 transition-all duration-300 ease-out
             ${isCollapsed ? 'ml-16' : 'ml-64'}
-            pt-16 min-h-screen
+            pt-16 min-h-[calc(100vh-4rem)]
           `}
           style={{
             background: isDark 

@@ -21,7 +21,7 @@ const ClientTable = ({
   return (
     <GlassmorphismCard className="overflow-hidden">
       {/* Table Container */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto table-scrollbar">
         <table className="w-full">
           {/* Header */}
           <thead>

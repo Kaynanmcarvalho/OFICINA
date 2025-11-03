@@ -5,6 +5,7 @@
 
 import { motion } from 'framer-motion';
 import { Check, X } from 'lucide-react';
+import '../../styles/toggle-switch-fix.css';
 
 const ToggleSwitch = ({ 
   enabled = false, 
@@ -22,17 +23,20 @@ const ToggleSwitch = ({
     sm: {
       container: 'w-10 h-6',
       thumb: 'w-4 h-4',
-      translate: 'translate-x-4'
+      translateX: 16, // 40px - 16px (thumb) - 8px (padding) = 16px
+      iconSize: 10
     },
     md: {
       container: 'w-12 h-7',
       thumb: 'w-5 h-5',
-      translate: 'translate-x-5'
+      translateX: 20, // 48px - 20px (thumb) - 8px (padding) = 20px
+      iconSize: 12
     },
     lg: {
       container: 'w-14 h-8',
       thumb: 'w-6 h-6',
-      translate: 'translate-x-6'
+      translateX: 24, // 56px - 24px (thumb) - 8px (padding) = 24px
+      iconSize: 14
     }
   };
 
@@ -45,7 +49,7 @@ const ToggleSwitch = ({
       className={`
         ${sizeConfig.container}
         relative inline-flex items-center rounded-full
-        transition-all duration-300 ease-out
+        transition-colors duration-150 ease-out toggle-optimized
         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
         ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
         ${className}
@@ -55,55 +59,71 @@ const ToggleSwitch = ({
           'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 
           'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
       }}
-      whileTap={disabled ? {} : { scale: 0.95 }}
-      initial={false}
+      whileTap={disabled ? {} : { scale: 0.98 }}
+      layout={false}
     >
       {/* Thumb (bolinha) */}
       <motion.div
         className={`
           ${sizeConfig.thumb}
           bg-white rounded-full shadow-lg
-          flex items-center justify-center
-          absolute top-0.5 left-0.5
+          absolute
         `}
+        style={{
+          top: '2px',
+          left: '2px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1)'
+        }}
         animate={{
-          x: enabled ? 
-            (size === 'sm' ? 16 : size === 'md' ? 20 : 24) : 
-            0
+          x: enabled ? sizeConfig.translateX : 0
         }}
         transition={{
           type: "spring",
-          stiffness: 700,
-          damping: 30
-        }}
-        style={{
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1)'
+          stiffness: 500,
+          damping: 30,
+          duration: 0.2
         }}
       >
         {/* Ícones opcionais */}
         {showIcons && (
           <motion.div
-            key={enabled ? 'check' : 'x'} // Key para forçar re-render
-            initial={{ scale: 0, rotate: enabled ? -90 : 90 }}
-            animate={{ scale: 1, rotate: 0 }}
-            exit={{ scale: 0, rotate: enabled ? 90 : -90 }}
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
+              height: '100%'
+            }}
+            animate={{ 
+              scale: 1, 
+              rotate: 0,
+              opacity: 1
+            }}
             transition={{ 
               duration: 0.2,
-              type: "spring",
-              stiffness: 500
+              ease: "easeOut"
             }}
           >
             {enabled ? (
               <Check 
-                size={size === 'sm' ? 8 : size === 'md' ? 10 : 12} 
+                size={sizeConfig.iconSize} 
                 className="text-green-600" 
-                strokeWidth={3}
+                strokeWidth={2.5}
+                style={{ display: 'block' }}
               />
             ) : (
               <X 
-                size={size === 'sm' ? 8 : size === 'md' ? 10 : 12} 
+                size={sizeConfig.iconSize} 
                 className="text-red-600" 
-                strokeWidth={3}
+                strokeWidth={2.5}
+                style={{ display: 'block' }}
               />
             )}
           </motion.div>

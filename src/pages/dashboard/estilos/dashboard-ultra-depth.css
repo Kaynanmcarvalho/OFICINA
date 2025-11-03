@@ -112,8 +112,7 @@
     0 0 0 2.5px rgba(0, 0, 0, 0.10),
     0 0 0 5px rgba(255, 255, 255, 0.6) !important;
   border: 2.5px solid rgba(0, 0, 0, 0.12) !important;
-  backdrop-filter: blur(28px) saturate(200%) contrast(110%) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(200%) contrast(110%) !important;
+  /* Blur removido para nitidez total */
 }
 
 /* Alertas por tipo com glow colorido */
@@ -327,8 +326,7 @@
     0 0 0 2px rgba(0, 0, 0, 0.10),
     0 0 0 4px rgba(255, 255, 255, 0.6) !important;
   border: 2px solid rgba(0, 0, 0, 0.12) !important;
-  backdrop-filter: blur(32px) saturate(200%) contrast(115%) !important;
-  -webkit-backdrop-filter: blur(32px) saturate(200%) contrast(115%) !important;
+  /* Blur removido para nitidez total */
 }
 
 /* ========================================

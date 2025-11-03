@@ -9,8 +9,7 @@ const ClientCard = ({ client, onEdit }) => {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -2 }}
-      className="rounded-xl p-4 shadow hover:shadow-lg transition-all duration-200 w-full apple-glass-card"
+      className="rounded-xl p-4 shadow w-full apple-glass-card"
       style={{ maxWidth: '100%', boxSizing: 'border-box' }}
     >
       <div className="flex items-center gap-3 mb-3">
@@ -92,7 +91,7 @@ const ClientCard = ({ client, onEdit }) => {
         </div>
         <button 
           onClick={() => onEdit(client)}
-          className="text-sm font-medium transition-colors duration-200 hover:opacity-80"
+          className="text-sm font-medium"
           style={{ color: 'var(--apple-accent-blue)' }}
         >
           Editar

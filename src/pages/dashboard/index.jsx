@@ -25,6 +25,8 @@ import {
 import './estilos/dashboard.css';
 import './estilos/dashboard-light-premium.css';
 import './estilos/dashboard-ultra-depth.css';
+import './estilos/dashboard-theme-colors.css';
+import './estilos/dashboard-backgrounds.css';
 
 // Lazy loading para componentes de gráficos
 const GraficoFinanceiro = lazy(() => import('./componentes/GraficoFinanceiro'));
@@ -44,22 +46,42 @@ const DashboardPage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    carregarDadosDashboard();
+    // Carregar dados iniciais
+    carregarDadosDashboard(true);
 
-    // Configurar listeners em tempo real
+    // Debounce para evitar múltiplas atualizações seguidas
+    let timeoutId = null;
+    
+    // Configurar listeners em tempo real com debounce
     const unsubscribe = subscribeToAllCollections((collection) => {
       console.log(`[Dashboard] Atualização detectada em: ${collection}`);
-      carregarDadosDashboard();
+      
+      // Cancelar timeout anterior se existir
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      
+      // Aguardar 2 segundos antes de atualizar para evitar piscar
+      timeoutId = setTimeout(() => {
+        carregarDadosDashboard(false);
+      }, 2000);
     });
 
-    // Cleanup: cancelar listeners ao desmontar
+    // Cleanup: cancelar listeners e timeout ao desmontar
     return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
       unsubscribe();
     };
   }, []);
 
-  const carregarDadosDashboard = async () => {
-    setIsLoading(true);
+  const carregarDadosDashboard = async (isInitialLoad = false) => {
+    // Só mostrar loading na primeira carga
+    if (isInitialLoad) {
+      setIsLoading(true);
+    }
+    
     try {
       const [
         stats,
@@ -83,19 +105,31 @@ const DashboardPage = () => {
         gerarDadosGraficoMovimentacao()
       ]);
 
-      setEstatisticas(stats);
-      setTendencias(trends);
-      setAlertas(alerts);
-      setInsights(clientInsights);
-      setClientesRecentes(recentClients);
-      setEstoqueCritico(criticalStock);
-      setFerramentasEmUso(toolsInUse);
-      setVeiculosAtivos(activeVehicles);
-      setDadosGrafico(chartData);
+      // Verificar se houve mudanças significativas antes de atualizar
+      const hasSignificantChanges = !estatisticas || 
+        estatisticas.totalClientes !== stats.totalClientes ||
+        estatisticas.totalVeiculos !== stats.totalVeiculos ||
+        estatisticas.totalFerramentas !== stats.totalFerramentas ||
+        estatisticas.totalEstoque !== stats.totalEstoque;
+
+      // Só atualizar se houver mudanças significativas ou for a primeira carga
+      if (hasSignificantChanges || isInitialLoad) {
+        setEstatisticas(stats);
+        setTendencias(trends);
+        setAlertas(alerts);
+        setInsights(clientInsights);
+        setClientesRecentes(recentClients);
+        setEstoqueCritico(criticalStock);
+        setFerramentasEmUso(toolsInUse);
+        setVeiculosAtivos(activeVehicles);
+        setDadosGrafico(chartData);
+      }
     } catch (error) {
       console.error('[Dashboard] Erro ao carregar dados:', error);
     } finally {
-      setIsLoading(false);
+      if (isInitialLoad) {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -116,7 +150,7 @@ const DashboardPage = () => {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen dashboard-premium-bg overflow-x-hidden" style={{ width: '100%', maxWidth: '100vw' }}>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 overflow-x-hidden" style={{ width: '100%', maxWidth: '100vw' }}>
         <div className="w-full mx-auto space-y-4 md:space-y-6 dashboard-no-transform px-3 md:px-4 lg:px-6 py-4 md:py-6" style={{ maxWidth: '100%', boxSizing: 'border-box' }}>
         
         {/* Header */}

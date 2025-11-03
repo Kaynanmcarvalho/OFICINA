@@ -1,0 +1,306 @@
+/**
+ * Modal Apple Minimal - Design Minimalista Premium
+ * Inspirado no design system da Apple
+ */
+
+/* ========================================
+   BACKDROP MINIMALISTA
+   ======================================== */
+
+.modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 99999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  animation: fadeIn 0.15s ease-out;
+  overflow: hidden;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+}
+
+/* ========================================
+   CONTAINER MINIMALISTA
+   ======================================== */
+
+.modal-container {
+  position: relative !important;
+  z-index: 100000 !important;
+  max-height: 85vh !important;
+  max-width: 90vw !important;
+  width: 100%;
+  margin: auto !important;
+  animation: slideIn 0.2s ease-out;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  transform: translateZ(0) !important;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ========================================
+   TEMA ESCURO
+   ======================================== */
+
+.dark .modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.dark .modal-container {
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* ========================================
+   RESPONSIVIDADE APPLE-LIKE
+   ======================================== */
+
+/* iPhone */
+@media (max-width: 480px) {
+  .modal-backdrop {
+    padding: 0.5rem;
+  }
+  
+  .modal-container {
+    max-height: 95vh;
+    max-width: 100%;
+    border-radius: 16px;
+  }
+}
+
+/* iPad */
+@media (min-width: 481px) and (max-width: 1024px) {
+  .modal-backdrop {
+    padding: 1rem;
+  }
+  
+  .modal-container {
+    max-height: 90vh;
+    max-width: 600px;
+    border-radius: 20px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1025px) {
+  .modal-backdrop {
+    padding: 2rem;
+  }
+  
+  .modal-container {
+    max-height: 80vh;
+    max-width: 700px;
+    border-radius: 24px;
+  }
+}
+
+/* ========================================
+   ELEMENTOS INTERNOS
+   ======================================== */
+
+/* Inputs estilo Apple */
+.modal-container input[type="text"],
+.modal-container input[type="email"],
+.modal-container input[type="tel"],
+.modal-container textarea,
+.modal-container select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  transition: all 0.15s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.modal-container input:focus,
+.modal-container textarea:focus,
+.modal-container select:focus {
+  outline: none;
+  border-color: #007AFF;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+/* Inputs tema escuro */
+.dark .modal-container input[type="text"],
+.dark .modal-container input[type="email"],
+.dark .modal-container input[type="tel"],
+.dark .modal-container textarea,
+.dark .modal-container select {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.dark .modal-container input:focus,
+.dark .modal-container textarea:focus,
+.dark .modal-container select:focus {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #007AFF;
+}
+
+/* Labels estilo Apple */
+.modal-container label {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.8);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.dark .modal-container label {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Botões estilo Apple */
+.modal-container button {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.modal-container button:active {
+  transform: scale(0.98);
+}
+
+/* ========================================
+   SCROLLBAR APPLE-LIKE
+   ======================================== */
+
+.modal-container .custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.modal-container .custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.modal-container .custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-container .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+}
+
+.modal-container .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.dark .modal-container .custom-scrollbar {
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.dark .modal-container .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.dark .modal-container .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* ========================================
+   CENTRALIZAÇÃO FORÇADA
+   ======================================== */
+
+/* Garantir que o modal sempre apareça centralizado na viewport */
+.modal-backdrop {
+  inset: 0 !important;
+  position: fixed !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.modal-container {
+  position: static !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+/* Prevenir scroll do body quando modal estiver aberto */
+body.modal-open {
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+}
+
+/* ========================================
+   PERFORMANCE E ACESSIBILIDADE
+   ======================================== */
+
+/* GPU Acceleration */
+.modal-backdrop,
+.modal-container {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* Redução de movimento */
+@media (prefers-reduced-motion: reduce) {
+  .modal-backdrop,
+  .modal-container {
+    animation: none;
+  }
+  
+  .modal-backdrop {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+}
+
+/* Alto contraste */
+@media (prefers-contrast: high) {
+  .modal-container {
+    border: 2px solid currentColor;
+  }
+  
+  .modal-container input,
+  .modal-container textarea,
+  .modal-container select {
+    border-width: 2px;
+  }
+}

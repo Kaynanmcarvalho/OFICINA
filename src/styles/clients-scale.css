@@ -1,0 +1,83 @@
+/* Redução de 10% nos elementos da página de clientes */
+.clients-page-container {
+  transform: scale(0.9);
+  transform-origin: top center;
+  width: 111.11%; /* Compensar a redução para manter largura total */
+  margin-left: -5.56%; /* Centralizar após compensação */
+  overflow-x: visible;
+}
+
+/* Ajustes específicos para elementos da página de clientes */
+.clients-page-container .max-w-7xl {
+  max-width: calc(80rem * 1.111); /* Compensar o scale */
+}
+
+/* Redução proporcional em todos os elementos filhos */
+.clients-page-container * {
+  /* Garantir que todos os elementos mantenham proporção */
+  box-sizing: border-box;
+}
+
+/* Ajustes para modais que podem aparecer sobre a página de clientes */
+.clients-page-container + div[class*="modal"],
+.clients-page-container + div[class*="backdrop"] {
+  transform: none !important;
+}
+
+/* Ajustes para responsividade */
+@media (max-width: 1024px) {
+  .clients-page-container {
+    width: 105.56%; /* Reduzir compensação em tablets */
+    margin-left: -2.78%;
+  }
+}
+
+@media (max-width: 768px) {
+  .clients-page-container {
+    width: 100%;
+    margin-left: 0;
+    transform: scale(0.9);
+    transform-origin: top left;
+  }
+}
+
+/* Ajustes para telas muito pequenas */
+@media (max-width: 480px) {
+  .clients-page-container {
+    transform: scale(0.85);
+  }
+}
+
+/* Garantir que elementos interativos mantenham usabilidade */
+.clients-page-container button,
+.clients-page-container input,
+.clients-page-container select {
+  min-height: 32px; /* Manter tamanho mínimo para touch */
+}
+
+/* Ajustes específicos para tabelas */
+.clients-page-container table {
+  width: 100%;
+  table-layout: auto;
+}
+
+.clients-page-container td,
+.clients-page-container th {
+  padding: calc(0.75rem * 0.9); /* Reduzir padding proporcionalmente */
+}
+
+/* Ajustes para cards de clientes */
+.clients-page-container .apple-glass-card {
+  margin-bottom: calc(1rem * 0.9);
+}
+
+/* Manter legibilidade do texto */
+.clients-page-container {
+  font-size: inherit; /* Não reduzir fonte base */
+}
+
+/* Ajustes para elementos de loading e estados vazios */
+.clients-page-container .loading-skeleton,
+.clients-page-container .empty-state {
+  transform: none; /* Evitar dupla transformação */
+}

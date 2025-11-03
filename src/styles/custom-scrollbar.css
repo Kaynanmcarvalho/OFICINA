@@ -1,0 +1,305 @@
+/**
+ * Custom Scrollbar Styles - Barras de Rolagem Personalizadas
+ * Design elegante sem fundo branco, adaptável aos temas
+ */
+
+/* ========================================
+   SCROLLBAR CUSTOMIZADA PRINCIPAL
+   ======================================== */
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.8);
+}
+
+/* ========================================
+   SCROLLBAR PARA TEMA ESCURO
+   ======================================== */
+
+.dark .custom-scrollbar {
+  scrollbar-color: rgba(75, 85, 99, 0.6) transparent;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.6);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.9);
+}
+
+/* ========================================
+   SCROLLBAR GLOBAL DA PÁGINA
+   ======================================== */
+
+/* Scrollbar principal do body */
+body {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.4) transparent;
+}
+
+body::-webkit-scrollbar {
+  width: 8px;
+}
+
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.4);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.7);
+}
+
+/* Scrollbar do body no tema escuro */
+.dark body {
+  scrollbar-color: rgba(75, 85, 99, 0.5) transparent;
+}
+
+.dark body::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.5);
+}
+
+.dark body::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.8);
+}
+
+/* ========================================
+   SCROLLBAR PARA DROPDOWNS E MODAIS
+   ======================================== */
+
+.dropdown-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.3) transparent;
+}
+
+.dropdown-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.dropdown-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 4px 0;
+}
+
+.dropdown-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.dropdown-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.6);
+}
+
+/* Dropdown scrollbar no tema escuro */
+.dark .dropdown-scrollbar {
+  scrollbar-color: rgba(75, 85, 99, 0.4) transparent;
+}
+
+.dark .dropdown-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.4);
+}
+
+.dark .dropdown-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.7);
+}
+
+/* ========================================
+   SCROLLBAR PARA TABELAS
+   ======================================== */
+
+.table-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.3) transparent;
+}
+
+.table-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.table-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+
+.table-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.table-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.6);
+}
+
+.table-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Tabela scrollbar no tema escuro */
+.dark .table-scrollbar {
+  scrollbar-color: rgba(75, 85, 99, 0.4) transparent;
+}
+
+.dark .table-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.4);
+}
+
+.dark .table-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.7);
+}
+
+/* ========================================
+   SCROLLBAR ULTRA FINA PARA ELEMENTOS PEQUENOS
+   ======================================== */
+
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.2) transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.2);
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.5);
+}
+
+/* Scrollbar ultra fina no tema escuro */
+.dark .thin-scrollbar {
+  scrollbar-color: rgba(75, 85, 99, 0.3) transparent;
+}
+
+.dark .thin-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.3);
+}
+
+.dark .thin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.6);
+}
+
+/* ========================================
+   SCROLLBAR INVISÍVEL (QUANDO NECESSÁRIO)
+   ======================================== */
+
+.invisible-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.invisible-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ========================================
+   ANIMAÇÕES E TRANSIÇÕES
+   ======================================== */
+
+/* Fade in/out suave para scrollbars */
+.fade-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.3s ease;
+}
+
+.fade-scrollbar:hover {
+  scrollbar-color: rgba(156, 163, 175, 0.4) transparent;
+}
+
+.fade-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.fade-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.fade-scrollbar::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+.fade-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.4);
+}
+
+.fade-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.7) !important;
+}
+
+/* Fade scrollbar no tema escuro */
+.dark .fade-scrollbar:hover {
+  scrollbar-color: rgba(75, 85, 99, 0.5) transparent;
+}
+
+.dark .fade-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.5);
+}
+
+.dark .fade-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.8) !important;
+}
+
+/* ========================================
+   OTIMIZAÇÕES SUTIS PARA UX
+   ======================================== */
+
+/* Previne scrollbar temporária apenas quando necessário */
+html {
+  overflow-y: scroll;
+}
+
+/* Otimização sutil para transições */
+.client-row-optimized {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Smooth toggle sem interferir no layout */
+.toggle-optimized {
+  will-change: transform;
+}
+
+.toggle-optimized:not(:hover):not(:focus) {
+  will-change: auto;
+}

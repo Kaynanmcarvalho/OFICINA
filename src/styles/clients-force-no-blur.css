@@ -1,0 +1,117 @@
+/* 
+ * FORÇA ABSOLUTA - REMOÇÃO TOTAL DE BLUR NA PÁGINA DE CLIENTES
+ * Este arquivo tem prioridade máxima e remove qualquer efeito de blur
+ */
+
+/* SELETOR UNIVERSAL - REMOVE BLUR DE TUDO */
+*,
+*::before,
+*::after,
+html,
+body,
+div,
+span,
+button,
+input,
+textarea,
+select,
+table,
+tr,
+td,
+th,
+tbody,
+thead,
+tfoot {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+}
+
+/* ESPECIFICAMENTE PARA A PÁGINA DE CLIENTES */
+.clients-page-container,
+.clients-page-container *,
+.clients-page-container *::before,
+.clients-page-container *::after {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  will-change: auto !important;
+}
+
+/* REMOVER TRANSFORMAÇÕES EM HOVER */
+.clients-page-container *:hover,
+.clients-page-container *:focus,
+.clients-page-container *:active {
+  transform: none !important;
+  -webkit-transform: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+}
+
+/* DESABILITAR TRANSIÇÕES QUE CAUSAM BLUR */
+.clients-page-container * {
+  transition: none !important;
+  -webkit-transition: none !important;
+}
+
+/* FORÇAR BACKGROUND SÓLIDO EM CARDS */
+.clients-page-container .apple-glass-card,
+.apple-glass-card {
+  background: var(--apple-bg-primary) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* REMOVER BLUR DE ELEMENTOS MOTION */
+[data-framer-component],
+.motion-div,
+div[style*="transform"],
+div[style*="filter"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+}
+
+/* GARANTIR QUE MODAIS NÃO TENHAM BLUR */
+.modal-backdrop,
+.modal-overlay,
+div[class*="modal"],
+div[class*="backdrop"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* REMOVER BLUR DE QUALQUER ELEMENTO COM GLASSMORPHISM */
+.glass,
+.glass-effect,
+.glassmorphism,
+[class*="glass"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: var(--apple-bg-primary) !important;
+}
+
+/* DESABILITAR HARDWARE ACCELERATION QUE PODE CAUSAR BLUR */
+* {
+  -webkit-transform: none !important;
+  transform: none !important;
+  -webkit-backface-visibility: visible !important;
+  backface-visibility: visible !important;
+}
+
+/* FORÇAR REMOÇÃO EM ELEMENTOS ESPECÍFICOS */
+table,
+tr,
+td,
+th,
+tbody,
+thead,
+button,
+input,
+div,
+span {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+}

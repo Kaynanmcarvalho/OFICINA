@@ -1,0 +1,240 @@
+/**
+ * Modal Backdrop Styles - Fundo de Modal com Blur
+ * Garante que modais apareçam por cima de todos os elementos
+ */
+
+/* ========================================
+   BACKDROP PRINCIPAL DO MODAL
+   ======================================== */
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999999; /* Z-index extremamente alto para ficar por cima de tudo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Animação de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+/* ========================================
+   VARIAÇÕES DE BACKDROP
+   ======================================== */
+
+/* Backdrop mais escuro */
+.modal-backdrop-dark {
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Backdrop mais claro */
+.modal-backdrop-light {
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* Backdrop sem blur (para performance) */
+.modal-backdrop-no-blur {
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* ========================================
+   MODAL CONTAINER
+   ======================================== */
+
+.modal-container {
+  position: relative;
+  z-index: 1000000; /* Ainda mais alto que o backdrop */
+  max-height: 90vh;
+  max-width: 95vw;
+  width: 100%;
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Animação de entrada do modal */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ========================================
+   RESPONSIVIDADE
+   ======================================== */
+
+/* Mobile */
+@media (max-width: 640px) {
+  .modal-backdrop {
+    padding: 0.25rem;
+  }
+  
+  .modal-container {
+    max-height: 95vh;
+    max-width: 98vw;
+  }
+}
+
+/* Tablet */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .modal-backdrop {
+    padding: 1rem;
+  }
+  
+  .modal-container {
+    max-height: 85vh;
+    max-width: 90vw;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1025px) {
+  .modal-backdrop {
+    padding: 2rem;
+  }
+  
+  .modal-container {
+    max-height: 80vh;
+    max-width: 85vw;
+  }
+}
+
+/* ========================================
+   ESTADOS ESPECIAIS
+   ======================================== */
+
+/* Modal em tela cheia */
+.modal-backdrop-fullscreen {
+  padding: 0;
+}
+
+.modal-backdrop-fullscreen .modal-container {
+  max-height: 100vh;
+  max-width: 100vw;
+  height: 100vh;
+  width: 100vw;
+  border-radius: 0;
+}
+
+/* Modal compacto */
+.modal-backdrop-compact {
+  padding: 1rem;
+}
+
+.modal-backdrop-compact .modal-container {
+  max-height: 70vh;
+  max-width: 600px;
+}
+
+/* ========================================
+   OVERLAYS ADICIONAIS
+   ======================================== */
+
+/* Overlay para dropdowns dentro de modais */
+.modal-dropdown-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10001;
+  background-color: transparent;
+}
+
+/* Overlay para tooltips dentro de modais */
+.modal-tooltip-overlay {
+  position: relative;
+  z-index: 10002;
+}
+
+/* ========================================
+   ACESSIBILIDADE
+   ======================================== */
+
+/* Foco visível em modais */
+.modal-backdrop:focus-within {
+  outline: none;
+}
+
+.modal-container:focus-within {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Redução de movimento para usuários sensíveis */
+@media (prefers-reduced-motion: reduce) {
+  .modal-backdrop,
+  .modal-container {
+    animation: none;
+  }
+  
+  .modal-backdrop {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+}
+
+/* ========================================
+   TEMA ESCURO
+   ======================================== */
+
+.dark .modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.dark .modal-backdrop-light {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.dark .modal-backdrop-dark {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* ========================================
+   PERFORMANCE
+   ======================================== */
+
+/* Otimizações para GPU */
+.modal-backdrop,
+.modal-container {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* Desabilitar blur em dispositivos com baixa performance */
+@media (max-resolution: 150dpi) {
+  .modal-backdrop {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+}
