@@ -13,9 +13,7 @@ const ToggleSwitch = ({
   size = 'md',
   disabled = false,
   showIcons = true,
-  className = '',
-  enabledColor = 'bg-green-500',
-  disabledColor = 'bg-red-500'
+  className = ''
 }) => {
   
   // Tamanhos disponíveis
