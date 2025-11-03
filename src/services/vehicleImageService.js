@@ -2,7 +2,7 @@
  * Serviço para buscar imagens de veículos da API
  */
 
-const API_BASE_URL = 'https://baclend-brc-anexar-arquivos-production.up.railway.app/api/vehicle-images';
+const API_BASE_URL = 'https://torq.up.railway.app/api/vehicle-images';
 
 // Flag para desenvolvimento - desabilita API quando há problemas de CORS
 const isDevelopment = import.meta.env.DEV;
@@ -39,7 +39,7 @@ export const searchVehicleImage = async (vehicleName) => {
     }
 
     const data = await response.json();
-    
+
     if (data && data.imageUrl) {
       return {
         imageUrl: data.imageUrl,
@@ -82,22 +82,22 @@ export const buildVehicleName = (vehicle) => {
   if (!vehicle) return '';
 
   const parts = [];
-  
+
   // Adiciona marca
   if (vehicle.brand) {
     parts.push(vehicle.brand);
   }
-  
+
   // Adiciona modelo
   if (vehicle.model) {
     parts.push(vehicle.model);
   }
-  
+
   // Adiciona ano
   if (vehicle.year) {
     parts.push(vehicle.year);
   }
-  
+
   // Adiciona cor se disponível
   if (vehicle.color) {
     parts.push(vehicle.color);
@@ -118,7 +118,7 @@ const imageCache = new Map();
  */
 export const searchVehicleImageCached = async (vehicleName) => {
   const cacheKey = vehicleName.toLowerCase().trim();
-  
+
   // Verifica cache
   if (imageCache.has(cacheKey)) {
     const cached = imageCache.get(cacheKey);
@@ -132,7 +132,7 @@ export const searchVehicleImageCached = async (vehicleName) => {
 
   // Busca na API
   const result = await searchVehicleImage(vehicleName);
-  
+
   // Salva no cache
   imageCache.set(cacheKey, {
     data: result,
