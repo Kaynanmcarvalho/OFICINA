@@ -1,32 +1,29 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { MdNotifications } from 'react-icons/md';
+import { Bell, Search } from 'lucide-react';
+import { useThemeStore } from '../../../store/index.jsx';
 import ThemeToggle from './ThemeToggle';
 import NavbarProfile from './NavbarProfile';
 import { badgeBounce } from '../../../utils/animations';
 
 const NavbarActions = () => {
-  const [notificationCount] = React.useState(3); // Example notification count
+  const { isDarkMode } = useThemeStore();
 
   return (
-    <div className="flex items-center gap-2">
-      {/* Notifications */}
-      <motion.button
-        className="relative p-2 rounded-xl hover:bg-gray-500/10 transition-colors"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        title="Notificações"
-      >
-        <MdNotifications className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-        {notificationCount > 0 && (
-          <motion.span
-            className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center"
-            animate={badgeBounce}
-          >
-            {notificationCount}
-          </motion.span>
-        )}
-      </motion.button>
+    <div className="relative flex items-center gap-3">
+      {/* Search Icon */}
+      <motion.div whileTap={{ scale: 0.9 }}>
+        <button 
+          className={`p-2 rounded-full transition-colors duration-300 ${
+            isDarkMode 
+              ? 'text-gray-300 hover:bg-gray-700' 
+              : 'text-gray-600 hover:bg-gray-200'
+          }`}
+          aria-label="Buscar"
+        >
+          <Search size={22} />
+        </button>
+      </motion.div>
 
       {/* Theme Toggle */}
       <ThemeToggle />

@@ -57,7 +57,7 @@ const SidebarItem = React.memo(({ item, isCollapsed, onClick }) => {
           to={item.path}
           className={itemClasses}
           onClick={onClick}
-          aria-label={item.name}
+          aria-label={item.label}
           aria-current={isActive ? 'page' : undefined}
         >
           {/* Icon with inner reflection */}
@@ -85,7 +85,7 @@ const SidebarItem = React.memo(({ item, isCollapsed, onClick }) => {
                 exit="collapsed"
                 className="whitespace-nowrap overflow-hidden"
               >
-                {item.name}
+                {item.label}
               </motion.span>
             )}
           </AnimatePresence>
@@ -143,7 +143,7 @@ const SidebarItem = React.memo(({ item, isCollapsed, onClick }) => {
               }
               shadow-lg backdrop-blur-md
             `}>
-              {item.name}
+              {item.label}
             </div>
           </motion.div>
         )}

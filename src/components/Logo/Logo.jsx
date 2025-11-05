@@ -33,10 +33,10 @@ import styles from './Logo.module.css';
 const Logo = ({
   size = 'medium',
   variant = 'full',
-  onClick,
+  onClick = undefined,
   className = '',
   animate = true,
-  ariaLabel,
+  ariaLabel = undefined,
 }) => {
   const { isDarkMode } = useThemeStore();
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -136,35 +136,6 @@ const Logo = ({
       />
     </div>
   );
-};
-
-Logo.propTypes = {
-  /** Tamanho da logo */
-  size: PropTypes.oneOf(['small', 'medium', 'large', 'auto']),
-  
-  /** Variante da logo */
-  variant: PropTypes.oneOf(['full', 'compact', 'icon']),
-  
-  /** Callback executado ao clicar na logo */
-  onClick: PropTypes.func,
-  
-  /** Classes CSS adicionais */
-  className: PropTypes.string,
-  
-  /** Habilitar animação de entrada */
-  animate: PropTypes.bool,
-  
-  /** Label customizado para acessibilidade */
-  ariaLabel: PropTypes.string,
-};
-
-Logo.defaultProps = {
-  size: 'medium',
-  variant: 'full',
-  onClick: undefined,
-  className: '',
-  animate: true,
-  ariaLabel: undefined,
 };
 
 // Memoizar componente para evitar re-renders desnecessários

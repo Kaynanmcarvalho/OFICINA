@@ -1,24 +1,23 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { MdPerson, MdLogout, MdSettings } from 'react-icons/md';
-import { useAuthStore, useThemeStore } from '../../../store/index.jsx';
-import { dropdownVariants } from '../../../utils/animations';
+import { User, Settings, LogOut, ChevronDown } from 'lucide-react';
+import { useAuthStore } from '../../../store/authStore';
+import { useThemeStore } from '../../../store/themeStore';
 
 const NavbarProfile = () => {
   const { user, logout } = useAuthStore();
-  const { isDarkMode } = useThemeStore();
+  const { darkMode } = useThemeStore();
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = React.useState(false);
-  const dropdownRef = React.useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const handleLogout = async () => {
     await logout();
     navigate('/login');
   };
 
-  // Close dropdown when clicking outside
-  React.useEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
@@ -29,101 +28,69 @@ const NavbarProfile = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const menuItems = [
-    { icon: MdPerson, label: 'Perfil', path: '/profile' },
-    { icon: MdSettings, label: 'Configurações', path: '/settings' },
-  ];
-
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Avatar Button */}
-      <motion.button
+      <motion.div
         onClick={() => setIsOpen(!isOpen)}
-        className={`
-          flex items-center gap-2 p-2 rounded-xl
-          transition-colors
-          ${isDarkMode
-            ? 'hover:bg-white/10'
-            : 'hover:bg-black/5'
-          }
-        `}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        className={`flex items-center p-1 rounded-full cursor-pointer transition-colors duration-300 ${isOpen ? (darkMode ? 'bg-gray-700' : 'bg-gray-200') : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+        whileTap={{ scale: 0.95 }}
       >
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-semibold text-sm">
-          {user?.displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
+        <div className="relative">
+          <div className="flex items-center justify-center h-10 w-10 rounded-full bg-orange-500 text-white">
+            <User size={24} />
+          </div>
+          <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
         </div>
-      </motion.button>
 
-      {/* Dropdown Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            className={`
-              absolute right-0 mt-2 w-64 rounded-2xl p-2
-              ${isDarkMode
-                ? 'bg-gray-800/90 border border-gray-700'
-                : 'bg-white/90 border border-gray-200'
-              }
-              backdrop-blur-xl shadow-2xl
-            `}
-            variants={dropdownVariants}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-          >
-            {/* User Info */}
-            <div className="px-3 py-3 border-b border-gray-700 dark:border-gray-700 border-gray-200">
-              <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                {user?.displayName || user?.email}
-              </p>
-              <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                {user?.email}
-              </p>
-            </div>
+        <div className="ml-3 text-left">
+          <p className={`text-sm font-medium ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+            {user?.displayName || user?.email}
+          </p>
+          <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            {user?.role || 'Usuário'}
+          </p>
+        </div>
 
-            {/* Menu Items */}
-            <div className="py-2">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setIsOpen(false)}
-                  className={`
-                    flex items-center gap-3 px-3 py-2 rounded-xl
-                    text-sm font-medium transition-colors
-                    ${isDarkMode
-                      ? 'text-gray-300 hover:bg-white/10'
-                      : 'text-gray-700 hover:bg-black/5'
-                    }
-                  `}
-                >
-                  <item.icon className="w-5 h-5" />
-                  {item.label}
-                </Link>
-              ))}
-            </div>
+        <motion.div whileTap={{ scale: 0.95 }}>
+          <ChevronDown
+            size={20}
+            className={`ml-2 cursor-pointer transition-transform duration-300 ${isOpen ? 'rotate-180' : ''} ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}
+          />
+        </motion.div>
+      </motion.div>
 
-            {/* Logout */}
-            <div className="pt-2 border-t border-gray-700 dark:border-gray-700 border-gray-200">
-              <button
-                onClick={handleLogout}
-                className={`
-                  w-full flex items-center gap-3 px-3 py-2 rounded-xl
-                  text-sm font-medium transition-colors
-                  ${isDarkMode
-                    ? 'text-red-400 hover:bg-red-500/10'
-                    : 'text-red-600 hover:bg-red-50'
-                  }
-                `}
-              >
-                <MdLogout className="w-5 h-5" />
-                Sair
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          className={`absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-20`}
+        >
+          <div className="py-1">
+            <Link
+              to="/profile"
+              className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              <User size={16} className="mr-3" />
+              Perfil
+            </Link>
+            <Link
+              to="/settings"
+              className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              <Settings size={16} className="mr-3" />
+              Configurações
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              <LogOut size={16} className="mr-3" />
+              Sair
+            </button>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 };

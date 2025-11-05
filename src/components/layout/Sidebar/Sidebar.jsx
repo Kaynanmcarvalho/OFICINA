@@ -3,12 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSidebarState } from '../../../hooks/useSidebarState';
 import { useThemeStore } from '../../../store/index.jsx';
 import { sidebarAnimations, overlayVariants, mobileSidebarVariants } from '../../../utils/animations';
-import SidebarLogo from './SidebarLogo';
 import SidebarNav from './SidebarNav';
 import SidebarFooter from './SidebarFooter';
 
-const Sidebar = ({ menuItems, footerItems }) => {
-  const { isCollapsed, toggleCollapse } = useSidebarState();
+const Sidebar = ({ menuItems, footerItems, isCollapsed, toggleSidebar }) => {
   const { isDarkMode } = useThemeStore();
   const [isMobileOpen, setIsMobileOpen] = React.useState(false);
 
@@ -35,8 +33,8 @@ const Sidebar = ({ menuItems, footerItems }) => {
   }, [isMobile, isMobileOpen]);
 
   const sidebarClasses = isDarkMode
-    ? 'fixed inset-y-0 left-0 z-40 flex flex-col transition-all duration-500 bg-gradient-to-b from-[#0d0d0f] to-[#1a1a1c] border-r border-white/[0.08] backdrop-blur-[22px]'
-    : 'fixed inset-y-0 left-0 z-40 flex flex-col transition-all duration-500 bg-white/[0.65] border-r border-black/[0.06] backdrop-blur-[20px]';
+    ? 'inset-y-0 left-0 z-40 flex flex-col transition-all duration-500 bg-gradient-to-b from-[#0d0d0f] to-[#1a1a1c] border-r border-white/[0.08] backdrop-blur-[22px]'
+    : 'inset-y-0 left-0 z-40 flex flex-col transition-all duration-500 bg-white/[0.65] border-r border-black/[0.06] backdrop-blur-[20px]';
 
   return (
     <>
@@ -55,9 +53,6 @@ const Sidebar = ({ menuItems, footerItems }) => {
         aria-expanded={!isCollapsed}
       >
         <div className="flex flex-col h-full overflow-hidden">
-          {/* Logo Section */}
-          <SidebarLogo isCollapsed={isCollapsed} />
-
           {/* Navigation */}
           <div className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-4">
             <SidebarNav 
@@ -70,7 +65,7 @@ const Sidebar = ({ menuItems, footerItems }) => {
           <SidebarFooter 
             items={footerItems}
             isCollapsed={isCollapsed}
-            onToggleCollapse={toggleCollapse}
+            onToggleCollapse={toggleSidebar}
           />
         </div>
       </motion.aside>
@@ -103,7 +98,6 @@ const Sidebar = ({ menuItems, footerItems }) => {
               variants={mobileSidebarVariants}
             >
               <div className="flex flex-col h-full overflow-hidden">
-                <SidebarLogo isCollapsed={false} />
                 
                 <div className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-4">
                   <SidebarNav 

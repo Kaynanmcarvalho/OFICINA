@@ -71,6 +71,12 @@ export const menuItems = [
     icon: BarChart3,
     dividerAfter: true, // Adiciona divisor visual após este item
   },
+];
+
+/**
+ * Itens de menu do rodapé da sidebar
+ */
+export const footerItems = [
   {
     id: 'settings',
     label: 'Configurações',

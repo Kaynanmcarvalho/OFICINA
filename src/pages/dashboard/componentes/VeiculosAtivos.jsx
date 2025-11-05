@@ -24,6 +24,10 @@ const VeiculosAtivos = ({ veiculos, isLoading = false }) => {
   const calcularDiasEmServico = (dataEntrada) => {
     if (!dataEntrada) return 0;
     const dataObj = dataEntrada instanceof Date ? dataEntrada : new Date(dataEntrada);
+    // Verifica se a data é válida antes de calcular
+    if (isNaN(dataObj.getTime())) {
+      return 0;
+    }
     return Math.floor((new Date() - dataObj) / (1000 * 60 * 60 * 24));
   };
 

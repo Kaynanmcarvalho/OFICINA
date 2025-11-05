@@ -5,7 +5,7 @@ import { useStore, useAuthStore, useThemeStore } from './store/index.jsx';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
-import { Layout } from './components/layout/Layout';
+import Layout from './components/layout/LayoutPremium';
 import './i18n/index.jsx';
 
 // Lazy load pages for better performance

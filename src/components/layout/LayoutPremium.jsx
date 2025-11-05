@@ -1,14 +1,15 @@
 import { Outlet } from 'react-router-dom';
-import { Navbar } from './Navbar/Navbar';
-import { Sidebar } from './Sidebar/Sidebar';
+import Navbar from './Navbar/Navbar';
+import Sidebar from './Sidebar/Sidebar';
 import { useTheme } from '../../hooks/useTheme';
 import { useSidebarState } from '../../hooks/useSidebarState';
+import { menuItems, footerItems } from '../Sidebar/sidebarConfig';
 
 const LayoutPremium = () => {
   console.log('🎨 LayoutPremium ATIVO - Design Apple-level carregado!');
   
   const { isDark } = useTheme();
-  const { isCollapsed } = useSidebarState();
+  const { isCollapsed, toggleSidebar } = useSidebarState();
 
   return (
     <div className={`
@@ -21,16 +22,20 @@ const LayoutPremium = () => {
       {/* Navbar Premium */}
       <Navbar />
       
-      <div className="flex">
-        {/* Sidebar Premium */}
-        <Sidebar />
+      {/* Sidebar e Conteúdo Principal */}
+      <div className="relative flex">
+        <Sidebar 
+          menuItems={menuItems} 
+          footerItems={footerItems} 
+          isCollapsed={isCollapsed} 
+          toggleSidebar={toggleSidebar} 
+        />
         
-        {/* Main Content Area */}
+        {/* Área de Conteúdo Principal */}
         <main 
           className={`
             flex-1 transition-all duration-300 ease-out
-            ${isCollapsed ? 'ml-16' : 'ml-64'}
-            pt-16 min-h-[calc(100vh-4rem)]
+            pt-16 min-h-screen
           `}
           style={{
             background: isDark 
@@ -109,4 +114,4 @@ const LayoutPremium = () => {
   );
 };
 
-export { LayoutPremium };
+export default LayoutPremium;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MdLightMode, MdDarkMode } from 'react-icons/md';
+import { Sun, Moon } from 'lucide-react';
 import { useThemeTransition } from '../../../hooks/useThemeTransition';
 import { themeIconVariants } from '../../../utils/animations';
 
@@ -24,7 +24,7 @@ const ThemeToggle = () => {
             animate="light"
             exit="dark"
           >
-            <MdLightMode className="w-5 h-5 text-gray-300" />
+            <Sun className="w-5 h-5 text-gray-300" />
           </motion.div>
         ) : (
           <motion.div
@@ -34,7 +34,7 @@ const ThemeToggle = () => {
             animate="dark"
             exit="light"
           >
-            <MdDarkMode className="w-5 h-5 text-gray-700" />
+            <Moon className="w-5 h-5 text-gray-700" fill="currentColor" />
           </motion.div>
         )}
       </AnimatePresence>

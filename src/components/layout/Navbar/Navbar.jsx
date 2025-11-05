@@ -3,8 +3,9 @@ import { motion } from 'framer-motion';
 import { useThemeStore } from '../../../store/index.jsx';
 import NavbarSearch from './NavbarSearch';
 import NavbarActions from './NavbarActions';
+import Logo from '../../Logo/Logo';
 
-const Navbar = ({ title, subtitle, onSearch }) => {
+const Navbar = ({ onSearch }) => {
   const { isDarkMode } = useThemeStore();
 
   const navbarClasses = isDarkMode
@@ -20,26 +21,9 @@ const Navbar = ({ title, subtitle, onSearch }) => {
     >
       <div className="max-w-7xl mx-auto px-6 h-full">
         <div className="flex items-center justify-between h-full gap-4">
-          {/* Left: Title and Subtitle */}
-          <div className="flex-1 min-w-0">
-            <motion.h1
-              className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white truncate"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              {title}
-            </motion.h1>
-            {subtitle && (
-              <motion.p
-                className="text-sm text-gray-600 dark:text-gray-400 truncate"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                {subtitle}
-              </motion.p>
-            )}
+          {/* Left: Logo */}
+          <div className="flex items-center">
+            <Logo />
           </div>
 
           {/* Center: Search (optional) */}
