@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# WhatsApp Web auth session (ephemeral)
+/.wwebjs_auth/
