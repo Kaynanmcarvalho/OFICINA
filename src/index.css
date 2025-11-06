@@ -427,6 +427,27 @@
 }
 
 @layer utilities {
+  /* Main Background - Otimizado para transição rápida */
+  .main-bg-light {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #f1f5f9 100%);
+    transition: background-color 0.2s ease-out;
+  }
+  
+  .main-bg-dark {
+    background: linear-gradient(135deg, #111827 0%, #1f2937 50%, #374151 100%);
+    transition: background-color 0.2s ease-out;
+  }
+  
+  /* Navbar - SEM transição de background */
+  header {
+    transition: none !important;
+  }
+  
+  header * {
+    transition-property: transform, opacity, color !important;
+    transition-duration: 0.2s !important;
+  }
+  
   /* Prevent horizontal overflow */
   .prevent-overflow {
     max-width: 100vw;

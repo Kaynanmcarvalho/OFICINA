@@ -9,8 +9,8 @@ const Navbar = ({ onSearch }) => {
   const { isDarkMode } = useThemeStore();
 
   const navbarClasses = isDarkMode
-    ? 'sticky top-0 z-50 h-16 transition-all duration-500 bg-[rgba(18,18,20,0.55)] border-b border-white/[0.08] backdrop-blur-xl'
-    : 'sticky top-0 z-50 h-16 transition-all duration-500 bg-white/[0.6] border-b border-black/[0.06] backdrop-blur-md';
+    ? 'sticky top-0 z-50 h-16 bg-[rgba(18,18,20,0.95)] border-b border-white/[0.08] backdrop-blur-xl'
+    : 'sticky top-0 z-50 h-16 bg-white/[0.95] border-b border-black/[0.06] backdrop-blur-md';
 
   return (
     <motion.header

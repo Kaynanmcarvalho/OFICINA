@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, lazy, Suspense, memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Users, Package, Wrench, Car } from '@/utils/icons';
 import CartaoIndicador from './componentes/CartaoIndicador';
@@ -33,7 +33,7 @@ const GraficoFinanceiro = lazy(() => import('./componentes/GraficoFinanceiro'));
 const InsightsClientes = lazy(() => import('./componentes/InsightsClientes'));
 const GraficoMovimentacao = lazy(() => import('./componentes/GraficoMovimentacao'));
 
-const DashboardPage = () => {
+const DashboardPage = memo(() => {
   const [estatisticas, setEstatisticas] = useState(null);
   const [tendencias, setTendencias] = useState(null);
   const [alertas, setAlertas] = useState([]);
@@ -49,29 +49,41 @@ const DashboardPage = () => {
     // Carregar dados iniciais
     carregarDadosDashboard(true);
 
-    // Debounce para evitar múltiplas atualizações seguidas
+    // Debounce mais agressivo para evitar múltiplas atualizações
     let timeoutId = null;
+    let updateCount = 0;
+    const MAX_UPDATES_PER_MINUTE = 3;
     
-    // Configurar listeners em tempo real com debounce
+    // Configurar listeners em tempo real com debounce e throttle
     const unsubscribe = subscribeToAllCollections((collection) => {
-      console.log(`[Dashboard] Atualização detectada em: ${collection}`);
+      // Limitar atualizações
+      updateCount++;
+      if (updateCount > MAX_UPDATES_PER_MINUTE) {
+        return;
+      }
       
       // Cancelar timeout anterior se existir
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
       
-      // Aguardar 2 segundos antes de atualizar para evitar piscar
+      // Aguardar 3 segundos antes de atualizar (aumentado de 2s)
       timeoutId = setTimeout(() => {
         carregarDadosDashboard(false);
-      }, 2000);
+      }, 3000);
     });
+
+    // Reset do contador a cada minuto
+    const resetInterval = setInterval(() => {
+      updateCount = 0;
+    }, 60000);
 
     // Cleanup: cancelar listeners e timeout ao desmontar
     return () => {
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
+      clearInterval(resetInterval);
       unsubscribe();
     };
   }, []);
@@ -114,15 +126,18 @@ const DashboardPage = () => {
 
       // Só atualizar se houver mudanças significativas ou for a primeira carga
       if (hasSignificantChanges || isInitialLoad) {
-        setEstatisticas(stats);
-        setTendencias(trends);
-        setAlertas(alerts);
-        setInsights(clientInsights);
-        setClientesRecentes(recentClients);
-        setEstoqueCritico(criticalStock);
-        setFerramentasEmUso(toolsInUse);
-        setVeiculosAtivos(activeVehicles);
-        setDadosGrafico(chartData);
+        // Usar batch updates para evitar múltiplos re-renders
+        requestAnimationFrame(() => {
+          setEstatisticas(stats);
+          setTendencias(trends);
+          setAlertas(alerts);
+          setInsights(clientInsights);
+          setClientesRecentes(recentClients);
+          setEstoqueCritico(criticalStock);
+          setFerramentasEmUso(toolsInUse);
+          setVeiculosAtivos(activeVehicles);
+          setDadosGrafico(chartData);
+        });
       }
     } catch (error) {
       console.error('[Dashboard] Erro ao carregar dados:', error);
@@ -282,6 +297,8 @@ const DashboardPage = () => {
       </div>
     </ErrorBoundary>
   );
-};
+});
+
+DashboardPage.displayName = 'DashboardPage';
 
 export default DashboardPage;
