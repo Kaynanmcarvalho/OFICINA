@@ -1,14 +1,13 @@
-import React from 'react';
+import { memo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSidebarState } from '../../../hooks/useSidebarState';
 import { useThemeStore } from '../../../store/index.jsx';
 import { sidebarAnimations, overlayVariants, mobileSidebarVariants } from '../../../utils/animations';
 import SidebarNav from './SidebarNav';
 import SidebarFooter from './SidebarFooter';
 
-const Sidebar = ({ menuItems, footerItems, isCollapsed, toggleSidebar }) => {
+const Sidebar = memo(({ menuItems, footerItems, isCollapsed, toggleSidebar }) => {
   const { isDarkMode } = useThemeStore();
-  const [isMobileOpen, setIsMobileOpen] = React.useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   // Check if mobile
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
@@ -21,7 +20,7 @@ const Sidebar = ({ menuItems, footerItems, isCollapsed, toggleSidebar }) => {
   };
 
   // Prevent body scroll when mobile sidebar is open
-  React.useEffect(() => {
+  useEffect(() => {
     if (isMobile && isMobileOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -33,8 +32,8 @@ const Sidebar = ({ menuItems, footerItems, isCollapsed, toggleSidebar }) => {
   }, [isMobile, isMobileOpen]);
 
   const sidebarClasses = isDarkMode
-    ? 'inset-y-0 left-0 z-40 flex flex-col transition-all duration-500 bg-gradient-to-b from-[#0d0d0f] to-[#1a1a1c] border-r border-white/[0.08] backdrop-blur-[22px]'
-    : 'inset-y-0 left-0 z-40 flex flex-col transition-all duration-500 bg-white/[0.65] border-r border-black/[0.06] backdrop-blur-[20px]';
+    ? 'fixed left-0 z-40 flex flex-col bg-gradient-to-b from-[#0d0d0f] to-[#1a1a1c] border-r border-white/[0.08] backdrop-blur-[22px]'
+    : 'fixed left-0 z-40 flex flex-col bg-white/[0.65] border-r border-black/[0.06] backdrop-blur-[20px]';
 
   return (
     <>
@@ -42,6 +41,8 @@ const Sidebar = ({ menuItems, footerItems, isCollapsed, toggleSidebar }) => {
       <motion.aside
         className={`${sidebarClasses} hidden lg:flex`}
         style={{
+          top: '64px',
+          height: 'calc(100vh - 64px)',
           boxShadow: isDarkMode 
             ? '0 0 40px rgba(0,0,0,0.3)' 
             : '0 0 40px rgba(0,0,0,0.05)'
@@ -49,6 +50,12 @@ const Sidebar = ({ menuItems, footerItems, isCollapsed, toggleSidebar }) => {
         initial={false}
         animate={isCollapsed ? 'collapsed' : 'expanded'}
         variants={sidebarAnimations}
+        transition={{
+          type: "spring",
+          stiffness: 300,
+          damping: 30,
+          mass: 0.8
+        }}
         aria-label="Navegação principal"
         aria-expanded={!isCollapsed}
       >
@@ -88,6 +95,8 @@ const Sidebar = ({ menuItems, footerItems, isCollapsed, toggleSidebar }) => {
             <motion.aside
               className={`${sidebarClasses} lg:hidden w-64`}
               style={{
+                top: '64px',
+                height: 'calc(100vh - 64px)',
                 boxShadow: isDarkMode 
                   ? '0 0 40px rgba(0,0,0,0.3)' 
                   : '0 0 40px rgba(0,0,0,0.05)'
@@ -119,6 +128,8 @@ const Sidebar = ({ menuItems, footerItems, isCollapsed, toggleSidebar }) => {
       </AnimatePresence>
     </>
   );
-};
+});
+
+Sidebar.displayName = 'Sidebar';
 
 export default Sidebar;

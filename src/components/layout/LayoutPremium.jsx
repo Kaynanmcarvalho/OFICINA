@@ -1,15 +1,17 @@
 import { Outlet } from 'react-router-dom';
+import { memo } from 'react';
 import Navbar from './Navbar/Navbar';
 import Sidebar from './Sidebar/Sidebar';
-import { useTheme } from '../../hooks/useTheme';
+import { useUnifiedTheme } from '../../hooks/useUnifiedTheme';
 import { useSidebarState } from '../../hooks/useSidebarState';
 import { menuItems, footerItems } from '../Sidebar/sidebarConfig';
 
-const LayoutPremium = () => {
-  console.log('🎨 LayoutPremium ATIVO - Design Apple-level carregado!');
+const LayoutPremium = memo(() => {
+  const { isDark } = useUnifiedTheme();
+  const { isCollapsed, toggleCollapse } = useSidebarState();
   
-  const { isDark } = useTheme();
-  const { isCollapsed, toggleSidebar } = useSidebarState();
+  // Alias para manter compatibilidade
+  const toggleSidebar = toggleCollapse;
 
   return (
     <div className={`
@@ -34,10 +36,13 @@ const LayoutPremium = () => {
         {/* Área de Conteúdo Principal */}
         <main 
           className={`
-            flex-1 transition-all duration-300 ease-out
-            pt-16 min-h-screen
+            flex-1 min-h-screen pt-16
+            transition-all ease-out
           `}
           style={{
+            marginLeft: isCollapsed ? '64px' : '256px',
+            transitionDuration: '400ms',
+            transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
             background: isDark 
               ? `
                 linear-gradient(135deg, 
@@ -112,6 +117,8 @@ const LayoutPremium = () => {
       </div>
     </div>
   );
-};
+});
+
+LayoutPremium.displayName = 'LayoutPremium';
 
 export default LayoutPremium;

@@ -19,22 +19,27 @@ const Navbar = ({ onSearch }) => {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="max-w-7xl mx-auto px-6 h-full">
-        <div className="flex items-center justify-between h-full gap-4">
+      <div className="w-full px-6 h-full">
+        <div className="flex items-center justify-between h-full gap-4 max-w-full">
           {/* Left: Logo */}
-          <div className="flex items-center">
+          <div className="flex items-center flex-shrink-0">
             <Logo />
           </div>
 
           {/* Center: Search (optional) */}
           {onSearch && (
-            <div className="hidden md:block">
+            <div className="hidden md:block flex-1 max-w-2xl mx-auto">
               <NavbarSearch onSearch={onSearch} />
             </div>
           )}
 
+          {/* Spacer para empurrar actions para direita quando não há search */}
+          {!onSearch && <div className="flex-1" />}
+
           {/* Right: Actions */}
-          <NavbarActions />
+          <div className="flex items-center justify-end flex-shrink-0 ml-auto">
+            <NavbarActions />
+          </div>
         </div>
       </div>
     </motion.header>

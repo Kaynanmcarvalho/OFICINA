@@ -1,14 +1,20 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 export const themeStore = (set, get) => ({
   // Theme state
-  theme: 'auto', // 'light', 'dark', 'auto'
-  isDarkMode: false,
+  theme: typeof window !== 'undefined' ? localStorage.getItem('theme-preference') || 'light' : 'light',
+  isDarkMode: typeof window !== 'undefined' ? localStorage.getItem('theme-preference') === 'dark' : false,
   language: 'pt-BR',
 
   // Theme actions
   setTheme: (theme) => {
     set({ theme });
+    
+    // Persist to localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('theme-preference', theme);
+    }
     
     // Apply theme to document
     const root = document.documentElement;

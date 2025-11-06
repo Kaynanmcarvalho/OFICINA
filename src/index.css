@@ -1,7 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* Importar estilos customizados de scrollbar */
 @import './styles/custom-scrollbar.css';
 
@@ -18,6 +14,13 @@
 @import './styles/dark-mode-premium.css';
 @import './styles/apple-premium.css';
 @import './pages/clients/styles/theme-tokens.css';
+
+/* Importar correção de alinhamento do Navbar */
+@import './styles/navbar-alignment-fix.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   :root {

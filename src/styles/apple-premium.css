@@ -107,6 +107,16 @@
     0 4px 30px rgba(0, 0, 0, 0.5);
 }
 
+/* Correção de alinhamento do Navbar - garante que logo e actions fiquem alinhados */
+.navbar-premium .flex.items-center.justify-between {
+  width: 100%;
+  max-width: 100%;
+}
+
+.navbar-premium .flex.items-center.justify-between > * {
+  flex-shrink: 0;
+}
+
 /* Reflexo de luz no topo */
 .navbar-premium::before {
   content: '';

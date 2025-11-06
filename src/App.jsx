@@ -33,7 +33,12 @@ const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 function App() {
   const { initializeStores, setupRealtimeListeners, isGlobalLoading } = useStore();
   const { user, isLoading: authLoading } = useAuthStore();
-  const { isDarkMode } = useThemeStore();
+  const { isDarkMode, initializeTheme } = useThemeStore();
+
+  // Initialize theme FIRST (before anything else)
+  useEffect(() => {
+    initializeTheme();
+  }, [initializeTheme]);
 
   useEffect(() => {
     // Initialize all stores on app start

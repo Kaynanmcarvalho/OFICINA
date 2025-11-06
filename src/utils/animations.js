@@ -34,25 +34,29 @@ export const easings = {
 
 // Duration tokens
 export const durations = {
-  fast: 0.2,
-  normal: 0.3,
-  slow: 0.5
+  fast: 0.15,
+  normal: 0.25,
+  slow: 0.4
 };
 
-// Sidebar animations
+// Sidebar animations - Otimizado para performance
 export const sidebarAnimations = {
   expanded: {
     width: 256,
     transition: {
-      duration: durations.slow,
-      ease: easings.smooth
+      type: 'spring',
+      stiffness: 300,
+      damping: 30,
+      mass: 0.8
     }
   },
   collapsed: {
-    width: 80,
+    width: 64,
     transition: {
-      duration: durations.slow,
-      ease: easings.smooth
+      type: 'spring',
+      stiffness: 300,
+      damping: 30,
+      mass: 0.8
     }
   }
 };

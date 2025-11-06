@@ -1,0 +1,101 @@
+/* ========================================
+   CORREÇÃO DE ALINHAMENTO DO NAVBAR
+   Garante alinhamento perfeito em todas as resoluções
+   ======================================== */
+
+/* Container principal do navbar */
+header[class*="sticky"] {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Container interno do navbar */
+header[class*="sticky"] > div {
+  width: 100%;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Flex container do navbar - garante alinhamento correto */
+header[class*="sticky"] .flex.items-center.justify-between {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* Logo - sempre à esquerda */
+header[class*="sticky"] .flex.items-center.justify-between > div:first-child {
+  flex-shrink: 0;
+  margin-right: auto;
+}
+
+/* Actions - sempre à direita */
+header[class*="sticky"] .flex.items-center.justify-between > div:last-child {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* Search no centro (quando presente) */
+header[class*="sticky"] .flex.items-center.justify-between > div:nth-child(2) {
+  flex: 1;
+  max-width: 48rem; /* max-w-2xl */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Responsivo - Mobile */
+@media (max-width: 768px) {
+  header[class*="sticky"] .flex.items-center.justify-between {
+    gap: 0.5rem;
+  }
+  
+  header[class*="sticky"] .flex.items-center.justify-between > div:nth-child(2) {
+    display: none;
+  }
+}
+
+/* Responsivo - Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+  header[class*="sticky"] .flex.items-center.justify-between {
+    gap: 0.75rem;
+  }
+}
+
+/* Desktop - Alinhamento perfeito */
+@media (min-width: 1025px) {
+  header[class*="sticky"] .flex.items-center.justify-between {
+    gap: 1rem;
+  }
+  
+  /* Garante que o logo fique sempre à esquerda */
+  header[class*="sticky"] .flex.items-center.justify-between > div:first-child {
+    padding-left: 0;
+  }
+  
+  /* Garante que as actions fiquem sempre à direita */
+  header[class*="sticky"] .flex.items-center.justify-between > div:last-child {
+    padding-right: 0;
+  }
+}
+
+/* Correção específica para o componente Logo */
+header[class*="sticky"] [class*="logoContainer"],
+header[class*="sticky"] [class*="Logo"] {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* Correção específica para NavbarActions */
+header[class*="sticky"] [class*="NavbarActions"],
+header[class*="sticky"] > div > div > div:last-child > div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
