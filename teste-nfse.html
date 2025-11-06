@@ -198,7 +198,7 @@
     </div>
     
     <script>
-        const API_URL = 'http://localhost:8000/nuvem-fiscal';
+        const API_URL = 'https://torq.up.railway.app/api/nfse';
         const CLIENT_ID = 'Qn0V1xTQWXdvk2zCVJkL';
         const CLIENT_SECRET = 'DE65kY0SZas4j840MlJSAjZ4yRx9fmFH2tnBU9dI';
         const CNPJ_EMPRESA = '57673794000171';
@@ -260,16 +260,15 @@
             }
         }
         
-        async function makeRequest(action, data) {
+        async function makeRequest(endpoint, data) {
             showLoading();
             try {
-                const response = await fetch(API_URL, {
+                const response = await fetch(`${API_URL}${endpoint}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        action,
                         clientId: CLIENT_ID,
                         clientSecret: CLIENT_SECRET,
                         ambiente: 'homologacao',
@@ -286,7 +285,7 @@
         }
         
         async function testarConexao() {
-            await makeRequest('test_connection', {});
+            await makeRequest('/testar-conexao', {});
         }
         
         async function emitirNfse() {
@@ -294,7 +293,7 @@
             const dhEmi = now.toISOString();
             const dCompet = now.toISOString().split('T')[0];
             
-            await makeRequest('emitir_nfse', {
+            await makeRequest('/emitir', {
                 nfseData: {
                     provedor: 'padrao',
                     ambiente: 'homologacao',
@@ -362,7 +361,7 @@
             const dhEmi = now.toISOString();
             const dCompet = now.toISOString().split('T')[0];
             
-            await makeRequest('emitir_lote_nfse', {
+            await makeRequest('/emitir-lote', {
                 loteData: {
                     provedor: 'padrao',
                     ambiente: 'homologacao',
@@ -429,7 +428,7 @@
         }
         
         async function listarLotesNfse() {
-            await makeRequest('listar_lotes_nfse', {
+            await makeRequest('/listar-lotes', {
                 filters: {
                     cpf_cnpj: CNPJ_EMPRESA,
                     $top: 10,
@@ -448,7 +447,7 @@
                 return;
             }
             
-            await makeRequest('consultar_nfse', {
+            await makeRequest('/consultar', {
                 nfseId: nfseId
             });
         }
@@ -463,7 +462,7 @@
             document.getElementById('nfseIdInput').value = nfseId;
             lastNfseId = nfseId;
             
-            await makeRequest('consultar_nfse', {
+            await makeRequest('/consultar', {
                 nfseId: nfseId
             });
         }

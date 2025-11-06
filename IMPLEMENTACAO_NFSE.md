@@ -204,7 +204,15 @@ O backend já deve ter a rota `/nuvem-fiscal` configurada. Certifique-se de que 
 - Arquivo de exemplo: `teste-nfse.html`
 - JSON de exemplo: `exemplo-nfse.json`
 - JSON de lote: `exemplo-lote-nfse.json`
-- API Base URL: `http://localhost:8000/nuvem-fiscal`
+- API Base URL: `https://torq.up.railway.app/api/nfse`
+
+## 🌐 Endpoints da API
+
+1. **Testar Conexão:** `POST https://torq.up.railway.app/api/nfse/testar-conexao`
+2. **Emitir NFS-e:** `POST https://torq.up.railway.app/api/nfse/emitir`
+3. **Emitir Lote:** `POST https://torq.up.railway.app/api/nfse/emitir-lote`
+4. **Consultar NFS-e:** `POST https://torq.up.railway.app/api/nfse/consultar`
+5. **Listar Lotes:** `POST https://torq.up.railway.app/api/nfse/listar-lotes`
 
 ## 📝 Notas Importantes
 

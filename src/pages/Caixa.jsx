@@ -338,9 +338,12 @@ const Caixa = () => {
   };
 
   const addToCart = async (product) => {
+    console.log('� [ADDTGOCART] Função chamada!');
     console.log('🔍 [DEBUG ADDTOCART] Produto sendo adicionado:', {
       id: product.id,
       nome: product.nome,
+      quantidade: product.quantidade,
+      preco: product.preco,
       ncm: product.ncm,
       cest: product.cest,
       cfop: product.cfop,
@@ -1073,86 +1076,134 @@ const Caixa = () => {
   const total = subtotal - discount;
 
   return (
-    <div className="p-6">
-      {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6">
+      {/* Header com gradiente */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6"
+        className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-2xl shadow-2xl p-8 mb-8"
       >
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Caixa</h1>
-          <p className="text-gray-600">Sistema de vendas e emissão de notas fiscais</p>
-        </div>
+        {/* Efeito de brilho */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer"></div>
+        
+        <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div className="text-white">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                <FiShoppingCart size={32} />
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold tracking-tight">Ponto de Venda</h1>
+                <p className="text-blue-100 mt-1 text-lg">Sistema completo de vendas e emissão de notas fiscais</p>
+              </div>
+            </div>
+          </div>
 
-        <button
-          onClick={() => setIsCartOpen(true)}
-          className="relative bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors mt-4 sm:mt-0"
-        >
-          <FiShoppingCart size={20} />
-          <span>Carrinho</span>
-          {cartItemsCount > 0 && (
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              {cartItemsCount}
-            </span>
-          )}
-        </button>
+          <button
+            onClick={() => setIsCartOpen(true)}
+            className="relative group bg-white hover:bg-gray-50 text-gray-900 px-6 py-4 rounded-xl flex items-center gap-3 transition-all duration-300 shadow-lg hover:shadow-xl mt-4 sm:mt-0 hover:scale-105"
+          >
+            <FiShoppingCart size={24} className="group-hover:scale-110 transition-transform" />
+            <div className="text-left">
+              <span className="block text-sm font-medium text-gray-500">Meu Carrinho</span>
+              <span className="block text-lg font-bold">{cartItemsCount} {cartItemsCount === 1 ? 'item' : 'itens'}</span>
+            </div>
+            {cartItemsCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-sm font-bold rounded-full w-8 h-8 flex items-center justify-center shadow-lg animate-bounce">
+                {cartItemsCount}
+              </span>
+            )}
+          </button>
+        </div>
+        
+        {/* Indicador de scanner USB */}
+        {hasUSBScanner && (
+          <div className="relative mt-4 flex items-center gap-2 text-white/90 text-sm">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <span>Scanner USB conectado e ativo</span>
+          </div>
+        )}
       </motion.div>
 
-      {/* Search and Filters */}
+      {/* Search and Filters - Design Moderno */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6"
+        className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 p-6 mb-8"
       >
         <div className="flex flex-col lg:flex-row gap-4">
-          {/* Search */}
-          <div className="flex-1 relative">
-            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          {/* Search com ícone animado */}
+          <div className="flex-1 relative group">
+            <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors" size={22} />
             <input
               type="text"
-              placeholder={hasUSBScanner ? "Buscar produtos por nome ou código... (Scanner ativo)" : "Buscar produtos por nome ou código..."}
+              placeholder={hasUSBScanner ? "🔍 Buscar produtos... (Scanner ativo)" : "🔍 Buscar produtos por nome ou código..."}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 text-lg"
             />
           </div>
 
-          {/* Category Filter */}
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            {categories.map(category => (
-              <option key={category.id} value={category.id}>
-                {category.label}
-              </option>
-            ))}
-          </select>
+          {/* Category Filter com estilo moderno */}
+          <div className="relative">
+            <FiFilter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="pl-12 pr-8 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white dark:bg-gray-900 text-gray-900 dark:text-white appearance-none cursor-pointer min-w-[200px] text-lg font-medium"
+            >
+              {categories.map(category => (
+                <option key={category.id} value={category.id}>
+                  {category.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          {/* View Mode */}
-          <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+          {/* View Mode com animação */}
+          <div className="flex gap-2 bg-gray-100 dark:bg-gray-900 p-1.5 rounded-xl">
             <button
               onClick={() => setViewMode('grid')}
               className={clsx(
-                'px-3 py-2 transition-colors',
-                viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'
+                'px-5 py-3 rounded-lg transition-all duration-300 flex items-center gap-2 font-medium',
+                viewMode === 'grid' 
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105' 
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-800'
               )}
             >
-              <FiGrid size={18} />
+              <FiGrid size={20} />
+              <span className="hidden sm:inline">Grade</span>
             </button>
             <button
               onClick={() => setViewMode('list')}
               className={clsx(
-                'px-3 py-2 transition-colors',
-                viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'
+                'px-5 py-3 rounded-lg transition-all duration-300 flex items-center gap-2 font-medium',
+                viewMode === 'list' 
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105' 
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-800'
               )}
             >
-              <FiList size={18} />
+              <FiList size={20} />
+              <span className="hidden sm:inline">Lista</span>
             </button>
           </div>
+        </div>
+        
+        {/* Contador de produtos */}
+        <div className="mt-4 flex items-center justify-between text-sm">
+          <span className="text-gray-600 dark:text-gray-400">
+            {filteredProducts.length} {filteredProducts.length === 1 ? 'produto encontrado' : 'produtos encontrados'}
+          </span>
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm('')}
+              className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+            >
+              <FiX size={16} />
+              Limpar busca
+            </button>
+          )}
         </div>
       </motion.div>
 
@@ -1175,111 +1226,153 @@ const Caixa = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
             className={clsx(
-              'bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all',
-              viewMode === 'grid' ? 'p-4' : 'p-4 flex items-center gap-4'
+              'group relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl shadow-lg border-2 border-gray-200/50 dark:border-gray-700/50 hover:shadow-2xl hover:border-blue-500/50 dark:hover:border-blue-400/50 transition-all duration-300 hover:scale-[1.02] overflow-hidden',
+              viewMode === 'grid' ? 'p-6' : 'p-6 flex items-center gap-6'
             )}
-
           >
+            {/* Efeito de brilho no hover */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            
+            {/* Conteúdo do card */}
+            <div className="relative z-10 w-full h-full">
             {viewMode === 'grid' ? (
               <>
-                <div className="mb-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-semibold bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900 dark:to-indigo-900 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-full">
                       #{product.codigo}
                     </span>
                     <span className={clsx(
-                      'text-xs px-2 py-1 rounded-full',
-                      product.estoque > 10 ? 'bg-green-100 text-green-800' :
-                        product.estoque > 5 ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
+                      'text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1',
+                      product.quantidade > 10 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' :
+                        product.quantidade > 5 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' :
+                          'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
                     )}>
-                      {product.estoque} un.
+                      <FiHash size={12} />
+                      {product.quantidade} un.
                     </span>
                   </div>
                   <h3
-                    className="font-semibold text-gray-900 mb-1 cursor-pointer hover:text-blue-600 transition-colors"
+                    className="font-bold text-gray-900 dark:text-white mb-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-lg line-clamp-2"
                     onClick={(e) => handleProductClick(product, e)}
                   >
                     {product.nome}
                   </h3>
-                  <p className="text-sm text-gray-600 mb-2">{product.descricao}</p>
-                  <p className="text-lg font-bold text-blue-600">
-                    R$ {product.preco.toFixed(2)}
-                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">{product.descricao}</p>
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-2xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                      R$ {product.preco.toFixed(2)}
+                    </p>
+                    {product.precoPromocional && (
+                      <span className="text-sm text-gray-400 line-through">
+                        R$ {product.precoPromocional.toFixed(2)}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <button
-                  onClick={() => addToCart(product)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    console.log('🖱️ Botão clicado! Produto:', product.nome, 'Quantidade:', product.quantidade);
+                    addToCart(product);
+                  }}
                   disabled={product.quantidade === 0}
                   className={clsx(
-                    'w-full py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2',
+                    'relative z-20 w-full py-3 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 shadow-lg pointer-events-auto',
                     product.quantidade > 0
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white hover:scale-105 hover:shadow-xl'
+                      : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
                   )}
                 >
-                  <FiPlus size={16} />
-                  {product.quantidade > 0 ? 'Adicionar' : 'Sem Estoque'}
+                  <FiPlus size={18} />
+                  {product.quantidade > 0 ? 'Adicionar ao Carrinho' : 'Sem Estoque'}
                 </button>
               </>
             ) : (
               <>
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-xs font-semibold bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900 dark:to-indigo-900 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-full">
                       #{product.codigo}
                     </span>
                     <h3
-                      className="font-semibold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors"
+                      className="font-bold text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-lg"
                       onClick={(e) => handleProductClick(product, e)}
                     >
                       {product.nome}
                     </h3>
                     <span className={clsx(
-                      'text-xs px-2 py-1 rounded-full ml-auto',
-                      product.quantidade > 10 ? 'bg-green-100 text-green-800' :
-                        product.quantidade > 5 ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
+                      'text-xs font-bold px-3 py-1.5 rounded-full ml-auto flex items-center gap-1',
+                      product.quantidade > 10 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' :
+                        product.quantidade > 5 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' :
+                          'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
                     )}>
+                      <FiHash size={12} />
                       {product.quantidade} un.
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600">{product.descricao}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{product.descricao}</p>
                 </div>
 
-                <div className="text-right">
-                  <p className="text-lg font-bold text-blue-600 mb-2">
-                    R$ {product.preco.toFixed(2)}
-                  </p>
+                <div className="text-right flex flex-col items-end gap-3">
+                  <div>
+                    <p className="text-2xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                      R$ {product.preco.toFixed(2)}
+                    </p>
+                    {product.precoPromocional && (
+                      <span className="text-sm text-gray-400 line-through">
+                        R$ {product.precoPromocional.toFixed(2)}
+                      </span>
+                    )}
+                  </div>
                   <button
-                    onClick={() => addToCart(product)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      console.log('🖱️ Botão clicado (lista)! Produto:', product.nome, 'Quantidade:', product.quantidade);
+                      addToCart(product);
+                    }}
                     disabled={product.quantidade === 0}
                     className={clsx(
-                      'px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2',
+                      'relative z-20 px-6 py-3 rounded-xl font-bold transition-all duration-300 flex items-center gap-2 shadow-lg pointer-events-auto',
                       product.quantidade > 0
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white hover:scale-105 hover:shadow-xl'
+                        : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
                     )}
                   >
-                    <FiPlus size={16} />
+                    <FiPlus size={18} />
                     {product.quantidade > 0 ? 'Adicionar' : 'Sem Estoque'}
                   </button>
                 </div>
               </>
             )}
+            </div>
           </motion.div>
         ))}
       </motion.div>
 
       {filteredProducts.length === 0 && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center py-12"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center py-20 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-xl border-2 border-dashed border-gray-300 dark:border-gray-700"
         >
-          <FiSearch size={48} className="mx-auto text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum produto encontrado</h3>
-          <p className="text-gray-600">Tente ajustar os filtros ou termo de busca</p>
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900 dark:to-indigo-900 rounded-full mb-6">
+            <FiSearch size={48} className="text-blue-600 dark:text-blue-400" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Nenhum produto encontrado</h3>
+          <p className="text-gray-600 dark:text-gray-400 text-lg mb-6">Tente ajustar os filtros ou termo de busca</p>
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm('')}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg"
+            >
+              <FiRefreshCw size={20} />
+              Limpar Busca
+            </button>
+          )}
         </motion.div>
       )}
 

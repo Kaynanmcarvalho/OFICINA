@@ -542,12 +542,25 @@
   }
 }
 
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 .animate-shimmer {
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: shimmer 2s ease-in-out infinite;
 }
 
 .animate-fade-in {
   animation: fade-in 200ms ease-out forwards;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
 }
 
 /* Apple-style focus rings */

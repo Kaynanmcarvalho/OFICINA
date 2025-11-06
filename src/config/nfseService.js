@@ -1,9 +1,11 @@
 /**
  * Serviço para emissão de NFS-e (Nota Fiscal de Serviço Eletrônica)
- * Integração com Nuvem Fiscal API
+ * Integração com Nuvem Fiscal API via Railway
  */
 
-const API_BASE_URL = 'http://localhost:8000/nuvem-fiscal';
+import NFSE_CONFIG from './nfseConfig';
+
+const API_BASE_URL = NFSE_CONFIG.API_BASE_URL;
 
 class NFSeService {
   /**
@@ -13,13 +15,12 @@ class NFSeService {
     try {
       console.log('📝 Emitindo NFS-e...', { clientId, ambiente });
 
-      const response = await fetch(API_BASE_URL, {
+      const response = await fetch(`${API_BASE_URL}/emitir`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          action: 'emitir_nfse',
           clientId,
           clientSecret,
           ambiente,
@@ -69,13 +70,12 @@ class NFSeService {
     try {
       console.log('📦 Emitindo lote de NFS-e...', { clientId, ambiente });
 
-      const response = await fetch(API_BASE_URL, {
+      const response = await fetch(`${API_BASE_URL}/emitir-lote`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          action: 'emitir_lote_nfse',
           clientId,
           clientSecret,
           ambiente,
@@ -115,13 +115,12 @@ class NFSeService {
     try {
       console.log('🔍 Consultando NFS-e...', { nfseId, ambiente });
 
-      const response = await fetch(API_BASE_URL, {
+      const response = await fetch(`${API_BASE_URL}/consultar`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          action: 'consultar_nfse',
           clientId,
           clientSecret,
           ambiente,
@@ -160,13 +159,12 @@ class NFSeService {
     try {
       console.log('📋 Listando lotes de NFS-e...', { filters, ambiente });
 
-      const response = await fetch(API_BASE_URL, {
+      const response = await fetch(`${API_BASE_URL}/listar-lotes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          action: 'listar_lotes_nfse',
           clientId,
           clientSecret,
           ambiente,
@@ -304,13 +302,12 @@ class NFSeService {
    */
   async testarConexao(clientId, clientSecret) {
     try {
-      const response = await fetch(API_BASE_URL, {
+      const response = await fetch(`${API_BASE_URL}/testar-conexao`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          action: 'test_connection',
           clientId,
           clientSecret,
           ambiente: 'homologacao'
