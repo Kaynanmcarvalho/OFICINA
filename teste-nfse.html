@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste NFS-e - Nuvem Fiscal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+        }
+        
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .result {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .result pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .success {
+            border-left: 4px solid #28a745;
+        }
+        
+        .error {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .info {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .info strong {
+            color: #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Teste de API NFS-e</h1>
+            <p>Nuvem Fiscal - Ambiente de Homologação</p>
+        </div>
+        
+        <div class="card">
+            <h2>📋 Informações da Empresa</h2>
+            <div class="info">
+                <strong>CNPJ:</strong> 57.673.794/0001-71<br>
+                <strong>Client ID:</strong> Qn0V1xTQWXdvk2zCVJkL<br>
+                <strong>Ambiente:</strong> Homologação
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>🚀 Ações Disponíveis</h2>
+            
+            <div class="button-group">
+                <button onclick="testarConexao()">🔌 Testar Conexão</button>
+                <button onclick="emitirNfse()">📝 Emitir NFS-e</button>
+                <button onclick="emitirLoteNfse()">📦 Emitir Lote NFS-e</button>
+                <button onclick="listarLotesNfse()">📋 Listar Lotes</button>
+                <button onclick="consultarNfse()">🔍 Consultar NFS-e</button>
+                <button onclick="consultarNfseManual()">🔍 Consultar por ID</button>
+            </div>
+            
+            <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">ID da NFS-e salvo:</label>
+                <input type="text" id="nfseIdInput" placeholder="Será preenchido automaticamente após emissão" 
+                       style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-family: monospace;">
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processando requisição...</p>
+            </div>
+            
+            <div id="result"></div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:8000/nuvem-fiscal';
+        const CLIENT_ID = 'Qn0V1xTQWXdvk2zCVJkL';
+        const CLIENT_SECRET = 'DE65kY0SZas4j840MlJSAjZ4yRx9fmFH2tnBU9dI';
+        const CNPJ_EMPRESA = '57673794000171';
+        
+        let lastNfseId = null;
+        let lastLoteId = null;
+        
+        function showLoading() {
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('result').innerHTML = '';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('active');
+        }
+        
+        function showResult(data, isSuccess = true) {
+            hideLoading();
+            const resultDiv = document.getElementById('result');
+            const className = isSuccess ? 'success' : 'error';
+            resultDiv.innerHTML = `
+                <div class="result ${className}">
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                </div>
+            `;
+            
+            // Salvar IDs para consultas posteriores
+            if (data.success && data.data) {
+                // Tentar diferentes estruturas de resposta
+                const responseId = data.data.id || data.data.nfse_id || data.data.dps_id;
+                
+                if (responseId) {
+                    if (responseId.startsWith('nfse_') || responseId.startsWith('dps_')) {
+                        lastNfseId = responseId;
+                        console.log('✅ NFS-e ID salvo:', lastNfseId);
+                        
+                        // Preencher campo de input
+                        const inputField = document.getElementById('nfseIdInput');
+                        if (inputField) {
+                            inputField.value = lastNfseId;
+                        }
+                        
+                        // Mostrar alerta visual
+                        const resultDiv = document.getElementById('result');
+                        resultDiv.innerHTML += `
+                            <div style="background: #d4edda; border: 2px solid #28a745; padding: 15px; margin-top: 10px; border-radius: 8px; color: #155724;">
+                                <strong>✅ ID salvo para consulta:</strong> ${lastNfseId}
+                            </div>
+                        `;
+                    }
+                    if (responseId.startsWith('lot_')) {
+                        lastLoteId = responseId;
+                        console.log('✅ Lote ID salvo:', lastLoteId);
+                    }
+                }
+                
+                // Log completo para debug
+                console.log('Resposta completa:', data);
+            }
+        }
+        
+        async function makeRequest(action, data) {
+            showLoading();
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action,
+                        clientId: CLIENT_ID,
+                        clientSecret: CLIENT_SECRET,
+                        ambiente: 'homologacao',
+                        ...data
+                    })
+                });
+                
+                const result = await response.json();
+                showResult(result, result.success);
+                return result;
+            } catch (error) {
+                showResult({ success: false, error: error.message }, false);
+            }
+        }
+        
+        async function testarConexao() {
+            await makeRequest('test_connection', {});
+        }
+        
+        async function emitirNfse() {
+            const now = new Date();
+            const dhEmi = now.toISOString();
+            const dCompet = now.toISOString().split('T')[0];
+            
+            await makeRequest('emitir_nfse', {
+                nfseData: {
+                    provedor: 'padrao',
+                    ambiente: 'homologacao',
+                    referencia: `NFSE-${Date.now()}`,
+                    infDPS: {
+                        tpAmb: 2,
+                        dhEmi: dhEmi,
+                        verAplic: '1.0',
+                        dCompet: dCompet,
+                        prest: {
+                            CNPJ: CNPJ_EMPRESA,
+                            regTrib: {
+                                regEspTrib: 6
+                            }
+                        },
+                        toma: {
+                            orgaoPublico: false,
+                            CNPJ: '58959068000182',
+                            xNome: 'BRC Comercio e Servicos Ltda',
+                            end: {
+                                endNac: {
+                                    cMun: '3550308',
+                                    CEP: '01310100'
+                                },
+                                xLgr: 'Avenida Paulista',
+                                nro: '1000',
+                                xBairro: 'Bela Vista'
+                            },
+                            email: 'contato@clienteteste.com.br'
+                        },
+                        serv: {
+                            locPrest: {
+                                cLocPrestacao: '3550308'
+                            },
+                            cServ: {
+                                cTribNac: '01.01',
+                                cTribMun: '0101',
+                                xDescServ: 'Serviços de consultoria em tecnologia da informação'
+                            }
+                        },
+                        valores: {
+                            vServPrest: {
+                                vReceb: 1000.00,
+                                vServ: 1000.00
+                            },
+                            trib: {
+                                tribMun: {
+                                    tribISSQN: 1,
+                                    cLocIncid: '3550308',
+                                    vBC: 1000.00,
+                                    pAliq: 5.00,
+                                    vISSQN: 50.00,
+                                    tpRetISSQN: 1,
+                                    vLiq: 950.00
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        async function emitirLoteNfse() {
+            const now = new Date();
+            const dhEmi = now.toISOString();
+            const dCompet = now.toISOString().split('T')[0];
+            
+            await makeRequest('emitir_lote_nfse', {
+                loteData: {
+                    provedor: 'padrao',
+                    ambiente: 'homologacao',
+                    referencia: `LOTE-${Date.now()}`,
+                    documentos: [
+                        {
+                            provedor: 'padrao',
+                            ambiente: 'homologacao',
+                            referencia: `NFSE-LOTE-1-${Date.now()}`,
+                            infDPS: {
+                                tpAmb: 2,
+                                dhEmi: dhEmi,
+                                verAplic: '1.0',
+                                dCompet: dCompet,
+                                prest: {
+                                    CNPJ: CNPJ_EMPRESA,
+                                    regTrib: { regEspTrib: 6 }
+                                },
+                                toma: {
+                                    orgaoPublico: false,
+                                    CNPJ: '58959068000182',
+                                    xNome: 'BRC Comercio e Servicos Ltda',
+                                    end: {
+                                        endNac: {
+                                            cMun: '3550308',
+                                            CEP: '01310100'
+                                        },
+                                        xLgr: 'Avenida Paulista',
+                                        nro: '1000',
+                                        xBairro: 'Bela Vista'
+                                    },
+                                    email: 'cliente1@teste.com.br'
+                                },
+                                serv: {
+                                    locPrest: { cLocPrestacao: '3550308' },
+                                    cServ: {
+                                        cTribNac: '01.01',
+                                        cTribMun: '0101',
+                                        xDescServ: 'Consultoria em TI'
+                                    }
+                                },
+                                valores: {
+                                    vServPrest: {
+                                        vReceb: 1000.00,
+                                        vServ: 1000.00
+                                    },
+                                    trib: {
+                                        tribMun: {
+                                            tribISSQN: 1,
+                                            cLocIncid: '3550308',
+                                            vBC: 1000.00,
+                                            pAliq: 5.00,
+                                            vISSQN: 50.00,
+                                            tpRetISSQN: 1,
+                                            vLiq: 950.00
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            });
+        }
+        
+        async function listarLotesNfse() {
+            await makeRequest('listar_lotes_nfse', {
+                filters: {
+                    cpf_cnpj: CNPJ_EMPRESA,
+                    $top: 10,
+                    $skip: 0,
+                    $inlinecount: true
+                }
+            });
+        }
+        
+        async function consultarNfse() {
+            const inputId = document.getElementById('nfseIdInput').value;
+            const nfseId = inputId || lastNfseId;
+            
+            if (!nfseId) {
+                alert('Primeiro emita uma NFS-e para obter um ID válido ou digite um ID manualmente!');
+                return;
+            }
+            
+            await makeRequest('consultar_nfse', {
+                nfseId: nfseId
+            });
+        }
+        
+        async function consultarNfseManual() {
+            const nfseId = prompt('Digite o ID da NFS-e (ex: dps_abc123 ou nfse_xyz789):');
+            
+            if (!nfseId) {
+                return;
+            }
+            
+            document.getElementById('nfseIdInput').value = nfseId;
+            lastNfseId = nfseId;
+            
+            await makeRequest('consultar_nfse', {
+                nfseId: nfseId
+            });
+        }
+        
+        // Testar conexão automaticamente ao carregar
+        window.addEventListener('load', () => {
+            console.log('Página carregada. Testando conexão...');
+            testarConexao();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+{
+  "action": "emitir_nfse",
+  "clientId": "Qn0V1xTQWXdvk2zCVJkL",
+  "clientSecret": "DE65kY0SZas4j840MlJSAjZ4yRx9fmFH2tnBU9dI",
+  "ambiente": "homologacao",
+  "nfseData": {
+    "provedor": "padrao",
+    "ambiente": "homologacao",
+    "referencia": "NFSE-001",
+    "infDPS": {
+      "tpAmb": 2,
+      "dhEmi": "2024-01-15T10:30:00-03:00",
+      "verAplic": "1.0",
+      "dCompet": "2024-01-15",
+      "prest": {
+        "CNPJ": "57673794000171",
+        "regTrib": {
+          "regEspTrib": 6
+        }
+      },
+      "toma": {
+        "orgaoPublico": false,
+        "CNPJ": "58959068000182",
+        "xNome": "BRC Comercio e Servicos Ltda",
+        "end": {
+          "endNac": {
+            "cMun": "3550308",
+            "CEP": "01310100"
+          },
+          "xLgr": "Avenida Paulista",
+          "nro": "1000",
+          "xBairro": "Bela Vista"
+        },
+        "email": "contato@cliente.com.br"
+      },
+      "serv": {
+        "locPrest": {
+          "cLocPrestacao": "3550308"
+        },
+        "cServ": {
+          "cTribNac": "01.01",
+          "cTribMun": "0101",
+          "xDescServ": "Serviços de consultoria em tecnologia da informação"
+        }
+      },
+      "valores": {
+        "vServPrest": {
+          "vReceb": 1000.00,
+          "vServ": 1000.00
+        },
+        "trib": {
+          "tribMun": {
+            "tribISSQN": 1,
+            "cLocIncid": "3550308",
+            "vBC": 1000.00,
+            "pAliq": 5.00,
+            "vISSQN": 50.00,
+            "tpRetISSQN": 1,
+            "vLiq": 950.00
+          }
+        }
+      }
+    }
+  }
+}

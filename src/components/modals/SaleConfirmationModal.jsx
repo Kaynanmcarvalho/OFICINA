@@ -25,7 +25,7 @@ const SaleConfirmationModal = ({
   loading = false
 }) => {
   const { user: currentUser } = useAuthStore();
-  const [permissions, setPermissions] = useState({ nfeAtivo: false, nfceAtivo: false });
+  const [permissions, setPermissions] = useState({ nfeAtivo: false, nfceAtivo: false, nfseAtivo: false });
   const [loadingPermissions, setLoadingPermissions] = useState(true);
 
   useEffect(() => {
@@ -44,14 +44,15 @@ const SaleConfirmationModal = ({
           const data = docSnap.data();
           setPermissions({
             nfeAtivo: data.invoice?.nfeAtivo || false,
-            nfceAtivo: data.invoice?.nfceAtivo || false
+            nfceAtivo: data.invoice?.nfceAtivo || false,
+            nfseAtivo: data.invoice?.nfseAtivo || false
           });
         } else {
-          setPermissions({ nfeAtivo: false, nfceAtivo: false });
+          setPermissions({ nfeAtivo: false, nfceAtivo: false, nfseAtivo: false });
         }
       } catch (e) {
         console.error('Erro ao carregar permissões de NF:', e);
-        setPermissions({ nfeAtivo: false, nfceAtivo: false });
+        setPermissions({ nfeAtivo: false, nfceAtivo: false, nfseAtivo: false });
       } finally {
         setLoadingPermissions(false);
       }
@@ -89,7 +90,10 @@ const SaleConfirmationModal = ({
       if (!permissions.nfeAtivo && permissions.nfceAtivo) {
         setNfeType('nfce');
       }
-      if (!permissions.nfeAtivo && !permissions.nfceAtivo) {
+      if (!permissions.nfeAtivo && !permissions.nfceAtivo && permissions.nfseAtivo) {
+        setNfeType('nfse');
+      }
+      if (!permissions.nfeAtivo && !permissions.nfceAtivo && !permissions.nfseAtivo) {
         setGenerateNFe(false);
       }
     }
@@ -98,13 +102,15 @@ const SaleConfirmationModal = ({
   // Ajustar tpImp automaticamente baseado no tipo de NF
   const handleNfeTypeChange = (type) => {
     // Impedir seleção de tipo desabilitado
-    if ((type === 'nfce' && !permissions.nfceAtivo) || (type === 'nfe' && !permissions.nfeAtivo)) {
+    if ((type === 'nfce' && !permissions.nfceAtivo) || 
+        (type === 'nfe' && !permissions.nfeAtivo) ||
+        (type === 'nfse' && !permissions.nfseAtivo)) {
       return;
     }
     setNfeType(type);
     setNfeOptions(prev => ({
       ...prev,
-      tpImp: type === 'nfce' ? 4 : 1 // NFCe=4 (DANFe NFC-e), NFe=1 (Retrato)
+      tpImp: type === 'nfce' ? 4 : type === 'nfse' ? 0 : 1 // NFCe=4 (DANFe NFC-e), NFe=1 (Retrato), NFSe=0 (Sem DANFE)
     }));
   };
   const [printReceipt, setPrintReceipt] = useState(true);
@@ -163,6 +169,9 @@ const SaleConfirmationModal = ({
     
     // Para NFe (modelo 55), dados do cliente são sempre obrigatórios
     if (nfeType === 'nfe') return true;
+    
+    // Para NFS-e (serviços), dados do cliente são obrigatórios
+    if (nfeType === 'nfse') return true;
     
     // Para NFCe, dados do cliente não são obrigatórios
     if (nfeType === 'nfce') {
@@ -386,7 +395,7 @@ const SaleConfirmationModal = ({
                         type="checkbox"
                         checked={generateNFe}
                         onChange={(e) => setGenerateNFe(e.target.checked)}
-                        disabled={loadingPermissions || (!permissions.nfeAtivo && !permissions.nfceAtivo)}
+                        disabled={loadingPermissions || (!permissions.nfeAtivo && !permissions.nfceAtivo && !permissions.nfseAtivo)}
                         className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                       />
                       <div className="flex items-center gap-2">
@@ -394,9 +403,9 @@ const SaleConfirmationModal = ({
                         <span>Gerar Nota Fiscal Eletrônica</span>
                       </div>
                     </label>
-                    {(!permissions.nfeAtivo && !permissions.nfceAtivo) && (
+                    {(!permissions.nfeAtivo && !permissions.nfceAtivo && !permissions.nfseAtivo) && (
                       <p className="text-xs text-red-600 dark:text-red-400 ml-7">
-                        Ative NFe ou NFCe em Integrações → Nota Fiscal → Permissões de Emissão.
+                        Ative NFe, NFCe ou NFS-e em Integrações → Nota Fiscal → Permissões de Emissão.
                       </p>
                     )}
  
@@ -406,7 +415,7 @@ const SaleConfirmationModal = ({
                          <label className="block text-sm font-medium text-gray-700 mb-2">
                            Tipo de Nota Fiscal
                          </label>
-                         <div className="flex gap-4">
+                         <div className="flex flex-wrap gap-4">
                            <label className="flex items-center gap-2 cursor-pointer">
                              <input
                                type="radio"
@@ -430,6 +439,18 @@ const SaleConfirmationModal = ({
                                className="w-4 h-4 text-blue-600 focus:ring-blue-500"
                              />
                              <span className="text-sm">NF-e (Empresa)</span>
+                           </label>
+                           <label className="flex items-center gap-2 cursor-pointer">
+                             <input
+                               type="radio"
+                               name="nfeType"
+                               value="nfse"
+                               checked={nfeType === 'nfse'}
+                               onChange={(e) => handleNfeTypeChange(e.target.value)}
+                               disabled={!permissions.nfseAtivo}
+                               className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                             />
+                             <span className="text-sm">NFS-e (Serviço)</span>
                            </label>
                          </div>
                         
