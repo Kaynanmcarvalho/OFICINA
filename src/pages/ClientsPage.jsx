@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 import '../styles/clients-scale.css';
 import '../styles/clients-no-blur.css';
 import '../styles/clients-force-no-blur.css';
+import '../styles/clients-scale-20.css';
 
 // Componentes
 import PageHeader from './clients/components/PageHeader';

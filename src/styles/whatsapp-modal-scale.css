@@ -1,0 +1,18 @@
+/**
+ * Redução de 20% em todos os elementos do modal WhatsApp
+ * Usando transform scale para manter proporções perfeitas
+ */
+
+/* Aplica scale no container principal do modal */
+.fixed.inset-0.z-\\[100\\] > div {
+  transform: scale(0.8);
+  transform-origin: top left;
+  margin-left: 15%;
+  margin-top: 8%;
+}
+
+/* Alternativa: Se a classe acima não funcionar, use esta */
+[class*="bg-white"][class*="rounded-2xl"][class*="max-w-4xl"] {
+  transform: scale(0.8);
+  transform-origin: top left;
+}

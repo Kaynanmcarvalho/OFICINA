@@ -1,9 +1,10 @@
-
+import { forwardRef } from 'react';
+import { motion } from 'framer-motion';
 import { Clock, CheckCircle, XCircle, AlertCircle, Send, LogIn, Edit } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-const BudgetCard = ({ budget, onEdit, onSend, onCheckin }) => {
+const BudgetCard = forwardRef(({ budget, onEdit, onSend, onCheckin }, ref) => {
   const getStatusConfig = (status) => {
     const configs = {
       pending: {
@@ -48,6 +49,7 @@ const BudgetCard = ({ budget, onEdit, onSend, onCheckin }) => {
 
   return (
     <motion.div
+      ref={ref}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9 }}
@@ -143,6 +145,8 @@ const BudgetCard = ({ budget, onEdit, onSend, onCheckin }) => {
       </div>
     </motion.div>
   );
-};
+});
+
+BudgetCard.displayName = 'BudgetCard';
 
 export default BudgetCard;

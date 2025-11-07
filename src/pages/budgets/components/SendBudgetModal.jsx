@@ -3,12 +3,15 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Mail, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import WhatsAppConnectionModal from '../../../components/whatsapp/WhatsAppConnectionModal';
+import { checkConnectionStatus, sendMessage } from '../../../services/whatsappService';
 
 const SendBudgetModal = ({ isOpen, onClose, budget }) => {
   const [sendMethod, setSendMethod] = useState('whatsapp');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
 
   if (!isOpen || !budget) return null;
 
@@ -31,6 +34,16 @@ ${approvalLink}
 Qualquer dúvida, estamos à disposição!`;
   };
 
+  const checkWhatsAppConnection = async () => {
+    try {
+      const status = await checkConnectionStatus();
+      return status.connected;
+    } catch (error) {
+      console.error('Erro ao verificar conexão WhatsApp:', error);
+      return false;
+    }
+  };
+
   const handleSendWhatsApp = async () => {
     const phone = phoneNumber || budget.clientPhone;
     
@@ -39,26 +52,47 @@ Qualquer dúvida, estamos à disposição!`;
       return;
     }
 
+    // Verificar se WhatsApp está conectado
+    const isConnected = await checkWhatsAppConnection();
+    
+    if (!isConnected) {
+      // Abrir modal de conexão
+      setShowWhatsAppModal(true);
+      return;
+    }
+
     setIsSending(true);
 
     try {
-      // Clean phone number
       const cleanPhone = phone.replace(/\D/g, '');
+      const message = generateWhatsAppMessage();
       
-      // Generate WhatsApp link
-      const message = encodeURIComponent(generateWhatsAppMessage());
-      const whatsappUrl = `https://wa.me/55${cleanPhone}?text=${message}`;
+      await sendMessage(cleanPhone, message);
 
-      // Open WhatsApp
-      window.open(whatsappUrl, '_blank');
-
-      toast.success('Link do WhatsApp aberto!');
+      toast.success('Orçamento enviado com sucesso!');
       onClose();
-    } catch {
-      toast.error('Erro ao enviar pelo WhatsApp');
+    } catch (error) {
+      console.error('Erro ao enviar:', error);
+      
+      if (error.message.includes('NOT_CONNECTED')) {
+        toast.error('WhatsApp desconectado. Reconecte e tente novamente.');
+        setShowWhatsAppModal(true);
+      } else {
+        toast.error('Erro ao enviar pelo WhatsApp');
+      }
     } finally {
       setIsSending(false);
     }
+  };
+
+  const handleWhatsAppConnected = (userData) => {
+    console.log('WhatsApp conectado:', userData);
+    setShowWhatsAppModal(false);
+    toast.success('Agora você pode enviar orçamentos automaticamente!');
+    // Tentar enviar novamente após conexão
+    setTimeout(() => {
+      handleSendWhatsApp();
+    }, 500);
   };
 
   const handleSendEmail = async () => {
@@ -96,14 +130,17 @@ Qualquer dúvida, estamos à disposição!`;
   };
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-2xl"
-        >
+    <>
+      <AnimatePresence>
+        {isOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <motion.div
+              key="send-budget-modal"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-2xl"
+            >
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -249,9 +286,18 @@ Qualquer dúvida, estamos à disposição!`;
               {isSending ? 'Enviando...' : 'Enviar'}
             </button>
           </div>
-        </motion.div>
-      </div>
-    </AnimatePresence>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* WhatsApp Connection Modal */}
+      <WhatsAppConnectionModal
+        isOpen={showWhatsAppModal}
+        onClose={() => setShowWhatsAppModal(false)}
+        onSuccess={handleWhatsAppConnected}
+      />
+    </>
   );
 };
 

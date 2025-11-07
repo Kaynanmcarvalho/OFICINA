@@ -1,0 +1,13 @@
+/**
+ * Redução de 20% em todos os elementos da página /clients
+ * Usando transform scale para manter proporções perfeitas
+ */
+
+.clients-page-container .max-w-7xl {
+  transform: scale(0.8);
+  transform-origin: top left;
+  width: 125%; /* Compensa o scale */
+  margin-bottom: -20%; /* Compensa o espaço extra do scale */
+  margin-left: 10%;
+  margin-top: 5%;
+}
