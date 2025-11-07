@@ -1,3 +1,6 @@
-2025/11/07-17:26:01.812 3d38 Reusing MANIFEST C:\Users\brcal\OneDrive\Documentos\sistemas\OFICINA\OFICINA\server-whatsapp\whatsapp_session\session\Default\Local Storage\leveldb/MANIFEST-000001
-2025/11/07-17:26:01.813 3d38 Recovering log #3
-2025/11/07-17:26:01.813 3d38 Reusing old log C:\Users\brcal\OneDrive\Documentos\sistemas\OFICINA\OFICINA\server-whatsapp\whatsapp_session\session\Default\Local Storage\leveldb/000003.log 
+2025/11/07-18:09:22.044 3d50 Reusing MANIFEST C:\Users\brcal\OneDrive\Documentos\sistemas\OFICINA\OFICINA\server-whatsapp\whatsapp_session\session\Default\Local Storage\leveldb/MANIFEST-000001
+2025/11/07-18:09:22.044 3d50 Recovering log #3
+2025/11/07-18:09:22.045 3d50 Reusing old log C:\Users\brcal\OneDrive\Documentos\sistemas\OFICINA\OFICINA\server-whatsapp\whatsapp_session\session\Default\Local Storage\leveldb/000003.log 
+2025/11/07-18:11:22.629 37d0 Level-0 table #5: started
+2025/11/07-18:11:22.641 37d0 Level-0 table #5: 19963 bytes OK
+2025/11/07-18:11:22.643 37d0 Delete type=0 #3

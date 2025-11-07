@@ -13,7 +13,16 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://192.168.18.203:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000'
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 // Estado global
@@ -268,14 +277,17 @@ app.get('/api/whatsapp/has-session', (req, res) => {
   });
 });
 
-// Iniciar servidor
-app.listen(PORT, () => {
+// Iniciar servidor em todas as interfaces de rede
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`
 ╔══════════════════════════════════════════════════════════╗
 ║  WhatsApp Backend - Simples e Funcional                 ║
-║  Servidor rodando em http://localhost:${PORT}            ║
+║  Servidor rodando em:                                    ║
+║    - http://localhost:${PORT}                            ║
+║    - http://192.168.18.203:${PORT}                       ║
 ║  SEM ABRIR NAVEGADOR - Headless Mode                    ║
 ║  Restauração automática de sessão: ATIVADA              ║
+║  Acessível na rede local: SIM                           ║
 ╚══════════════════════════════════════════════════════════╝
   `);
 });
