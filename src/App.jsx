@@ -28,6 +28,8 @@ const CaixaPage = React.lazy(() => import('./pages/Caixa'));
 const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
 const ReportsPage = React.lazy(() => import('./pages/ReportsPage'));
 const DevPage = React.lazy(() => import('./pages/DevPage'));
+const BudgetsPage = React.lazy(() => import('./pages/BudgetsPage'));
+const BudgetApprovalPage = React.lazy(() => import('./pages/BudgetApprovalPage'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 
 function App() {
@@ -97,6 +99,9 @@ function App() {
                 }
               />
 
+              {/* Public budget approval route */}
+              <Route path="/orcamento/aprovar/:approvalLink" element={<BudgetApprovalPage />} />
+
               {/* Profile completion route */}
               <Route
                 path="/complete-profile"
@@ -120,6 +125,7 @@ function App() {
                 <Route path="dashboard" element={<DashboardPage />} />
                 <Route path="checkin" element={<CheckinPage />} />
                 <Route path="checkin/:id" element={<CheckInDetailsPage />} />
+                <Route path="orcamentos" element={<BudgetsPage />} />
                 <Route path="clients" element={<ClientsPage />} />
                 <Route path="inventory" element={<InventoryPage />} />
                 <Route path="vehicles" element={<VehiclesPage />} />

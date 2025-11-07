@@ -6,6 +6,7 @@ import { LogIn, LogOut } from 'lucide-react';
 import ModalCheckin from './checkin/componentes/ModalCheckin';
 import ModalCheckout from './checkin/componentes/ModalCheckout';
 import ModalEditarCheckin from './checkin/componentes/ModalEditarCheckin';
+import BudgetModal from './budgets/components/BudgetModal';
 import RecentSectionThemeAware from '../components/recent/RecentSectionThemeAware';
 import OperationalDashboard from './checkin/componentes/dashboard/OperationalDashboard';
 
@@ -18,9 +19,11 @@ const CheckInPage = () => {
   const [isCheckInModalOpen, setIsCheckInModalOpen] = useState(false);
   const [isCheckOutModalOpen, setIsCheckOutModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
   const [selectedCheckin, setSelectedCheckin] = useState(null);
   const [selectedForCheckout, setSelectedForCheckout] = useState(null);
   const [checkinToEdit, setCheckinToEdit] = useState(null);
+  const [checkinForBudget, setCheckinForBudget] = useState(null);
 
   useEffect(() => {
     fetchCheckins();
@@ -40,6 +43,13 @@ const CheckInPage = () => {
     } catch (error) {
       console.error('Erro ao atualizar lista:', error);
     }
+  };
+
+  // Check if checkin has budget
+  const checkinHasBudget = (checkinId) => {
+    // TODO: Implement check if checkin has associated budget
+    // For now, return false
+    return false;
   };
 
   // Convert checkin data to RecentItem format
@@ -100,6 +110,7 @@ const CheckInPage = () => {
         vehicleId: checkin.vehicleId,
         serviceType: checkin.services,
         notes: checkin.observations,
+        hasBudget: checkinHasBudget(checkin.firestoreId || checkin.id),
       },
     };
   };
@@ -140,6 +151,10 @@ const CheckInPage = () => {
         setCheckinToEdit(checkin);
         setIsEditModalOpen(true);
         break;
+      case 'createBudget':
+        setCheckinForBudget(checkin);
+        setIsBudgetModalOpen(true);
+        break;
       case 'complete':
         handleSelectForCheckout(checkin);
         break;
@@ -148,10 +163,6 @@ const CheckInPage = () => {
           // TODO: Implement delete functionality
           console.log('Delete checkin:', checkin);
         }
-        break;
-      case 'duplicate':
-        // TODO: Implement duplicate functionality
-        console.log('Duplicate checkin:', checkin);
         break;
       default:
         break;
@@ -414,6 +425,29 @@ const CheckInPage = () => {
           // TODO: Implementar salvamento real
           fetchCheckins(); // Recarregar lista
         }}
+      />
+
+      {/* Modal de Orçamento */}
+      <BudgetModal
+        isOpen={isBudgetModalOpen}
+        onClose={() => {
+          setIsBudgetModalOpen(false);
+          setCheckinForBudget(null);
+        }}
+        budget={checkinForBudget ? {
+          clientId: checkinForBudget.clientId,
+          clientName: checkinForBudget.clientName,
+          clientPhone: checkinForBudget.clientPhone,
+          clientEmail: checkinForBudget.clientEmail,
+          vehicleId: checkinForBudget.vehicleId,
+          vehiclePlate: checkinForBudget.vehiclePlate,
+          vehicleBrand: checkinForBudget.vehicleBrand,
+          vehicleModel: checkinForBudget.vehicleModel,
+          vehicleYear: checkinForBudget.vehicleYear,
+          vehicleColor: checkinForBudget.vehicleColor,
+          notes: `Orçamento criado a partir do check-in #${checkinForBudget.id}`,
+          items: []
+        } : null}
       />
     </div>
   );

@@ -284,9 +284,10 @@ const RecentItemThemeAware: React.FC<RecentItemThemeAwareProps> = ({
                 <ItemActions
                   onOpen={() => onAction?.({ type: 'open', itemId: item.id })}
                   onEdit={() => onAction?.({ type: 'edit', itemId: item.id })}
-                  onDuplicate={() => onAction?.({ type: 'duplicate', itemId: item.id })}
+                  onCreateBudget={() => onAction?.({ type: 'createBudget', itemId: item.id })}
                   onComplete={() => onAction?.({ type: 'complete', itemId: item.id })}
                   onDelete={() => onAction?.({ type: 'delete', itemId: item.id })}
+                  hasBudget={item.metadata?.hasBudget || false}
                 />
               </div>
             </div>

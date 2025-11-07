@@ -2,6 +2,7 @@ import {
   LayoutDashboard,
   CreditCard,
   ClipboardCheck,
+  FileText,
   Users,
   Car,
   Package,
@@ -33,6 +34,12 @@ export const menuItems = [
     label: 'Check-in',
     path: '/checkin',
     icon: ClipboardCheck,
+  },
+  {
+    id: 'orcamentos',
+    label: 'Orçamentos',
+    path: '/orcamentos',
+    icon: FileText,
   },
   {
     id: 'clients',

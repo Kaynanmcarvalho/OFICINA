@@ -11,6 +11,7 @@ import { useToolStore } from './toolStore.jsx';
 import { useTeamStore } from './teamStore.jsx';
 import { useSettingsStore } from './settingsStore.jsx';
 import { useOrganizationStore } from './organizationStore.jsx';
+import { useBudgetStore } from './budgetStore.jsx';
 
 // Main store combining all stores
 export const useStore = create(
@@ -48,6 +49,7 @@ export const useStore = create(
                 useVehicleStore.getState().fetchVehicles(),
                 useToolStore.getState().fetchTools(),
                 useTeamStore.getState().fetchMembers(),
+                useBudgetStore.getState().fetchBudgets(),
               ]);
             }
             
@@ -85,7 +87,8 @@ export const useStore = create(
             useVehicleStore.getState().subscribeToVehicles(),
             useToolStore.getState().subscribeToTools(),
             useTeamStore.getState().subscribeToMembers(),
-            useTeamStore.getState().subscribeToSchedules()
+            useTeamStore.getState().subscribeToSchedules(),
+            useBudgetStore.getState().subscribeToBudgets()
           );
           
           return () => {
@@ -118,3 +121,4 @@ export { useToolStore } from './toolStore.jsx';
 export { useTeamStore } from './teamStore.jsx';
 export { useSettingsStore } from './settingsStore.jsx';
 export { useOrganizationStore } from './organizationStore.jsx';
+export { useBudgetStore } from './budgetStore.jsx';
