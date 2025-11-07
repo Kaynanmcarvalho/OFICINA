@@ -61,13 +61,22 @@ function initializeWhatsApp() {
     qrCodeData = null;
   });
 
+  // Carregando sessão
+  client.on('loading_screen', (percent, message) => {
+    console.log(`⏳ Carregando sessão: ${percent}% - ${message}`);
+  });
+
   // Pronto para usar
   client.on('ready', () => {
     console.log('✅ WhatsApp pronto!');
     isReady = true;
+    qrCodeData = null;
     
     // Obter número
-    client.info.wid.user && (currentNumber = client.info.wid.user);
+    if (client.info && client.info.wid) {
+      currentNumber = client.info.wid.user;
+      console.log(`📱 Conectado como: +${currentNumber}`);
+    }
   });
 
   // Desconectado
@@ -76,11 +85,28 @@ function initializeWhatsApp() {
     isReady = false;
     qrCodeData = null;
     currentNumber = null;
+    
+    // Tentar reconectar após 5 segundos
+    setTimeout(() => {
+      console.log('🔄 Tentando reconectar...');
+      client = null;
+      initializeWhatsApp();
+    }, 5000);
+  });
+
+  // Erro de autenticação
+  client.on('auth_failure', (msg) => {
+    console.error('❌ Falha na autenticação:', msg);
+    qrCodeData = null;
   });
 
   // Inicializar
   client.initialize();
 }
+
+// Inicializar automaticamente ao startar o servidor
+console.log('🚀 Iniciando WhatsApp automaticamente...');
+initializeWhatsApp();
 
 // Rotas da API
 
@@ -166,11 +192,26 @@ app.post('/api/whatsapp/send', async (req, res) => {
       });
     }
 
-    // Formatar número
-    const formattedNumber = phone_number.replace(/\D/g, '') + '@c.us';
+    // Limpar e formatar número
+    let cleanNumber = phone_number.replace(/\D/g, '');
+    
+    // Se não tem código do país, adicionar 55 (Brasil)
+    if (cleanNumber.length === 11 || cleanNumber.length === 10) {
+      cleanNumber = '55' + cleanNumber;
+    }
+    
+    // Verificar se o número é válido
+    const numberId = await client.getNumberId(cleanNumber);
+    
+    if (!numberId || !numberId._serialized) {
+      return res.status(400).json({
+        error: 'INVALID_NUMBER',
+        message: 'Número não está registrado no WhatsApp'
+      });
+    }
 
-    // Enviar mensagem
-    await client.sendMessage(formattedNumber, message);
+    // Enviar mensagem usando o ID verificado
+    await client.sendMessage(numberId._serialized, message);
 
     res.json({
       success: true,
@@ -212,6 +253,21 @@ app.post('/api/whatsapp/disconnect', async (req, res) => {
   }
 });
 
+// Verificar se tem sessão salva
+app.get('/api/whatsapp/has-session', (req, res) => {
+  const fs = require('fs');
+  const path = require('path');
+  
+  const sessionPath = path.join(__dirname, 'whatsapp_session');
+  const hasSession = fs.existsSync(sessionPath);
+  
+  res.json({
+    hasSession,
+    isReady,
+    currentNumber
+  });
+});
+
 // Iniciar servidor
 app.listen(PORT, () => {
   console.log(`
@@ -219,6 +275,7 @@ app.listen(PORT, () => {
 ║  WhatsApp Backend - Simples e Funcional                 ║
 ║  Servidor rodando em http://localhost:${PORT}            ║
 ║  SEM ABRIR NAVEGADOR - Headless Mode                    ║
+║  Restauração automática de sessão: ATIVADA              ║
 ╚══════════════════════════════════════════════════════════╝
   `);
 });

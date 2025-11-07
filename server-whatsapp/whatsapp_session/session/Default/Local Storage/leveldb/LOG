@@ -1,2 +1,3 @@
-2025/11/07-17:20:01.999 3650 Creating DB C:\Users\brcal\OneDrive\Documentos\sistemas\OFICINA\OFICINA\server-whatsapp\whatsapp_session\session\Default\Local Storage\leveldb since it was missing.
-2025/11/07-17:20:02.018 3650 Reusing MANIFEST C:\Users\brcal\OneDrive\Documentos\sistemas\OFICINA\OFICINA\server-whatsapp\whatsapp_session\session\Default\Local Storage\leveldb/MANIFEST-000001
+2025/11/07-17:31:08.627 1b00 Reusing MANIFEST C:\Users\brcal\OneDrive\Documentos\sistemas\OFICINA\OFICINA\server-whatsapp\whatsapp_session\session\Default\Local Storage\leveldb/MANIFEST-000001
+2025/11/07-17:31:08.628 1b00 Recovering log #3
+2025/11/07-17:31:08.646 1b00 Reusing old log C:\Users\brcal\OneDrive\Documentos\sistemas\OFICINA\OFICINA\server-whatsapp\whatsapp_session\session\Default\Local Storage\leveldb/000003.log 
