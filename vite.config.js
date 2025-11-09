@@ -11,8 +11,19 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    include: ['axios', 'jspdf', 'browser-image-compression'],
-    force: false
+    include: [
+      'axios', 
+      'jspdf', 
+      'browser-image-compression',
+      'lucide-react',
+      'react-icons',
+      'react-icons/fa',
+      'react-icons/fi',
+      'react-icons/hi',
+      'react-icons/md',
+      'framer-motion'
+    ],
+    force: true
   },
   server: {
     fs: {

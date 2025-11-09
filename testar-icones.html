@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Ícones - TORQ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .checklist {
+            list-style: none;
+        }
+
+        .checklist li {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .checklist li:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .checkbox.checked {
+            background: #667eea;
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .item-text {
+            flex: 1;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .instructions {
+            margin-top: 30px;
+            padding: 20px;
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            border-radius: 8px;
+        }
+
+        .instructions h3 {
+            color: #1976D2;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            color: #333;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .button-group {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .alert {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+        }
+
+        .alert strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Teste de Ícones - TORQ</h1>
+        <p class="subtitle">Verifique se todos os ícones estão carregando corretamente</p>
+
+        <ul class="checklist">
+            <li>
+                <div class="checkbox" id="check1"></div>
+                <span class="item-text">Logo TORQ aparece no navbar (topo da página)</span>
+                <span class="status pending" id="status1">Pendente</span>
+            </li>
+            <li>
+                <div class="checkbox" id="check2"></div>
+                <span class="item-text">Ícones do menu lateral (Dashboard, Caixa, Check-in, etc.)</span>
+                <span class="status pending" id="status2">Pendente</span>
+            </li>
+            <li>
+                <div class="checkbox" id="check3"></div>
+                <span class="item-text">Ícone de busca no navbar (lupa)</span>
+                <span class="status pending" id="status3">Pendente</span>
+            </li>
+            <li>
+                <div class="checkbox" id="check4"></div>
+                <span class="item-text">Ícone de tema (sol/lua) no navbar</span>
+                <span class="status pending" id="status4">Pendente</span>
+            </li>
+            <li>
+                <div class="checkbox" id="check5"></div>
+                <span class="item-text">Ícone de perfil/avatar no navbar</span>
+                <span class="status pending" id="status5">Pendente</span>
+            </li>
+            <li>
+                <div class="checkbox" id="check6"></div>
+                <span class="item-text">Ícone de configurações no rodapé do menu</span>
+                <span class="status pending" id="status6">Pendente</span>
+            </li>
+            <li>
+                <div class="checkbox" id="check7"></div>
+                <span class="item-text">Setas de expandir/recolher menu (chevrons)</span>
+                <span class="status pending" id="status7">Pendente</span>
+            </li>
+        </ul>
+
+        <div class="instructions">
+            <h3>📋 Como Testar:</h3>
+            <ol>
+                <li>Execute o script: <code>iniciar-servidor-limpo.bat</code></li>
+                <li>Aguarde o servidor iniciar completamente</li>
+                <li>Abra o navegador em: <code>http://localhost:5173</code></li>
+                <li>Faça login no sistema</li>
+                <li>Verifique cada item da lista acima</li>
+                <li>Clique nos checkboxes para marcar os itens verificados</li>
+            </ol>
+        </div>
+
+        <div class="alert">
+            <strong>⚠️ Importante:</strong>
+            Se algum ícone não aparecer, execute <code>limpar-cache-completo.bat</code> e tente novamente.
+            Não esqueça de limpar o cache do navegador (Ctrl+Shift+Delete).
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="checkAll()">✓ Marcar Todos</button>
+            <button class="btn btn-secondary" onclick="uncheckAll()">✗ Desmarcar Todos</button>
+            <button class="btn btn-secondary" onclick="resetTest()">🔄 Reiniciar Teste</button>
+        </div>
+    </div>
+
+    <script>
+        // Adicionar interatividade aos checkboxes
+        for (let i = 1; i <= 7; i++) {
+            const checkbox = document.getElementById(`check${i}`);
+            const status = document.getElementById(`status${i}`);
+            
+            checkbox.addEventListener('click', function() {
+                if (this.classList.contains('checked')) {
+                    this.classList.remove('checked');
+                    status.textContent = 'Pendente';
+                    status.className = 'status pending';
+                } else {
+                    this.classList.add('checked');
+                    status.textContent = 'OK';
+                    status.className = 'status success';
+                }
+                updateProgress();
+            });
+        }
+
+        function checkAll() {
+            for (let i = 1; i <= 7; i++) {
+                const checkbox = document.getElementById(`check${i}`);
+                const status = document.getElementById(`status${i}`);
+                checkbox.classList.add('checked');
+                status.textContent = 'OK';
+                status.className = 'status success';
+            }
+            updateProgress();
+        }
+
+        function uncheckAll() {
+            for (let i = 1; i <= 7; i++) {
+                const checkbox = document.getElementById(`check${i}`);
+                const status = document.getElementById(`status${i}`);
+                checkbox.classList.remove('checked');
+                status.textContent = 'Pendente';
+                status.className = 'status pending';
+            }
+            updateProgress();
+        }
+
+        function resetTest() {
+            uncheckAll();
+        }
+
+        function updateProgress() {
+            let checked = 0;
+            for (let i = 1; i <= 7; i++) {
+                if (document.getElementById(`check${i}`).classList.contains('checked')) {
+                    checked++;
+                }
+            }
+            
+            if (checked === 7) {
+                alert('🎉 Parabéns! Todos os ícones estão funcionando corretamente!');
+            }
+        }
+    </script>
+</body>
+</html>

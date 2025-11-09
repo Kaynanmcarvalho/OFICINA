@@ -1,65 +1,88 @@
 /**
- * ClientsPage - Página de clientes com design Apple-like premium
- * Reformulação completa com glassmorphism e microinterações
+ * ClientsPagePremium - Gestão de Clientes Premium
+ * Design Apple-like com experiência imersiva e funcionalidades inteligentes
+ * 
+ * Features:
+ * - Grid e Lista view com transições suaves
+ * - Busca inteligente em tempo real
+ * - Filtros avançados com Smart Segments
+ * - Slide-over premium para detalhes do cliente
+ * - Integração completa com Firebase
+ * - WhatsApp integration
+ * - Micro-animações e feedback visual
  */
 
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useThemeStore } from '../store';
-import { useClientStore } from '../store';
+import './clients/estilos/clients-premium-light.css';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useClientStore } from '../store/clientStore';
+import { useThemeStore } from '../store/themeStore';
 import toast from 'react-hot-toast';
-import '../styles/clients-scale.css';
-import '../styles/clients-no-blur.css';
-import '../styles/clients-force-no-blur.css';
-import '../styles/clients-scale-20.css';
 
-// Componentes
-import PageHeader from './clients/components/PageHeader';
-import SearchBar from './clients/components/SearchBar';
-import ClientTable from './clients/components/ClientTable';
-import ClientModal from './clients/components/ClientModal';
-import ClientViewModal from './clients/components/ClientViewModal';
-import VehicleGalleryModal from '../components/VehicleGalleryModal';
-import ClientFilter from '../components/ui/ClientFilter';
-import EmptyState from './clients/components/EmptyState';
+// Components
+import ClientsHeader from './clients/ClientsHeader';
+import ClientsSearchBar from './clients/ClientsSearchBar';
+import ClientsFilters from './clients/ClientsFilters';
+import ClientsGridView from './clients/ClientsGridView';
+import ClientsListView from './clients/ClientsListView';
+import ClientSlideOver from './clients/ClientSlideOver';
+import ModalNovoCliente from './checkin/componentes/ModalNovoCliente';
+import EmptyState from './clients/EmptyState';
 
-const ClientsPage = () => {
+// View modes
+const VIEW_MODES = {
+  GRID: 'grid',
+  LIST: 'list'
+};
+
+const ClientsPagePremium = () => {
   const { isDarkMode } = useThemeStore();
-  const { clients, fetchClients, createClient, updateClient, deleteClient, isLoading } = useClientStore();
-  const [isClientModalOpen, setIsClientModalOpen] = useState(false);
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
-  const [selectedClient, setSelectedClient] = useState(null);
-  const [viewingClient, setViewingClient] = useState(null);
-  const [vehicleClient, setVehicleClient] = useState(null);
+  const { 
+    clients, 
+    fetchClients, 
+    createClient, 
+    updateClient, 
+    deleteClient,
+    isLoading 
+  } = useClientStore();
+
+  // View state
+  const [viewMode, setViewMode] = useState(VIEW_MODES.GRID);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredClients, setFilteredClients] = useState([]);
-  const [activeFilters, setActiveFilters] = useState({ 
-    status: 'all', 
-    period: 'all', 
-    location: 'all' 
+  const [activeFilters, setActiveFilters] = useState({
+    status: 'all',
+    tags: [],
+    dateRange: null
   });
-  
+
+  // Modal states
+  const [isClientModalOpen, setIsClientModalOpen] = useState(false);
+  const [isSlideOverOpen, setIsSlideOverOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [editingClient, setEditingClient] = useState(null);
+
+  // Load clients on mount
   useEffect(() => {
     fetchClients();
   }, [fetchClients]);
-  
-  // Filtrar clientes baseado na busca e filtros
-  useEffect(() => {
-    let filtered = clients;
 
-    // Filtro por busca
+  // Filtered clients with intelligent search
+  const filteredClients = useMemo(() => {
+    let filtered = [...clients];
+
+    // Search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(client => 
         client.name?.toLowerCase().includes(query) ||
         client.email?.toLowerCase().includes(query) ||
         client.phone?.includes(query) ||
-        client.cpf?.includes(query)
+        client.cpf?.includes(query) ||
+        client.cnpj?.includes(query)
       );
     }
 
-    // Filtro por status
+    // Status filter
     if (activeFilters.status !== 'all') {
       filtered = filtered.filter(client => {
         if (activeFilters.status === 'active') {
@@ -71,255 +94,277 @@ const ClientsPage = () => {
       });
     }
 
-    // Filtro por período (exemplo básico)
-    if (activeFilters.period !== 'all') {
-      const now = new Date();
+    // Tags filter
+    if (activeFilters.tags.length > 0) {
+      filtered = filtered.filter(client => 
+        activeFilters.tags.some(tag => 
+          client.tags?.includes(tag)
+        )
+      );
+    }
+
+    // Date range filter
+    if (activeFilters.dateRange) {
+      const { start, end } = activeFilters.dateRange;
       filtered = filtered.filter(client => {
-        if (!client.createdAt) return true;
-        const clientDate = new Date(client.createdAt);
-        
-        switch (activeFilters.period) {
-          case 'today':
-            return clientDate.toDateString() === now.toDateString();
-          case 'week':
-            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-            return clientDate >= weekAgo;
-          case 'month':
-            return clientDate.getMonth() === now.getMonth() && 
-                   clientDate.getFullYear() === now.getFullYear();
-          case 'year':
-            return clientDate.getFullYear() === now.getFullYear();
-          default:
-            return true;
-        }
+        if (!client.lastServiceDate) return false;
+        const serviceDate = new Date(client.lastServiceDate);
+        return serviceDate >= start && serviceDate <= end;
       });
     }
 
-    setFilteredClients(filtered);
+    return filtered;
   }, [clients, searchQuery, activeFilters]);
-  
-  const handleNewClient = () => {
-    setSelectedClient(null);
+
+  // Statistics
+  const stats = useMemo(() => ({
+    total: clients.length,
+    active: clients.filter(c => c.active !== false).length,
+    inactive: clients.filter(c => c.active === false).length,
+    withVehicles: clients.filter(c => c.vehicles?.length > 0).length
+  }), [clients]);
+
+  // Handlers
+  const handleNewClient = useCallback(() => {
+    setEditingClient(null);
     setIsClientModalOpen(true);
-  };
-  
-  const handleEditClient = (client) => {
+  }, []);
+
+  const handleEditClient = useCallback((client) => {
+    setEditingClient(client);
+    setIsClientModalOpen(true);
+  }, []);
+
+  const handleViewClient = useCallback((client) => {
     setSelectedClient(client);
-    setIsClientModalOpen(true);
-  };
+    setIsSlideOverOpen(true);
+  }, []);
 
-  const handleViewClient = (client) => {
-    setViewingClient(client);
-    setIsViewModalOpen(true);
-  };
-
-  const handleViewVehicles = (client) => {
-    if (client.vehicles && client.vehicles.length > 0) {
-      setVehicleClient(client);
-      setIsVehicleModalOpen(true);
-    } else {
-      toast.error('Este cliente não possui veículos cadastrados');
-    }
-  };
-
-  // Nova função para toggle de status - otimizada
-  const handleToggleClientStatus = async (clientId, newStatus) => {
+  const handleSaveClient = useCallback(async (clientData) => {
     try {
-      const client = clients.find(c => c.id === clientId || c.firestoreId === clientId);
-      if (!client) {
-        console.error('Cliente não encontrado:', clientId);
-        return;
-      }
-
-      // Atualização otimizada - apenas os campos necessários
-      const updateData = { 
-        active: newStatus,
-        updatedAt: new Date().toISOString()
-      };
-
-      await updateClient(client.firestoreId || client.id, updateData);
-      
-      // Toast mais discreto
-      toast.success(
-        newStatus ? 'Cliente ativado' : 'Cliente desativado',
-        { 
-          duration: 2000,
+      if (editingClient) {
+        await updateClient(editingClient.firestoreId, clientData);
+        toast.success('Cliente atualizado com sucesso!', {
+          icon: '✅',
           style: {
-            fontSize: '14px',
-            padding: '8px 12px'
+            borderRadius: '12px',
+            background: isDarkMode ? '#1f2937' : '#fff',
+            color: isDarkMode ? '#f9fafb' : '#111827',
           }
-        }
-      );
-    } catch (error) {
-      console.error('Erro ao alterar status do cliente:', error);
-      toast.error('Erro ao alterar status do cliente');
-    }
-  };
-
-  // Função para lidar com mudanças de filtro
-  const handleFilterChange = (newFilters) => {
-    setActiveFilters(newFilters);
-  };
-
-  // Calcular estatísticas para o filtro
-  const totalClients = clients.length;
-  const activeClients = clients.filter(c => c.active !== false).length;
-  const inactiveClients = clients.filter(c => c.active === false).length;
-  
-
-  
-  const handleSaveClient = async (formData) => {
-    try {
-      if (selectedClient) {
-        await updateClient(selectedClient.firestoreId || selectedClient.id, formData);
-        toast.success('Cliente atualizado com sucesso!');
+        });
       } else {
-        await createClient(formData);
-        toast.success('Cliente criado com sucesso!');
+        await createClient(clientData);
+        toast.success('Cliente criado com sucesso!', {
+          icon: '🎉',
+          style: {
+            borderRadius: '12px',
+            background: isDarkMode ? '#1f2937' : '#fff',
+            color: isDarkMode ? '#f9fafb' : '#111827',
+          }
+        });
       }
       setIsClientModalOpen(false);
-      setSelectedClient(null);
+      setEditingClient(null);
     } catch (err) {
       console.error('Erro ao salvar cliente:', err);
-      toast.error('Erro ao salvar cliente');
+      toast.error('Erro ao salvar cliente', {
+        icon: '❌',
+        style: {
+          borderRadius: '12px',
+          background: isDarkMode ? '#1f2937' : '#fff',
+          color: isDarkMode ? '#f9fafb' : '#111827',
+        }
+      });
     }
-  };
-  
-  // Container animation
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
-    },
-  };
-  
+  }, [editingClient, updateClient, createClient, isDarkMode]);
+
+  const handleDeleteClient = useCallback(async (clientId) => {
+    if (!confirm('Tem certeza que deseja excluir este cliente?')) return;
+    
+    try {
+      await deleteClient(clientId);
+      toast.success('Cliente excluído com sucesso!', {
+        icon: '🗑️',
+        style: {
+          borderRadius: '12px',
+          background: isDarkMode ? '#1f2937' : '#fff',
+          color: isDarkMode ? '#f9fafb' : '#111827',
+        }
+      });
+      setIsSlideOverOpen(false);
+      setSelectedClient(null);
+    } catch (err) {
+      console.error('Erro ao excluir cliente:', err);
+      toast.error('Erro ao excluir cliente', {
+        icon: '❌',
+        style: {
+          borderRadius: '12px',
+          background: isDarkMode ? '#1f2937' : '#fff',
+          color: isDarkMode ? '#f9fafb' : '#111827',
+        }
+      });
+    }
+  }, [deleteClient, isDarkMode]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      // Cmd/Ctrl + K - Open search
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        document.querySelector('[data-search-input]')?.focus();
+      }
+      
+      // N - New client
+      if (e.key === 'n' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        const activeElement = document.activeElement;
+        if (activeElement?.tagName !== 'INPUT' && activeElement?.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          handleNewClient();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [handleNewClient]);
+
   return (
-    <div
-      className="transition-colors duration-300 px-6 pb-12 clients-page-container"
-      style={{
-        background: isDarkMode 
-          ? 'var(--apple-bg-primary, #000000)'
-          : 'var(--apple-bg-primary, #ffffff)',
-        color: isDarkMode 
-          ? 'var(--apple-text-primary, #f5f5f7)'
-          : 'var(--apple-text-primary, #1d1d1f)',
-      }}
+    <div 
+      data-page="clients"
+      className={`clients-page-container transition-colors duration-300 ${
+        isDarkMode 
+          ? 'bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950' 
+          : 'bg-gradient-to-b from-gray-50 via-white to-gray-50'
+      }`}
     >
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="max-w-7xl mx-auto"
-      >
+      <div className="w-full" style={{ padding: '24px', boxSizing: 'border-box', minHeight: '100%' }}>
         {/* Header */}
-        <PageHeader 
-          clientCount={clients.length}
+        <ClientsHeader 
+          clientCount={stats.total}
+          activeCount={stats.active}
           onNewClient={handleNewClient}
         />
-        
-        {/* SearchBar e Filtros */}
+
+        {/* Search and Filters */}
         <motion.div
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            visible: { 
-              opacity: 1, 
-              y: 0,
-              transition: {
-                type: "spring",
-                stiffness: 200,
-                damping: 20,
-              },
-            },
-          }}
-          className="mb-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-6 space-y-4"
         >
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1">
-              <SearchBar
+              <ClientsSearchBar
                 value={searchQuery}
                 onChange={setSearchQuery}
                 isLoading={isLoading}
+                resultCount={filteredClients.length}
               />
             </div>
-            <ClientFilter
-              onFilterChange={handleFilterChange}
+            
+            <ClientsFilters
               activeFilters={activeFilters}
-              totalClients={totalClients}
-              activeClients={activeClients}
-              inactiveClients={inactiveClients}
+              onFilterChange={setActiveFilters}
+              stats={stats}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
             />
           </div>
         </motion.div>
-        
-        {/* Tabela de Clientes */}
-        <motion.div
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            visible: { 
-              opacity: 1, 
-              y: 0,
-              transition: {
-                type: "spring",
-                stiffness: 200,
-                damping: 20,
-                delay: 0.1,
-              },
-            },
-          }}
-        >
-          {clients.length === 0 && !isLoading ? (
-            <EmptyState onNewClient={handleNewClient} />
+
+        {/* Content */}
+        <AnimatePresence mode="wait">
+          {isLoading && clients.length === 0 ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex items-center justify-center py-20"
+            >
+              <div className="text-center">
+                <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Carregando clientes...
+                </p>
+              </div>
+            </motion.div>
+          ) : filteredClients.length === 0 ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className=""
+            >
+              <EmptyState 
+                hasClients={clients.length > 0}
+                hasFilters={searchQuery || activeFilters.status !== 'all' || activeFilters.tags.length > 0}
+                onNewClient={handleNewClient}
+                onClearFilters={() => {
+                  setSearchQuery('');
+                  setActiveFilters({ status: 'all', tags: [], dateRange: null });
+                }}
+              />
+            </motion.div>
           ) : (
-            <ClientTable
-              clients={filteredClients}
-              isLoading={isLoading}
-              onEditClient={handleEditClient}
-              onToggleClientStatus={handleToggleClientStatus}
-              onViewClient={handleViewClient}
-              onViewVehicles={handleViewVehicles}
-            />
+            <motion.div
+              key={viewMode}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className=""
+            >
+              {viewMode === VIEW_MODES.GRID ? (
+                <ClientsGridView
+                  clients={filteredClients}
+                  onViewClient={handleViewClient}
+                  onEditClient={handleEditClient}
+                  onDeleteClient={handleDeleteClient}
+                />
+              ) : (
+                <ClientsListView
+                  clients={filteredClients}
+                  onViewClient={handleViewClient}
+                  onEditClient={handleEditClient}
+                  onDeleteClient={handleDeleteClient}
+                />
+              )}
+            </motion.div>
           )}
-        </motion.div>
-      </motion.div>
-      
-      {/* Modal de Cliente */}
-      <ClientModal
+        </AnimatePresence>
+      </div>
+
+      {/* Modal Novo Cliente (mesmo do checkin) */}
+      <ModalNovoCliente
         isOpen={isClientModalOpen}
         onClose={() => {
           setIsClientModalOpen(false);
+          setEditingClient(null);
+        }}
+        onSuccess={() => {
+          setIsClientModalOpen(false);
+          setEditingClient(null);
+          fetchClients(); // Recarrega a lista de clientes
+        }}
+        existingClient={editingClient}
+      />
+
+      {/* Client Slide Over */}
+      <ClientSlideOver
+        isOpen={isSlideOverOpen}
+        onClose={() => {
+          setIsSlideOverOpen(false);
           setSelectedClient(null);
         }}
-        onSave={handleSaveClient}
         client={selectedClient}
-        isLoading={isLoading}
-      />
-
-      {/* Modal de Visualização */}
-      <ClientViewModal
-        isOpen={isViewModalOpen}
-        onClose={() => {
-          setIsViewModalOpen(false);
-          setViewingClient(null);
-        }}
-        client={viewingClient}
-      />
-
-      {/* Modal de Galeria de Veículos */}
-      <VehicleGalleryModal
-        isOpen={isVehicleModalOpen}
-        onClose={() => {
-          setIsVehicleModalOpen(false);
-          setVehicleClient(null);
-        }}
-        client={vehicleClient}
-        vehicles={vehicleClient?.vehicles || []}
+        onEdit={handleEditClient}
+        onDelete={handleDeleteClient}
       />
     </div>
   );
 };
 
-export default ClientsPage;
+export default ClientsPagePremium;

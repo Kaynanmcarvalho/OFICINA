@@ -1,4 +1,4 @@
-import React, { useEffect, Suspense } from 'react';
+import React, { useEffect, Suspense, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useStore, useAuthStore, useThemeStore } from './store/index.jsx';
@@ -6,6 +6,7 @@ import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import Layout from './components/layout/LayoutPremium';
+import './utils/preloadIcons'; // Import direto para executar o pré-carregamento
 import './i18n/index.jsx';
 
 // Lazy load pages for better performance
@@ -36,8 +37,19 @@ function App() {
   const { initializeStores, setupRealtimeListeners, isGlobalLoading } = useStore();
   const { user, isLoading: authLoading } = useAuthStore();
   const { isDarkMode, initializeTheme } = useThemeStore();
+  const [iconsReady, setIconsReady] = useState(false);
 
-  // Initialize theme FIRST (before anything else)
+  // Preload icons FIRST (critical for UI) - executa de forma síncrona
+  useEffect(() => {
+    // Pequeno delay para garantir que o módulo foi carregado
+    const timer = setTimeout(() => {
+      setIconsReady(true);
+      console.log('✅ App: Ícones prontos para renderização');
+    }, 50);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Initialize theme SECOND (before anything else)
   useEffect(() => {
     initializeTheme();
   }, [initializeTheme]);
@@ -64,8 +76,8 @@ function App() {
     }
   }, [isDarkMode]);
 
-  // Show loading spinner while initializing
-  if (authLoading || isGlobalLoading) {
+  // Show loading spinner while initializing or waiting for icons
+  if (!iconsReady || authLoading || isGlobalLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <LoadingSpinner size="lg" />

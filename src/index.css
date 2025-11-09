@@ -13,7 +13,6 @@
 /* Import Premium Styles */
 @import './styles/dark-mode-premium.css';
 @import './styles/apple-premium.css';
-@import './pages/clients/styles/theme-tokens.css';
 
 /* Importar correção de alinhamento do Navbar */
 @import './styles/navbar-alignment-fix.css';

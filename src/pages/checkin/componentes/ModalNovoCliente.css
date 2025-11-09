@@ -1,0 +1,126 @@
+/* Animações para o Modal Novo Cliente */
+
+/* Placeholders globais mais sutis */
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
+  color: rgb(163, 163, 163);
+  opacity: 0.35 !important;
+}
+
+input:focus::placeholder,
+textarea:focus::placeholder {
+  opacity: 0.25 !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Melhoria nos inputs - tema claro */
+.input-premium {
+  @apply w-full px-4 py-3 rounded-xl transition-all duration-300 ease-out antialiased font-medium;
+  @apply bg-white dark:bg-neutral-800;
+  @apply text-neutral-900 dark:text-neutral-100;
+  @apply focus:outline-none focus:ring-0;
+}
+
+.input-premium::placeholder {
+  @apply text-neutral-400 dark:text-neutral-600;
+  opacity: 0.4;
+}
+
+/* Tema claro - contornos suaves estilo Apple */
+.input-premium:not(.input-error) {
+  @apply border border-gray-300/60 dark:border-neutral-700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.input-premium:not(.input-error):focus {
+  @apply border-blue-500/60;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 3px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+/* Input com erro */
+.input-premium.input-error {
+  @apply border-[2px] border-red-500;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1), 0 2px 8px rgba(239, 68, 68, 0.15);
+}
+
+/* Select premium */
+.select-premium {
+  @apply w-full px-4 py-3 rounded-xl transition-all duration-300 ease-out antialiased font-medium;
+  @apply bg-white dark:bg-neutral-800;
+  @apply text-neutral-900 dark:text-neutral-100;
+  @apply border border-gray-300/60 dark:border-neutral-700;
+  @apply focus:outline-none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.select-premium option {
+  @apply text-neutral-900 dark:text-neutral-100;
+}
+
+.select-premium:focus {
+  @apply border-blue-500/60;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 3px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+/* Textarea premium */
+.textarea-premium {
+  @apply w-full px-4 py-3 rounded-xl transition-all duration-300 ease-out antialiased font-medium resize-none;
+  @apply bg-white dark:bg-neutral-800;
+  @apply text-neutral-900 dark:text-neutral-100;
+  @apply border border-gray-300/60 dark:border-neutral-700;
+  @apply focus:outline-none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.textarea-premium::placeholder {
+  @apply text-neutral-400 dark:text-neutral-600;
+  opacity: 0.4;
+}
+
+.textarea-premium:focus {
+  @apply border-blue-500/60;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 3px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}

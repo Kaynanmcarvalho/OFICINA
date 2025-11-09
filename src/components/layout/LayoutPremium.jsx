@@ -45,7 +45,7 @@ const LayoutPremium = memo(() => {
           }}
         >
           {/* Main Content */}
-          <div className="relative p-6">
+          <div className="relative">
             <Outlet />
           </div>
         </main>

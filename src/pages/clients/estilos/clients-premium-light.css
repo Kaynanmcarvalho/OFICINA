@@ -1,0 +1,381 @@
+/**
+ * Clientes Page - Light Mode Premium Enhancements
+ * EXATAMENTE a mesma profundidade e sombreamento do Dashboard
+ * Inspirado em Apple Design Language (macOS Sonoma, iOS 17)
+ * 
+ * IMPORTANTE: Estilos aplicados APENAS na página de clientes
+ */
+
+/* ========================================
+   LAYOUT - OCUPAR TODO O ESPAÇO DISPONÍVEL
+   ======================================== */
+
+.clients-page-container {
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  overflow: visible !important;
+  width: 100% !important;
+  min-height: 100% !important;
+  z-index: 1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Garantir que o gradiente cubra toda a área */
+.clients-page-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ========================================
+   WRAPPER ESPECÍFICO PARA CLIENTES
+   ======================================== */
+
+/* Aplicar apenas em elementos dentro da página de clientes */
+.clients-page-container .glass-effect:not(.dark *) {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(252, 252, 253, 1) 100%
+  ) !important;
+  box-shadow: 
+    /* Sombra principal INTENSIFICADA */
+    0 4px 16px -2px rgba(0, 0, 0, 0.12),
+    /* Sombra de profundidade FORTE */
+    0 12px 40px -6px rgba(0, 0, 0, 0.16),
+    /* Sombra ambiente PRONUNCIADA */
+    0 24px 72px -12px rgba(0, 0, 0, 0.10),
+    /* Sombra de contorno EXTRA */
+    0 32px 96px -16px rgba(0, 0, 0, 0.06),
+    /* Borda interna BRILHANTE */
+    inset 0 2px 0 0 rgba(255, 255, 255, 0.95),
+    /* Borda externa DEFINIDA */
+    0 0 0 1.5px rgba(0, 0, 0, 0.08),
+    /* Glow sutil externo */
+    0 0 0 3px rgba(255, 255, 255, 0.5) !important;
+  border: 2px solid rgba(0, 0, 0, 0.10) !important;
+  position: relative !important;
+  transition: all 0.4s cubic-bezier(0.2, 0.9, 0.2, 1) !important;
+}
+
+/* Pseudo-elemento para profundidade extra */
+.clients-page-container .glass-effect:not(.dark *)::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(200, 200, 200, 0.3) 50%,
+    rgba(255, 255, 255, 0.8) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.6;
+  z-index: -1;
+  transition: none !important;
+}
+
+/* Garantir que o ::before não mude no hover */
+.clients-page-container .glass-effect:not(.dark *):hover::before {
+  opacity: 0.6 !important;
+}
+
+/* Hover state com elevação DRAMÁTICA */
+[data-page="clients"] .glass-effect:not(.dark *):hover,
+.clients-page-container .glass-effect:not(.dark *):hover {
+  /* Manter o mesmo background - NÃO MUDAR */
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(252, 252, 253, 1) 100%
+  ) !important;
+  box-shadow: 
+    0 8px 24px -4px rgba(0, 0, 0, 0.16),
+    0 16px 48px -8px rgba(0, 0, 0, 0.20),
+    0 28px 80px -12px rgba(0, 0, 0, 0.14),
+    0 40px 112px -16px rgba(0, 0, 0, 0.08),
+    inset 0 2px 0 0 rgba(255, 255, 255, 1),
+    0 0 0 2px rgba(0, 0, 0, 0.10),
+    0 0 0 4px rgba(255, 255, 255, 0.6),
+    /* Glow azul sutil no hover */
+    0 0 32px -8px rgba(59, 130, 246, 0.15) !important;
+  transform: translateY(-4px) scale(1.01) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+/* ========================================
+   BADGES E STATUS PREMIUM
+   ======================================== */
+
+/* Badge Success ULTRA INTENSIFICADO */
+[data-page="clients"] [class*="bg-green"]:not(.dark *),
+.clients-page-container [class*="bg-green"]:not(.dark *) {
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.20) 0%,
+    rgba(16, 185, 129, 0.15) 50%,
+    rgba(16, 185, 129, 0.18) 100%
+  ) !important;
+  border: 2px solid rgba(16, 185, 129, 0.35) !important;
+  box-shadow: 
+    0 3px 12px -2px rgba(16, 185, 129, 0.25),
+    0 6px 24px -4px rgba(16, 185, 129, 0.20),
+    0 10px 40px -6px rgba(16, 185, 129, 0.15),
+    inset 0 2px 0 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 0 rgba(16, 185, 129, 0.2),
+    0 0 0 1px rgba(16, 185, 129, 0.15) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* Badge Blue ULTRA INTENSIFICADO */
+[data-page="clients"] [class*="bg-blue"]:not(.dark *),
+.clients-page-container [class*="bg-blue"]:not(.dark *) {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.20) 0%,
+    rgba(59, 130, 246, 0.15) 50%,
+    rgba(59, 130, 246, 0.18) 100%
+  ) !important;
+  border: 2px solid rgba(59, 130, 246, 0.35) !important;
+  box-shadow: 
+    0 3px 12px -2px rgba(59, 130, 246, 0.25),
+    0 6px 24px -4px rgba(59, 130, 246, 0.20),
+    0 10px 40px -6px rgba(59, 130, 246, 0.15),
+    inset 0 2px 0 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 0 rgba(59, 130, 246, 0.2),
+    0 0 0 1px rgba(59, 130, 246, 0.15) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* Badge Purple */
+[data-page="clients"] [class*="bg-purple"]:not(.dark *),
+.clients-page-container [class*="bg-purple"]:not(.dark *) {
+  background: linear-gradient(
+    135deg,
+    rgba(168, 85, 247, 0.20) 0%,
+    rgba(168, 85, 247, 0.15) 50%,
+    rgba(168, 85, 247, 0.18) 100%
+  ) !important;
+  border: 2px solid rgba(168, 85, 247, 0.35) !important;
+  box-shadow: 
+    0 3px 12px -2px rgba(168, 85, 247, 0.25),
+    0 6px 24px -4px rgba(168, 85, 247, 0.20),
+    0 10px 40px -6px rgba(168, 85, 247, 0.15),
+    inset 0 2px 0 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 0 rgba(168, 85, 247, 0.2),
+    0 0 0 1px rgba(168, 85, 247, 0.15) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* ========================================
+   BOTÕES PREMIUM
+   ======================================== */
+
+/* Excluir botões com cores específicas (blue, green) do estilo premium */
+[data-page="clients"] button:not(.dark *):not([class*="bg-blue"]):not([class*="bg-green"]):not([class*="bg-red"]),
+.clients-page-container button:not(.dark *):not([class*="bg-blue"]):not([class*="bg-green"]):not([class*="bg-red"]) {
+  box-shadow: 
+    0 2px 6px -1px rgba(0, 0, 0, 0.12),
+    0 4px 16px -2px rgba(0, 0, 0, 0.10),
+    0 8px 32px -4px rgba(0, 0, 0, 0.06),
+    inset 0 2px 0 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.05) !important;
+  border: 2px solid rgba(0, 0, 0, 0.12) !important;
+  transition: all 0.3s cubic-bezier(0.2, 0.9, 0.2, 1) !important;
+  position: relative !important;
+}
+
+/* Botões AZUIS - Ver Detalhes */
+[data-page="clients"] button[class*="bg-blue"]:not(.dark *),
+.clients-page-container button[class*="bg-blue"]:not(.dark *) {
+  background: rgb(37, 99, 235) !important; /* blue-600 */
+  background-color: rgb(37, 99, 235) !important;
+  color: rgb(255, 255, 255) !important;
+  border: none !important;
+  font-weight: 600 !important;
+  box-shadow: 
+    0 2px 8px -1px rgba(37, 99, 235, 0.4),
+    0 4px 16px -2px rgba(37, 99, 235, 0.3),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Botões VERDES - WhatsApp */
+[data-page="clients"] button[class*="bg-green"]:not(.dark *),
+.clients-page-container button[class*="bg-green"]:not(.dark *) {
+  background: rgb(22, 163, 74) !important; /* green-600 */
+  background-color: rgb(22, 163, 74) !important;
+  color: rgb(255, 255, 255) !important;
+  border: none !important;
+  font-weight: 600 !important;
+  box-shadow: 
+    0 2px 8px -1px rgba(22, 163, 74, 0.4),
+    0 4px 16px -2px rgba(22, 163, 74, 0.3),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Botões VERMELHOS */
+[data-page="clients"] button[class*="bg-red"]:not(.dark *),
+.clients-page-container button[class*="bg-red"]:not(.dark *) {
+  background: rgb(220, 38, 38) !important; /* red-600 */
+  background-color: rgb(220, 38, 38) !important;
+  color: rgb(255, 255, 255) !important;
+  border: none !important;
+  font-weight: 600 !important;
+  box-shadow: 
+    0 2px 8px -1px rgba(220, 38, 38, 0.4),
+    0 4px 16px -2px rgba(220, 38, 38, 0.3),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Garantir que ícones e textos dentro dos botões coloridos sejam brancos */
+[data-page="clients"] button[class*="bg-blue"]:not(.dark *) *,
+[data-page="clients"] button[class*="bg-green"]:not(.dark *) *,
+[data-page="clients"] button[class*="bg-red"]:not(.dark *) *,
+.clients-page-container button[class*="bg-blue"]:not(.dark *) *,
+.clients-page-container button[class*="bg-green"]:not(.dark *) *,
+.clients-page-container button[class*="bg-red"]:not(.dark *) * {
+  color: rgb(255, 255, 255) !important;
+}
+
+/* SVGs específicos */
+[data-page="clients"] button[class*="bg-blue"]:not(.dark *) svg,
+[data-page="clients"] button[class*="bg-green"]:not(.dark *) svg,
+[data-page="clients"] button[class*="bg-red"]:not(.dark *) svg,
+.clients-page-container button[class*="bg-blue"]:not(.dark *) svg,
+.clients-page-container button[class*="bg-green"]:not(.dark *) svg,
+.clients-page-container button[class*="bg-red"]:not(.dark *) svg {
+  color: white !important;
+  stroke: white !important;
+}
+
+[data-page="clients"] button:not(.dark *):not([class*="bg-blue"]):not([class*="bg-green"]):not([class*="bg-red"])::after,
+.clients-page-container button:not(.dark *):not([class*="bg-blue"]):not([class*="bg-green"]):not([class*="bg-red"])::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  background: linear-gradient(145deg, rgba(255,255,255,0.5), rgba(200,200,200,0.2));
+  opacity: 0;
+  transition: opacity 0.3s ease !important;
+  pointer-events: none;
+  z-index: -1;
+}
+
+[data-page="clients"] button:not(.dark *):not([class*="bg-blue"]):not([class*="bg-green"]):not([class*="bg-red"]):hover,
+.clients-page-container button:not(.dark *):not([class*="bg-blue"]):not([class*="bg-green"]):not([class*="bg-red"]):hover {
+  box-shadow: 
+    0 4px 12px -2px rgba(0, 0, 0, 0.16),
+    0 8px 24px -4px rgba(0, 0, 0, 0.14),
+    0 12px 48px -6px rgba(0, 0, 0, 0.10),
+    inset 0 2px 0 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.08),
+    0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-page="clients"] button:not(.dark *):not([class*="bg-blue"]):not([class*="bg-green"]):not([class*="bg-red"]):hover::after,
+.clients-page-container button:not(.dark *):not([class*="bg-blue"]):not([class*="bg-green"]):not([class*="bg-red"]):hover::after {
+  opacity: 1 !important;
+}
+
+[data-page="clients"] button:not(.dark *):not([class*="bg-blue"]):not([class*="bg-green"]):not([class*="bg-red"]):active,
+.clients-page-container button:not(.dark *):not([class*="bg-blue"]):not([class*="bg-green"]):not([class*="bg-red"]):active {
+  transform: translateY(0) scale(0.98) !important;
+  box-shadow: 
+    0 1px 3px -1px rgba(0, 0, 0, 0.10),
+    inset 0 3px 6px -1px rgba(0, 0, 0, 0.10),
+    inset 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Hover para botões coloridos */
+[data-page="clients"] button[class*="bg-blue"]:not(.dark *):hover,
+[data-page="clients"] button[class*="bg-green"]:not(.dark *):hover,
+.clients-page-container button[class*="bg-blue"]:not(.dark *):hover,
+.clients-page-container button[class*="bg-green"]:not(.dark *):hover {
+  transform: translateY(-1px) scale(1.02) !important;
+  box-shadow: 
+    0 4px 16px -2px rgba(0, 0, 0, 0.20),
+    0 8px 32px -4px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ========================================
+   INPUTS PREMIUM
+   ======================================== */
+
+[data-page="clients"] input:not(.dark *),
+[data-page="clients"] select:not(.dark *),
+[data-page="clients"] textarea:not(.dark *),
+.clients-page-container input:not(.dark *),
+.clients-page-container select:not(.dark *),
+.clients-page-container textarea:not(.dark *) {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1.5px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 
+    0 1px 3px -1px rgba(0, 0, 0, 0.06),
+    0 2px 8px -2px rgba(0, 0, 0, 0.04),
+    inset 0 1px 2px 0 rgba(0, 0, 0, 0.02) !important;
+  transition: all 0.2s cubic-bezier(0.2, 0.9, 0.2, 1) !important;
+}
+
+[data-page="clients"] input:not(.dark *):focus,
+[data-page="clients"] select:not(.dark *):focus,
+[data-page="clients"] textarea:not(.dark *):focus,
+.clients-page-container input:not(.dark *):focus,
+.clients-page-container select:not(.dark *):focus,
+.clients-page-container textarea:not(.dark *):focus {
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  box-shadow: 
+    0 0 0 4px rgba(59, 130, 246, 0.08),
+    0 2px 8px -1px rgba(59, 130, 246, 0.12),
+    inset 0 1px 2px 0 rgba(0, 0, 0, 0.02) !important;
+  outline: none !important;
+}
+
+/* ========================================
+   MODO ESCURO - MANTÉM ESTILO ORIGINAL
+   ======================================== */
+
+.dark .glass-effect {
+  background: rgba(17, 24, 39, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  will-change: auto;
+}
+
+.dark .glass-effect::before {
+  display: none;
+}
+
+
+/* ========================================
+   CONTEÚDO INTERNO - SEM MARGENS EXTRAS
+   ======================================== */
+
+/* Garantir que o conteúdo interno também respeite */
+.clients-page-container > div {
+  min-height: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { X, User, Phone, Mail, CreditCard, MapPin, Car, FileText, ChevronRight, ChevronLeft, Check, Search as SearchIcon, Loader, Building2, AlertCircle, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
+import './ModalNovoCliente.css';
 import { createClient } from '../../../services/clientService';
 import { searchVehicleByPlate, fetchBrands, fetchModels, getVehicleTypeForApi } from '../../../services/vehicleApiService';
-import { detectVehicleType } from '../../../services/vehicleTypeDetector';
+// import { detectVehicleType } from '../../../services/vehicleTypeDetector';
 import SearchableSelect from '../../../components/ui/SearchableSelect';
 import {
     validateCPF,
@@ -34,7 +35,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
         birthDate: existingClient?.birthDate || '',
         address: existingClient?.address || '',
         number: existingClient?.number || '',
-        hasNumber: existingClient?.hasNumber !== false, // true por padrão
+        hasNumber: existingClient?.hasNumber === true, // false por padrão
         complement: existingClient?.complement || '',
         neighborhood: existingClient?.neighborhood || '',
         city: existingClient?.city || '',
@@ -68,7 +69,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                 birthDate: existingClient.birthDate || '',
                 address: existingClient.address || '',
                 number: existingClient.number || '',
-                hasNumber: existingClient.hasNumber !== false, // true por padrão, false apenas se explicitamente definido
+                hasNumber: existingClient.hasNumber === true, // false por padrão
                 complement: existingClient.complement || '',
                 neighborhood: existingClient.neighborhood || '',
                 city: existingClient.city || '',
@@ -804,11 +805,10 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 bg-black/40 backdrop-blur-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/60 backdrop-blur-sm animate-fadeIn">
             <div 
-                className="w-full max-w-6xl bg-white dark:bg-neutral-900 rounded-lg shadow-2xl dark:shadow-neutral-950/50 border border-neutral-200 dark:border-neutral-800 flex flex-col overflow-hidden max-h-[90vh]" 
+                className="w-full max-w-7xl bg-white dark:bg-neutral-900 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.15),0_8px_16px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.6)] border border-gray-300/40 dark:border-neutral-700 flex flex-col overflow-hidden max-h-[92vh] animate-scaleIn" 
                 style={{ 
-                    transform: 'scale(0.95)',
                     fontSmooth: 'always',
                     WebkitFontSmoothing: 'antialiased',
                     MozOsxFontSmoothing: 'grayscale',
@@ -816,20 +816,24 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                 }}
             >
                 {/* Header */}
-                <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 dark:border-neutral-800">
+                <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200/60 dark:border-neutral-700/60">
                     <div>
-                        <h2 className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 antialiased">
+                        <h2 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100 antialiased">
                             {existingClient ? 'Editar Cliente' : 'Novo Cliente'}
                         </h2>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 antialiased font-medium">Etapa {currentStep} de {steps.length}: {steps[currentStep - 1].title}</p>
+                        <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1 antialiased font-medium">Etapa {currentStep} de {steps.length}: {steps[currentStep - 1].title}</p>
                     </div>
-                    <button onClick={onClose} className="p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-300 ease-out text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100" aria-label="Fechar">
-                        <X className="w-4 h-4" />
+                    <button 
+                        onClick={onClose} 
+                        className="p-2.5 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-300 ease-out text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 hover:scale-110 hover:rotate-90" 
+                        aria-label="Fechar"
+                    >
+                        <X className="w-5 h-5" />
                     </button>
                 </div>
 
                 {/* Progress Steps */}
-                <div className="px-4 py-2 border-b border-neutral-200 dark:border-neutral-800">
+                <div className="px-6 py-4 border-b border-gray-200/60 dark:border-neutral-700/60 bg-gray-50/50 dark:bg-neutral-800/30">
                     <div className="flex items-center justify-between">
                         {steps.map((step, index) => {
                             const Icon = step.icon;
@@ -838,12 +842,12 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                             return (
                                 <div key={step.number} className="flex items-center flex-1">
                                     <div className="flex flex-col items-center flex-1">
-                                        <div className={'w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ' + (isCompleted ? 'bg-green-600 text-white' : isActive ? 'bg-blue-600 text-white' : 'bg-neutral-200 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400')}>
-                                            {isCompleted ? <Check className="w-3.5 h-3.5" /> : <Icon className="w-3.5 h-3.5" />}
+                                        <div className={'w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-500 ease-out transform ' + (isCompleted ? 'bg-green-600 text-white shadow-lg scale-105' : isActive ? 'bg-blue-600 text-white shadow-lg scale-110 animate-pulse' : 'bg-neutral-200 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 scale-95')}>
+                                            {isCompleted ? <Check className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
                                         </div>
-                                        <span className={'text-xs mt-1 font-medium hidden sm:block ' + (isActive ? 'text-blue-600 dark:text-blue-400' : 'text-neutral-500 dark:text-neutral-400')}>{step.title}</span>
+                                        <span className={'text-xs mt-2 font-semibold hidden sm:block transition-all duration-300 ' + (isActive ? 'text-blue-600 dark:text-blue-400' : 'text-neutral-500 dark:text-neutral-400')}>{step.title}</span>
                                     </div>
-                                    {index < steps.length - 1 && <div className={'h-0.5 flex-1 mx-1 ' + (isCompleted ? 'bg-green-600' : 'bg-neutral-200 dark:bg-neutral-700')} />}
+                                    {index < steps.length - 1 && <div className={'h-1 flex-1 mx-2 rounded-full transition-all duration-500 ' + (isCompleted ? 'bg-green-600' : 'bg-neutral-200 dark:bg-neutral-700')} />}
                                 </div>
                             );
                         })}
@@ -851,7 +855,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto px-5 py-4">
+                <div className="flex-1 overflow-y-auto px-6 py-6 animate-slideIn">
                     {/* Etapa 1: Tipo e Identificação */}
                     {currentStep === 1 && (
                         <div className="space-y-4">
@@ -860,18 +864,18 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                                 <label className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3 antialiased">
                                     Tipo de Pessoa *
                                 </label>
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-2 gap-4">
                                     <button
                                         type="button"
                                         onClick={() => setPersonType('fisica')}
-                                        className={`p-3 rounded-lg border-2 transition-all duration-300 ${personType === 'fisica'
-                                            ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                                            : 'border-neutral-200 dark:border-neutral-700 hover:border-neutral-300'
+                                        className={`p-4 rounded-2xl border-2 transition-all duration-500 ease-out transform hover:scale-105 ${personType === 'fisica'
+                                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-lg scale-105'
+                                            : 'border-gray-300/60 dark:border-neutral-700 hover:border-blue-400/60 shadow-[0_1px_3px_rgba(0,0,0,0.05)]'
                                             }`}
                                     >
-                                        <User className={`w-7 h-7 mx-auto mb-1.5 ${personType === 'fisica' ? 'text-blue-600' : 'text-neutral-400'
+                                        <User className={`w-8 h-8 mx-auto mb-2 transition-all duration-300 ${personType === 'fisica' ? 'text-blue-600' : 'text-neutral-400'
                                             }`} />
-                                        <span className={`block text-sm font-semibold antialiased ${personType === 'fisica' ? 'text-blue-600' : 'text-neutral-600 dark:text-neutral-400'
+                                        <span className={`block text-sm font-bold antialiased ${personType === 'fisica' ? 'text-blue-600' : 'text-neutral-600 dark:text-neutral-400'
                                             }`}>
                                             Pessoa Física
                                         </span>
@@ -880,14 +884,14 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                                     <button
                                         type="button"
                                         onClick={() => setPersonType('juridica')}
-                                        className={`p-3 rounded-lg border-2 transition-all duration-300 ${personType === 'juridica'
-                                            ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                                            : 'border-neutral-200 dark:border-neutral-700 hover:border-neutral-300'
+                                        className={`p-4 rounded-2xl border-2 transition-all duration-500 ease-out transform hover:scale-105 ${personType === 'juridica'
+                                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-lg scale-105'
+                                            : 'border-gray-300/60 dark:border-neutral-700 hover:border-blue-400/60 shadow-[0_1px_3px_rgba(0,0,0,0.05)]'
                                             }`}
                                     >
-                                        <Building2 className={`w-7 h-7 mx-auto mb-1.5 ${personType === 'juridica' ? 'text-blue-600' : 'text-neutral-400'
+                                        <Building2 className={`w-8 h-8 mx-auto mb-2 transition-all duration-300 ${personType === 'juridica' ? 'text-blue-600' : 'text-neutral-400'
                                             }`} />
-                                        <span className={`block text-sm font-semibold antialiased ${personType === 'juridica' ? 'text-blue-600' : 'text-neutral-600 dark:text-neutral-400'
+                                        <span className={`block text-sm font-bold antialiased ${personType === 'juridica' ? 'text-blue-600' : 'text-neutral-600 dark:text-neutral-400'
                                             }`}>
                                             Pessoa Jurídica
                                         </span>
@@ -911,7 +915,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                                                 setErrors({ ...errors, name: null });
                                             }}
                                             placeholder="João da Silva"
-                                            className={'w-full px-3 py-2.5 rounded-lg bg-neutral-50 dark:bg-neutral-800 border ' + (errors.name ? 'border-red-500' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out antialiased font-medium'}
+                                            className={'input-premium ' + (errors.name ? 'input-error' : '')}
                                         />
                                         {errors.name && (
                                             <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
@@ -957,7 +961,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                                                 }}
                                                 placeholder="123.456.789-00"
                                                 maxLength={14}
-                                                className={'w-full px-3 py-2.5 rounded-lg bg-neutral-50 dark:bg-neutral-800 border ' + (errors.cpf ? 'border-red-500 ring-2 ring-red-500/20' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out antialiased font-medium'}
+                                                className={'input-premium ' + (errors.cpf ? 'input-error' : '')}
                                             />
                                             {errors.cpf && (
                                                 <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
@@ -987,7 +991,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                                                 }}
                                                 placeholder="DD/MM/AAAA"
                                                 maxLength={10}
-                                                className={'w-full px-3 py-2.5 rounded-lg bg-neutral-50 dark:bg-neutral-800 border ' + (errors.birthDate ? 'border-red-500' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out'}
+                                                className={'input-premium ' + (errors.birthDate ? 'input-error' : '')}
                                             />
                                             {errors.birthDate && (
                                                 <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
@@ -1221,7 +1225,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                                             setErrors({ ...errors, phone: null });
                                         }}
                                         placeholder="(11) 98765-4321"
-                                        className={'w-full px-3 py-2.5 rounded-lg bg-neutral-50 dark:bg-neutral-800 border ' + (errors.phone ? 'border-red-500' : 'border-neutral-200 dark:border-neutral-700') + ' text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out antialiased font-medium'}
+                                        className={'input-premium ' + (errors.phone ? 'input-error' : '')}
                                     />
                                     {errors.phone && (
                                         <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
@@ -1241,7 +1245,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                         placeholder="cliente@email.com"
-                                        className="w-full px-3 py-2.5 rounded-lg bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-out antialiased font-medium"
+                                        className="input-premium"
                                     />
                                 </div>
                             </div>
