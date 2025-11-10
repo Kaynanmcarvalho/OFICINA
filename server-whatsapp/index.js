@@ -1,6 +1,6 @@
-/**
+﻿/**
  * Backend WhatsApp Multi-Tenant
- * Isolamento por empresa com inicialização automática
+ * Isolamento por empresa com inicializa├º├úo autom├ítica
  */
 
 require('dotenv').config();
@@ -28,16 +28,16 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Estado global - Múltiplas sessões por empresa
+// Estado global - M├║ltiplas sess├Áes por empresa
 const sessions = new Map();
 
-// Cache de números verificados (para acelerar envios)
+// Cache de n├║meros verificados (para acelerar envios)
 const numberCache = new Map(); // cleanNumber -> { numberId, timestamp }
 
-// Obter ou criar sessão para uma empresa
+// Obter ou criar sess├úo para uma empresa
 function getSession(empresaId) {
   if (!empresaId) {
-    throw new Error('empresaId é obrigatório');
+    throw new Error('empresaId ├® obrigat├│rio');
   }
   
   if (!sessions.has(empresaId)) {
@@ -53,22 +53,22 @@ function getSession(empresaId) {
   return sessions.get(empresaId);
 }
 
-// Inicializar cliente WhatsApp para uma empresa específica
+// Inicializar cliente WhatsApp para uma empresa espec├¡fica
 function initializeWhatsApp(empresaId) {
   const session = getSession(empresaId);
   
   if (session.client) {
-    console.log(`✓ Cliente já existe para empresa ${empresaId}`);
+    console.log(`Ô£ô Cliente j├í existe para empresa ${empresaId}`);
     return;
   }
 
   if (session.initializing) {
-    console.log(`⏳ Já está inicializando para empresa ${empresaId}`);
+    console.log(`ÔÅ│ J├í est├í inicializando para empresa ${empresaId}`);
     return;
   }
 
   session.initializing = true;
-  console.log(`📱 Inicializando WhatsApp para empresa ${empresaId}...`);
+  console.log(`­ƒô▒ Inicializando WhatsApp para empresa ${empresaId}...`);
 
   session.client = new Client({
     authStrategy: new LocalAuth({
@@ -90,54 +90,54 @@ function initializeWhatsApp(empresaId) {
 
   // QR Code gerado
   session.client.on('qr', async (qr) => {
-    console.log(`📱 QR Code gerado para empresa ${empresaId}!`);
+    console.log(`­ƒô▒ QR Code gerado para empresa ${empresaId}!`);
     session.qrCodeData = await qrcode.toDataURL(qr);
   });
 
   // Autenticado
   session.client.on('authenticated', () => {
-    console.log(`✅ Empresa ${empresaId} autenticada!`);
+    console.log(`Ô£à Empresa ${empresaId} autenticada!`);
     session.qrCodeData = null;
   });
 
-  // Carregando sessão
+  // Carregando sess├úo
   session.client.on('loading_screen', (percent, message) => {
-    console.log(`⏳ Empresa ${empresaId} carregando: ${percent}% - ${message}`);
+    console.log(`ÔÅ│ Empresa ${empresaId} carregando: ${percent}% - ${message}`);
   });
 
   // Pronto para usar
   session.client.on('ready', () => {
-    console.log(`✅ WhatsApp pronto para empresa ${empresaId}!`);
+    console.log(`Ô£à WhatsApp pronto para empresa ${empresaId}!`);
     session.isReady = true;
     session.qrCodeData = null;
     session.initializing = false;
     
-    // Obter número
+    // Obter n├║mero
     if (session.client.info && session.client.info.wid) {
       session.currentNumber = session.client.info.wid.user;
-      console.log(`📱 Empresa ${empresaId} conectada como: +${session.currentNumber}`);
+      console.log(`­ƒô▒ Empresa ${empresaId} conectada como: +${session.currentNumber}`);
     }
   });
 
   // Desconectado
   session.client.on('disconnected', (reason) => {
-    console.log(`❌ Empresa ${empresaId} desconectada:`, reason);
+    console.log(`ÔØî Empresa ${empresaId} desconectada:`, reason);
     session.isReady = false;
     session.qrCodeData = null;
     session.currentNumber = null;
     session.initializing = false;
     
-    // Tentar reconectar após 5 segundos
+    // Tentar reconectar ap├│s 5 segundos
     setTimeout(() => {
-      console.log(`🔄 Tentando reconectar empresa ${empresaId}...`);
+      console.log(`­ƒöä Tentando reconectar empresa ${empresaId}...`);
       session.client = null;
       initializeWhatsApp(empresaId);
     }, 5000);
   });
 
-  // Erro de autenticação
+  // Erro de autentica├º├úo
   session.client.on('auth_failure', (msg) => {
-    console.error(`❌ Falha na autenticação da empresa ${empresaId}:`, msg);
+    console.error(`ÔØî Falha na autentica├º├úo da empresa ${empresaId}:`, msg);
     session.qrCodeData = null;
     session.initializing = false;
   });
@@ -146,7 +146,7 @@ function initializeWhatsApp(empresaId) {
   session.client.initialize();
 }
 
-console.log('🚀 Servidor WhatsApp Multi-Tenant pronto!');
+console.log('­ƒÜÇ Servidor WhatsApp Multi-Tenant pronto!');
 
 // Rotas da API
 
@@ -160,20 +160,20 @@ app.post('/api/whatsapp/connect', async (req, res) => {
   try {
     const { empresaId } = req.body;
     
-    console.log('🔌 POST /api/whatsapp/connect - empresaId:', empresaId);
-    console.log('📦 Body completo:', JSON.stringify(req.body));
+    console.log('­ƒöî POST /api/whatsapp/connect - empresaId:', empresaId);
+    console.log('­ƒôª Body completo:', JSON.stringify(req.body));
     
     if (!empresaId || empresaId === 'undefined' || empresaId === 'null') {
-      console.error('❌ empresaId inválido:', empresaId);
+      console.error('ÔØî empresaId inv├ílido:', empresaId);
       return res.status(400).json({
-        error: 'empresaId é obrigatório e deve ser válido',
+        error: 'empresaId ├® obrigat├│rio e deve ser v├ílido',
         received: empresaId
       });
     }
     
     const session = getSession(empresaId);
     
-    // Se já está pronto, retornar status
+    // Se j├í est├í pronto, retornar status
     if (session.isReady) {
       return res.json({
         status: 'already_authenticated',
@@ -182,12 +182,12 @@ app.post('/api/whatsapp/connect', async (req, res) => {
       });
     }
 
-    // Se não tem cliente, inicializar
+    // Se n├úo tem cliente, inicializar
     if (!session.client && !session.initializing) {
       initializeWhatsApp(empresaId);
     }
 
-    // Aguardar QR Code (máximo 30 segundos)
+    // Aguardar QR Code (m├íximo 30 segundos)
     let attempts = 0;
     while (!session.qrCodeData && !session.isReady && attempts < 60) {
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -203,7 +203,7 @@ app.post('/api/whatsapp/connect', async (req, res) => {
     }
 
     if (session.qrCodeData) {
-      console.log('✅ Retornando QR Code para empresaId:', empresaId);
+      console.log('Ô£à Retornando QR Code para empresaId:', empresaId);
       return res.json({
         status: 'qr_ready',
         qr: session.qrCodeData,
@@ -211,7 +211,7 @@ app.post('/api/whatsapp/connect', async (req, res) => {
       });
     }
 
-    console.error('⏰ Timeout aguardando QR Code para empresaId:', empresaId);
+    console.error('ÔÅ░ Timeout aguardando QR Code para empresaId:', empresaId);
     res.status(408).json({
       error: 'Timeout aguardando QR Code',
       empresaId
@@ -221,18 +221,18 @@ app.post('/api/whatsapp/connect', async (req, res) => {
     console.error('Erro ao conectar:', error);
     res.status(500).json({
       error: error.message,
-      message: 'Erro ao iniciar conexão'
+      message: 'Erro ao iniciar conex├úo'
     });
   }
 });
 
-// Status da conexão
+// Status da conex├úo
 app.get('/api/whatsapp/status', (req, res) => {
   const { empresaId } = req.query;
   
   if (!empresaId || empresaId === 'undefined' || empresaId === 'null') {
     return res.status(400).json({
-      error: 'empresaId é obrigatório e deve ser válido'
+      error: 'empresaId ├® obrigat├│rio e deve ser v├ílido'
     });
   }
   
@@ -240,7 +240,7 @@ app.get('/api/whatsapp/status', (req, res) => {
   
   res.json({
     connected: session.isReady,
-    message: session.isReady ? 'Conectado' : 'Não conectado',
+    message: session.isReady ? 'Conectado' : 'N├úo conectado',
     user_data: session.isReady ? { phone: session.currentNumber } : null,
     empresaId
   });
@@ -253,17 +253,17 @@ app.post('/api/whatsapp/send', async (req, res) => {
   try {
     const { phone_number, message, empresaId } = req.body;
 
-    console.log(`📨 POST /api/whatsapp/send - empresaId: ${empresaId}, para: ${phone_number}`);
+    console.log(`­ƒô¿ POST /api/whatsapp/send - empresaId: ${empresaId}, para: ${phone_number}`);
 
     if (!empresaId) {
       return res.status(400).json({
-        error: 'empresaId é obrigatório'
+        error: 'empresaId ├® obrigat├│rio'
       });
     }
 
     if (!phone_number || !message) {
       return res.status(400).json({
-        error: 'phone_number e message são obrigatórios'
+        error: 'phone_number e message s├úo obrigat├│rios'
       });
     }
 
@@ -272,37 +272,37 @@ app.post('/api/whatsapp/send', async (req, res) => {
     if (!session.isReady) {
       return res.status(401).json({
         error: 'NOT_CONNECTED',
-        message: `WhatsApp não está conectado para empresa ${empresaId}`
+        message: `WhatsApp n├úo est├í conectado para empresa ${empresaId}`
       });
     }
 
-    // Limpar e formatar número
+    // Limpar e formatar n├║mero
     let cleanNumber = phone_number.replace(/\D/g, '');
     
-    // Se não tem código do país, adicionar 55 (Brasil)
+    // Se n├úo tem c├│digo do pa├¡s, adicionar 55 (Brasil)
     if (cleanNumber.length === 11 || cleanNumber.length === 10) {
       cleanNumber = '55' + cleanNumber;
     }
     
-    console.log(`📤 Enviando mensagem para ${cleanNumber} via empresa ${empresaId}...`);
+    console.log(`­ƒôñ Enviando mensagem para ${cleanNumber} via empresa ${empresaId}...`);
     
-    // Verificar cache (válido por 1 hora)
+    // Verificar cache (v├ílido por 1 hora)
     const cached = numberCache.get(cleanNumber);
     const cacheValid = cached && (Date.now() - cached.timestamp < 3600000);
     
     let numberId;
     if (cacheValid) {
-      console.log(`⚡ Usando cache para ${cleanNumber}`);
+      console.log(`ÔÜí Usando cache para ${cleanNumber}`);
       numberId = cached.numberId;
     } else {
-      // Obter ID do número (necessário para WhatsApp Web)
+      // Obter ID do n├║mero (necess├írio para WhatsApp Web)
       numberId = await session.client.getNumberId(cleanNumber);
       
       if (!numberId || !numberId._serialized) {
-        console.error(`❌ Número ${cleanNumber} não está no WhatsApp`);
+        console.error(`ÔØî N├║mero ${cleanNumber} n├úo est├í no WhatsApp`);
         return res.status(400).json({
           error: 'INVALID_NUMBER',
-          message: 'Número não está registrado no WhatsApp'
+          message: 'N├║mero n├úo est├í registrado no WhatsApp'
         });
       }
       
@@ -311,14 +311,14 @@ app.post('/api/whatsapp/send', async (req, res) => {
         numberId: numberId._serialized,
         timestamp: Date.now()
       });
-      console.log(`💾 Número ${cleanNumber} salvo no cache`);
+      console.log(`­ƒÆ¥ N├║mero ${cleanNumber} salvo no cache`);
     }
     
     // Enviar mensagem usando o ID verificado
     await session.client.sendMessage(numberId._serialized || numberId, message);
 
     const duration = Date.now() - startTime;
-    console.log(`✅ Mensagem enviada em ${duration}ms para ${cleanNumber} via empresa ${empresaId}`);
+    console.log(`Ô£à Mensagem enviada em ${duration}ms para ${cleanNumber} via empresa ${empresaId}`);
 
     res.json({
       success: true,
@@ -329,7 +329,7 @@ app.post('/api/whatsapp/send', async (req, res) => {
 
   } catch (error) {
     const duration = Date.now() - startTime;
-    console.error(`❌ Erro ao enviar mensagem após ${duration}ms:`, error.message);
+    console.error(`ÔØî Erro ao enviar mensagem ap├│s ${duration}ms:`, error.message);
     res.status(500).json({
       error: error.message,
       message: 'Erro ao enviar mensagem'
@@ -344,7 +344,7 @@ app.post('/api/whatsapp/disconnect', async (req, res) => {
     
     if (!empresaId) {
       return res.status(400).json({
-        error: 'empresaId é obrigatório'
+        error: 'empresaId ├® obrigat├│rio'
       });
     }
     
@@ -375,7 +375,7 @@ app.post('/api/whatsapp/disconnect', async (req, res) => {
   }
 });
 
-// Verificar se tem sessão salva
+// Verificar se tem sess├úo salva
 app.get('/api/whatsapp/has-session', (req, res) => {
   const fs = require('fs');
   const path = require('path');
@@ -383,7 +383,7 @@ app.get('/api/whatsapp/has-session', (req, res) => {
   
   if (!empresaId) {
     return res.status(400).json({
-      error: 'empresaId é obrigatório'
+      error: 'empresaId ├® obrigat├│rio'
     });
   }
   
@@ -403,13 +403,13 @@ app.get('/api/whatsapp/has-session', (req, res) => {
 // Iniciar servidor
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`
-╔══════════════════════════════════════════════════════════╗
-║  WhatsApp Backend - Multi-Tenant                        ║
-║  Servidor rodando em:                                    ║
-║    - http://localhost:${PORT}                            ║
-║    - http://192.168.18.203:${PORT}                       ║
-║  Headless Mode: ATIVADO                                  ║
-║  Isolamento por empresa: ATIVADO                         ║
-╚══════════════════════════════════════════════════════════╝
+ÔòöÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòù
+Ôòæ  WhatsApp Backend - Multi-Tenant                        Ôòæ
+Ôòæ  Servidor rodando em:                                    Ôòæ
+Ôòæ    - http://localhost:${PORT}                            Ôòæ
+Ôòæ    - http://192.168.18.203:${PORT}                       Ôòæ
+Ôòæ  Headless Mode: ATIVADO                                  Ôòæ
+Ôòæ  Isolamento por empresa: ATIVADO                         Ôòæ
+ÔòÜÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòØ
   `);
 });

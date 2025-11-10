@@ -6,6 +6,7 @@ import { useNotificationStore } from './notificationStore.jsx';
 import { useCheckinStore } from './checkinStore.jsx';
 import { useClientStore } from './clientStore.jsx';
 import { useInventoryStore } from './inventoryStore.jsx';
+import { useProductStore } from './productStore.jsx';
 import { useVehicleStore } from './vehicleStore.jsx';
 import { useToolStore } from './toolStore.jsx';
 import { useTeamStore } from './teamStore.jsx';
@@ -46,6 +47,7 @@ export const useStore = create(
                 useCheckinStore.getState().fetchCheckins(),
                 useClientStore.getState().fetchClients(),
                 useInventoryStore.getState().fetchParts(),
+                useProductStore.getState().fetchProducts(),
                 useVehicleStore.getState().fetchVehicles(),
                 useToolStore.getState().fetchTools(),
                 useTeamStore.getState().fetchMembers(),
@@ -84,6 +86,7 @@ export const useStore = create(
             useCheckinStore.getState().subscribeToCheckins(),
             useClientStore.getState().subscribeToClients(),
             useInventoryStore.getState().subscribeToInventory(),
+            useProductStore.getState().subscribeToProducts(),
             useVehicleStore.getState().subscribeToVehicles(),
             useToolStore.getState().subscribeToTools(),
             useTeamStore.getState().subscribeToMembers(),
@@ -116,6 +119,7 @@ export { useNotificationStore } from './notificationStore.jsx';
 export { useCheckinStore } from './checkinStore.jsx';
 export { useClientStore } from './clientStore.jsx';
 export { useInventoryStore } from './inventoryStore.jsx';
+export { useProductStore } from './productStore.jsx';
 export { useVehicleStore } from './vehicleStore.jsx';
 export { useToolStore } from './toolStore.jsx';
 export { useTeamStore } from './teamStore.jsx';

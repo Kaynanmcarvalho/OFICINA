@@ -232,13 +232,13 @@ const ClientsPagePremium = () => {
   return (
     <div 
       data-page="clients"
-      className={`clients-page-container transition-colors duration-300 ${
+      className={`clients-page-container transition-colors duration-300 min-h-screen ${
         isDarkMode 
           ? 'bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950' 
           : 'bg-gradient-to-b from-gray-50 via-white to-gray-50'
       }`}
     >
-      <div className="w-full" style={{ padding: '24px', boxSizing: 'border-box', minHeight: '100%' }}>
+      <div className="w-full" style={{ padding: '24px', boxSizing: 'border-box', minHeight: '100vh' }}>
         {/* Header */}
         <ClientsHeader 
           clientCount={stats.total}

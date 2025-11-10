@@ -5,12 +5,32 @@ import { useThemeStore } from '../../../store/index.jsx';
 import { itemAnimations, textVariants, tooltipVariants } from '../../../utils/animations';
 
 const SidebarItem = React.memo(({ item, isCollapsed, onClick }) => {
+  // Garantir que item existe
+  if (!item) {
+    console.error('❌ SidebarItem: item é undefined');
+    return null;
+  }
   const location = useLocation();
   const { isDarkMode } = useThemeStore();
   const [showTooltip, setShowTooltip] = React.useState(false);
   
   const isActive = location.pathname === item.path;
   const Icon = item.icon;
+  
+  // Debug: verificar se o ícone existe
+  React.useEffect(() => {
+    if (!Icon) {
+      console.error(`❌ Ícone não encontrado para: ${item.label}`, item);
+    } else {
+      console.log(`✅ Ícone carregado para: ${item.label}`, Icon.name || Icon);
+    }
+  }, [Icon, item.label]);
+  
+  // Verificar se o ícone existe
+  if (!Icon) {
+    console.warn(`Ícone não encontrado para o item: ${item.label}`);
+    return null;
+  }
 
   // Color mapping
   const colorClasses = {
@@ -61,7 +81,7 @@ const SidebarItem = React.memo(({ item, isCollapsed, onClick }) => {
           aria-current={isActive ? 'page' : undefined}
         >
           {/* Icon */}
-          <Icon className="w-5 h-5" />
+          {Icon && <Icon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />}
 
           {/* Text label */}
           <AnimatePresence>
@@ -120,5 +140,7 @@ const SidebarItem = React.memo(({ item, isCollapsed, onClick }) => {
     </div>
   );
 });
+
+SidebarItem.displayName = 'SidebarItem';
 
 export default SidebarItem;

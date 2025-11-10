@@ -117,7 +117,9 @@ export const whatsappService = {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Erro ao enviar mensagem');
+        // Propagar o código de erro também
+        const errorMessage = error.error || error.message || 'Erro ao enviar mensagem';
+        throw new Error(errorMessage);
       }
 
       const result = await response.json();
@@ -145,13 +147,17 @@ export const whatsappService = {
 
       const data = await response.json();
       
-      console.log('📊 Status WhatsApp para empresaId:', empresaId, '- Conectado:', data.connected);
+      console.log('📊 Status WhatsApp para empresaId:', empresaId, '- Conectado:', data.connected, '- Tem sessão salva:', data.hasSavedSession);
+      
+      // Se tem sessão salva, considerar como "exists" mesmo que não esteja conectado no momento
+      const exists = data.connected || data.hasSavedSession;
       
       return {
         success: true,
-        exists: data.connected,
-        status: data.connected ? 'connected' : 'disconnected',
+        exists: exists,
+        status: data.connected ? 'connected' : (data.hasSavedSession ? 'saved' : 'disconnected'),
         phoneNumber: data.user_data?.phone,
+        hasSavedSession: data.hasSavedSession,
         empresaId: data.empresaId
       };
     } catch (error) {
@@ -159,7 +165,8 @@ export const whatsappService = {
       return {
         success: false,
         exists: false,
-        status: 'disconnected'
+        status: 'disconnected',
+        hasSavedSession: false
       };
     }
   },
@@ -191,7 +198,12 @@ export const whatsappService = {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Erro ao conectar');
+        // Propagar o código de erro também (TIMEOUT, NOT_CONNECTED, etc)
+        const errorMessage = error.error || error.message || 'Erro ao conectar';
+        const errorObj = new Error(errorMessage);
+        errorObj.code = error.error;
+        errorObj.suggestion = error.suggestion;
+        throw errorObj;
       }
 
       const data = await response.json();

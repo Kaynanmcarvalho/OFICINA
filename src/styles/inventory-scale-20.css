@@ -1,0 +1,40 @@
+/**
+ * Redução de 20% em todos os elementos da página /inventory
+ * Usando transform scale para manter proporções perfeitas
+ */
+
+/* Container principal do inventário */
+[data-page="inventory"] > div {
+  transform: scale(0.8);
+  transform-origin: top center;
+  width: 125%; /* Compensa o scale */
+  max-width: 125%;
+  margin-left: -12.5%; /* Centraliza: (125% - 100%) / 2 = 12.5% */
+  margin-right: -12.5%;
+  margin-bottom: -20%; /* Compensa o espaço extra do scale */
+  margin-top: 2%;
+  box-sizing: border-box;
+}
+
+/* Garantir que o fundo cubra toda a área */
+[data-page="inventory"] {
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Ajustar modais para não serem afetados pelo scale */
+[data-page="inventory"] .fixed {
+  transform: none !important;
+  width: auto !important;
+  margin: 0 !important;
+}
+
+/* Garantir que dropdowns e popovers não sejam afetados */
+[data-page="inventory"] [role="dialog"],
+[data-page="inventory"] [role="menu"],
+[data-page="inventory"] [data-radix-popper-content-wrapper] {
+  transform: none !important;
+  width: auto !important;
+  margin: 0 !important;
+}

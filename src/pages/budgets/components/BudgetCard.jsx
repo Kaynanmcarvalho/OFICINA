@@ -13,7 +13,7 @@ const BudgetCard = forwardRef(({ budget, onEdit, onSend, onCheckin }, ref) => {
       pending: {
         icon: Clock,
         label: 'Pendente',
-        color: 'text-yellow-600 dark:text-yellow-400',
+        color: 'text-yellow-600 dark:text-white',
         bg: 'bg-yellow-50 dark:bg-yellow-900/20',
         border: 'border-yellow-200 dark:border-yellow-800'
       },
@@ -27,21 +27,21 @@ const BudgetCard = forwardRef(({ budget, onEdit, onSend, onCheckin }, ref) => {
       approved: {
         icon: CheckCircle,
         label: 'Aprovado',
-        color: 'text-green-600 dark:text-green-400',
+        color: 'text-green-600 dark:text-white',
         bg: 'bg-green-50 dark:bg-green-900/20',
         border: 'border-green-200 dark:border-green-800'
       },
       partially_approved: {
         icon: AlertCircle,
         label: 'Parcialmente Aprovado',
-        color: 'text-blue-600 dark:text-blue-400',
+        color: 'text-blue-600 dark:text-white',
         bg: 'bg-blue-50 dark:bg-blue-900/20',
         border: 'border-blue-200 dark:border-blue-800'
       },
       expired: {
         icon: XCircle,
         label: 'Expirado',
-        color: 'text-gray-600 dark:text-gray-400',
+        color: 'text-gray-600 dark:text-white',
         bg: 'bg-gray-50 dark:bg-gray-900/20',
         border: 'border-gray-200 dark:border-gray-800'
       }
