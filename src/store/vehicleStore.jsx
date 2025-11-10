@@ -1,20 +1,12 @@
 import { create } from 'zustand';
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  getDocs, 
-  getDoc,
-  query, 
-  where, 
-  orderBy, 
-  limit,
-  onSnapshot
-} from 'firebase/firestore';
-import { db } from '../config/firebase';
-
+import {
+  addDocument,
+  getAllDocuments,
+  getDocumentById,
+  updateDocument,
+  deleteDocument,
+  subscribeToCollection
+} from '../services/storeHelpers';
 export const useVehicleStore = create((set, get) => ({
   // State
   vehicles: [],
@@ -68,8 +60,7 @@ export const useVehicleStore = create((set, get) => ({
         notes: '',
       };
 
-      const docRef = await addDoc(collection(db, 'vehicles'), newVehicle);
-      const vehicleWithId = { ...newVehicle, firestoreId: docRef.id };
+      const vehicleWithId = await addDocument('vehicles', newVehicle);
 
       set((state) => ({
         vehicles: [vehicleWithId, ...state.vehicles],
@@ -87,13 +78,12 @@ export const useVehicleStore = create((set, get) => ({
   updateVehicle: async (vehicleId, updates) => {
     set({ isLoading: true, error: null });
     try {
-      const vehicleRef = doc(db, 'vehicles', vehicleId);
       const updatedData = {
         ...updates,
         updatedAt: new Date().toISOString(),
       };
 
-      await updateDoc(vehicleRef, updatedData);
+      await updateDocument('vehicles', vehicleId, updatedData);
 
       set((state) => ({
         vehicles: state.vehicles.map((vehicle) =>
@@ -118,7 +108,7 @@ export const useVehicleStore = create((set, get) => ({
   deleteVehicle: async (vehicleId) => {
     set({ isLoading: true, error: null });
     try {
-      await deleteDoc(doc(db, 'vehicles', vehicleId));
+      await deleteDocument('vehicles', vehicleId);
 
       set((state) => ({
         vehicles: state.vehicles.filter((vehicle) => vehicle.firestoreId !== vehicleId),
@@ -137,16 +127,9 @@ export const useVehicleStore = create((set, get) => ({
   fetchVehicles: async () => {
     set({ isLoading: true, error: null });
     try {
-      const q = query(
-        collection(db, 'vehicles'),
-        orderBy('createdAt', 'desc')
-      );
-      
-      const querySnapshot = await getDocs(q);
-      const vehicles = querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        firestoreId: doc.id,
-      }));
+      const vehicles = await getAllDocuments('vehicles', {
+      orderBy: { field: 'createdAt', direction: 'desc' }
+    });
 
       set({ vehicles, isLoading: false });
       return { success: true, data: vehicles };
@@ -160,11 +143,10 @@ export const useVehicleStore = create((set, get) => ({
   getVehicleById: async (vehicleId) => {
     set({ isLoading: true, error: null });
     try {
-      const docRef = doc(db, 'vehicles', vehicleId);
-      const docSnap = await getDoc(docRef);
+      const docSnap = await getDocumentById('vehicles', vehicleId);
       
-      if (docSnap.exists()) {
-        const vehicle = { ...docSnap.data(), firestoreId: docSnap.id };
+      if (docSnap) {
+        const vehicle = docSnap;
         set({ currentVehicle: vehicle, isLoading: false });
         return { success: true, data: vehicle };
       } else {
@@ -178,69 +160,28 @@ export const useVehicleStore = create((set, get) => ({
   },
 
   subscribeToVehicles: () => {
-    return onSnapshot(
-      query(collection(db, 'vehicles'), orderBy('createdAt', 'desc')),
-      (snapshot) => {
-        const vehicles = snapshot.docs.map(doc => ({ ...doc.data(), firestoreId: doc.id }));
-        set({ vehicles });
-      },
-      (error) => {
-        set({ error: error.message });
-      }
-    );
+    return subscribeToCollection('vehicles', (vehicles) => {
+      set({ vehicles });
+    }, {
+      orderBy: { field: 'createdAt', direction: 'desc' }
+    });
   },
 
   // Search motorcycles
   searchVehicles: async (searchTerm) => {
     set({ isLoading: true, error: null });
     try {
-      // Search by vehicle ID
-      const idQuery = query(
-        collection(db, 'vehicles'),
-        where('vehicleId', '>=', searchTerm),
-        where('vehicleId', '<=', searchTerm + '\uf8ff'),
-        limit(20)
-      );
+      // Buscar todos e filtrar localmente para melhor suporte multi-tenant
+      const allItems = await getAllDocuments('vehicles');
+      const searchLower = searchTerm.toLowerCase();
       
-      // Search by brand
-      const brandQuery = query(
-        collection(db, 'vehicles'),
-        where('brand', '>=', searchTerm),
-        where('brand', '<=', searchTerm + '\uf8ff'),
-        limit(20)
-      );
-      
-      // Search by model
-      const modelQuery = query(
-        collection(db, 'vehicles'),
-        where('model', '>=', searchTerm),
-        where('model', '<=', searchTerm + '\uf8ff'),
-        limit(20)
-      );
-      
-      // Search by client ID
-      const clientQuery = query(
-        collection(db, 'vehicles'),
-        where('clientId', '>=', searchTerm),
-        where('clientId', '<=', searchTerm + '\uf8ff'),
-        limit(20)
-      );
-      
-      const [idResults, brandResults, modelResults, clientResults] = await Promise.all([
-        getDocs(idQuery),
-        getDocs(brandQuery),
-        getDocs(modelQuery),
-        getDocs(clientQuery)
-      ]);
-      
-      const allResults = new Map();
-      
-      // Combine results and remove duplicates
-      [...idResults.docs, ...brandResults.docs, ...modelResults.docs, ...clientResults.docs].forEach(doc => {
-        allResults.set(doc.id, { ...doc.data(), firestoreId: doc.id });
-      });
-      
-      const searchResults = Array.from(allResults.values());
+      const searchResults = allItems.filter(item =>
+        item.vehicleId?.toLowerCase().includes(searchLower) ||
+        item.brand?.toLowerCase().includes(searchLower) ||
+        item.model?.toLowerCase().includes(searchLower) ||
+        item.clientId?.toLowerCase().includes(searchLower) ||
+        item.plate?.toLowerCase().includes(searchLower)
+      ).slice(0, 20);
 
       set({ searchResults, isLoading: false });
       return { success: true, data: searchResults };

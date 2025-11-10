@@ -4,14 +4,19 @@ import Navbar from './Navbar/Navbar';
 import Sidebar from './Sidebar/Sidebar';
 import { useUnifiedTheme } from '../../hooks/useUnifiedTheme';
 import { useSidebarState } from '../../hooks/useSidebarState';
+import { useEmpresa } from '../../contexts/EmpresaContext';
 import { menuItems, footerItems } from '../Sidebar/sidebarConfig';
 
 const LayoutPremium = memo(() => {
   const { isDark } = useUnifiedTheme();
   const { isCollapsed, toggleCollapse } = useSidebarState();
+  const empresa = useEmpresa();
   
   // Alias para manter compatibilidade
   const toggleSidebar = toggleCollapse;
+  
+  // Ajustar padding-top quando banner de impersonation estiver ativo
+  const topPadding = empresa?.isImpersonating ? 'pt-[112px]' : 'pt-16';
 
   return (
     <div className={`
@@ -36,7 +41,7 @@ const LayoutPremium = memo(() => {
         {/* Área de Conteúdo Principal */}
         <main 
           className={`
-            flex-1 min-h-screen pt-16
+            flex-1 min-h-screen ${topPadding}
             transition-all duration-300 ease-out
             ${isDark ? 'main-bg-dark' : 'main-bg-light'}
           `}

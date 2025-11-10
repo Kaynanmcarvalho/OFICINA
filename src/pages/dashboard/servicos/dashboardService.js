@@ -1,9 +1,8 @@
-import { collection, getDocs, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
-import { db } from '../../../config/firebase';
+import { getAllDocuments, subscribeToCollection } from '../../../services/storeHelpers';
 
 /**
  * Serviço de Dashboard - 100% Real e Conectado ao Firebase
- * Sem mocks, sem placeholders, apenas dados reais
+ * Com isolamento multi-tenant completo
  */
 
 /**
@@ -11,18 +10,12 @@ import { db } from '../../../config/firebase';
  */
 export const buscarEstatisticasGerais = async () => {
   try {
-    const [clientes, veiculos, ferramentas, estoque] = await Promise.all([
-      getDocs(collection(db, 'clients')),
-      getDocs(collection(db, 'vehicles')),
-      getDocs(collection(db, 'tools')),
-      getDocs(collection(db, 'inventory'))
+    const [clientesData, veiculosData, ferramentasData, estoqueData] = await Promise.all([
+      getAllDocuments('clients'),
+      getAllDocuments('vehicles'),
+      getAllDocuments('tools'),
+      getAllDocuments('inventory')
     ]);
-
-    // Processar dados de clientes
-    const clientesData = clientes.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    const veiculosData = veiculos.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    const ferramentasData = ferramentas.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    const estoqueData = estoque.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
     // Calcular ferramentas em uso
     const ferramentasEmUso = ferramentasData.filter(f => 
@@ -30,20 +23,20 @@ export const buscarEstatisticasGerais = async () => {
     ).length;
 
     // Calcular estoque total (soma de quantidades)
-    const estoqueTotal = estoqueData.reduce((sum, item) => sum + (item.quantity || 0), 0);
+    const estoqueTotal = estoqueData.reduce((sum, item) => sum + (item.quantity || item.currentStock || 0), 0);
 
     // Calcular produtos com estoque baixo
     const produtosBaixoEstoque = estoqueData.filter(item => 
-      (item.quantity || 0) <= (item.minQuantity || 5)
+      (item.quantity || item.currentStock || 0) <= (item.minQuantity || item.minStock || 5)
     ).length;
 
     return {
-      totalClientes: clientes.size,
-      totalVeiculos: veiculos.size,
-      totalFerramentas: ferramentas.size,
+      totalClientes: clientesData.length,
+      totalVeiculos: veiculosData.length,
+      totalFerramentas: ferramentasData.length,
       ferramentasEmUso,
-      ferramentasDisponiveis: ferramentas.size - ferramentasEmUso,
-      totalProdutos: estoque.size,
+      ferramentasDisponiveis: ferramentasData.length - ferramentasEmUso,
+      totalProdutos: estoqueData.length,
       totalEstoque: estoqueTotal,
       produtosBaixoEstoque,
       clientes: clientesData,
@@ -65,15 +58,14 @@ export const buscarAlertas = async () => {
     const alertas = [];
 
     // Verificar estoque baixo
-    const estoqueSnapshot = await getDocs(collection(db, 'inventory'));
-    estoqueSnapshot.forEach(doc => {
-      const item = doc.data();
-      const quantidade = item.quantity || 0;
-      const minimo = item.minQuantity || 5;
+    const estoqueData = await getAllDocuments('inventory');
+    estoqueData.forEach(item => {
+      const quantidade = item.quantity || item.currentStock || 0;
+      const minimo = item.minQuantity || item.minStock || 5;
 
       if (quantidade <= minimo) {
         alertas.push({
-          id: `estoque-${doc.id}`,
+          id: `estoque-${item.id}`,
           tipo: quantidade === 0 ? 'critico' : 'aviso',
           categoria: 'estoque',
           titulo: quantidade === 0 ? 'Produto Esgotado' : 'Estoque Baixo',
@@ -85,12 +77,11 @@ export const buscarAlertas = async () => {
     });
 
     // Verificar ferramentas em manutenção
-    const ferramentasSnapshot = await getDocs(collection(db, 'tools'));
-    ferramentasSnapshot.forEach(doc => {
-      const ferramenta = doc.data();
+    const ferramentasData = await getAllDocuments('tools');
+    ferramentasData.forEach(ferramenta => {
       if (ferramenta.status === 'Manutenção' || ferramenta.status === 'manutencao' || ferramenta.status === 'maintenance') {
         alertas.push({
-          id: `ferramenta-${doc.id}`,
+          id: `ferramenta-${ferramenta.id}`,
           tipo: 'info',
           categoria: 'ferramentas',
           titulo: 'Ferramenta em Manutenção',
@@ -115,22 +106,19 @@ export const buscarAlertas = async () => {
  */
 export const buscarClientesRecentes = async () => {
   try {
-    const clientesSnapshot = await getDocs(
-      query(collection(db, 'clients'), orderBy('createdAt', 'desc'), limit(5))
-    );
-
-    return clientesSnapshot.docs.map(doc => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        nome: data.name || 'Cliente sem nome',
-        email: data.email || '',
-        telefone: data.phone || '',
-        cpfCnpj: data.cpfCnpj || '',
-        dataCadastro: data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date(),
-        totalServicos: data.totalServices || 0
-      };
+    const clientesData = await getAllDocuments('clients', {
+      orderBy: { field: 'createdAt', direction: 'desc' }
     });
+
+    return clientesData.slice(0, 5).map(data => ({
+      id: data.id,
+      nome: data.name || 'Cliente sem nome',
+      email: data.email || '',
+      telefone: data.phone || '',
+      cpfCnpj: data.cpfCnpj || '',
+      dataCadastro: data.createdAt ? new Date(data.createdAt) : new Date(),
+      totalServicos: data.totalServices || 0
+    }));
   } catch (error) {
     console.error('[Dashboard] Erro ao buscar clientes recentes:', error);
     return [];
@@ -142,19 +130,18 @@ export const buscarClientesRecentes = async () => {
  */
 export const buscarEstoqueCritico = async () => {
   try {
-    const estoqueSnapshot = await getDocs(collection(db, 'inventory'));
+    const estoqueData = await getAllDocuments('inventory');
     const produtosCriticos = [];
 
-    estoqueSnapshot.forEach(doc => {
-      const item = doc.data();
-      const quantidade = item.quantity || 0;
-      const minimo = item.minQuantity || 5;
+    estoqueData.forEach(item => {
+      const quantidade = item.quantity || item.currentStock || 0;
+      const minimo = item.minQuantity || item.minStock || 5;
 
       if (quantidade <= minimo) {
         produtosCriticos.push({
-          id: doc.id,
+          id: item.id,
           nome: item.name || 'Produto sem nome',
-          codigo: item.partNumber || item.sku || '',
+          codigo: item.partNumber || item.sku || item.partId || '',
           quantidade,
           minimo,
           categoria: item.category || 'Outros',
@@ -177,16 +164,15 @@ export const buscarEstoqueCritico = async () => {
  */
 export const buscarFerramentasEmUso = async () => {
   try {
-    const ferramentasSnapshot = await getDocs(collection(db, 'tools'));
+    const ferramentasData = await getAllDocuments('tools');
     const ferramentasEmUso = [];
 
-    ferramentasSnapshot.forEach(doc => {
-      const ferramenta = doc.data();
+    ferramentasData.forEach(ferramenta => {
       if (ferramenta.status === 'Em Uso' || ferramenta.status === 'em_uso' || ferramenta.status === 'in_use') {
         ferramentasEmUso.push({
-          id: doc.id,
+          id: ferramenta.id,
           nome: ferramenta.name || 'Ferramenta sem nome',
-          codigo: ferramenta.code || '',
+          codigo: ferramenta.code || ferramenta.toolId || '',
           categoria: ferramenta.category || 'Outros',
           responsavel: ferramenta.assignedTo || 'Não atribuído',
           localizacao: ferramenta.location || 'Não especificado',
@@ -207,23 +193,22 @@ export const buscarFerramentasEmUso = async () => {
  */
 export const buscarVeiculosAtivos = async () => {
   try {
-    const veiculosSnapshot = await getDocs(collection(db, 'vehicles'));
+    const veiculosData = await getAllDocuments('vehicles');
     const veiculosAtivos = [];
 
-    veiculosSnapshot.forEach(doc => {
-      const veiculo = doc.data();
+    veiculosData.forEach(veiculo => {
       const statusAtivos = ['Em Montagem', 'Aguardando Peças', 'Teste', 'em_servico', 'in_service'];
       
       if (statusAtivos.includes(veiculo.status)) {
         veiculosAtivos.push({
-          id: doc.id,
+          id: veiculo.id,
           placa: veiculo.plate || veiculo.licensePlate || 'Sem placa',
           marca: veiculo.brand || veiculo.make || '',
           modelo: veiculo.model || '',
           ano: veiculo.year || '',
           status: veiculo.status || 'Em Serviço',
           cliente: veiculo.clientName || 'Cliente não informado',
-          dataEntrada: veiculo.createdAt ? new Date(veiculo.createdAt.seconds * 1000) : new Date()
+          dataEntrada: veiculo.createdAt ? new Date(veiculo.createdAt) : new Date()
         });
       }
     });
@@ -240,8 +225,7 @@ export const buscarVeiculosAtivos = async () => {
  */
 export const calcularInsightsClientes = async () => {
   try {
-    const clientesSnapshot = await getDocs(collection(db, 'clients'));
-    const clientes = clientesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const clientes = await getAllDocuments('clients');
 
     const totalClientes = clientes.length;
     
@@ -310,22 +294,22 @@ export const gerarDadosGrafico = async () => {
       });
     }
 
-    // Buscar clientes e contar por dia
-    const clientesSnapshot = await getDocs(collection(db, 'clients'));
-    const veiculosSnapshot = await getDocs(collection(db, 'vehicles'));
+    // Buscar clientes e veículos
+    const [clientesData, veiculosData] = await Promise.all([
+      getAllDocuments('clients'),
+      getAllDocuments('vehicles')
+    ]);
 
     const dadosGrafico = diasSemana.map(dia => {
-      const clientesDia = clientesSnapshot.docs.filter(doc => {
-        const data = doc.data();
+      const clientesDia = clientesData.filter(data => {
         if (!data.createdAt) return false;
-        const dataCriacao = new Date(data.createdAt.seconds * 1000);
+        const dataCriacao = new Date(data.createdAt);
         return dataCriacao.toDateString() === dia.dataCompleta.toDateString();
       }).length;
 
-      const veiculosDia = veiculosSnapshot.docs.filter(doc => {
-        const data = doc.data();
+      const veiculosDia = veiculosData.filter(data => {
         if (!data.createdAt) return false;
-        const dataCriacao = new Date(data.createdAt.seconds * 1000);
+        const dataCriacao = new Date(data.createdAt);
         return dataCriacao.toDateString() === dia.dataCompleta.toDateString();
       }).length;
 
@@ -346,55 +330,7 @@ export const gerarDadosGrafico = async () => {
 /**
  * Gera dados para gráfico de movimentação semanal (últimos 7 dias)
  */
-export const gerarDadosGraficoMovimentacao = async () => {
-  try {
-    const hoje = new Date();
-    const diasSemana = [];
-    
-    // Gerar últimos 7 dias
-    for (let i = 6; i >= 0; i--) {
-      const data = new Date(hoje);
-      data.setDate(data.getDate() - i);
-      diasSemana.push({
-        dia: data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-        dataCompleta: data
-      });
-    }
-
-    // Buscar clientes e veículos
-    const [clientesSnapshot, veiculosSnapshot] = await Promise.all([
-      getDocs(collection(db, 'clients')),
-      getDocs(collection(db, 'vehicles'))
-    ]);
-
-    const dadosGrafico = diasSemana.map(({ dia, dataCompleta }) => {
-      const clientesDia = clientesSnapshot.docs.filter(doc => {
-        const data = doc.data();
-        if (!data.createdAt) return false;
-        const dataCriacao = new Date(data.createdAt.seconds * 1000);
-        return dataCriacao.toDateString() === dataCompleta.toDateString();
-      }).length;
-
-      const veiculosDia = veiculosSnapshot.docs.filter(doc => {
-        const data = doc.data();
-        if (!data.createdAt) return false;
-        const dataCriacao = new Date(data.createdAt.seconds * 1000);
-        return dataCriacao.toDateString() === dataCompleta.toDateString();
-      }).length;
-
-      return {
-        dia,
-        clientes: clientesDia,
-        veiculos: veiculosDia
-      };
-    });
-
-    return dadosGrafico;
-  } catch (error) {
-    console.error('[Dashboard] Erro ao gerar dados do gráfico de movimentação:', error);
-    return [];
-  }
-};
+export const gerarDadosGraficoMovimentacao = gerarDadosGrafico;
 
 /**
  * Calcula tendências comparando período atual com anterior
@@ -408,38 +344,34 @@ export const calcularTendencias = async () => {
     quatorzeDiasAtras.setDate(quatorzeDiasAtras.getDate() - 14);
 
     // Buscar todas as coleções
-    const [clientesSnapshot, veiculosSnapshot] = await Promise.all([
-      getDocs(collection(db, 'clients')),
-      getDocs(collection(db, 'vehicles'))
+    const [clientesData, veiculosData] = await Promise.all([
+      getAllDocuments('clients'),
+      getAllDocuments('vehicles')
     ]);
 
     // Contar registros do período atual (últimos 7 dias)
-    const clientesAtual = clientesSnapshot.docs.filter(doc => {
-      const data = doc.data();
+    const clientesAtual = clientesData.filter(data => {
       if (!data.createdAt) return false;
-      const dataCriacao = new Date(data.createdAt.seconds * 1000);
+      const dataCriacao = new Date(data.createdAt);
       return dataCriacao >= seteDiasAtras;
     }).length;
 
-    const veiculosAtual = veiculosSnapshot.docs.filter(doc => {
-      const data = doc.data();
+    const veiculosAtual = veiculosData.filter(data => {
       if (!data.createdAt) return false;
-      const dataCriacao = new Date(data.createdAt.seconds * 1000);
+      const dataCriacao = new Date(data.createdAt);
       return dataCriacao >= seteDiasAtras;
     }).length;
 
     // Contar registros do período anterior (7-14 dias atrás)
-    const clientesAnterior = clientesSnapshot.docs.filter(doc => {
-      const data = doc.data();
+    const clientesAnterior = clientesData.filter(data => {
       if (!data.createdAt) return false;
-      const dataCriacao = new Date(data.createdAt.seconds * 1000);
+      const dataCriacao = new Date(data.createdAt);
       return dataCriacao >= quatorzeDiasAtras && dataCriacao < seteDiasAtras;
     }).length;
 
-    const veiculosAnterior = veiculosSnapshot.docs.filter(doc => {
-      const data = doc.data();
+    const veiculosAnterior = veiculosData.filter(data => {
       if (!data.createdAt) return false;
-      const dataCriacao = new Date(data.createdAt.seconds * 1000);
+      const dataCriacao = new Date(data.createdAt);
       return dataCriacao >= quatorzeDiasAtras && dataCriacao < seteDiasAtras;
     }).length;
 
@@ -488,56 +420,12 @@ export const calcularTendencias = async () => {
 export const subscribeToAllCollections = (callback) => {
   const unsubscribers = [];
 
-  // Listener para clientes
+  // Listeners isolados por empresa
   unsubscribers.push(
-    onSnapshot(
-      collection(db, 'clients'),
-      () => {
-        callback('clients');
-      },
-      (error) => {
-        console.error('[Dashboard] Erro no listener de clientes:', error);
-      }
-    )
-  );
-
-  // Listener para veículos
-  unsubscribers.push(
-    onSnapshot(
-      collection(db, 'vehicles'),
-      () => {
-        callback('vehicles');
-      },
-      (error) => {
-        console.error('[Dashboard] Erro no listener de veículos:', error);
-      }
-    )
-  );
-
-  // Listener para ferramentas
-  unsubscribers.push(
-    onSnapshot(
-      collection(db, 'tools'),
-      () => {
-        callback('tools');
-      },
-      (error) => {
-        console.error('[Dashboard] Erro no listener de ferramentas:', error);
-      }
-    )
-  );
-
-  // Listener para estoque
-  unsubscribers.push(
-    onSnapshot(
-      collection(db, 'inventory'),
-      () => {
-        callback('inventory');
-      },
-      (error) => {
-        console.error('[Dashboard] Erro no listener de estoque:', error);
-      }
-    )
+    subscribeToCollection('clients', () => callback('clients')),
+    subscribeToCollection('vehicles', () => callback('vehicles')),
+    subscribeToCollection('tools', () => callback('tools')),
+    subscribeToCollection('inventory', () => callback('inventory'))
   );
 
   // Retornar função para cancelar todos os listeners

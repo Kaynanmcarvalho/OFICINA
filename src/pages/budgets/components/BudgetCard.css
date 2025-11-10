@@ -1,0 +1,212 @@
+/**
+ * Budget Card Premium Styles
+ * Aplicando o mesmo nível de profundidade, sombras e contornos do Dashboard
+ */
+
+/* ========================================
+   BUDGET CARD PREMIUM - MODO CLARO
+   ======================================== */
+
+/* Card principal com sombras ultra intensificadas */
+.budget-card-premium:not(.dark *) {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(252, 252, 253, 1) 100%
+  ) !important;
+  box-shadow: 
+    /* Sombra principal INTENSIFICADA */
+    0 4px 16px -2px rgba(0, 0, 0, 0.12),
+    /* Sombra de profundidade FORTE */
+    0 12px 40px -6px rgba(0, 0, 0, 0.16),
+    /* Sombra ambiente PRONUNCIADA */
+    0 24px 72px -12px rgba(0, 0, 0, 0.10),
+    /* Sombra de contorno EXTRA */
+    0 32px 96px -16px rgba(0, 0, 0, 0.06),
+    /* Borda interna BRILHANTE */
+    inset 0 2px 0 0 rgba(255, 255, 255, 0.95),
+    /* Borda externa DEFINIDA */
+    0 0 0 1.5px rgba(0, 0, 0, 0.08),
+    /* Glow sutil externo */
+    0 0 0 3px rgba(255, 255, 255, 0.5) !important;
+  border: 2px solid rgba(0, 0, 0, 0.10) !important;
+  position: relative !important;
+  transition: all 0.4s cubic-bezier(0.2, 0.9, 0.2, 1) !important;
+}
+
+/* Pseudo-elemento para profundidade extra */
+.budget-card-premium:not(.dark *)::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(200, 200, 200, 0.3) 50%,
+    rgba(255, 255, 255, 0.8) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Hover state com elevação DRAMÁTICA */
+.budget-card-premium:not(.dark *):hover {
+  box-shadow: 
+    0 8px 24px -4px rgba(0, 0, 0, 0.16),
+    0 16px 48px -8px rgba(0, 0, 0, 0.20),
+    0 28px 80px -12px rgba(0, 0, 0, 0.14),
+    0 40px 112px -16px rgba(0, 0, 0, 0.08),
+    inset 0 2px 0 0 rgba(255, 255, 255, 1),
+    0 0 0 2px rgba(0, 0, 0, 0.10),
+    0 0 0 4px rgba(255, 255, 255, 0.6),
+    /* Glow azul sutil no hover */
+    0 0 32px -8px rgba(59, 130, 246, 0.15) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+/* ========================================
+   BADGES DE STATUS PREMIUM
+   ======================================== */
+
+/* Badge Pendente (Amarelo) */
+.budget-badge-pending:not(.dark *) {
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.20) 0%,
+    rgba(245, 158, 11, 0.15) 50%,
+    rgba(245, 158, 11, 0.18) 100%
+  ) !important;
+  border: 2px solid rgba(245, 158, 11, 0.35) !important;
+  box-shadow: 
+    0 3px 12px -2px rgba(245, 158, 11, 0.25),
+    0 6px 24px -4px rgba(245, 158, 11, 0.20),
+    0 10px 40px -6px rgba(245, 158, 11, 0.15),
+    inset 0 2px 0 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 0 rgba(245, 158, 11, 0.2),
+    0 0 0 1px rgba(245, 158, 11, 0.15) !important;
+}
+
+/* Badge Enviado (Azul) */
+.budget-badge-sent:not(.dark *) {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.20) 0%,
+    rgba(59, 130, 246, 0.15) 50%,
+    rgba(59, 130, 246, 0.18) 100%
+  ) !important;
+  border: 2px solid rgba(59, 130, 246, 0.35) !important;
+  box-shadow: 
+    0 3px 12px -2px rgba(59, 130, 246, 0.25),
+    0 6px 24px -4px rgba(59, 130, 246, 0.20),
+    0 10px 40px -6px rgba(59, 130, 246, 0.15),
+    inset 0 2px 0 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 0 rgba(59, 130, 246, 0.2),
+    0 0 0 1px rgba(59, 130, 246, 0.15) !important;
+}
+
+/* Badge Aprovado (Verde) */
+.budget-badge-approved:not(.dark *) {
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.20) 0%,
+    rgba(16, 185, 129, 0.15) 50%,
+    rgba(16, 185, 129, 0.18) 100%
+  ) !important;
+  border: 2px solid rgba(16, 185, 129, 0.35) !important;
+  box-shadow: 
+    0 3px 12px -2px rgba(16, 185, 129, 0.25),
+    0 6px 24px -4px rgba(16, 185, 129, 0.20),
+    0 10px 40px -6px rgba(16, 185, 129, 0.15),
+    inset 0 2px 0 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 0 rgba(16, 185, 129, 0.2),
+    0 0 0 1px rgba(16, 185, 129, 0.15) !important;
+}
+
+/* Badge Expirado (Cinza) */
+.budget-badge-expired:not(.dark *) {
+  background: linear-gradient(
+    135deg,
+    rgba(107, 114, 128, 0.20) 0%,
+    rgba(107, 114, 128, 0.15) 50%,
+    rgba(107, 114, 128, 0.18) 100%
+  ) !important;
+  border: 2px solid rgba(107, 114, 128, 0.35) !important;
+  box-shadow: 
+    0 3px 12px -2px rgba(107, 114, 128, 0.25),
+    0 6px 24px -4px rgba(107, 114, 128, 0.20),
+    0 10px 40px -6px rgba(107, 114, 128, 0.15),
+    inset 0 2px 0 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 0 rgba(107, 114, 128, 0.2),
+    0 0 0 1px rgba(107, 114, 128, 0.15) !important;
+}
+
+/* ========================================
+   ALERTAS DE EXPIRAÇÃO PREMIUM
+   ======================================== */
+
+/* Alerta de expiração próxima (Laranja) */
+.budget-alert-expiring:not(.dark *) {
+  background: linear-gradient(
+    135deg,
+    rgba(249, 115, 22, 0.15) 0%,
+    rgba(249, 115, 22, 0.10) 100%
+  ) !important;
+  border: 1.5px solid rgba(249, 115, 22, 0.30) !important;
+  box-shadow: 
+    0 2px 8px -1px rgba(249, 115, 22, 0.20),
+    0 4px 16px -2px rgba(249, 115, 22, 0.15),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.6),
+    0 0 0 1px rgba(249, 115, 22, 0.10) !important;
+}
+
+/* Alerta de expirado (Vermelho) */
+.budget-alert-expired:not(.dark *) {
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.15) 0%,
+    rgba(239, 68, 68, 0.10) 100%
+  ) !important;
+  border: 1.5px solid rgba(239, 68, 68, 0.30) !important;
+  box-shadow: 
+    0 2px 8px -1px rgba(239, 68, 68, 0.20),
+    0 4px 16px -2px rgba(239, 68, 68, 0.15),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.6),
+    0 0 0 1px rgba(239, 68, 68, 0.10) !important;
+}
+
+/* ========================================
+   BOTÕES PREMIUM
+   ======================================== */
+
+.budget-card-premium:not(.dark *) button {
+  box-shadow: 
+    0 2px 6px -1px rgba(0, 0, 0, 0.12),
+    0 4px 16px -2px rgba(0, 0, 0, 0.10),
+    0 8px 32px -4px rgba(0, 0, 0, 0.06),
+    inset 0 2px 0 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.3s cubic-bezier(0.2, 0.9, 0.2, 1) !important;
+}
+
+.budget-card-premium:not(.dark *) button:hover {
+  box-shadow: 
+    0 4px 12px -2px rgba(0, 0, 0, 0.16),
+    0 8px 24px -4px rgba(0, 0, 0, 0.14),
+    0 12px 48px -6px rgba(0, 0, 0, 0.10),
+    inset 0 2px 0 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.08) !important;
+  transform: translateY(-1px) scale(1.02) !important;
+}
+
+.budget-card-premium:not(.dark *) button:active {
+  transform: translateY(0) scale(0.98) !important;
+  box-shadow: 
+    0 1px 3px -1px rgba(0, 0, 0, 0.10),
+    inset 0 3px 6px -1px rgba(0, 0, 0, 0.10) !important;
+}

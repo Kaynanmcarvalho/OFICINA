@@ -1,0 +1,192 @@
+/**
+ * Budget Filters Premium Styles
+ * Aplicando o mesmo nível de profundidade, sombras e contornos do Dashboard
+ */
+
+/* ========================================
+   CONTAINER DE FILTROS PREMIUM - MODO CLARO
+   ======================================== */
+
+.budget-filters-container:not(.dark *) {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(252, 252, 253, 1) 100%
+  ) !important;
+  box-shadow: 
+    /* Sombra principal INTENSIFICADA */
+    0 4px 16px -2px rgba(0, 0, 0, 0.12),
+    /* Sombra de profundidade FORTE */
+    0 12px 40px -6px rgba(0, 0, 0, 0.16),
+    /* Sombra ambiente PRONUNCIADA */
+    0 24px 72px -12px rgba(0, 0, 0, 0.10),
+    /* Sombra de contorno EXTRA */
+    0 32px 96px -16px rgba(0, 0, 0, 0.06),
+    /* Borda interna BRILHANTE */
+    inset 0 2px 0 0 rgba(255, 255, 255, 0.95),
+    /* Borda externa DEFINIDA */
+    0 0 0 1.5px rgba(0, 0, 0, 0.08),
+    /* Glow sutil externo */
+    0 0 0 3px rgba(255, 255, 255, 0.5) !important;
+  border: 2px solid rgba(0, 0, 0, 0.10) !important;
+  position: relative !important;
+}
+
+/* Pseudo-elemento para profundidade extra */
+.budget-filters-container:not(.dark *)::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(200, 200, 200, 0.3) 50%,
+    rgba(255, 255, 255, 0.8) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* ========================================
+   INPUT DE BUSCA PREMIUM
+   ======================================== */
+
+.budget-search-input:not(.dark *) {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(255, 255, 255, 1) 100%
+  ) !important;
+  border: 2.5px solid rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 
+    /* Sombra principal ULTRA INTENSIFICADA */
+    0 4px 12px -1px rgba(0, 0, 0, 0.18),
+    /* Sombra de profundidade FORTE */
+    0 8px 24px -2px rgba(0, 0, 0, 0.15),
+    /* Sombra ambiente PRONUNCIADA */
+    0 16px 48px -4px rgba(0, 0, 0, 0.12),
+    /* Sombra extra profunda */
+    0 24px 72px -6px rgba(0, 0, 0, 0.08),
+    /* Borda interna BRILHANTE */
+    inset 0 3px 0 0 rgba(255, 255, 255, 0.9),
+    inset 0 -2px 0 0 rgba(0, 0, 0, 0.08),
+    /* Contorno externo DEFINIDO */
+    0 0 0 2px rgba(0, 0, 0, 0.10) !important;
+  transition: all 0.3s cubic-bezier(0.2, 0.9, 0.2, 1) !important;
+}
+
+.budget-search-input:not(.dark *):focus {
+  border-color: rgba(59, 130, 246, 0.5) !important;
+  box-shadow: 
+    /* Ring azul INTENSO */
+    0 0 0 5px rgba(59, 130, 246, 0.15),
+    /* Sombra azul */
+    0 4px 16px -2px rgba(59, 130, 246, 0.25),
+    0 8px 32px -4px rgba(59, 130, 246, 0.20),
+    /* Sombras de profundidade */
+    0 12px 48px -6px rgba(0, 0, 0, 0.10),
+    /* Borda interna */
+    inset 0 2px 0 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 0 rgba(59, 130, 246, 0.1),
+    /* Contorno */
+    0 0 0 1px rgba(59, 130, 246, 0.3) !important;
+  outline: none !important;
+  transform: translateY(-1px) !important;
+}
+
+.budget-search-input:not(.dark *):hover {
+  border-color: rgba(0, 0, 0, 0.20) !important;
+  box-shadow: 
+    /* Sombras ULTRA elevadas no hover */
+    0 6px 18px -2px rgba(0, 0, 0, 0.20),
+    0 12px 36px -4px rgba(0, 0, 0, 0.16),
+    0 20px 60px -6px rgba(0, 0, 0, 0.12),
+    0 32px 96px -8px rgba(0, 0, 0, 0.08),
+    /* Borda interna */
+    inset 0 3px 0 0 rgba(255, 255, 255, 0.95),
+    inset 0 -2px 0 0 rgba(0, 0, 0, 0.10),
+    /* Contorno */
+    0 0 0 2px rgba(0, 0, 0, 0.12),
+    /* Glow externo */
+    0 0 0 4px rgba(255, 255, 255, 0.6) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* ========================================
+   SELECT DE FILTRO PREMIUM
+   ======================================== */
+
+.budget-filter-select:not(.dark *) {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(255, 255, 255, 1) 100%
+  ) !important;
+  border: 2.5px solid rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 
+    /* Sombra principal ULTRA INTENSIFICADA */
+    0 4px 12px -1px rgba(0, 0, 0, 0.18),
+    /* Sombra de profundidade FORTE */
+    0 8px 24px -2px rgba(0, 0, 0, 0.15),
+    /* Sombra ambiente PRONUNCIADA */
+    0 16px 48px -4px rgba(0, 0, 0, 0.12),
+    /* Sombra extra profunda */
+    0 24px 72px -6px rgba(0, 0, 0, 0.08),
+    /* Borda interna BRILHANTE */
+    inset 0 3px 0 0 rgba(255, 255, 255, 0.9),
+    inset 0 -2px 0 0 rgba(0, 0, 0, 0.08),
+    /* Contorno externo DEFINIDO */
+    0 0 0 2px rgba(0, 0, 0, 0.10) !important;
+  transition: all 0.3s cubic-bezier(0.2, 0.9, 0.2, 1) !important;
+  cursor: pointer !important;
+}
+
+.budget-filter-select:not(.dark *):focus {
+  border-color: rgba(59, 130, 246, 0.5) !important;
+  box-shadow: 
+    /* Ring azul INTENSO */
+    0 0 0 5px rgba(59, 130, 246, 0.15),
+    /* Sombra azul */
+    0 4px 16px -2px rgba(59, 130, 246, 0.25),
+    0 8px 32px -4px rgba(59, 130, 246, 0.20),
+    /* Sombras de profundidade */
+    0 12px 48px -6px rgba(0, 0, 0, 0.10),
+    /* Borda interna */
+    inset 0 2px 0 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 0 rgba(59, 130, 246, 0.1),
+    /* Contorno */
+    0 0 0 1px rgba(59, 130, 246, 0.3) !important;
+  outline: none !important;
+  transform: translateY(-1px) !important;
+}
+
+.budget-filter-select:not(.dark *):hover {
+  border-color: rgba(0, 0, 0, 0.20) !important;
+  box-shadow: 
+    /* Sombras ULTRA elevadas no hover */
+    0 6px 18px -2px rgba(0, 0, 0, 0.20),
+    0 12px 36px -4px rgba(0, 0, 0, 0.16),
+    0 20px 60px -6px rgba(0, 0, 0, 0.12),
+    0 32px 96px -8px rgba(0, 0, 0, 0.08),
+    /* Borda interna */
+    inset 0 3px 0 0 rgba(255, 255, 255, 0.95),
+    inset 0 -2px 0 0 rgba(0, 0, 0, 0.10),
+    /* Contorno */
+    0 0 0 2px rgba(0, 0, 0, 0.12),
+    /* Glow externo */
+    0 0 0 4px rgba(255, 255, 255, 0.6) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Estilo das opções do select */
+.budget-filter-select:not(.dark *) option {
+  background: rgba(255, 255, 255, 1) !important;
+  color: rgba(0, 0, 0, 0.9) !important;
+  padding: 8px !important;
+}

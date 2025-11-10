@@ -1,19 +1,13 @@
 import { create } from 'zustand';
-import {
-  collection,
-  addDoc,
-  updateDoc,
-  doc,
-  getDocs,
-  getDoc,
-  query,
-  where,
-  orderBy,
-  onSnapshot,
-  increment
-} from 'firebase/firestore';
-import { db } from '../config/firebase';
 import { v4 as uuidv4 } from 'uuid';
+import {
+  addDocument,
+  getAllDocuments,
+  getDocumentById,
+  updateDocument,
+  subscribeToCollection,
+  queryDocuments
+} from '../services/storeHelpers';
 
 const EXPIRATION_HOURS = 48;
 
@@ -80,8 +74,7 @@ export const useBudgetStore = create((set, get) => ({
         }]
       };
 
-      const docRef = await addDoc(collection(db, 'budgets'), newBudget);
-      const budgetWithId = { ...newBudget, firestoreId: docRef.id };
+      const budgetWithId = await addDocument('budgets', newBudget);
 
       set((state) => ({
         budgets: [budgetWithId, ...state.budgets],
@@ -99,19 +92,18 @@ export const useBudgetStore = create((set, get) => ({
   updateBudget: async (budgetId, updates) => {
     set({ isLoading: true, error: null });
     try {
-      const budgetRef = doc(db, 'budgets', budgetId);
-      const currentBudget = get().budgets.find(b => b.firestoreId === budgetId);
+      const currentBudget = get().budgets.find(b => b.id === budgetId || b.firestoreId === budgetId);
       
       const updatedData = {
         ...updates,
         updatedAt: new Date().toISOString(),
-        version: increment(1)
+        version: (currentBudget?.version || 0) + 1
       };
 
       // Add to history if items changed
-      if (updates.items) {
+      if (updates.items && currentBudget) {
         const historyEntry = {
-          version: currentBudget.version + 1,
+          version: (currentBudget.version || 0) + 1,
           createdAt: new Date().toISOString(),
           items: updates.items,
           total: updates.total
@@ -119,12 +111,12 @@ export const useBudgetStore = create((set, get) => ({
         updatedData.history = [...(currentBudget.history || []), historyEntry];
       }
 
-      await updateDoc(budgetRef, updatedData);
+      await updateDocument('budgets', budgetId, updatedData);
 
       set((state) => ({
         budgets: state.budgets.map((budget) =>
-          budget.firestoreId === budgetId
-            ? { ...budget, ...updatedData, version: currentBudget.version + 1 }
+          budget.id === budgetId || budget.firestoreId === budgetId
+            ? { ...budget, ...updatedData }
             : budget
         ),
         isLoading: false,
@@ -140,7 +132,7 @@ export const useBudgetStore = create((set, get) => ({
   // Expire budget and return products to stock
   expireBudget: async (budgetId) => {
     try {
-      const budget = get().budgets.find(b => b.firestoreId === budgetId);
+      const budget = get().budgets.find(b => b.id === budgetId || b.firestoreId === budgetId);
       if (!budget || budget.status !== 'pending') return;
 
       // Return products to stock
@@ -171,7 +163,7 @@ export const useBudgetStore = create((set, get) => ({
   approveBudget: async (budgetId, approvedItems) => {
     set({ isLoading: true, error: null });
     try {
-      const budget = get().budgets.find(b => b.firestoreId === budgetId);
+      const budget = get().budgets.find(b => b.id === budgetId || b.firestoreId === budgetId);
       if (!budget) throw new Error('Orçamento não encontrado');
 
       const allApproved = approvedItems.length === budget.items.length;
@@ -194,7 +186,7 @@ export const useBudgetStore = create((set, get) => ({
   // Reject budget items
   rejectBudgetItems: async (budgetId, rejectedItemIds, reason) => {
     try {
-      const budget = get().budgets.find(b => b.firestoreId === budgetId);
+      const budget = get().budgets.find(b => b.id === budgetId || b.firestoreId === budgetId);
       if (!budget) throw new Error('Orçamento não encontrado');
 
       // Remove dependent services
@@ -247,16 +239,9 @@ export const useBudgetStore = create((set, get) => ({
   fetchBudgets: async () => {
     set({ isLoading: true, error: null });
     try {
-      const q = query(
-        collection(db, 'budgets'),
-        orderBy('createdAt', 'desc')
-      );
-
-      const querySnapshot = await getDocs(q);
-      const budgets = querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        firestoreId: doc.id,
-      }));
+      const budgets = await getAllDocuments('budgets', {
+        orderBy: { field: 'createdAt', direction: 'desc' }
+      });
 
       set({ budgets, isLoading: false });
       return { success: true, data: budgets };
@@ -270,11 +255,9 @@ export const useBudgetStore = create((set, get) => ({
   getBudgetById: async (budgetId) => {
     set({ isLoading: true, error: null });
     try {
-      const docRef = doc(db, 'budgets', budgetId);
-      const docSnap = await getDoc(docRef);
+      const budget = await getDocumentById('budgets', budgetId);
 
-      if (docSnap.exists()) {
-        const budget = { ...docSnap.data(), firestoreId: docSnap.id };
+      if (budget) {
         set({ currentBudget: budget, isLoading: false });
         return { success: true, data: budget };
       } else {
@@ -291,22 +274,16 @@ export const useBudgetStore = create((set, get) => ({
   getBudgetByApprovalLink: async (approvalLink) => {
     set({ isLoading: true, error: null });
     try {
-      const q = query(
-        collection(db, 'budgets'),
-        where('approvalLink', '==', approvalLink)
-      );
+      const budgets = await queryDocuments('budgets', {
+        where: [{ field: 'approvalLink', operator: '==', value: approvalLink }]
+      });
 
-      const querySnapshot = await getDocs(q);
-      if (querySnapshot.empty) {
+      if (budgets.length === 0) {
         set({ error: 'Orçamento não encontrado', isLoading: false });
         return { success: false, error: 'Orçamento não encontrado' };
       }
 
-      const budget = {
-        ...querySnapshot.docs[0].data(),
-        firestoreId: querySnapshot.docs[0].id
-      };
-
+      const budget = budgets[0];
       set({ currentBudget: budget, isLoading: false });
       return { success: true, data: budget };
     } catch (error) {
@@ -348,18 +325,10 @@ export const useBudgetStore = create((set, get) => ({
 
   // Real-time listener
   subscribeToBudgets: () => {
-    const q = query(
-      collection(db, 'budgets'),
-      orderBy('createdAt', 'desc')
-    );
-
-    return onSnapshot(q, (querySnapshot) => {
-      const budgets = querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        firestoreId: doc.id,
-      }));
-
+    return subscribeToCollection('budgets', (budgets) => {
       set({ budgets });
+    }, {
+      orderBy: { field: 'createdAt', direction: 'desc' }
     });
   },
 }));

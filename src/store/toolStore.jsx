@@ -1,20 +1,12 @@
 import { create } from 'zustand';
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  getDocs, 
-  getDoc,
-  query, 
-  where, 
-  orderBy, 
-  limit,
-  onSnapshot
-} from 'firebase/firestore';
-import { db } from '../config/firebase';
-
+import {
+  addDocument,
+  getAllDocuments,
+  getDocumentById,
+  updateDocument,
+  deleteDocument,
+  subscribeToCollection
+} from '../services/storeHelpers';
 export const useToolStore = create((set, get) => ({
   // State
   tools: [],
@@ -74,8 +66,7 @@ export const useToolStore = create((set, get) => ({
         currentLocation: toolData.defaultLocation || 'Oficina Principal',
       };
 
-      const docRef = await addDoc(collection(db, 'tools'), newTool);
-      const toolWithId = { ...newTool, firestoreId: docRef.id };
+      const toolWithId = await addDocument('tools', newTool);
 
       set((state) => ({
         tools: [toolWithId, ...state.tools],
@@ -93,13 +84,12 @@ export const useToolStore = create((set, get) => ({
   updateTool: async (toolId, updates) => {
     set({ isLoading: true, error: null });
     try {
-      const toolRef = doc(db, 'tools', toolId);
       const updatedData = {
         ...updates,
         updatedAt: new Date().toISOString(),
       };
 
-      await updateDoc(toolRef, updatedData);
+      await updateDocument('tools', toolId, updatedData);
 
       set((state) => ({
         tools: state.tools.map((tool) =>
@@ -124,7 +114,7 @@ export const useToolStore = create((set, get) => ({
   deleteTool: async (toolId) => {
     set({ isLoading: true, error: null });
     try {
-      await deleteDoc(doc(db, 'tools', toolId));
+      await deleteDocument('tools', toolId);
 
       set((state) => ({
         tools: state.tools.filter((tool) => tool.firestoreId !== toolId),
@@ -143,16 +133,9 @@ export const useToolStore = create((set, get) => ({
   fetchTools: async () => {
     set({ isLoading: true, error: null });
     try {
-      const q = query(
-        collection(db, 'tools'),
-        orderBy('name')
-      );
-      
-      const querySnapshot = await getDocs(q);
-      const tools = querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        firestoreId: doc.id,
-      }));
+      const tools = await getAllDocuments('tools', {
+      orderBy: { field: 'name', direction: 'asc' }
+    });
 
       set({ tools, isLoading: false });
       return { success: true, data: tools };
@@ -166,11 +149,10 @@ export const useToolStore = create((set, get) => ({
   getToolById: async (toolId) => {
     set({ isLoading: true, error: null });
     try {
-      const docRef = doc(db, 'tools', toolId);
-      const docSnap = await getDoc(docRef);
+      const docSnap = await getDocumentById('tools', toolId);
       
-      if (docSnap.exists()) {
-        const tool = { ...docSnap.data(), firestoreId: docSnap.id };
+      if (docSnap) {
+        const tool = docSnap;
         set({ currentTool: tool, isLoading: false });
         return { success: true, data: tool };
       } else {
@@ -187,14 +169,7 @@ export const useToolStore = create((set, get) => ({
   searchTools: async (searchTerm) => {
     set({ isLoading: true, error: null });
     try {
-      // Search by name
-      const nameQuery = query(
-        collection(db, 'tools'),
-        where('name', '>=', searchTerm),
-        where('name', '<=', searchTerm + '\uf8ff'),
-        orderBy('name'),
-        limit(20)
-      );
+      // Search by name - usando busca local
       
       // Search by tool ID
       const idQuery = query(
@@ -204,19 +179,11 @@ export const useToolStore = create((set, get) => ({
         limit(20)
       );
       
-      // Search by brand
-      const brandQuery = query(
-        collection(db, 'tools'),
-        where('brand', '>=', searchTerm),
-        where('brand', '<=', searchTerm + '\uf8ff'),
-        limit(20)
-      );
+      // Search by brand - usando busca local
       
-      const [nameResults, idResults, brandResults] = await Promise.all([
-        getDocs(nameQuery),
-        getDocs(idQuery),
-        getDocs(brandQuery)
-      ]);
+      // Buscar todos e filtrar localmente
+    const allItems = await getAllDocuments('brandResults');
+    const searchLower = searchTerm.toLowerCase();
       
       const allResults = new Map();
       
@@ -501,18 +468,10 @@ export const useToolStore = create((set, get) => ({
 
   // Real-time listener
   subscribeToTools: () => {
-    const q = query(
-      collection(db, 'tools'),
-      orderBy('name')
-    );
-    
-    return onSnapshot(q, (querySnapshot) => {
-      const tools = querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        firestoreId: doc.id,
-      }));
-      
+    return subscribeToCollection('tools', (tools) => {
       set({ tools });
+    }, {
+      orderBy: { field: 'name', direction: 'asc' }
     });
   },
 }));

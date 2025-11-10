@@ -4,6 +4,7 @@
 
 import { useState } from 'react';
 import { motion as Motion, AnimatePresence } from 'framer-motion';
+import './ClientSlideOver.css';
 import { 
   X, User, Car, History, MessageSquare, Zap,
   Mail, Phone, MapPin, Calendar, DollarSign,
@@ -27,6 +28,12 @@ const TABS = [
 const ClientSlideOver = ({ isOpen, onClose, client, onEdit, onDelete }) => {
   const { isDarkMode } = useThemeStore();
   const [activeTab, setActiveTab] = useState('overview');
+  const [offsetY, setOffsetY] = useState(() => {
+    const saved = localStorage.getItem('slideOverOffsetY');
+    return saved ? parseInt(saved) : 0;
+  });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartY, setDragStartY] = useState(0);
 
   if (!client) return null;
 
@@ -52,6 +59,38 @@ const ClientSlideOver = ({ isOpen, onClose, client, onEdit, onDelete }) => {
 
   const isActive = client.active !== false;
 
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setDragStartY(e.clientY - offsetY);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    const newOffsetY = e.clientY - dragStartY;
+    const maxOffset = window.innerHeight - 200;
+    const minOffset = -window.innerHeight + 200;
+    const clampedOffset = Math.max(minOffset, Math.min(maxOffset, newOffsetY));
+    setOffsetY(clampedOffset);
+  };
+
+  const handleMouseUp = () => {
+    if (isDragging) {
+      setIsDragging(false);
+      localStorage.setItem('slideOverOffsetY', offsetY.toString());
+    }
+  };
+
+  // Ocultar scrollbar do body quando aberto
+  if (typeof document !== 'undefined') {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    }
+  }
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -62,7 +101,7 @@ const ClientSlideOver = ({ isOpen, onClose, client, onEdit, onDelete }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
           />
 
           {/* Slide Over */}
@@ -71,21 +110,34 @@ const ClientSlideOver = ({ isOpen, onClose, client, onEdit, onDelete }) => {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            style={{ 
+              transform: `translateY(${offsetY}px) translateX(0)`,
+              cursor: isDragging ? 'grabbing' : 'default',
+              right: 0,
+              left: 'auto'
+            }}
             className={`
-              fixed right-0 top-0 bottom-0 w-full max-w-2xl z-50
+              client-slideover-container
               flex flex-col
               ${isDarkMode 
                 ? 'bg-gray-900 border-l-[3px] border-gray-700/80 shadow-[-8px_0_40px_rgba(0,0,0,0.5)]' 
-                : 'bg-white border-l-[4px] border-gray-900/80 shadow-[-8px_0_40px_rgba(0,0,0,0.2),-4px_0_16px_rgba(0,0,0,0.1)]'
+                : 'bg-white border-l-[2px] border-gray-300/40 shadow-[-8px_0_40px_rgba(0,0,0,0.2),-4px_0_16px_rgba(0,0,0,0.1)]'
               }
             `}
           >
             {/* Header */}
-            <div className={`
-              px-6 py-5 border-b
-              ${isDarkMode ? 'border-gray-700/60' : 'border-gray-300/80'}
-            `}>
-              <div className="flex items-start justify-between mb-4">
+            <div 
+              onMouseDown={handleMouseDown}
+              className={`
+                px-6 py-4 border-b flex-shrink-0
+                ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}
+                ${isDarkMode ? 'border-gray-700/60' : 'border-gray-300/80'}
+              `}
+            >
+              <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-4">
                   <div className={`
                     w-16 h-16 rounded-2xl flex items-center justify-center
@@ -202,7 +254,7 @@ const ClientSlideOver = ({ isOpen, onClose, client, onEdit, onDelete }) => {
 
             {/* Tabs */}
             <div className={`
-              px-6 border-b overflow-x-auto
+              px-6 border-b flex-shrink-0 overflow-x-hidden
               ${isDarkMode ? 'border-gray-700/60' : 'border-gray-300/80'}
             `}>
               <div className="flex gap-1">
@@ -247,7 +299,7 @@ const ClientSlideOver = ({ isOpen, onClose, client, onEdit, onDelete }) => {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-6 pb-12 min-h-0">
               <AnimatePresence mode="wait">
                 {activeTab === 'overview' && (
                   <Motion.div

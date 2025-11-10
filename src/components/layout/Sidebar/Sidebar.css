@@ -1,0 +1,16 @@
+/* Remover todos os efeitos visuais do sidebar */
+.sidebar-item-active {
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+.sidebar-item-active * {
+  box-shadow: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+}
+
+/* Remover animações de glow */
+[class*="motion"] [class*="absolute"] {
+  display: none !important;
+}

@@ -1,0 +1,190 @@
+rules_version = '2';
+
+/**
+ * Firestore Security Rules - Multi-Tenant Torq
+ * 
+ * Garante isolamento completo de dados entre empresas
+ * Apenas cache_placas é compartilhado globalmente
+ */
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ============================================
+    // HELPER FUNCTIONS
+    // ============================================
+    
+    // Verifica se usuário está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Obtém empresaId do custom claims do token JWT (MUITO MAIS RÁPIDO)
+    function getUserEmpresaId() {
+      return request.auth.token.empresaId;
+    }
+    
+    // Obtém role do custom claims do token JWT
+    function getUserRole() {
+      return request.auth.token.role;
+    }
+    
+    // Verifica se usuário pertence à empresa do documento
+    function belongsToUserEmpresa(empresaId) {
+      return isAuthenticated() && getUserEmpresaId() == empresaId;
+    }
+    
+    // VALIDAÇÃO CRÍTICA: Verifica se empresaId do documento corresponde ao do usuário
+    function isValidEmpresaId() {
+      return request.resource.data.empresaId == getUserEmpresaId();
+    }
+    
+    // Verifica se usuário é admin da empresa
+    function isAdmin() {
+      return isAuthenticated() && getUserRole() == 'admin';
+    }
+    
+    // Verifica se usuário tem role específica
+    function hasRole(role) {
+      return isAuthenticated() && getUserRole() == role;
+    }
+    
+    // ============================================
+    // USUARIOS (Global - fora de empresas)
+    // ============================================
+    
+    match /usuarios/{userId} {
+      // Usuário pode ler apenas seu próprio documento
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Apenas admins podem criar/atualizar usuários
+      allow create, update: if isAdmin();
+      
+      // Ninguém pode deletar usuários (soft delete apenas)
+      allow delete: if false;
+    }
+    
+    // ============================================
+    // EMPRESAS
+    // ============================================
+    
+    match /empresas/{empresaId} {
+      // Usuário pode ler dados da própria empresa
+      allow read: if belongsToUserEmpresa(empresaId);
+      
+      // Apenas admins podem atualizar dados da empresa
+      allow update: if belongsToUserEmpresa(empresaId) && isAdmin();
+      
+      // Ninguém pode criar/deletar empresas via client
+      allow create, delete: if false;
+      
+      // ============================================
+      // SUBCOLEÇÕES DA EMPRESA
+      // ============================================
+      
+      // CLIENTES
+      match /clientes/{clienteId} {
+        allow read: if belongsToUserEmpresa(empresaId);
+        allow create: if belongsToUserEmpresa(empresaId) && 
+                         (hasRole('admin') || hasRole('atendente')) &&
+                         isValidEmpresaId(); // CRÍTICO: Valida empresaId
+        allow update: if belongsToUserEmpresa(empresaId) && 
+                         (hasRole('admin') || hasRole('atendente')) &&
+                         request.resource.data.empresaId == resource.data.empresaId; // Impede mudança de empresa
+        allow delete: if belongsToUserEmpresa(empresaId) && isAdmin();
+      }
+      
+      // VEÍCULOS
+      match /veiculos/{veiculoId} {
+        allow read: if belongsToUserEmpresa(empresaId);
+        allow create: if belongsToUserEmpresa(empresaId) && 
+                         (hasRole('admin') || hasRole('atendente')) &&
+                         isValidEmpresaId();
+        allow update: if belongsToUserEmpresa(empresaId) && 
+                         (hasRole('admin') || hasRole('atendente')) &&
+                         request.resource.data.empresaId == resource.data.empresaId;
+        allow delete: if belongsToUserEmpresa(empresaId) && isAdmin();
+      }
+      
+      // ORÇAMENTOS
+      match /orcamentos/{orcamentoId} {
+        allow read: if belongsToUserEmpresa(empresaId);
+        allow create: if belongsToUserEmpresa(empresaId) && 
+                         (hasRole('admin') || hasRole('atendente')) &&
+                         isValidEmpresaId();
+        allow update: if belongsToUserEmpresa(empresaId) && 
+                         (hasRole('admin') || hasRole('atendente')) &&
+                         request.resource.data.empresaId == resource.data.empresaId;
+        allow delete: if belongsToUserEmpresa(empresaId) && isAdmin();
+      }
+      
+      // CHECK-INS
+      match /checkins/{checkinId} {
+        allow read: if belongsToUserEmpresa(empresaId);
+        allow create: if belongsToUserEmpresa(empresaId) && 
+                         (hasRole('admin') || hasRole('atendente')) &&
+                         isValidEmpresaId();
+        allow update: if belongsToUserEmpresa(empresaId) && 
+                         (hasRole('atendente') || hasRole('atendente')) &&
+                         request.resource.data.empresaId == resource.data.empresaId;
+        allow delete: if belongsToUserEmpresa(empresaId) && isAdmin();
+      }
+      
+      // USUÁRIOS DA EMPRESA
+      match /usuarios/{usuarioId} {
+        allow read: if belongsToUserEmpresa(empresaId);
+        allow create, update, delete: if belongsToUserEmpresa(empresaId) && isAdmin();
+      }
+      
+      // SESSÃO WHATSAPP
+      match /whatsapp_session/{sessionId} {
+        allow read, write: if belongsToUserEmpresa(empresaId) && isAdmin();
+      }
+      
+      // CONFIGURAÇÕES
+      match /configuracoes/{configId} {
+        allow read: if belongsToUserEmpresa(empresaId);
+        allow write: if belongsToUserEmpresa(empresaId) && isAdmin();
+      }
+      
+      // LOGS (apenas leitura para admin)
+      match /logs/{logId} {
+        allow read: if belongsToUserEmpresa(empresaId) && isAdmin();
+        allow write: if false; // Logs são escritos apenas pelo backend
+      }
+    }
+    
+    // ============================================
+    // CACHE DE PLACAS (Global - Compartilhado)
+    // ============================================
+    
+    match /cache_placas/{placa} {
+      // Qualquer usuário autenticado pode ler
+      allow read: if isAuthenticated();
+      
+      // Qualquer usuário autenticado pode escrever (criar cache)
+      allow create, update: if isAuthenticated();
+      
+      // Ninguém pode deletar cache
+      allow delete: if false;
+    }
+    
+    // ============================================
+    // ADMIN DASHBOARD (Super Admin apenas)
+    // ============================================
+    
+    match /admin/{document=**} {
+      // Apenas super admins (definidos manualmente)
+      allow read, write: if false; // Implementar lógica de super admin
+    }
+    
+    // ============================================
+    // DENY ALL (Fallback)
+    // ============================================
+    
+    // Qualquer outra coleção é negada por padrão
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

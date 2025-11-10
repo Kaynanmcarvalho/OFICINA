@@ -1,20 +1,8 @@
 import { create } from 'zustand';
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  getDocs, 
-  getDoc,
-  query, 
-  where, 
-  orderBy, 
-  limit,
-  onSnapshot
-} from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { db, storage } from '../config/firebase';
+import { storage, db } from '../config/firebase';
+import { firestoreService } from '../services/firestoreService';
 
 export const useCheckinStore = create((set, get) => ({
   // State
@@ -42,12 +30,10 @@ export const useCheckinStore = create((set, get) => ({
         id: `CHK-${Date.now()}`,
         checkinDate: new Date().toISOString(),
         status: 'in-progress',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
       };
 
-      const docRef = await addDoc(collection(db, 'checkins'), newCheckin);
-      const checkinWithId = { ...newCheckin, firestoreId: docRef.id };
+      const docId = await firestoreService.create('checkins', newCheckin);
+      const checkinWithId = { ...newCheckin, firestoreId: docId, id: docId };
 
       set((state) => ({
         checkins: [checkinWithId, ...state.checkins],
@@ -56,6 +42,7 @@ export const useCheckinStore = create((set, get) => ({
 
       return { success: true, data: checkinWithId };
     } catch (error) {
+      console.error('[CheckinStore] Error creating checkin:', error);
       set({ error: error.message, isLoading: false });
       return { success: false, error: error.message };
     }
@@ -180,20 +167,14 @@ export const useCheckinStore = create((set, get) => ({
   fetchCheckins: async () => {
     set({ isLoading: true, error: null });
     try {
-      const q = query(
-        collection(db, 'checkins'),
-        orderBy('createdAt', 'desc')
-      );
-      
-      const querySnapshot = await getDocs(q);
-      const checkins = querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        firestoreId: doc.id,
-      }));
+      const checkins = await firestoreService.getAll('checkins', {
+        orderBy: { field: 'createdAt', direction: 'desc' }
+      });
 
       set({ checkins, isLoading: false });
       return { success: true, data: checkins };
     } catch (error) {
+      console.error('[CheckinStore] Error fetching checkins:', error);
       set({ error: error.message, isLoading: false });
       return { success: false, error: error.message };
     }
@@ -203,11 +184,9 @@ export const useCheckinStore = create((set, get) => ({
   getCheckinById: async (checkinId) => {
     set({ isLoading: true, error: null });
     try {
-      const docRef = doc(db, 'checkins', checkinId);
-      const docSnap = await getDoc(docRef);
+      const checkin = await firestoreService.getById('checkins', checkinId);
       
-      if (docSnap.exists()) {
-        const checkin = { ...docSnap.data(), firestoreId: docSnap.id };
+      if (checkin) {
         set({ currentCheckin: checkin, isLoading: false });
         return { success: true, data: checkin };
       } else {
@@ -224,23 +203,18 @@ export const useCheckinStore = create((set, get) => ({
   searchCheckins: async (searchTerm) => {
     set({ isLoading: true, error: null });
     try {
-      const q = query(
-        collection(db, 'checkins'),
-        where('clientName', '>=', searchTerm),
-        where('clientName', '<=', searchTerm + '\uf8ff'),
-        orderBy('clientName'),
-        limit(20)
-      );
-      
-      const querySnapshot = await getDocs(q);
-      const results = querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        firestoreId: doc.id,
-      }));
+      const results = await firestoreService.query('checkins', [
+        { field: 'clientName', operator: '>=', value: searchTerm },
+        { field: 'clientName', operator: '<=', value: searchTerm + '\uf8ff' }
+      ], {
+        orderBy: { field: 'clientName', direction: 'asc' },
+        limit: 20
+      });
 
       set({ isLoading: false });
       return { success: true, data: results };
     } catch (error) {
+      console.error('[CheckinStore] Error searching checkins:', error);
       set({ error: error.message, isLoading: false });
       return { success: false, error: error.message };
     }
@@ -321,18 +295,10 @@ export const useCheckinStore = create((set, get) => ({
 
   // Real-time listener
   subscribeToCheckins: () => {
-    const q = query(
-      collection(db, 'checkins'),
-      orderBy('createdAt', 'desc')
-    );
-    
-    return onSnapshot(q, (querySnapshot) => {
-      const checkins = querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        firestoreId: doc.id,
-      }));
-      
+    return firestoreService.onSnapshot('checkins', (checkins) => {
       set({ checkins });
+    }, {
+      orderBy: { field: 'createdAt', direction: 'desc' }
     });
   },
 }));

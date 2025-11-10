@@ -1,12 +1,17 @@
 import { memo, useState, useEffect } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { useThemeStore } from '../../../store/index.jsx';
 import { sidebarAnimations, overlayVariants, mobileSidebarVariants } from '../../../utils/animations';
 import SidebarNav from './SidebarNav';
 import SidebarFooter from './SidebarFooter';
+import { useSuperAdmin } from '../../../hooks/useSuperAdmin';
+import { superAdminItems } from '../../Sidebar/sidebarConfig';
+import './Sidebar.css';
 
 const Sidebar = memo(({ menuItems, footerItems, isCollapsed, toggleSidebar }) => {
   const { isDarkMode } = useThemeStore();
+  const { isSuperAdmin } = useSuperAdmin();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   // Check if mobile
@@ -66,6 +71,17 @@ const Sidebar = memo(({ menuItems, footerItems, isCollapsed, toggleSidebar }) =>
               items={menuItems} 
               isCollapsed={isCollapsed}
             />
+            
+            {/* Super Admin Section */}
+            {isSuperAdmin && (
+              <>
+                <div className="my-4 border-t border-red-500/30" />
+                <SidebarNav 
+                  items={superAdminItems} 
+                  isCollapsed={isCollapsed}
+                />
+              </>
+            )}
           </div>
 
           {/* Footer Section */}
@@ -114,6 +130,18 @@ const Sidebar = memo(({ menuItems, footerItems, isCollapsed, toggleSidebar }) =>
                     isCollapsed={false}
                     onItemClick={() => setIsMobileOpen(false)}
                   />
+                  
+                  {/* Super Admin Section - Mobile */}
+                  {isSuperAdmin && (
+                    <>
+                      <div className="my-4 border-t border-red-500/30" />
+                      <SidebarNav 
+                        items={superAdminItems} 
+                        isCollapsed={false}
+                        onItemClick={() => setIsMobileOpen(false)}
+                      />
+                    </>
+                  )}
                 </div>
 
                 <SidebarFooter 

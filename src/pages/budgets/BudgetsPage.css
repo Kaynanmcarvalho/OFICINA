@@ -1,0 +1,20 @@
+/**
+ * Budgets Page - Redução proporcional de 10% em todos os elementos
+ */
+
+/* Container principal com zoom de 90% */
+.budgets-page-scaled {
+  zoom: 0.9;
+  -moz-transform: scale(0.9);
+  -moz-transform-origin: 0 0;
+}
+
+/* Alternativa usando transform para melhor compatibilidade */
+@supports not (zoom: 0.9) {
+  .budgets-page-scaled {
+    transform: scale(0.9);
+    transform-origin: top left;
+    width: 111.11%; /* Compensar a redução: 100% / 0.9 */
+    height: 111.11%;
+  }
+}

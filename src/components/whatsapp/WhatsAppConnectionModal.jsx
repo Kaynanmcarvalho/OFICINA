@@ -5,15 +5,13 @@
  */
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { X, Smartphone, CheckCircle, AlertCircle, Loader2, LogOut } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore';
 
-const API_URL = import.meta.env.VITE_WHATSAPP_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import { whatsappService } from '../../services/whatsappService';
 
 export default function WhatsAppConnectionModal({ isOpen, onClose }) {
-  const { user } = useAuthStore();
-  const empresaId = user?.organizationId || user?.cpfCnpj || user?.uid;
+  
 
   const [status, setStatus] = useState('idle'); // idle, loading, qr_ready, connected, error
   const [qrCode, setQrCode] = useState(null);
@@ -26,12 +24,12 @@ export default function WhatsAppConnectionModal({ isOpen, onClose }) {
 
     const interval = setInterval(async () => {
       try {
-        const response = await fetch(`${API_URL}/api/whatsapp/status`);
-        const data = await response.json();
+        // Usar whatsappService que já tem a lógica correta de empresaId
+        const data = await whatsappService.getStatus();
 
-        if (data.connected) {
+        if (data.status === 'connected') {
           setStatus('connected');
-          setPhoneNumber(data.user_data?.phone);
+          setPhoneNumber(data.phoneNumber);
           setQrCode(null);
           clearInterval(interval);
         }
@@ -45,21 +43,21 @@ export default function WhatsAppConnectionModal({ isOpen, onClose }) {
 
   // Verificar status ao abrir
   useEffect(() => {
-    if (!isOpen || !empresaId) return;
+    if (!isOpen) return;
 
     checkStatus();
-  }, [isOpen, empresaId]);
+  }, [isOpen]);
 
   const checkStatus = async () => {
     try {
       setStatus('loading');
       
-      const response = await fetch(`${API_URL}/api/whatsapp/status`);
-      const data = await response.json();
+      // Usar whatsappService que já tem a lógica correta de empresaId
+      const data = await whatsappService.getStatus();
 
-      if (data.connected) {
+      if (data.status === 'connected') {
         setStatus('connected');
-        setPhoneNumber(data.user_data?.phone);
+        setPhoneNumber(data.phoneNumber);
       } else {
         setStatus('idle');
       }
@@ -74,27 +72,30 @@ export default function WhatsAppConnectionModal({ isOpen, onClose }) {
       setStatus('loading');
       setErrorMessage(null);
       
-      const response = await fetch(`${API_URL}/api/whatsapp/connect`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      console.log('[WhatsApp Modal] Iniciando conexão...');
+      
+      // Usar whatsappService que já tem a lógica correta de empresaId
+      const data = await whatsappService.connect();
 
-      const data = await response.json();
+      console.log('[WhatsApp Modal] Dados recebidos:', data);
+      console.log('[WhatsApp Modal] Status:', data.status);
+      console.log('[WhatsApp Modal] QR existe?', !!data.qr);
 
-      if (data.status === 'already_authenticated') {
+      if (data.status === 'connected') {
+        console.log('[WhatsApp Modal] ✅ Já conectado');
         setStatus('connected');
-        setPhoneNumber(data.user_data?.phone);
-      } else if (data.status === 'waiting_qr' && data.qr_code) {
+        setPhoneNumber(data.phoneNumber);
+      } else if (data.status === 'qr_ready' && data.qr) {
+        console.log('[WhatsApp Modal] ✅ QR Code recebido');
         setStatus('qr_ready');
-        setQrCode(data.qr_code);
+        setQrCode(data.qr);
       } else {
+        console.log('[WhatsApp Modal] ❌ Status inesperado:', data);
         setStatus('error');
-        setErrorMessage(data.message || 'Erro ao conectar');
+        setErrorMessage('Erro ao conectar');
       }
     } catch (error) {
-      console.error('[WhatsApp Modal] Erro ao conectar:', error);
+      console.error('[WhatsApp Modal] ❌ Erro ao conectar:', error);
       setStatus('error');
       setErrorMessage('Erro ao conectar com o servidor');
     }
@@ -106,20 +107,12 @@ export default function WhatsAppConnectionModal({ isOpen, onClose }) {
     try {
       setStatus('loading');
       
-      const response = await fetch(`${API_URL}/api/whatsapp/disconnect`, {
-        method: 'POST'
-      });
+      // Usar whatsappService que já tem a lógica correta de empresaId
+      await whatsappService.disconnect();
 
-      const data = await response.json();
-
-      if (data.success) {
-        setStatus('idle');
-        setPhoneNumber(null);
-        setQrCode(null);
-      } else {
-        setStatus('error');
-        setErrorMessage(data.message || 'Erro ao desconectar');
-      }
+      setStatus('idle');
+      setPhoneNumber(null);
+      setQrCode(null);
     } catch (error) {
       console.error('[WhatsApp Modal] Erro ao desconectar:', error);
       setStatus('error');
@@ -139,19 +132,13 @@ export default function WhatsAppConnectionModal({ isOpen, onClose }) {
     <AnimatePresence>
       <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
         {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+        <div
           onClick={handleClose}
           className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         />
 
         {/* Modal */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        <div
           className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden"
         >
           {/* Header */}
@@ -313,7 +300,7 @@ export default function WhatsAppConnectionModal({ isOpen, onClose }) {
               </div>
             )}
           </div>
-        </motion.div>
+        </div>
       </div>
     </AnimatePresence>
   );

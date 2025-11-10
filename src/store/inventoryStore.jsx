@@ -1,19 +1,12 @@
 import { create } from 'zustand';
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  getDocs, 
-  getDoc,
-  query, 
-  where, 
-  orderBy, 
-  limit,
-  onSnapshot
-} from 'firebase/firestore';
-import { db } from '../config/firebase';
+import {
+  addDocument,
+  getAllDocuments,
+  getDocumentById,
+  updateDocument,
+  deleteDocument,
+  subscribeToCollection
+} from '../services/storeHelpers';
 
 export const useInventoryStore = create((set, get) => ({
   // State
@@ -62,8 +55,7 @@ export const useInventoryStore = create((set, get) => ({
         lastUsedDate: null,
       };
 
-      const docRef = await addDoc(collection(db, 'inventory'), newPart);
-      const partWithId = { ...newPart, firestoreId: docRef.id };
+      const partWithId = await addDocument('inventory', newPart);
 
       set((state) => ({
         parts: [partWithId, ...state.parts],
@@ -81,21 +73,20 @@ export const useInventoryStore = create((set, get) => ({
   updatePart: async (partId, updates) => {
     set({ isLoading: true, error: null });
     try {
-      const partRef = doc(db, 'inventory', partId);
       const updatedData = {
         ...updates,
         updatedAt: new Date().toISOString(),
       };
 
-      await updateDoc(partRef, updatedData);
+      await updateDocument('inventory', partId, updatedData);
 
       set((state) => ({
         parts: state.parts.map((part) =>
-          part.firestoreId === partId
+          part.id === partId || part.firestoreId === partId
             ? { ...part, ...updatedData }
             : part
         ),
-        currentPart: state.currentPart?.firestoreId === partId
+        currentPart: (state.currentPart?.id === partId || state.currentPart?.firestoreId === partId)
           ? { ...state.currentPart, ...updatedData }
           : state.currentPart,
         isLoading: false,
@@ -112,11 +103,13 @@ export const useInventoryStore = create((set, get) => ({
   deletePart: async (partId) => {
     set({ isLoading: true, error: null });
     try {
-      await deleteDoc(doc(db, 'inventory', partId));
+      await deleteDocument('inventory', partId);
 
       set((state) => ({
-        parts: state.parts.filter((part) => part.firestoreId !== partId),
-        currentPart: state.currentPart?.firestoreId === partId ? null : state.currentPart,
+        parts: state.parts.filter((part) => part.id !== partId && part.firestoreId !== partId),
+        currentPart: (state.currentPart?.id === partId || state.currentPart?.firestoreId === partId) 
+          ? null 
+          : state.currentPart,
         isLoading: false,
       }));
 
@@ -131,16 +124,9 @@ export const useInventoryStore = create((set, get) => ({
   fetchParts: async () => {
     set({ isLoading: true, error: null });
     try {
-      const q = query(
-        collection(db, 'inventory'),
-        orderBy('name')
-      );
-      
-      const querySnapshot = await getDocs(q);
-      const parts = querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        firestoreId: doc.id,
-      }));
+      const parts = await getAllDocuments('inventory', {
+        orderBy: { field: 'name', direction: 'asc' }
+      });
 
       set({ parts, isLoading: false });
       return { success: true, data: parts };
@@ -154,11 +140,9 @@ export const useInventoryStore = create((set, get) => ({
   getPartById: async (partId) => {
     set({ isLoading: true, error: null });
     try {
-      const docRef = doc(db, 'inventory', partId);
-      const docSnap = await getDoc(docRef);
+      const part = await getDocumentById('inventory', partId);
       
-      if (docSnap.exists()) {
-        const part = { ...docSnap.data(), firestoreId: docSnap.id };
+      if (part) {
         set({ currentPart: part, isLoading: false });
         return { success: true, data: part };
       } else {
@@ -175,45 +159,16 @@ export const useInventoryStore = create((set, get) => ({
   searchParts: async (searchTerm) => {
     set({ isLoading: true, error: null });
     try {
-      // Search by name
-      const nameQuery = query(
-        collection(db, 'inventory'),
-        where('name', '>=', searchTerm),
-        where('name', '<=', searchTerm + '\uf8ff'),
-        orderBy('name'),
-        limit(20)
-      );
+      // Get all parts and filter locally for better multi-tenant support
+      const allParts = await getAllDocuments('inventory');
       
-      // Search by part ID
-      const idQuery = query(
-        collection(db, 'inventory'),
-        where('partId', '>=', searchTerm),
-        where('partId', '<=', searchTerm + '\uf8ff'),
-        limit(20)
-      );
-      
-      // Search by brand
-      const brandQuery = query(
-        collection(db, 'inventory'),
-        where('brand', '>=', searchTerm),
-        where('brand', '<=', searchTerm + '\uf8ff'),
-        limit(20)
-      );
-      
-      const [nameResults, idResults, brandResults] = await Promise.all([
-        getDocs(nameQuery),
-        getDocs(idQuery),
-        getDocs(brandQuery)
-      ]);
-      
-      const allResults = new Map();
-      
-      // Combine results and remove duplicates
-      [...nameResults.docs, ...idResults.docs, ...brandResults.docs].forEach(doc => {
-        allResults.set(doc.id, { ...doc.data(), firestoreId: doc.id });
-      });
-      
-      const searchResults = Array.from(allResults.values());
+      const searchLower = searchTerm.toLowerCase();
+      const searchResults = allParts.filter(part => 
+        part.name?.toLowerCase().includes(searchLower) ||
+        part.partId?.toLowerCase().includes(searchLower) ||
+        part.brand?.toLowerCase().includes(searchLower) ||
+        part.category?.toLowerCase().includes(searchLower)
+      ).slice(0, 20);
 
       set({ searchResults, isLoading: false });
       return { success: true, data: searchResults };
@@ -226,7 +181,7 @@ export const useInventoryStore = create((set, get) => ({
   // Update stock
   updateStock: async (partId, quantity, type = 'adjustment', reason = '') => {
     try {
-      const part = get().parts.find(p => p.firestoreId === partId);
+      const part = get().parts.find(p => p.id === partId || p.firestoreId === partId);
       if (!part) return { success: false, error: 'Peça não encontrada' };
       
       const movement = {
@@ -257,7 +212,7 @@ export const useInventoryStore = create((set, get) => ({
   // Use part (decrease stock)
   usePart: async (partId, quantity, serviceId = null, reason = 'Usado em serviço') => {
     try {
-      const part = get().parts.find(p => p.firestoreId === partId);
+      const part = get().parts.find(p => p.id === partId || p.firestoreId === partId);
       if (!part) return { success: false, error: 'Peça não encontrada' };
       
       if (part.currentStock < quantity) {
@@ -380,18 +335,10 @@ export const useInventoryStore = create((set, get) => ({
 
   // Real-time listener
   subscribeToInventory: () => {
-    const q = query(
-      collection(db, 'inventory'),
-      orderBy('name')
-    );
-    
-    return onSnapshot(q, (querySnapshot) => {
-      const parts = querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        firestoreId: doc.id,
-      }));
-      
+    return subscribeToCollection('inventory', (parts) => {
       set({ parts });
+    }, {
+      orderBy: { field: 'name', direction: 'asc' }
     });
   },
 }));

@@ -34,17 +34,9 @@ ${approvalLink}
 Qualquer dúvida, estamos à disposição!`;
   };
 
-  const checkWhatsAppConnection = async () => {
-    try {
-      const status = await checkConnectionStatus();
-      return status.connected;
-    } catch (error) {
-      console.error('Erro ao verificar conexão WhatsApp:', error);
-      return false;
-    }
-  };
+  
 
-  const handleSendWhatsApp = async () => {
+  const handleSendWhatsApp = async (skipConnectionCheck = false) => {
     const phone = phoneNumber || budget.clientPhone;
     
     if (!phone) {
@@ -52,15 +44,22 @@ Qualquer dúvida, estamos à disposição!`;
       return;
     }
 
-    // Verificar se WhatsApp está conectado
-    const isConnected = await checkWhatsAppConnection();
-    
-    if (!isConnected) {
-      // Abrir modal de conexão
-      setShowWhatsAppModal(true);
-      return;
+    // Se não deve pular a verificação, verificar conexão primeiro
+    if (!skipConnectionCheck) {
+      try {
+        const status = await checkConnectionStatus();
+        if (!status.connected) {
+          setShowWhatsAppModal(true);
+          return;
+        }
+      } catch (error) {
+        console.error('Erro ao verificar conexão:', error);
+        setShowWhatsAppModal(true);
+        return;
+      }
     }
 
+    // Enviar mensagem
     setIsSending(true);
 
     try {
@@ -68,6 +67,13 @@ Qualquer dúvida, estamos à disposição!`;
       const message = generateWhatsAppMessage();
       
       await sendMessage(cleanPhone, message);
+
+      // Atualizar status para "sent" e registrar data de envio
+      const budgetStore = window.budgetStore || (await import('../../../store/budgetStore')).useBudgetStore.getState();
+      await budgetStore.updateBudget(budget.id || budget.firestoreId, {
+        status: 'sent',
+        sentAt: new Date().toISOString()
+      });
 
       toast.success('Orçamento enviado com sucesso!');
       onClose();
@@ -89,9 +95,9 @@ Qualquer dúvida, estamos à disposição!`;
     console.log('WhatsApp conectado:', userData);
     setShowWhatsAppModal(false);
     toast.success('Agora você pode enviar orçamentos automaticamente!');
-    // Tentar enviar novamente após conexão
+    // Enviar mensagem diretamente após conexão (pulando verificação)
     setTimeout(() => {
-      handleSendWhatsApp();
+      handleSendWhatsApp(true);
     }, 500);
   };
 
@@ -111,6 +117,13 @@ Qualquer dúvida, estamos à disposição!`;
       
       const mailtoLink = `mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       window.location.href = mailtoLink;
+
+      // Atualizar status para "sent" e registrar data de envio
+      const budgetStore = window.budgetStore || (await import('../../../store/budgetStore')).useBudgetStore.getState();
+      await budgetStore.updateBudget(budget.id || budget.firestoreId, {
+        status: 'sent',
+        sentAt: new Date().toISOString()
+      });
 
       toast.success('Cliente de e-mail aberto!');
       onClose();
@@ -139,7 +152,7 @@ Qualquer dúvida, estamos à disposição!`;
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-2xl"
+              className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto"
             >
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">

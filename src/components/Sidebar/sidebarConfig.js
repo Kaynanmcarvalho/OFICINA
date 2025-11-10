@@ -9,7 +9,9 @@ import {
   Wrench,
   Calendar,
   BarChart3,
-  Settings
+  Settings,
+  Building2,
+  Shield
 } from 'lucide-react';
 
 /**
@@ -89,5 +91,28 @@ export const footerItems = [
     label: 'Configurações',
     path: '/settings',
     icon: Settings,
+  },
+];
+
+/**
+ * Itens de menu exclusivos para super-admin
+ * Apenas visíveis para e-mails autorizados
+ */
+export const superAdminItems = [
+  {
+    id: 'saas-dashboard',
+    label: 'SaaS Dashboard',
+    path: '/admin/dashboard',
+    icon: Building2,
+    badge: 'ADMIN',
+    badgeColor: 'red',
+  },
+  {
+    id: 'onboarding',
+    label: 'Nova Empresa',
+    path: '/admin/onboarding',
+    icon: Shield,
+    badge: 'ADMIN',
+    badgeColor: 'red',
   },
 ];

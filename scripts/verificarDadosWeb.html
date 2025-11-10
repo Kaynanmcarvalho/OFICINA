@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificar Dados Antigos - Firebase</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+
+    .status {
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+
+    .status.loading {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+
+    .status.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .status.error {
+      background: #ffebee;
+      color: #c62828;
+    }
+
+    .collection-card {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-left: 4px solid #667eea;
+    }
+
+    .collection-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .collection-name {
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .collection-count {
+      background: #667eea;
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    .examples {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 10px;
+    }
+
+    .example-item {
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .example-item:last-child {
+      border-bottom: none;
+    }
+
+    .summary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 15px;
+      margin-top: 30px;
+    }
+
+    .summary h2 {
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .summary-stat {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .summary-stat:last-child {
+      border-bottom: none;
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      background: #764ba2;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+
+    .empty-state svg {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Verificar Dados Antigos</h1>
+    <p class="subtitle">Verificando dados na raiz do Firebase (estrutura antiga)</p>
+
+    <div id="status" class="status loading">
+      ⏳ Conectando ao Firebase...
+    </div>
+
+    <button id="btnVerificar" onclick="verificarDados()">
+      🔄 Verificar Dados
+    </button>
+
+    <div id="results"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import { getFirestore, collection, getDocs, query, limit } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+    // Configuração do Firebase (mesma do projeto)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+      authDomain: "seu-projeto.firebaseapp.com",
+      projectId: "seu-projeto-id",
+      storageBucket: "seu-projeto.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:xxxxxxxxxxxxx"
+    };
+
+    // IMPORTANTE: Substitua pela configuração real do seu projeto!
+    // Você pode encontrar em: src/config/firebase.js
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.db = db;
+    window.collection = collection;
+    window.getDocs = getDocs;
+    window.query = query;
+    window.limit = limit;
+
+    document.getElementById('status').innerHTML = '✅ Conectado ao Firebase!';
+    document.getElementById('status').className = 'status success';
+  </script>
+
+  <script>
+    async function verificarDados() {
+      const btnVerificar = document.getElementById('btnVerificar');
+      const statusDiv = document.getElementById('status');
+      const resultsDiv = document.getElementById('results');
+
+      btnVerificar.disabled = true;
+      statusDiv.className = 'status loading';
+      statusDiv.innerHTML = '⏳ Verificando dados...';
+      resultsDiv.innerHTML = '';
+
+      const colecoes = [
+        'clients',
+        'clientes',
+        'checkins',
+        'budgets',
+        'orcamentos',
+        'inventory',
+        'estoque',
+        'vehicles',
+        'veiculos',
+        'tools',
+        'ferramentas'
+      ];
+
+      const resultados = {};
+      let totalDocs = 0;
+
+      for (const nomeColecao of colecoes) {
+        try {
+          const colRef = window.collection(window.db, nomeColecao);
+          const snapshot = await window.getDocs(colRef);
+          const count = snapshot.size;
+
+          if (count > 0) {
+            const exemplos = [];
+            snapshot.docs.slice(0, 3).forEach(doc => {
+              const data = doc.data();
+              exemplos.push({
+                id: doc.id,
+                nome: data.name || data.nome || data.clientName || data.nomeCliente || 'Sem nome',
+                criadoEm: data.createdAt || data.dataCriacao || 'Sem data'
+              });
+            });
+
+            resultados[nomeColecao] = { count, exemplos };
+            totalDocs += count;
+
+            // Adicionar card da coleção
+            const card = document.createElement('div');
+            card.className = 'collection-card';
+            card.innerHTML = `
+              <div class="collection-header">
+                <div class="collection-name">📦 ${nomeColecao}</div>
+                <div class="collection-count">${count} documento(s)</div>
+              </div>
+              <div class="examples">
+                <strong>Exemplos:</strong>
+                ${exemplos.map(ex => `
+                  <div class="example-item">
+                    • ${ex.nome} <span style="color: #999;">(ID: ${ex.id})</span>
+                  </div>
+                `).join('')}
+              </div>
+            `;
+            resultsDiv.appendChild(card);
+          }
+        } catch (error) {
+          console.error(`Erro ao verificar ${nomeColecao}:`, error);
+        }
+      }
+
+      // Adicionar resumo
+      if (totalDocs > 0) {
+        const summary = document.createElement('div');
+        summary.className = 'summary';
+        summary.innerHTML = `
+          <h2>📊 Resumo</h2>
+          <div class="summary-stat">
+            <span>Total de documentos antigos:</span>
+            <strong>${totalDocs}</strong>
+          </div>
+          <div class="summary-stat">
+            <span>Coleções com dados:</span>
+            <strong>${Object.keys(resultados).length}</strong>
+          </div>
+          <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
+            ✅ Super Admins DEVEM ter acesso a estes dados!
+          </div>
+        `;
+        resultsDiv.appendChild(summary);
+
+        statusDiv.className = 'status success';
+        statusDiv.innerHTML = `✅ Verificação concluída! Encontrados ${totalDocs} documentos antigos.`;
+      } else {
+        resultsDiv.innerHTML = `
+          <div class="empty-state">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+            </svg>
+            <h3>Nenhum dado antigo encontrado</h3>
+            <p>Não há documentos na estrutura antiga do Firebase</p>
+          </div>
+        `;
+
+        statusDiv.className = 'status error';
+        statusDiv.innerHTML = '⚠️ Nenhum dado antigo encontrado na raiz do Firebase';
+      }
+
+      btnVerificar.disabled = false;
+    }
+  </script>
+</body>
+</html>

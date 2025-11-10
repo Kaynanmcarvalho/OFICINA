@@ -202,6 +202,10 @@ export const authStore = (set, get) => ({
   logout: async () => {
     set({ isLoading: true });
     try {
+      // Limpar dados de impersonation antes do logout
+      const { clearImpersonation } = await import('../services/impersonationService');
+      clearImpersonation();
+      
       await signOut(auth);
       set({
         user: null,

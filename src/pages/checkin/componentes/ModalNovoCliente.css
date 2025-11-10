@@ -69,15 +69,15 @@ textarea:focus::placeholder {
   opacity: 0.4;
 }
 
-/* Tema claro - contornos suaves estilo Apple */
+/* Tema claro - contornos mais visíveis */
 .input-premium:not(.input-error) {
-  @apply border border-gray-300/60 dark:border-neutral-700;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  @apply border-2 border-gray-400 dark:border-neutral-700;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .input-premium:not(.input-error):focus {
-  @apply border-blue-500/60;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 3px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  @apply border-2 border-blue-500;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Input com erro */
@@ -91,9 +91,9 @@ textarea:focus::placeholder {
   @apply w-full px-4 py-3 rounded-xl transition-all duration-300 ease-out antialiased font-medium;
   @apply bg-white dark:bg-neutral-800;
   @apply text-neutral-900 dark:text-neutral-100;
-  @apply border border-gray-300/60 dark:border-neutral-700;
+  @apply border-2 border-gray-400 dark:border-neutral-700;
   @apply focus:outline-none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .select-premium option {
@@ -101,8 +101,8 @@ textarea:focus::placeholder {
 }
 
 .select-premium:focus {
-  @apply border-blue-500/60;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 3px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  @apply border-2 border-blue-500;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Textarea premium */
@@ -110,9 +110,9 @@ textarea:focus::placeholder {
   @apply w-full px-4 py-3 rounded-xl transition-all duration-300 ease-out antialiased font-medium resize-none;
   @apply bg-white dark:bg-neutral-800;
   @apply text-neutral-900 dark:text-neutral-100;
-  @apply border border-gray-300/60 dark:border-neutral-700;
+  @apply border-2 border-gray-400 dark:border-neutral-700;
   @apply focus:outline-none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .textarea-premium::placeholder {
@@ -121,6 +121,453 @@ textarea:focus::placeholder {
 }
 
 .textarea-premium:focus {
-  @apply border-blue-500/60;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 3px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  @apply border-2 border-blue-500;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Ajuste de posicionamento - empurrar modal para baixo */
+.fixed.inset-0.z-50.flex {
+  padding-top: 5rem !important;
+  align-items: flex-start !important;
+}
+
+/* Forçar contornos e sombreamento mais visíveis no modo claro */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  border: 2px solid #9ca3af !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12), inset 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  background-color: #ffffff !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+  border: 2px solid #3b82f6 !important;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Campos de input no modo escuro */
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark select,
+.dark textarea {
+  border: 2px solid #4b5563 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), inset 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+  background-color: #1f2937 !important;
+  color: #f3f4f6 !important;
+}
+
+.dark input:not([type="checkbox"]):not([type="radio"]):focus,
+.dark select:focus,
+.dark textarea:focus {
+  border: 2px solid #3b82f6 !important;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3), 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  background-color: #1f2937 !important;
+}
+
+/* Placeholders no modo escuro */
+.dark input::placeholder,
+.dark textarea::placeholder,
+.dark select::placeholder {
+  color: #9ca3af !important;
+  opacity: 0.5 !important;
+}
+
+/* Melhorar visibilidade dos ícones dos steps */
+.text-blue-600,
+.text-neutral-400,
+.text-neutral-500 {
+  opacity: 1 !important;
+  filter: contrast(1.3) !important;
+}
+
+/* Ícones dos steps mais escuros */
+svg {
+  opacity: 0.9 !important;
+}
+
+/* Step ativo mais visível - azul forte */
+.bg-blue-600 {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+}
+
+/* Textos dos steps mais escuros */
+.text-neutral-600 {
+  color: #4b5563 !important;
+}
+
+.text-neutral-400 {
+  color: #6b7280 !important;
+}
+
+/* ===== MELHORIAS DE VISIBILIDADE DO STEPPER ===== */
+
+/* Container do stepper com mais contraste e elegância */
+.px-6.py-4.border-b {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%) !important;
+  border-bottom: 2px solid rgba(148, 163, 184, 0.3) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Círculos dos steps - maior contraste e nitidez */
+.w-10.h-10.rounded-2xl {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* Step ativo - azul vibrante e forte */
+.bg-blue-600.scale-110 {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%) !important;
+  box-shadow: 
+    0 0 0 5px rgba(37, 99, 235, 0.3),
+    0 0 30px rgba(37, 99, 235, 0.5),
+    0 10px 25px rgba(29, 78, 216, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.25),
+    inset 0 2px 4px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.15) !important;
+  border: 3px solid rgba(255, 255, 255, 0.95) !important;
+  transform: scale(1.2) !important;
+}
+
+/* Ícones dentro dos steps - nítidos e elegantes */
+.w-10.h-10.rounded-2xl svg {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2)) !important;
+  stroke-width: 2.5 !important;
+  opacity: 0.85 !important;
+  color: #64748b !important;
+}
+
+/* Ícone do step ativo - brilho extra e cor branca pura */
+.bg-blue-600.scale-110 svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  filter: 
+    drop-shadow(0 0 8px rgba(255, 255, 255, 0.9)) 
+    drop-shadow(0 0 4px rgba(255, 255, 255, 0.7))
+    drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5))
+    brightness(1.2) !important;
+  stroke-width: 3.5 !important;
+  opacity: 1 !important;
+}
+
+/* Steps inativos - elegantes e sutis */
+.bg-neutral-200 {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.08),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8),
+    inset 0 -1px 2px rgba(148, 163, 184, 0.1) !important;
+  border: 2px solid rgba(203, 213, 225, 0.5) !important;
+}
+
+/* Textos dos steps - azul forte e legível */
+.text-blue-600 {
+  color: #1e40af !important;
+  font-weight: 800 !important;
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9), 0 0 15px rgba(37, 99, 235, 0.4) !important;
+  letter-spacing: 0.02em !important;
+}
+
+.text-neutral-500 {
+  color: #475569 !important;
+  font-weight: 600 !important;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Linhas de progresso - mais visíveis */
+.h-1.flex-1.mx-2.rounded-full {
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid rgba(209, 213, 219, 0.5) !important;
+}
+
+/* Animação de pulse com azul vibrante */
+@keyframes pulse-visible {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1.2);
+    box-shadow: 
+      0 0 0 5px rgba(37, 99, 235, 0.3),
+      0 0 30px rgba(37, 99, 235, 0.5),
+      0 10px 25px rgba(29, 78, 216, 0.4);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25);
+    box-shadow: 
+      0 0 0 6px rgba(37, 99, 235, 0.4),
+      0 0 40px rgba(37, 99, 235, 0.6),
+      0 12px 30px rgba(29, 78, 216, 0.5);
+  }
+}
+
+.animate-pulse {
+  animation: pulse-visible 2s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
+}
+
+/* Dark mode adjustments */
+.dark .px-6.py-4.border-b {
+  background: linear-gradient(to bottom, rgba(38, 38, 38, 0.9), rgba(23, 23, 23, 0.8)) !important;
+  border-bottom: 2px solid rgba(64, 64, 64, 0.8) !important;
+}
+
+.dark .bg-neutral-200 {
+  background: linear-gradient(135deg, #404040 0%, #262626 100%) !important;
+  border: 2px solid rgba(64, 64, 64, 0.8) !important;
+}
+
+.dark .text-neutral-500 {
+  color: #9ca3af !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ===== FORÇAR COR BRANCA NO SVG DO STEP ATIVO ===== */
+.bg-blue-600.scale-110 svg path,
+.bg-blue-600.scale-110 svg circle,
+.bg-blue-600.scale-110 svg line,
+.bg-blue-600.scale-110 svg polyline,
+.bg-blue-600.scale-110 svg polygon {
+  stroke: #ffffff !important;
+  fill: none !important;
+}
+
+/* Garantir que o ícone lucide-user seja branco */
+.lucide-user {
+  color: currentColor !important;
+}
+
+.bg-blue-600 .lucide-user {
+  color: #ffffff !important;
+}
+
+/* Aumentar ainda mais o contraste do círculo ativo */
+.bg-blue-600.text-white {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%) !important;
+}
+
+/* Remover qualquer opacidade que possa estar reduzindo a visibilidade */
+.bg-blue-600.scale-110,
+.bg-blue-600.scale-110 * {
+  opacity: 1 !important;
+}
+
+/* ===== MELHORIAS ADICIONAIS PARA ELEGÂNCIA ===== */
+
+/* Ícones dos steps inativos - cor mais definida */
+.bg-neutral-200 svg {
+  color: #64748b !important;
+  stroke: #64748b !important;
+  opacity: 0.75 !important;
+}
+
+/* Remover filtros que deixam embaçado */
+.w-10.h-10.rounded-2xl {
+  backdrop-filter: none !important;
+}
+
+/* Círculos com bordas mais definidas */
+.w-10.h-10.rounded-2xl {
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Linhas de progresso mais elegantes */
+.h-1.flex-1.mx-2.rounded-full {
+  background: linear-gradient(90deg, #e2e8f0 0%, #cbd5e1 100%) !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+  border: none !important;
+}
+
+/* Texto "Tipo e Identificação" mais legível */
+.text-xs.mt-2 {
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* ===== FORÇAR AZUL VIBRANTE EM TODOS OS STEPS ATIVOS ===== */
+
+/* Garantir que bg-blue-600 seja sempre azul vibrante */
+.bg-blue-600,
+.bg-blue-600.shadow-lg,
+.bg-blue-600.text-white,
+.bg-blue-600.animate-pulse {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%) !important;
+  color: #ffffff !important;
+}
+
+/* Todos os SVGs dentro de bg-blue-600 devem ser brancos */
+.bg-blue-600 svg,
+.bg-blue-600 svg path,
+.bg-blue-600 svg circle,
+.bg-blue-600 svg line,
+.bg-blue-600 svg polyline,
+.bg-blue-600 svg polygon,
+.bg-blue-600 .lucide-user,
+.bg-blue-600 .lucide-map-pin,
+.bg-blue-600 .lucide-car,
+.bg-blue-600 .lucide-file-text {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  fill: none !important;
+  opacity: 1 !important;
+}
+
+/* Sombras e efeitos para bg-blue-600 */
+.bg-blue-600.shadow-lg {
+  box-shadow: 
+    0 0 0 5px rgba(37, 99, 235, 0.3),
+    0 0 30px rgba(37, 99, 235, 0.5),
+    0 10px 25px rgba(29, 78, 216, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.25),
+    inset 0 2px 4px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Garantir escala e borda para steps ativos */
+.bg-blue-600.scale-110,
+.bg-blue-600[class*="scale-"] {
+  transform: scale(1.2) !important;
+  border: 3px solid rgba(255, 255, 255, 0.95) !important;
+}
+
+/* ===== MODO ESCURO - AZUL VIBRANTE EM TODOS OS STEPS ATIVOS ===== */
+
+/* Garantir que bg-blue-600 seja sempre azul vibrante no dark mode */
+.dark .bg-blue-600,
+.dark .bg-blue-600.shadow-lg,
+.dark .bg-blue-600.text-white,
+.dark .bg-blue-600.animate-pulse {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+}
+
+/* Todos os SVGs dentro de bg-blue-600 devem ser brancos no dark mode */
+.dark .bg-blue-600 svg,
+.dark .bg-blue-600 svg path,
+.dark .bg-blue-600 svg circle,
+.dark .bg-blue-600 svg line,
+.dark .bg-blue-600 svg polyline,
+.dark .bg-blue-600 svg polygon,
+.dark .bg-blue-600 .lucide-user,
+.dark .bg-blue-600 .lucide-map-pin,
+.dark .bg-blue-600 .lucide-car,
+.dark .bg-blue-600 .lucide-file-text {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  fill: none !important;
+  opacity: 1 !important;
+}
+
+/* Sombras e efeitos para bg-blue-600 no dark mode */
+.dark .bg-blue-600.shadow-lg {
+  box-shadow: 
+    0 0 0 5px rgba(59, 130, 246, 0.35),
+    0 0 35px rgba(59, 130, 246, 0.6),
+    0 12px 30px rgba(37, 99, 235, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Garantir escala e borda para steps ativos no dark mode */
+.dark .bg-blue-600.scale-110,
+.dark .bg-blue-600[class*="scale-"] {
+  transform: scale(1.2) !important;
+  border: 3px solid rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Step ativo no dark mode - ainda mais vibrante */
+.dark .bg-blue-600.scale-110 {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
+  box-shadow: 
+    0 0 0 5px rgba(59, 130, 246, 0.4),
+    0 0 40px rgba(59, 130, 246, 0.7),
+    0 12px 35px rgba(37, 99, 235, 0.6),
+    0 4px 15px rgba(0, 0, 0, 0.5),
+    inset 0 2px 4px rgba(255, 255, 255, 0.35),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Texto do step ativo no dark mode */
+.dark .text-blue-600 {
+  color: #60a5fa !important;
+  font-weight: 800 !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 20px rgba(59, 130, 246, 0.5) !important;
+}
+
+/* Animação de pulse no dark mode */
+@keyframes pulse-visible-dark {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1.2);
+    box-shadow: 
+      0 0 0 5px rgba(59, 130, 246, 0.4),
+      0 0 40px rgba(59, 130, 246, 0.7),
+      0 12px 35px rgba(37, 99, 235, 0.6);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25);
+    box-shadow: 
+      0 0 0 6px rgba(59, 130, 246, 0.5),
+      0 0 50px rgba(59, 130, 246, 0.8),
+      0 15px 40px rgba(37, 99, 235, 0.7);
+  }
+}
+
+.dark .animate-pulse {
+  animation: pulse-visible-dark 2s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
+}
+
+/* ===== MODO CLARO - VISUAL 2D FLAT ===== */
+
+/* Ícone SVG do step ativo - flat e nítido */
+:not(.dark) .bg-blue-600 svg,
+:not(.dark) .bg-blue-600.scale-110 svg {
+  stroke-width: 3 !important;
+  opacity: 1 !important;
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  filter: none !important;
+}
+
+/* Texto do step ativo no modo claro - limpo e legível */
+:not(.dark) .text-blue-600 {
+  color: #1e40af !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+  letter-spacing: 0.01em !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* Círculo do step ativo - flat 2D com sombra suave */
+:not(.dark) .bg-blue-600.scale-110 {
+  background: #2563eb !important;
+  box-shadow: 
+    0 0 0 4px rgba(37, 99, 235, 0.2),
+    0 2px 8px rgba(37, 99, 235, 0.3) !important;
+  border: 2px solid rgba(255, 255, 255, 0.9) !important;
+  transform: scale(1.15) !important;
+}
+
+/* Remover filtros */
+:not(.dark) .text-blue-600,
+:not(.dark) .bg-blue-600,
+:not(.dark) .bg-blue-600 * {
+  filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* SVG limpo sem efeitos */
+:not(.dark) .bg-blue-600 svg path,
+:not(.dark) .bg-blue-600 svg circle {
+  stroke: #ffffff !important;
+  stroke-width: 3 !important;
+  fill: none !important;
+  opacity: 1 !important;
 }

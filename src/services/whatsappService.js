@@ -1,12 +1,96 @@
 /**
- * WhatsApp Service
- * Serviço para integração com WhatsApp API (Python Backend)
+ * WhatsApp Service - Multi-Tenant com Isolamento Total
+ * Cada empresa tem sua própria sessão WhatsApp isolada
  */
 
 import { useAuthStore } from '../store/authStore';
 
-// Usar backend Python que já está funcionando
+// Usar backend Node.js multi-tenant
 const API_URL = import.meta.env.VITE_WHATSAPP_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+/**
+ * Obtém o empresaId do usuário logado
+ * CRÍTICO: Garante isolamento total das sessões WhatsApp
+ */
+function getEmpresaId() {
+  const authStore = useAuthStore.getState();
+  const user = authStore.user;
+  
+  console.log('🔍 DEBUG getEmpresaId - user:', user);
+  console.log('🔍 DEBUG getEmpresaId - authStore.empresaId:', authStore.empresaId);
+  console.log('🔍 DEBUG getEmpresaId - user.role:', user?.role);
+  console.log('🔍 DEBUG getEmpresaId - user.customClaims:', user?.customClaims);
+  
+  // Se não tem user, tentar pegar do localStorage como fallback
+  if (!user) {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        console.log('⚠️ User não estava no store, usando localStorage:', parsedUser);
+        
+        // Verificar se é super admin (aceitar ambos formatos)
+        const isSuperAdmin = parsedUser.role === 'super_admin' || 
+                            parsedUser.role === 'super-admin' ||
+                            parsedUser.customClaims?.role === 'super_admin' ||
+                            parsedUser.customClaims?.role === 'super-admin';
+        
+        if (isSuperAdmin) {
+          const emailPrefix = parsedUser.email?.split('@')[0] || 'super-admin';
+          const superAdminId = `super-admin-${emailPrefix}`;
+          console.log('✅ SUPER ADMIN (localStorage)! Usando ID:', superAdminId);
+          return superAdminId;
+        }
+        
+        // Usuário normal
+        if (parsedUser.empresaId) {
+          console.log('✅ Usuário normal (localStorage) - empresaId:', parsedUser.empresaId);
+          return parsedUser.empresaId;
+        }
+      } catch (e) {
+        console.error('Erro ao parsear user do localStorage:', e);
+      }
+    }
+  }
+  
+  // SUPER ADMIN: SEMPRE usar ID baseado no email, NUNCA usar empresaId
+  // Aceitar tanto 'super_admin' quanto 'super-admin'
+  const isSuperAdmin = user?.role === 'super_admin' || 
+                       user?.role === 'super-admin' ||
+                       user?.customClaims?.role === 'super_admin' ||
+                       user?.customClaims?.role === 'super-admin';
+  
+  if (isSuperAdmin) {
+    const emailPrefix = user.email?.split('@')[0] || 'super-admin';
+    const superAdminId = `super-admin-${emailPrefix}`;
+    console.log('✅ SUPER ADMIN detectado! Usando ID:', superAdminId, 'para email:', user.email);
+    return superAdminId;
+  }
+  
+  // USUÁRIO NORMAL: usar empresaId
+  const empresaId = user?.empresaId || authStore.empresaId;
+  
+  if (!empresaId) {
+    console.error('❌ ERRO CRÍTICO: empresaId não encontrado!', { 
+      user, 
+      authStoreEmpresaId: authStore.empresaId,
+      role: user?.role,
+      localStorage: localStorage.getItem('user')
+    });
+    
+    // Último recurso: usar email como identificador temporário
+    if (user?.email) {
+      const tempId = `temp-${user.email.split('@')[0]}`;
+      console.warn('⚠️ Usando ID temporário:', tempId);
+      return tempId;
+    }
+    
+    throw new Error('Usuário não está associado a uma empresa');
+  }
+  
+  console.log('✅ Usuário normal - usando empresaId:', empresaId, 'para email:', user?.email);
+  return empresaId;
+}
 
 export const whatsappService = {
   /**
@@ -17,6 +101,8 @@ export const whatsappService = {
    */
   async sendMessage(phoneNumber, message) {
     try {
+      const empresaId = getEmpresaId();
+      
       const response = await fetch(`${API_URL}/api/whatsapp/send`, {
         method: 'POST',
         headers: {
@@ -25,6 +111,7 @@ export const whatsappService = {
         body: JSON.stringify({
           phone_number: phoneNumber,
           message: message,
+          empresaId: empresaId, // ISOLAMENTO GARANTIDO
         }),
       });
 
@@ -33,7 +120,9 @@ export const whatsappService = {
         throw new Error(error.message || 'Erro ao enviar mensagem');
       }
 
-      return await response.json();
+      const result = await response.json();
+      console.log('✅ Mensagem enviada via empresaId:', empresaId, 'de:', result.sentFrom);
+      return result;
     } catch (error) {
       console.error('Erro ao enviar mensagem WhatsApp:', error);
       throw error;
@@ -46,7 +135,9 @@ export const whatsappService = {
    */
   async getStatus() {
     try {
-      const response = await fetch(`${API_URL}/api/whatsapp/status`);
+      const empresaId = getEmpresaId();
+      
+      const response = await fetch(`${API_URL}/api/whatsapp/status?empresaId=${empresaId}`);
       
       if (!response.ok) {
         throw new Error('Erro ao verificar status');
@@ -54,12 +145,14 @@ export const whatsappService = {
 
       const data = await response.json();
       
-      // Adaptar resposta do Python para formato esperado
+      console.log('📊 Status WhatsApp para empresaId:', empresaId, '- Conectado:', data.connected);
+      
       return {
         success: true,
         exists: data.connected,
         status: data.connected ? 'connected' : 'disconnected',
-        phoneNumber: data.user_data?.phone
+        phoneNumber: data.user_data?.phone,
+        empresaId: data.empresaId
       };
     } catch (error) {
       console.error('Erro ao verificar status WhatsApp:', error);
@@ -77,12 +170,24 @@ export const whatsappService = {
    */
   async connect() {
     try {
+      const empresaId = getEmpresaId();
+      
+      console.log('🔌 Conectando WhatsApp para empresaId:', empresaId);
+      console.log('🌐 API_URL:', API_URL);
+      console.log('📡 Fazendo requisição para:', `${API_URL}/api/whatsapp/connect`);
+      
       const response = await fetch(`${API_URL}/api/whatsapp/connect`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        body: JSON.stringify({
+          empresaId: empresaId // ISOLAMENTO GARANTIDO
+        })
       });
+      
+      console.log('📥 Response status:', response.status);
+      console.log('📥 Response ok:', response.ok);
 
       if (!response.ok) {
         const error = await response.json();
@@ -91,12 +196,18 @@ export const whatsappService = {
 
       const data = await response.json();
       
-      // Adaptar resposta do Python
+      console.log('📦 Dados recebidos:', data);
+      console.log('✅ Conexão iniciada para empresaId:', data.empresaId);
+      console.log('🔍 Status:', data.status);
+      console.log('🔍 QR (qr_code):', data.qr_code ? 'existe' : 'não existe');
+      console.log('🔍 QR (qr):', data.qr ? 'existe' : 'não existe');
+      
       return {
         success: true,
         status: data.status === 'already_authenticated' ? 'connected' : 'qr_ready',
-        qr: data.qr_code,
-        phoneNumber: data.user_data?.phone
+        qr: data.qr || data.qr_code, // Aceitar ambos os formatos
+        phoneNumber: data.user_data?.phone,
+        empresaId: data.empresaId
       };
     } catch (error) {
       console.error('Erro ao conectar WhatsApp:', error);
@@ -110,8 +221,18 @@ export const whatsappService = {
    */
   async disconnect() {
     try {
+      const empresaId = getEmpresaId();
+      
+      console.log('🔌 Desconectando WhatsApp para empresaId:', empresaId);
+      
       const response = await fetch(`${API_URL}/api/whatsapp/disconnect`, {
-        method: 'POST'
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          empresaId: empresaId // ISOLAMENTO GARANTIDO
+        })
       });
 
       if (!response.ok) {
@@ -119,7 +240,9 @@ export const whatsappService = {
         throw new Error(error.message || 'Erro ao desconectar');
       }
 
-      return await response.json();
+      const result = await response.json();
+      console.log('✅ Desconectado empresaId:', result.empresaId);
+      return result;
     } catch (error) {
       console.error('Erro ao desconectar WhatsApp:', error);
       throw error;

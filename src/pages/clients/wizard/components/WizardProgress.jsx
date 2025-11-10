@@ -73,14 +73,15 @@ const WizardProgress = ({ currentStep, onStepClick }) => {
                 } : {}}
                 className={`
                   w-10 h-10 rounded-full flex items-center justify-center
-                  font-bold text-sm transition-all duration-300
+                  font-bold transition-all duration-300
+                  ${isCurrent ? 'text-lg' : 'text-sm'}
                   ${isClickable ? 'cursor-pointer' : 'cursor-default'}
                   ${isCompleted
                     ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30'
                     : isCurrent
                       ? isDarkMode
-                        ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white ring-4 ring-blue-500/30 shadow-lg shadow-blue-600/40'
-                        : 'bg-gradient-to-br from-blue-600 to-blue-700 text-white ring-4 ring-blue-500/30 shadow-lg shadow-blue-600/40'
+                        ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white ring-4 ring-blue-400/50 shadow-xl shadow-blue-500/60'
+                        : 'bg-gradient-to-br from-blue-600 to-blue-700 text-white ring-4 ring-blue-400/60 shadow-xl shadow-blue-600/60'
                       : isDarkMode
                         ? 'bg-gray-800 text-gray-400 border-2 border-gray-700'
                         : 'bg-white text-gray-400 border-2 border-gray-300'
@@ -97,9 +98,14 @@ const WizardProgress = ({ currentStep, onStepClick }) => {
                     duration: 0.5,
                     ease: [0.4, 0, 0.2, 1]
                   }}
+                  className={isCurrent ? 'drop-shadow-lg' : ''}
+                  style={isCurrent ? { 
+                    filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.8))',
+                    fontWeight: '900'
+                  } : {}}
                 >
                   {isCompleted ? (
-                    <Check className="w-5 h-5" />
+                    <Check className="w-5 h-5 stroke-[3]" />
                   ) : (
                     step.number
                   )}

@@ -9,15 +9,25 @@ import BudgetFilters from './budgets/components/BudgetFilters';
 import BudgetStats from './budgets/components/BudgetStats';
 import SendBudgetModal from './budgets/components/SendBudgetModal';
 import CheckinFromBudgetModal from './budgets/components/CheckinFromBudgetModal';
+import './budgets/BudgetsPage.css';
 
 const BudgetsPage = () => {
+  const budgetStore = useBudgetStore();
   const { 
     budgets, 
     fetchBudgets, 
     isLoading,
     getStatistics,
     expireBudget
-  } = useBudgetStore();
+  } = budgetStore;
+
+  // Make budgetStore available globally
+  useEffect(() => {
+    window.budgetStore = budgetStore;
+    return () => {
+      delete window.budgetStore;
+    };
+  }, [budgetStore]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSendModalOpen, setIsSendModalOpen] = useState(false);
@@ -38,7 +48,7 @@ const BudgetsPage = () => {
     const checkExpiredBudgets = () => {
       const now = new Date();
       budgets.forEach(budget => {
-        if (budget.status === 'pending' && new Date(budget.expiresAt) < now) {
+        if ((budget.status === 'pending' || budget.status === 'sent') && new Date(budget.expiresAt) < now) {
           expireBudget(budget.firestoreId);
         }
       });
@@ -70,7 +80,15 @@ const BudgetsPage = () => {
     setIsCheckinModalOpen(true);
   };
 
-  const filteredBudgets = budgets.filter(budget => {
+  // Remove duplicates based on firestoreId
+  const uniqueBudgets = budgets.reduce((acc, budget) => {
+    if (!acc.find(b => b.firestoreId === budget.firestoreId)) {
+      acc.push(budget);
+    }
+    return acc;
+  }, []);
+
+  const filteredBudgets = uniqueBudgets.filter(budget => {
     if (filters.status !== 'all' && budget.status !== filters.status) {
       return false;
     }
@@ -88,7 +106,7 @@ const BudgetsPage = () => {
   const stats = getStatistics();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-black dark:to-gray-800 transition-colors duration-500">
+    <div className="budgets-page-scaled min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-black dark:to-gray-800 transition-colors duration-500">
       {/* Background Animation */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <motion.div

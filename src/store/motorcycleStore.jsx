@@ -1,20 +1,12 @@
 import { create } from 'zustand';
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  getDocs, 
-  getDoc,
-  query, 
-  where, 
-  orderBy, 
-  limit,
-  onSnapshot
-} from 'firebase/firestore';
-import { db } from '../config/firebase';
-
+import {
+  addDocument,
+  getAllDocuments,
+  getDocumentById,
+  updateDocument,
+  deleteDocument,
+  subscribeToCollection
+} from '../services/storeHelpers';
 export const useMotorcycleStore = create((set, get) => ({
   // State
   motorcycles: [],
@@ -68,8 +60,7 @@ export const useMotorcycleStore = create((set, get) => ({
         notes: '',
       };
 
-      const docRef = await addDoc(collection(db, 'motorcycles'), newMotorcycle);
-      const motorcycleWithId = { ...newMotorcycle, firestoreId: docRef.id };
+      const motorcycleWithId = await addDocument('motorcycles', newMotorcycle);
 
       set((state) => ({
         motorcycles: [motorcycleWithId, ...state.motorcycles],
@@ -87,13 +78,12 @@ export const useMotorcycleStore = create((set, get) => ({
   updateMotorcycle: async (motorcycleId, updates) => {
     set({ isLoading: true, error: null });
     try {
-      const motorcycleRef = doc(db, 'motorcycles', motorcycleId);
       const updatedData = {
         ...updates,
         updatedAt: new Date().toISOString(),
       };
 
-      await updateDoc(motorcycleRef, updatedData);
+      await updateDocument('motorcycles', motorcycleId, updatedData);
 
       set((state) => ({
         motorcycles: state.motorcycles.map((motorcycle) =>
@@ -118,7 +108,7 @@ export const useMotorcycleStore = create((set, get) => ({
   deleteMotorcycle: async (motorcycleId) => {
     set({ isLoading: true, error: null });
     try {
-      await deleteDoc(doc(db, 'motorcycles', motorcycleId));
+      await deleteDocument('motorcycles', motorcycleId);
 
       set((state) => ({
         motorcycles: state.motorcycles.filter((motorcycle) => motorcycle.firestoreId !== motorcycleId),
@@ -137,16 +127,9 @@ export const useMotorcycleStore = create((set, get) => ({
   fetchMotorcycles: async () => {
     set({ isLoading: true, error: null });
     try {
-      const q = query(
-        collection(db, 'motorcycles'),
-        orderBy('createdAt', 'desc')
-      );
-      
-      const querySnapshot = await getDocs(q);
-      const motorcycles = querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        firestoreId: doc.id,
-      }));
+      const motorcycles = await getAllDocuments('motorcycles', {
+      orderBy: { field: 'createdAt', direction: 'desc' }
+    });
 
       set({ motorcycles, isLoading: false });
       return { success: true, data: motorcycles };
@@ -160,11 +143,10 @@ export const useMotorcycleStore = create((set, get) => ({
   getMotorcycleById: async (motorcycleId) => {
     set({ isLoading: true, error: null });
     try {
-      const docRef = doc(db, 'motorcycles', motorcycleId);
-      const docSnap = await getDoc(docRef);
+      const docSnap = await getDocumentById('motorcycles', motorcycleId);
       
-      if (docSnap.exists()) {
-        const motorcycle = { ...docSnap.data(), firestoreId: docSnap.id };
+      if (docSnap) {
+        const motorcycle = docSnap;
         set({ currentMotorcycle: motorcycle, isLoading: false });
         return { success: true, data: motorcycle };
       } else {
@@ -189,21 +171,9 @@ export const useMotorcycleStore = create((set, get) => ({
         limit(20)
       );
       
-      // Search by brand
-      const brandQuery = query(
-        collection(db, 'motorcycles'),
-        where('brand', '>=', searchTerm),
-        where('brand', '<=', searchTerm + '\uf8ff'),
-        limit(20)
-      );
+      // Search by brand - usando busca local
       
-      // Search by model
-      const modelQuery = query(
-        collection(db, 'motorcycles'),
-        where('model', '>=', searchTerm),
-        where('model', '<=', searchTerm + '\uf8ff'),
-        limit(20)
-      );
+      // Search by model - usando busca local
       
       // Search by client ID
       const clientQuery = query(
@@ -213,12 +183,9 @@ export const useMotorcycleStore = create((set, get) => ({
         limit(20)
       );
       
-      const [idResults, brandResults, modelResults, clientResults] = await Promise.all([
-        getDocs(idQuery),
-        getDocs(brandQuery),
-        getDocs(modelQuery),
-        getDocs(clientQuery)
-      ]);
+      // Buscar todos e filtrar localmente
+    const allItems = await getAllDocuments('modelResults');
+    const searchLower = searchTerm.toLowerCase();
       
       const allResults = new Map();
       
@@ -483,18 +450,10 @@ export const useMotorcycleStore = create((set, get) => ({
 
   // Real-time listener
   subscribeToMotorcycles: () => {
-    const q = query(
-      collection(db, 'motorcycles'),
-      orderBy('createdAt', 'desc')
-    );
-    
-    return onSnapshot(q, (querySnapshot) => {
-      const motorcycles = querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        firestoreId: doc.id,
-      }));
-      
+    return subscribeToCollection('motorcycles', (motorcycles) => {
       set({ motorcycles });
+    }, {
+      orderBy: { field: 'createdAt', direction: 'desc' }
     });
   },
 }));

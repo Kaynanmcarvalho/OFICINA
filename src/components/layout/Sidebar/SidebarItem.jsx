@@ -38,7 +38,7 @@ const SidebarItem = React.memo(({ item, isCollapsed, onClick }) => {
     relative flex items-center gap-3 px-3 py-3 rounded-xl
     text-sm font-medium transition-all duration-200
     ${isActive 
-      ? `${colors.active} border-l-3 shadow-[inset_0_0_12px_rgba(255,255,255,0.05)]` 
+      ? `${colors.active} border-l-3` 
       : `text-gray-700 dark:text-gray-300 ${colors.hover}`
     }
     ${isCollapsed ? 'justify-center' : ''}
@@ -60,20 +60,8 @@ const SidebarItem = React.memo(({ item, isCollapsed, onClick }) => {
           aria-label={item.label}
           aria-current={isActive ? 'page' : undefined}
         >
-          {/* Icon with inner reflection */}
-          <div className="relative">
-            <Icon className="w-5 h-5" style={{
-              filter: isActive ? 'drop-shadow(0 0 8px currentColor)' : 'none'
-            }} />
-            {isActive && (
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-full"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              />
-            )}
-          </div>
+          {/* Icon */}
+          <Icon className="w-5 h-5" />
 
           {/* Text label */}
           <AnimatePresence>
@@ -102,26 +90,7 @@ const SidebarItem = React.memo(({ item, isCollapsed, onClick }) => {
             </motion.span>
           )}
 
-          {/* Active indicator glow */}
-          {isActive && (
-            <motion.div
-              className="absolute inset-0 rounded-xl"
-              style={{
-                boxShadow: `0 0 20px ${item.color === 'amber' ? 'rgba(245, 158, 11, 0.3)' : 
-                                      item.color === 'green' ? 'rgba(34, 197, 94, 0.3)' :
-                                      item.color === 'red' ? 'rgba(239, 68, 68, 0.3)' :
-                                      'rgba(37, 99, 235, 0.3)'}`
-              }}
-              animate={{
-                opacity: [0.5, 0.8, 0.5],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: 'easeInOut'
-              }}
-            />
-          )}
+
         </Link>
       </motion.div>
 

@@ -2,172 +2,201 @@
 
 ## Introduction
 
-Este documento define os requisitos para implementação de uma arquitetura multi-tenant completa no sistema Torq (SaaS para oficinas mecânicas). O sistema permitirá que múltiplas empresas utilizem a plataforma de forma isolada, cada uma com sua própria identidade visual, dados segregados, usuários independentes e sessões WhatsApp exclusivas, mantendo um design Apple-like premium e imersivo.
+Este documento especifica os requisitos para implementação de uma arquitetura multi-tenant completa no sistema Torq (SaaS para oficinas mecânicas). O sistema permitirá que múltiplas empresas utilizem a plataforma de forma isolada, com identidade visual própria, dados segregados e experiência premium Apple-like.
 
 ## Glossary
 
 - **Sistema Torq**: Plataforma SaaS para gestão de oficinas mecânicas, estética automotiva e autopeças
-- **Empresa**: Organização cliente que contrata o sistema Torq (tenant)
-- **EmpresaId**: Identificador único de cada empresa no sistema
-- **Tenant**: Instância isolada de dados e configurações de uma empresa
-- **Slug**: Identificador amigável em URL para cada empresa (ex: speedcar-motors)
-- **Firebase**: Plataforma backend (Firestore + Auth) utilizada pelo sistema
+- **Empresa**: Organização cliente que contrata o Sistema Torq (tenant)
+- **empresaId**: Identificador único de cada Empresa no Firebase Firestore
+- **Usuário**: Pessoa que acessa o Sistema Torq vinculada a uma Empresa específica
+- **Firebase Auth**: Serviço de autenticação do Firebase
 - **Firestore**: Banco de dados NoSQL do Firebase
-- **EmpresaContext**: Contexto React global que armazena dados da empresa ativa
-- **Role**: Papel/permissão de um usuário (admin, atendente, financeiro)
-- **Cache de Placas**: Armazenamento global compartilhado de consultas de placas veiculares
-- **Sessão WhatsApp**: Conexão exclusiva de WhatsApp Business de cada empresa
-- **Glassmorphism**: Efeito visual de vidro translúcido com blur
-- **Apple-like**: Design inspirado nos princípios de interface da Apple (clean, fluido, imersivo)
+- **EmpresaContext**: Contexto React global que armazena dados da Empresa ativa
+- **Slug**: Identificador textual único da Empresa usado em URLs
+- **Cache Global de Placas**: Coleção compartilhada entre todas as Empresas para consultas de veículos
+- **Sessão WhatsApp**: Conexão exclusiva de cada Empresa com a API do WhatsApp
+- **Role**: Papel/permissão de um Usuário (admin, atendente, financeiro)
+- **Tema**: Configuração visual personalizada de cada Empresa (cores, logo, gradientes)
 
 ## Requirements
 
-### Requirement 1: Estrutura de Dados Multi-Tenant no Firebase
+### Requirement 1: Isolamento de Dados por Empresa
 
-**User Story:** Como administrador do sistema, eu quero que cada empresa tenha seus dados completamente isolados no Firebase, para que nenhuma empresa possa acessar dados de outra.
+**User Story:** Como administrador do sistema, eu quero que cada empresa tenha seus dados completamente isolados, para que nenhuma empresa possa acessar informações de outra.
 
 #### Acceptance Criteria
 
-1. WHEN uma nova empresa é cadastrada, THE Sistema Torq SHALL criar um documento em `/empresas/{empresaId}` com campos: nomeFantasia, slug, logo, tema, plano, ativo, criadoEm
-2. THE Sistema Torq SHALL criar subcoleções isoladas para cada empresa: `/empresas/{empresaId}/clientes`, `/empresas/{empresaId}/veiculos`, `/empresas/{empresaId}/orcamentos`, `/empresas/{empresaId}/checkins`, `/empresas/{empresaId}/usuarios`, `/empresas/{empresaId}/whatsapp_session`, `/empresas/{empresaId}/configuracoes`
-3. THE Sistema Torq SHALL manter uma coleção global `/cache_placas/{placa}` compartilhada entre todas as empresas
-4. WHEN qualquer query é executada, THE Sistema Torq SHALL incluir obrigatoriamente o empresaId no path da coleção
-5. THE Sistema Torq SHALL garantir que nenhuma query retorne dados de empresas diferentes da empresa ativa
+1. WHEN o Sistema Torq cria uma nova Empresa, THE Sistema Torq SHALL gerar um empresaId único no formato UUID v4
+2. THE Sistema Torq SHALL armazenar todos os dados de clientes, veículos, orçamentos, check-ins e usuários dentro da subcoleção `/empresas/{empresaId}`
+3. WHEN um Usuário realiza uma consulta ao Firestore, THE Sistema Torq SHALL incluir obrigatoriamente o empresaId no caminho da coleção
+4. THE Sistema Torq SHALL rejeitar qualquer consulta que não contenha um empresaId válido com código de erro 403
+5. WHERE uma Empresa tenta acessar dados de outra Empresa, THE Sistema Torq SHALL retornar uma lista vazia sem expor a existência dos dados
 
 ### Requirement 2: Autenticação e Contexto Global
 
-**User Story:** Como usuário do sistema, eu quero fazer login e ter acesso apenas aos dados da minha empresa, para que minha sessão seja segura e isolada.
+**User Story:** Como usuário do sistema, eu quero fazer login e ter acesso automático aos dados da minha empresa, para que eu possa trabalhar sem precisar selecionar manualmente minha empresa.
 
 #### Acceptance Criteria
 
-1. WHEN um usuário faz login via Firebase Auth, THE Sistema Torq SHALL buscar o documento do usuário contendo empresaId, role, nome, email
-2. THE Sistema Torq SHALL criar um EmpresaContext React contendo empresaId, nomeFantasia, logo, tema, plano, permissoes
-3. THE Sistema Torq SHALL armazenar o empresaId no sessionStorage com chave "empresaId"
-4. THE Sistema Torq SHALL disponibilizar o EmpresaContext para todos os componentes via React Context API
-5. WHEN o usuário navega entre páginas, THE Sistema Torq SHALL manter o empresaId persistido no sessionStorage
-6. WHEN o usuário faz logout, THE Sistema Torq SHALL limpar o sessionStorage e resetar o EmpresaContext
+1. WHEN um Usuário realiza login via Firebase Auth, THE Sistema Torq SHALL buscar o documento do Usuário contendo empresaId, role, nome e email
+2. THE Sistema Torq SHALL criar um EmpresaContext React contendo empresaId, nomeFantasia, logo, tema, plano e permissoes
+3. THE Sistema Torq SHALL armazenar o empresaId no sessionStorage com a chave "empresaId"
+4. WHEN o Usuário navega entre páginas, THE Sistema Torq SHALL recuperar o empresaId do sessionStorage para manter a sessão
+5. IF o empresaId não for encontrado no sessionStorage, THEN THE Sistema Torq SHALL redirecionar o Usuário para a tela de login
 
-### Requirement 3: Identidade Visual Dinâmica por Empresa
+### Requirement 3: Identidade Visual Dinâmica
 
-**User Story:** Como administrador de uma empresa, eu quero personalizar as cores e logo do sistema, para que a interface reflita a identidade visual da minha marca.
-
-#### Acceptance Criteria
-
-1. THE Sistema Torq SHALL armazenar configurações visuais em `/empresas/{empresaId}/configuracoes` com campos: corPrimaria, corSecundaria, corFundo, logo, gradientes
-2. WHEN o EmpresaContext é carregado, THE Sistema Torq SHALL aplicar as cores personalizadas usando CSS variables
-3. THE Sistema Torq SHALL exibir o logo da empresa no topo da sidebar e na tela de login
-4. THE Sistema Torq SHALL exibir o nome da empresa e plano ativo no header no formato "{nomeFantasia} | Plano {plano}"
-5. THE Sistema Torq SHALL aplicar transições suaves com Framer Motion em todas as mudanças de tema
-6. THE Sistema Torq SHALL manter design Apple-like com glassmorphism, sombreamentos sutis e profundidade visual
-7. THE Sistema Torq SHALL utilizar ícones SVG profissionais e tipografia moderna (SF Pro, Inter ou Nunito Sans)
-
-### Requirement 4: Sistema de Permissões e Usuários
-
-**User Story:** Como administrador de uma empresa, eu quero gerenciar usuários com diferentes níveis de acesso, para que cada funcionário tenha apenas as permissões necessárias.
+**User Story:** Como administrador de uma empresa, eu quero personalizar as cores e logo do sistema, para que minha equipe trabalhe com a identidade visual da nossa marca.
 
 #### Acceptance Criteria
 
-1. THE Sistema Torq SHALL armazenar usuários em `/empresas/{empresaId}/usuarios/{userId}` com campos: nome, email, role, ativo, criadoEm
-2. THE Sistema Torq SHALL suportar três roles: admin (acesso total), atendente (criar clientes, orçamentos, check-ins), financeiro (acessar caixa e relatórios)
-3. WHEN um usuário com role "atendente" acessa o sistema, THE Sistema Torq SHALL ocultar menus e botões de administração e financeiro
-4. WHEN um usuário com role "financeiro" acessa o sistema, THE Sistema Torq SHALL ocultar menus de administração e limitar acesso a dados financeiros
-5. WHEN um usuário com role "admin" acessa o sistema, THE Sistema Torq SHALL exibir todos os menus e funcionalidades
-6. THE Sistema Torq SHALL validar permissões no frontend e backend antes de executar ações sensíveis
+1. THE Sistema Torq SHALL permitir que cada Empresa configure cor primária, cor secundária, gradientes e logo em `/empresas/{empresaId}/configuracoes`
+2. WHEN o EmpresaContext é carregado, THE Sistema Torq SHALL aplicar o tema personalizado da Empresa em todos os componentes visuais
+3. THE Sistema Torq SHALL exibir o logo da Empresa no topo da sidebar e na tela de login
+4. THE Sistema Torq SHALL exibir o nome da Empresa e o plano ativo no header no formato "{nomeFantasia} | Plano {plano}"
+5. THE Sistema Torq SHALL aplicar transições suaves de 300ms ao alternar entre temas usando cubic-bezier(0.4, 0, 0.2, 1)
+
+### Requirement 4: Sistema de Permissões por Role
+
+**User Story:** Como administrador de uma empresa, eu quero controlar o que cada usuário pode fazer no sistema, para que eu possa limitar acessos conforme a função de cada pessoa.
+
+#### Acceptance Criteria
+
+1. THE Sistema Torq SHALL suportar três roles: admin (acesso total), atendente (criar clientes, orçamentos, check-ins) e financeiro (acessar caixa e relatórios)
+2. WHEN um Usuário com role "atendente" acessa o sistema, THE Sistema Torq SHALL ocultar menus e botões de funcionalidades financeiras
+3. WHEN um Usuário com role "financeiro" acessa o sistema, THE Sistema Torq SHALL ocultar menus e botões de criação de check-ins
+4. THE Sistema Torq SHALL armazenar o role do Usuário em `/empresas/{empresaId}/usuarios/{userId}`
+5. THE Sistema Torq SHALL validar permissões no backend antes de executar operações sensíveis
 
 ### Requirement 5: Sessão WhatsApp Exclusiva por Empresa
 
-**User Story:** Como administrador de uma empresa, eu quero conectar minha própria conta WhatsApp Business, para que eu possa enviar mensagens aos meus clientes de forma independente.
+**User Story:** Como usuário de uma empresa, eu quero conectar o WhatsApp da minha empresa ao sistema, para que eu possa enviar mensagens aos clientes sem interferir em outras empresas.
 
 #### Acceptance Criteria
 
-1. THE Sistema Torq SHALL armazenar dados da sessão WhatsApp em `/empresas/{empresaId}/whatsapp_session` com campos: token, sessionId, webhook, status, conectadoEm
-2. THE Sistema Torq SHALL exibir status visual da sessão WhatsApp ("Conectado ✅" ou "Desconectado ❌")
-3. THE Sistema Torq SHALL fornecer botão "Conectar WhatsApp" que exibe QR Code quando necessário
-4. WHEN uma empresa envia mensagem WhatsApp, THE Sistema Torq SHALL utilizar apenas a sessão dessa empresa
-5. THE Sistema Torq SHALL garantir que nenhuma empresa possa visualizar ou enviar mensagens usando sessão de outra empresa
+1. THE Sistema Torq SHALL armazenar token, webhook e sessionId de cada Empresa em `/empresas/{empresaId}/whatsapp_session`
+2. THE Sistema Torq SHALL exibir o status da sessão WhatsApp como "Conectado ✅" quando ativa ou "Desconectado ❌" quando inativa
+3. WHEN uma Empresa clica em "Conectar WhatsApp", THE Sistema Torq SHALL gerar um QR Code exclusivo para aquela Empresa
+4. THE Sistema Torq SHALL impedir que uma Empresa visualize ou envie mensagens usando a sessão de outra Empresa
+5. WHEN a sessão WhatsApp expira, THE Sistema Torq SHALL notificar apenas os Usuários da Empresa afetada
 
 ### Requirement 6: Cache Global de Placas Compartilhado
 
-**User Story:** Como usuário do sistema, eu quero que consultas de placas veiculares sejam rápidas e econômicas, para que o sistema não faça chamadas de API repetidas desnecessariamente.
+**User Story:** Como usuário do sistema, eu quero que consultas de placas já realizadas sejam reutilizadas, para que o sistema seja mais rápido e econômico.
 
 #### Acceptance Criteria
 
-1. THE Sistema Torq SHALL armazenar consultas de placas em `/cache_placas/{placa}` com campos: marca, modelo, ano, cor, consultadoEm, empresaId (da primeira consulta)
-2. WHEN um usuário consulta uma placa, THE Sistema Torq SHALL verificar primeiro se existe em `/cache_placas/{placa}`
-3. IF a placa existe no cache e foi consultada há menos de 30 dias, THE Sistema Torq SHALL retornar os dados do cache
-4. IF a placa não existe no cache ou está desatualizada, THE Sistema Torq SHALL chamar a API externa, salvar no cache e retornar os dados
-5. THE Sistema Torq SHALL permitir que todas as empresas utilizem o cache compartilhado para reduzir custos de API
+1. THE Sistema Torq SHALL armazenar resultados de consultas de placas em `/cache_placas/{placa}` acessível por todas as Empresas
+2. WHEN um Usuário consulta uma placa, THE Sistema Torq SHALL verificar primeiro se existe no cache local da sessão
+3. IF a placa não existe no cache local, THEN THE Sistema Torq SHALL buscar em `/cache_placas/{placa}`
+4. IF a placa não existe no cache global, THEN THE Sistema Torq SHALL chamar a API externa, salvar o resultado em `/cache_placas/{placa}` e retornar os dados
+5. THE Sistema Torq SHALL incluir timestamp de criação em cada entrada do cache para permitir expiração futura
 
-### Requirement 7: Sistema de Subdomínios e Identificação
+### Requirement 7: Estrutura Firebase Hierárquica
 
-**User Story:** Como empresa cliente, eu quero acessar o sistema através de uma URL personalizada, para que minha marca seja reforçada e o acesso seja facilitado.
-
-#### Acceptance Criteria
-
-1. THE Sistema Torq SHALL suportar URLs no formato `https://torq.app/{slug_da_empresa}`
-2. THE Sistema Torq SHALL armazenar o slug único de cada empresa em `/empresas/{empresaId}/slug`
-3. WHEN um usuário acessa uma URL com slug, THE Sistema Torq SHALL identificar a empresa pelo slug e carregar suas configurações
-4. THE Sistema Torq SHALL validar que cada slug é único no sistema
-5. WHEN o slug não é encontrado, THE Sistema Torq SHALL exibir página de erro 404 personalizada
-
-### Requirement 8: Interface Premium Apple-like
-
-**User Story:** Como usuário do sistema, eu quero uma interface elegante e fluida, para que minha experiência seja premium e agradável.
+**User Story:** Como desenvolvedor do sistema, eu quero uma estrutura de dados clara e escalável no Firebase, para que seja fácil manter e expandir o sistema.
 
 #### Acceptance Criteria
 
-1. THE Sistema Torq SHALL implementar animações suaves com Framer Motion em transições de página e modais
-2. THE Sistema Torq SHALL utilizar efeitos de glassmorphism com blur e transparência em cards e modais
-3. THE Sistema Torq SHALL aplicar sombreamentos sutis e profundidade visual em todos os elementos
-4. THE Sistema Torq SHALL utilizar tipografia premium (SF Pro Display, Inter ou Nunito Sans)
-5. THE Sistema Torq SHALL implementar microinterações em botões, inputs e elementos clicáveis
-6. THE Sistema Torq SHALL manter navegação intuitiva com feedback visual imediato
-7. THE Sistema Torq SHALL utilizar ícones Lucide React e SVGs otimizados
+1. THE Sistema Torq SHALL organizar dados no Firestore seguindo a estrutura `/empresas/{empresaId}/{subcoleção}`
+2. THE Sistema Torq SHALL criar as subcoleções: clientes, veiculos, orcamentos, checkins, usuarios, whatsapp_session e configuracoes
+3. THE Sistema Torq SHALL manter a coleção `/cache_placas` no nível raiz, fora de `/empresas`
+4. THE Sistema Torq SHALL incluir índices compostos no Firestore para queries frequentes com empresaId
+5. THE Sistema Torq SHALL documentar a estrutura de dados em um arquivo FIRESTORE_STRUCTURE.md
 
-### Requirement 9: Segurança e Isolamento de Dados
+### Requirement 8: Sistema de Slug e Roteamento
 
-**User Story:** Como administrador do sistema, eu quero garantir que os dados de cada empresa estejam completamente isolados e seguros, para que não haja vazamento de informações entre empresas.
+**User Story:** Como administrador de uma empresa, eu quero que minha empresa tenha uma URL exclusiva, para que seja fácil de compartilhar e memorizar.
 
 #### Acceptance Criteria
 
-1. THE Sistema Torq SHALL validar empresaId em todas as queries do Firestore
-2. THE Sistema Torq SHALL implementar middleware no backend Node.js que verifica empresaId em cada requisição autenticada
-3. THE Sistema Torq SHALL incluir empresaId, uid e role no token JWT
-4. THE Sistema Torq SHALL registrar logs de auditoria em `/empresas/{empresaId}/logs` com campos: acao, usuario, timestamp, detalhes
-5. THE Sistema Torq SHALL retornar erro 403 (Forbidden) quando houver tentativa de acesso a dados de outra empresa
+1. THE Sistema Torq SHALL permitir que cada Empresa defina um slug único alfanumérico em `/empresas/{empresaId}/slug`
+2. THE Sistema Torq SHALL validar que o slug contém apenas letras minúsculas, números e hífens
+3. WHEN um Usuário acessa `https://torq.app/{slug}`, THE Sistema Torq SHALL identificar a Empresa pelo slug e carregar suas configurações
+4. THE Sistema Torq SHALL redirecionar para página de erro 404 se o slug não existir
+5. THE Sistema Torq SHALL impedir que dois slugs idênticos sejam cadastrados
 
-### Requirement 10: Dashboard Administrativo Global
+### Requirement 9: Interface Apple-like Premium
 
-**User Story:** Como dono do SaaS Torq, eu quero visualizar métricas globais de todas as empresas, para que eu possa monitorar o uso e saúde da plataforma.
-
-#### Acceptance Criteria
-
-1. THE Sistema Torq SHALL fornecer rota administrativa `/admin/dashboard` acessível apenas para super-admin
-2. THE Sistema Torq SHALL exibir total de empresas cadastradas e ativas
-3. THE Sistema Torq SHALL exibir total de clientes ativos em todas as empresas
-4. THE Sistema Torq SHALL exibir estatísticas de uso do cache de placas (quantidade e economia de API)
-5. THE Sistema Torq SHALL exibir monitor de sessões WhatsApp ativas por empresa
-6. THE Sistema Torq SHALL exibir gráficos de crescimento e uso da plataforma
-
-### Requirement 11: Dashboard por Empresa
-
-**User Story:** Como administrador de uma empresa, eu quero visualizar métricas específicas da minha empresa, para que eu possa acompanhar o desempenho do meu negócio.
+**User Story:** Como usuário do sistema, eu quero uma interface elegante e fluida, para que minha experiência de trabalho seja agradável e profissional.
 
 #### Acceptance Criteria
 
-1. THE Sistema Torq SHALL exibir dashboard com métricas da empresa: "Clientes este mês", "Orçamentos concluídos", "Check-ins ativos", "Receita do mês"
-2. THE Sistema Torq SHALL filtrar todas as métricas pelo empresaId da empresa ativa
-3. THE Sistema Torq SHALL exibir gráficos de evolução temporal com dados apenas da empresa
-4. THE Sistema Torq SHALL permitir exportação de relatórios em PDF com identidade visual da empresa
+1. THE Sistema Torq SHALL aplicar animações suaves usando Framer Motion com duração entre 200ms e 400ms
+2. THE Sistema Torq SHALL utilizar tipografia premium (SF Pro Display, Inter ou Nunito Sans) com pesos entre 400 e 700
+3. THE Sistema Torq SHALL aplicar sombras sutis com múltiplas camadas (0 2px 8px, 0 4px 16px, 0 8px 32px) em cards e modais
+4. THE Sistema Torq SHALL implementar efeito glassmorphism com backdrop-filter blur(12px) e transparência de 80-95%
+5. THE Sistema Torq SHALL utilizar ícones Lucide React com tamanho mínimo de 20px e máximo de 32px
 
-### Requirement 12: Visualização de Clientes
+### Requirement 10: Segurança e Auditoria
 
-**User Story:** Como usuário do sistema, eu quero visualizar meus clientes em modo lista ou grid, para que eu possa escolher a melhor forma de navegar pelos dados.
+**User Story:** Como administrador do sistema, eu quero que todas as ações sejam seguras e rastreáveis, para que eu possa garantir a integridade dos dados.
 
 #### Acceptance Criteria
 
-1. THE Sistema Torq SHALL fornecer toggle para alternar entre visualização em lista e grid
-2. WHEN modo grid está ativo, THE Sistema Torq SHALL exibir cards de clientes com foto, nome, telefone e último atendimento
-3. WHEN modo lista está ativo, THE Sistema Torq SHALL exibir tabela com colunas: nome, telefone, email, veículos, último atendimento
-4. THE Sistema Torq SHALL manter a preferência de visualização no localStorage
-5. THE Sistema Torq SHALL aplicar animações suaves ao alternar entre modos
+1. THE Sistema Torq SHALL validar o empresaId em todas as requisições autenticadas no backend
+2. THE Sistema Torq SHALL incluir empresaId, uid e role no token JWT gerado após autenticação
+3. THE Sistema Torq SHALL registrar logs de ações críticas em `/empresas/{empresaId}/logs` com timestamp, userId e ação
+4. THE Sistema Torq SHALL implementar rate limiting de 100 requisições por minuto por Usuário
+5. THE Sistema Torq SHALL criptografar dados sensíveis (senhas, tokens) usando bcrypt com salt rounds mínimo de 10
+
+### Requirement 11: Dashboard Administrativo Global
+
+**User Story:** Como dono do SaaS Torq, eu quero visualizar métricas globais de todas as empresas, para que eu possa monitorar a saúde do sistema.
+
+#### Acceptance Criteria
+
+1. THE Sistema Torq SHALL criar uma rota `/admin/dashboard` acessível apenas por super-admin
+2. THE Sistema Torq SHALL exibir total de Empresas cadastradas, Empresas ativas e Empresas inativas
+3. THE Sistema Torq SHALL exibir total de Usuários ativos em todas as Empresas
+4. THE Sistema Torq SHALL exibir quantidade de entradas no cache de placas e taxa de hit/miss
+5. THE Sistema Torq SHALL exibir lista de sessões WhatsApp ativas com nome da Empresa e status
+
+### Requirement 12: Performance e Escalabilidade
+
+**User Story:** Como usuário do sistema, eu quero que o sistema seja rápido mesmo com muitos dados, para que eu possa trabalhar com eficiência.
+
+#### Acceptance Criteria
+
+1. THE Sistema Torq SHALL carregar a página inicial em menos de 2 segundos em conexão 4G
+2. THE Sistema Torq SHALL implementar paginação com limite de 50 itens por página em listas longas
+3. THE Sistema Torq SHALL utilizar lazy loading para componentes pesados (modais, gráficos)
+4. THE Sistema Torq SHALL implementar cache local com IndexedDB para dados frequentemente acessados
+5. THE Sistema Torq SHALL comprimir imagens de logo para máximo de 200KB usando WebP ou AVIF
+
+### Requirement 13: Migração de Dados Existentes
+
+**User Story:** Como desenvolvedor do sistema, eu quero migrar os dados atuais para a nova estrutura multi-tenant, para que não haja perda de informações.
+
+#### Acceptance Criteria
+
+1. THE Sistema Torq SHALL criar um script de migração que move dados de coleções raiz para `/empresas/{empresaId}`
+2. THE Sistema Torq SHALL criar uma Empresa padrão com empresaId gerado para os dados existentes
+3. THE Sistema Torq SHALL vincular todos os Usuários existentes à Empresa padrão
+4. THE Sistema Torq SHALL validar integridade dos dados após migração comparando contagens
+5. THE Sistema Torq SHALL criar backup completo do Firestore antes de executar a migração
+
+### Requirement 14: Onboarding de Novas Empresas
+
+**User Story:** Como nova empresa contratando o Torq, eu quero um processo simples de cadastro, para que eu possa começar a usar rapidamente.
+
+#### Acceptance Criteria
+
+1. WHEN uma nova Empresa se cadastra, THE Sistema Torq SHALL criar automaticamente a estrutura `/empresas/{empresaId}` com subcoleções vazias
+2. THE Sistema Torq SHALL solicitar nome fantasia, CNPJ, email, telefone e slug desejado
+3. THE Sistema Torq SHALL criar o primeiro Usuário com role "admin" vinculado à nova Empresa
+4. THE Sistema Torq SHALL aplicar tema padrão (cores Torq) até que a Empresa personalize
+5. THE Sistema Torq SHALL enviar email de boas-vindas com link de acesso e tutorial em vídeo
+
+### Requirement 15: Modo Offline e Sincronização
+
+**User Story:** Como usuário do sistema, eu quero continuar trabalhando mesmo sem internet, para que eu não perca produtividade.
+
+#### Acceptance Criteria
+
+1. THE Sistema Torq SHALL habilitar persistência offline do Firestore com enablePersistence()
+2. WHEN o Usuário perde conexão, THE Sistema Torq SHALL exibir badge "Modo Offline" no header
+3. THE Sistema Torq SHALL permitir criação e edição de registros offline armazenando em fila local
+4. WHEN a conexão é restaurada, THE Sistema Torq SHALL sincronizar automaticamente dados pendentes
+5. THE Sistema Torq SHALL notificar o Usuário sobre conflitos de sincronização e permitir resolução manual

@@ -1,19 +1,14 @@
 import { create } from 'zustand';
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  getDocs, 
-  getDoc,
-  query, 
-  orderBy, 
-  onSnapshot
-} from 'firebase/firestore';
-import { db } from '../config/firebase';
 import toast from 'react-hot-toast';
 import { smartClientSearch } from '../utils/searchUtils';
+import {
+  addDocument,
+  getAllDocuments,
+  getDocumentById,
+  updateDocument,
+  deleteDocument,
+  subscribeToCollection
+} from '../services/storeHelpers';
 
 export const useClientStore = create((set, get) => ({
   // State
@@ -203,8 +198,7 @@ export const useClientStore = create((set, get) => ({
         serviceHistory: [],
       };
 
-      const docRef = await addDoc(collection(db, 'clients'), newClient);
-      const clientWithId = { ...newClient, firestoreId: docRef.id };
+      const clientWithId = await addDocument('clients', newClient);
 
       set((state) => ({
         clients: [clientWithId, ...state.clients],
@@ -222,21 +216,20 @@ export const useClientStore = create((set, get) => ({
   updateClient: async (clientId, updates) => {
     set({ isLoading: true, error: null });
     try {
-      const clientRef = doc(db, 'clients', clientId);
       const updatedData = {
         ...updates,
         updatedAt: new Date().toISOString(),
       };
 
-      await updateDoc(clientRef, updatedData);
+      await updateDocument('clients', clientId, updatedData);
 
       set((state) => ({
         clients: state.clients.map((client) =>
-          client.firestoreId === clientId
+          client.id === clientId || client.firestoreId === clientId
             ? { ...client, ...updatedData }
             : client
         ),
-        currentClient: state.currentClient?.firestoreId === clientId
+        currentClient: (state.currentClient?.id === clientId || state.currentClient?.firestoreId === clientId)
           ? { ...state.currentClient, ...updatedData }
           : state.currentClient,
         isLoading: false,
@@ -253,11 +246,15 @@ export const useClientStore = create((set, get) => ({
   deleteClient: async (clientId) => {
     set({ isLoading: true, error: null });
     try {
-      await deleteDoc(doc(db, 'clients', clientId));
+      await deleteDocument('clients', clientId);
 
       set((state) => ({
-        clients: state.clients.filter((client) => client.firestoreId !== clientId),
-        currentClient: state.currentClient?.firestoreId === clientId ? null : state.currentClient,
+        clients: state.clients.filter((client) => 
+          client.id !== clientId && client.firestoreId !== clientId
+        ),
+        currentClient: (state.currentClient?.id === clientId || state.currentClient?.firestoreId === clientId) 
+          ? null 
+          : state.currentClient,
         isLoading: false,
       }));
 
@@ -272,16 +269,9 @@ export const useClientStore = create((set, get) => ({
   fetchClients: async () => {
     set({ isLoading: true, error: null });
     try {
-      const q = query(
-        collection(db, 'clients'),
-        orderBy('createdAt', 'desc')
-      );
-      
-      const querySnapshot = await getDocs(q);
-      const clients = querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        firestoreId: doc.id,
-      }));
+      const clients = await getAllDocuments('clients', {
+        orderBy: { field: 'createdAt', direction: 'desc' }
+      });
 
       set({ clients, isLoading: false });
 
@@ -294,11 +284,9 @@ export const useClientStore = create((set, get) => ({
         await get().migrateFromLocalStorage();
         
         // Fetch again after migration to get newly migrated clients
-        const updatedQuery = await getDocs(q);
-        const updatedClients = updatedQuery.docs.map(doc => ({
-          ...doc.data(),
-          firestoreId: doc.id,
-        }));
+        const updatedClients = await getAllDocuments('clients', {
+          orderBy: { field: 'createdAt', direction: 'desc' }
+        });
         
         set({ clients: updatedClients });
         console.log('[fetchClients] Clients after migration:', updatedClients.length);
@@ -318,11 +306,9 @@ export const useClientStore = create((set, get) => ({
   getClientById: async (clientId) => {
     set({ isLoading: true, error: null });
     try {
-      const docRef = doc(db, 'clients', clientId);
-      const docSnap = await getDoc(docRef);
+      const client = await getDocumentById('clients', clientId);
       
-      if (docSnap.exists()) {
-        const client = { ...docSnap.data(), firestoreId: docSnap.id };
+      if (client) {
         set({ currentClient: client, isLoading: false });
         return { success: true, data: client };
       } else {
@@ -345,11 +331,7 @@ export const useClientStore = create((set, get) => ({
       
       // If cache is empty, fetch from Firebase
       if (allClients.length === 0) {
-        const clientsSnapshot = await getDocs(collection(db, 'clients'));
-        allClients = clientsSnapshot.docs.map(doc => ({
-          ...doc.data(),
-          firestoreId: doc.id
-        }));
+        allClients = await getAllDocuments('clients');
         set({ clients: allClients });
       }
       
@@ -396,7 +378,7 @@ export const useClientStore = create((set, get) => ({
   // Add vehicle to client
   addVehicle: async (clientId, vehicleData) => {
     try {
-      const client = get().clients.find(c => c.firestoreId === clientId);
+      const client = get().clients.find(c => c.id === clientId || c.firestoreId === clientId);
       if (!client) return { success: false, error: 'Cliente não encontrado' };
       
       const newVehicle = {
@@ -418,7 +400,7 @@ export const useClientStore = create((set, get) => ({
   // Remove vehicle from client
   removeVehicle: async (clientId, vehicleId) => {
     try {
-      const client = get().clients.find(c => c.firestoreId === clientId);
+      const client = get().clients.find(c => c.id === clientId || c.firestoreId === clientId);
       if (!client) return { success: false, error: 'Cliente não encontrado' };
       
       const updatedVehicles = client.vehicles.filter(v => v.id !== vehicleId);
@@ -434,7 +416,7 @@ export const useClientStore = create((set, get) => ({
   // Add service to client history
   addServiceToHistory: async (clientId, serviceData) => {
     try {
-      const client = get().clients.find(c => c.firestoreId === clientId);
+      const client = get().clients.find(c => c.id === clientId || c.firestoreId === clientId);
       if (!client) return { success: false, error: 'Cliente não encontrado' };
       
       const newService = {
@@ -460,7 +442,7 @@ export const useClientStore = create((set, get) => ({
 
   // Get client statistics
   getClientStatistics: (clientId) => {
-    const client = get().clients.find(c => c.firestoreId === clientId);
+    const client = get().clients.find(c => c.id === clientId || c.firestoreId === clientId);
     if (!client) return null;
     
     const serviceHistory = client.serviceHistory || [];
@@ -516,18 +498,10 @@ export const useClientStore = create((set, get) => ({
 
   // Real-time listener
   subscribeToClients: () => {
-    const q = query(
-      collection(db, 'clients'),
-      orderBy('createdAt', 'desc')
-    );
-    
-    return onSnapshot(q, (querySnapshot) => {
-      const clients = querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        firestoreId: doc.id,
-      }));
-      
+    return subscribeToCollection('clients', (clients) => {
       set({ clients });
+    }, {
+      orderBy: { field: 'createdAt', direction: 'desc' }
     });
   },
 }));

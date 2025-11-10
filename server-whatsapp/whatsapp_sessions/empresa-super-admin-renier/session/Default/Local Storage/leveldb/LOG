@@ -1,0 +1,7 @@
+2025/11/10-01:19:50.251 31e0 Reusing MANIFEST C:\Users\renie\OneDrive\Documentos\New folder\OFICINA-1\server-whatsapp\whatsapp_sessions\empresa-super-admin-renier\session\Default\Local Storage\leveldb/MANIFEST-000001
+2025/11/10-01:19:50.252 31e0 Recovering log #3
+2025/11/10-01:19:50.252 31e0 Level-0 table #3: started
+2025/11/10-01:19:50.257 31e0 Level-0 table #3: 20472 bytes OK
+2025/11/10-01:19:50.257 31e0 Recovering log #4
+2025/11/10-01:19:50.257 31e0 Reusing old log C:\Users\renie\OneDrive\Documentos\New folder\OFICINA-1\server-whatsapp\whatsapp_sessions\empresa-super-admin-renier\session\Default\Local Storage\leveldb/000004.log 
+2025/11/10-01:19:50.259 31e0 Delete type=0 #3

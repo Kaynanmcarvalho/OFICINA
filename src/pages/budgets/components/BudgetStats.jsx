@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { FileText, Clock, CheckCircle, TrendingUp } from 'lucide-react';
+import './BudgetStats.css';
 
 const BudgetStats = ({ stats }) => {
   const statCards = [
@@ -46,7 +47,8 @@ const BudgetStats = ({ stats }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-700 shadow-lg"
+            whileHover={{ y: -4 }}
+            className="budget-stat-card bg-white dark:bg-gray-900 rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-700 shadow-lg"
           >
             <div className="flex items-center justify-between mb-4">
               <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colorClasses[stat.color]} flex items-center justify-center`}>

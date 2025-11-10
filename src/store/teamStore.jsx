@@ -1,20 +1,12 @@
 import { create } from 'zustand';
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  getDocs, 
-  getDoc,
-  query, 
-  where, 
-  orderBy, 
-  limit,
-  onSnapshot
-} from 'firebase/firestore';
-import { db } from '../config/firebase';
-
+import {
+  addDocument,
+  getAllDocuments,
+  getDocumentById,
+  updateDocument,
+  deleteDocument,
+  subscribeToCollection
+} from '../services/storeHelpers';
 export const useTeamStore = create((set, get) => ({
   // State
   members: [],
@@ -81,8 +73,7 @@ export const useTeamStore = create((set, get) => ({
         attendanceRecord: [],
       };
 
-      const docRef = await addDoc(collection(db, 'team_members'), newMember);
-      const memberWithId = { ...newMember, firestoreId: docRef.id };
+      const memberWithId = await addDocument('team_members', newMember);
 
       set((state) => ({
         members: [memberWithId, ...state.members],
@@ -100,13 +91,12 @@ export const useTeamStore = create((set, get) => ({
   updateMember: async (memberId, updates) => {
     set({ isLoading: true, error: null });
     try {
-      const memberRef = doc(db, 'team_members', memberId);
       const updatedData = {
         ...updates,
         updatedAt: new Date().toISOString(),
       };
 
-      await updateDoc(memberRef, updatedData);
+      await updateDocument('team_members', memberId, updatedData);
 
       set((state) => ({
         members: state.members.map((member) =>
@@ -131,7 +121,7 @@ export const useTeamStore = create((set, get) => ({
   deleteMember: async (memberId) => {
     set({ isLoading: true, error: null });
     try {
-      await deleteDoc(doc(db, 'team_members', memberId));
+      await deleteDocument('team_members', memberId);
 
       set((state) => ({
         members: state.members.filter((member) => member.firestoreId !== memberId),
@@ -150,16 +140,9 @@ export const useTeamStore = create((set, get) => ({
   fetchMembers: async () => {
     set({ isLoading: true, error: null });
     try {
-      const q = query(
-        collection(db, 'team_members'),
-        orderBy('name')
-      );
-      
-      const querySnapshot = await getDocs(q);
-      const members = querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        firestoreId: doc.id,
-      }));
+      const members = await getAllDocuments('team_members', {
+      orderBy: { field: 'name', direction: 'asc' }
+    });
 
       set({ members, isLoading: false });
       return { success: true, data: members };
@@ -173,11 +156,10 @@ export const useTeamStore = create((set, get) => ({
   getMemberById: async (memberId) => {
     set({ isLoading: true, error: null });
     try {
-      const docRef = doc(db, 'team_members', memberId);
-      const docSnap = await getDoc(docRef);
+      const docSnap = await getDocumentById('team_members', memberId);
       
-      if (docSnap.exists()) {
-        const member = { ...docSnap.data(), firestoreId: docSnap.id };
+      if (docSnap) {
+        const member = docSnap;
         set({ currentMember: member, isLoading: false });
         return { success: true, data: member };
       } else {
@@ -204,8 +186,7 @@ export const useTeamStore = create((set, get) => ({
         status: 'Agendado',
       };
 
-      const docRef = await addDoc(collection(db, 'schedules'), newSchedule);
-      const scheduleWithId = { ...newSchedule, firestoreId: docRef.id };
+      const scheduleWithId = await addDocument('schedules', newSchedule);
 
       set((state) => ({
         schedules: [scheduleWithId, ...state.schedules],
@@ -223,13 +204,12 @@ export const useTeamStore = create((set, get) => ({
   updateSchedule: async (scheduleId, updates) => {
     set({ isLoading: true, error: null });
     try {
-      const scheduleRef = doc(db, 'schedules', scheduleId);
       const updatedData = {
         ...updates,
         updatedAt: new Date().toISOString(),
       };
 
-      await updateDoc(scheduleRef, updatedData);
+      await updateDocument('schedules', scheduleId, updatedData);
 
       set((state) => ({
         schedules: state.schedules.map((schedule) =>
@@ -254,7 +234,7 @@ export const useTeamStore = create((set, get) => ({
   deleteSchedule: async (scheduleId) => {
     set({ isLoading: true, error: null });
     try {
-      await deleteDoc(doc(db, 'schedules', scheduleId));
+      await deleteDocument('schedules', scheduleId);
 
       set((state) => ({
         schedules: state.schedules.filter((schedule) => schedule.firestoreId !== scheduleId),
@@ -547,34 +527,18 @@ export const useTeamStore = create((set, get) => ({
 
   // Real-time listeners
   subscribeToMembers: () => {
-    const q = query(
-      collection(db, 'team_members'),
-      orderBy('name')
-    );
-    
-    return onSnapshot(q, (querySnapshot) => {
-      const members = querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        firestoreId: doc.id,
-      }));
-      
+    return subscribeToCollection('team_members', (members) => {
       set({ members });
+    }, {
+      orderBy: { field: 'name', direction: 'asc' }
     });
   },
 
   subscribeToSchedules: () => {
-    const q = query(
-      collection(db, 'schedules'),
-      orderBy('date', 'desc')
-    );
-    
-    return onSnapshot(q, (querySnapshot) => {
-      const schedules = querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        firestoreId: doc.id,
-      }));
-      
+    return subscribeToCollection('schedules', (schedules) => {
       set({ schedules });
+    }, {
+      orderBy: { field: 'date', direction: 'desc' }
     });
   },
 }));
