@@ -74,7 +74,12 @@ export const deleteDocument = async (collectionName, id) => {
  */
 export const queryDocuments = async (collectionName, queryOptions) => {
   const collection = getCollectionName(collectionName);
-  return await firestoreService.query(collection, queryOptions);
+  const filters = queryOptions.where || [];
+  const options = {
+    orderBy: queryOptions.orderBy,
+    limit: queryOptions.limit
+  };
+  return await firestoreService.query(collection, filters, options);
 };
 
 /**

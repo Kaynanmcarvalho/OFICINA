@@ -57,10 +57,13 @@ export const useBudgetStore = create((set, get) => ({
         }
       }
       
+      const approvalLink = uuidv4();
+      const budgetNumber = get().generateBudgetNumber();
+      
       const newBudget = {
         ...budgetData,
-        budgetNumber: get().generateBudgetNumber(),
-        approvalLink: uuidv4(),
+        budgetNumber,
+        approvalLink,
         status: 'pending',
         createdAt: now.toISOString(),
         updatedAt: now.toISOString(),
@@ -74,7 +77,14 @@ export const useBudgetStore = create((set, get) => ({
         }]
       };
 
+      console.log('💾 Criando orçamento:', budgetNumber);
+      console.log('🔗 ApprovalLink gerado:', approvalLink);
+      console.log('📋 Link completo:', `${window.location.origin}/orcamento/aprovar/${approvalLink}`);
+
       const budgetWithId = await addDocument('budgets', newBudget);
+
+      console.log('✅ Orçamento salvo com ID:', budgetWithId.id || budgetWithId.firestoreId);
+      console.log('✅ ApprovalLink salvo:', budgetWithId.approvalLink);
 
       set((state) => ({
         budgets: [budgetWithId, ...state.budgets],
@@ -83,6 +93,7 @@ export const useBudgetStore = create((set, get) => ({
 
       return { success: true, data: budgetWithId };
     } catch (error) {
+      console.error('❌ Erro ao criar orçamento:', error);
       set({ error: error.message, isLoading: false });
       return { success: false, error: error.message };
     }
@@ -163,21 +174,48 @@ export const useBudgetStore = create((set, get) => ({
   approveBudget: async (budgetId, approvedItems) => {
     set({ isLoading: true, error: null });
     try {
-      const budget = get().budgets.find(b => b.id === budgetId || b.firestoreId === budgetId);
-      if (!budget) throw new Error('Orçamento não encontrado');
+      console.log('💾 Aprovando orçamento:', budgetId);
+      console.log('📋 Itens aprovados:', approvedItems.length);
+      
+      // Buscar orçamento no estado ou no Firestore
+      let budget = get().budgets.find(b => b.id === budgetId || b.firestoreId === budgetId);
+      
+      // Se não encontrou no estado, buscar no Firestore
+      if (!budget) {
+        console.log('⚠️ Orçamento não encontrado no estado, buscando no Firestore...');
+        const result = await get().getBudgetById(budgetId);
+        if (!result.success) {
+          throw new Error('Orçamento não encontrado');
+        }
+        budget = result.data;
+      }
 
       const allApproved = approvedItems.length === budget.items.length;
       const status = allApproved ? 'approved' : 'partially_approved';
+      
+      console.log('📊 Status:', status);
+      console.log('📊 Todos aprovados?', allApproved);
 
-      await get().updateBudget(budgetId, {
+      // Calcular novo total baseado nos itens aprovados
+      const newTotal = approvedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+      const updateData = {
         status,
         approvedItems,
-        approvedAt: new Date().toISOString()
-      });
+        approvedAt: new Date().toISOString(),
+        total: newTotal
+      };
+      
+      console.log('💾 Dados para atualizar:', updateData);
+
+      const updateResult = await get().updateBudget(budgetId, updateData);
+      
+      console.log('✅ Resultado da atualização:', updateResult);
 
       set({ isLoading: false });
       return { success: true };
     } catch (error) {
+      console.error('❌ Erro ao aprovar orçamento:', error);
       set({ error: error.message, isLoading: false });
       return { success: false, error: error.message };
     }
@@ -274,19 +312,35 @@ export const useBudgetStore = create((set, get) => ({
   getBudgetByApprovalLink: async (approvalLink) => {
     set({ isLoading: true, error: null });
     try {
+      console.log('🔍 Buscando orçamento com approvalLink:', approvalLink);
+      
       const budgets = await queryDocuments('budgets', {
         where: [{ field: 'approvalLink', operator: '==', value: approvalLink }]
       });
 
+      console.log('📦 Orçamentos encontrados:', budgets.length);
+      
       if (budgets.length === 0) {
+        console.error('❌ Nenhum orçamento encontrado com approvalLink:', approvalLink);
+        
+        // Debug: buscar todos os orçamentos para ver se o link existe
+        const allBudgets = await getAllDocuments('budgets');
+        console.log('📋 Total de orçamentos no banco:', allBudgets.length);
+        console.log('📋 Primeiros 5 approvalLinks:', allBudgets.slice(0, 5).map(b => ({
+          budgetNumber: b.budgetNumber,
+          approvalLink: b.approvalLink
+        })));
+        
         set({ error: 'Orçamento não encontrado', isLoading: false });
         return { success: false, error: 'Orçamento não encontrado' };
       }
 
       const budget = budgets[0];
+      console.log('✅ Orçamento encontrado:', budget.budgetNumber);
       set({ currentBudget: budget, isLoading: false });
       return { success: true, data: budget };
     } catch (error) {
+      console.error('❌ Erro ao buscar orçamento:', error);
       set({ error: error.message, isLoading: false });
       return { success: false, error: error.message };
     }

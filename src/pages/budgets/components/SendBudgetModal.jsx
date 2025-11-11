@@ -17,6 +17,7 @@ const SendBudgetModal = ({ isOpen, onClose, budget }) => {
   const [isWhatsAppConnected, setIsWhatsAppConnected] = useState(false);
   const [showDisconnectedAlert, setShowDisconnectedAlert] = useState(false);
   const [showDisconnectConfirm, setShowDisconnectConfirm] = useState(false);
+  const [requireSignature, setRequireSignature] = useState(false);
 
   const approvalLink = budget ? `${window.location.origin}/orcamento/aprovar/${budget.approvalLink}` : '';
 
@@ -173,7 +174,8 @@ Qualquer dúvida, estamos à disposição!`;
       const budgetStore = window.budgetStore || (await import('../../../store/budgetStore')).useBudgetStore.getState();
       await budgetStore.updateBudget(budget.id || budget.firestoreId, {
         status: 'sent',
-        sentAt: new Date().toISOString()
+        sentAt: new Date().toISOString(),
+        requireSignature: requireSignature
       });
 
       toast.success('Orçamento enviado com sucesso!');
@@ -230,7 +232,8 @@ Qualquer dúvida, estamos à disposição!`;
       const budgetStore = window.budgetStore || (await import('../../../store/budgetStore')).useBudgetStore.getState();
       await budgetStore.updateBudget(budget.id || budget.firestoreId, {
         status: 'sent',
-        sentAt: new Date().toISOString()
+        sentAt: new Date().toISOString(),
+        requireSignature: requireSignature
       });
 
       toast.success('Cliente de e-mail aberto!');
@@ -405,6 +408,32 @@ Qualquer dúvida, estamos à disposição!`;
                         Desconectar
                       </button>
                     </div>
+                  </motion.div>
+                )}
+
+                {/* Require Signature Checkbox */}
+                {sendMethod === 'whatsapp' && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.27 }}
+                    className="flex items-center gap-3 p-3 bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50 dark:from-purple-900/20 dark:to-indigo-900/10 border border-purple-200 dark:border-purple-800/50 rounded-2xl"
+                  >
+                    <input
+                      type="checkbox"
+                      id="requireSignature"
+                      checked={requireSignature}
+                      onChange={(e) => setRequireSignature(e.target.checked)}
+                      className="w-5 h-5 text-purple-600 bg-white border-purple-300 rounded focus:ring-purple-500 focus:ring-2 cursor-pointer"
+                    />
+                    <label htmlFor="requireSignature" className="flex-1 cursor-pointer">
+                      <span className="text-sm font-semibold text-purple-900 dark:text-purple-200">
+                        Solicitar Assinatura Digital
+                      </span>
+                      <p className="text-xs text-purple-700 dark:text-purple-300 mt-0.5">
+                        O cliente precisará assinar digitalmente antes de aprovar
+                      </p>
+                    </label>
                   </motion.div>
                 )}
 

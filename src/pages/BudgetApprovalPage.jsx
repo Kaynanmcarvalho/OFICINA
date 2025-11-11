@@ -2,9 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, XCircle, Clock, AlertCircle, Check, X } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, AlertCircle, Check, X, Download } from 'lucide-react';
 import { useBudgetStore } from '../store/budgetStore';
 import toast from 'react-hot-toast';
+import jsPDF from 'jspdf';
 
 const BudgetApprovalPage = () => {
   const { approvalLink } = useParams();
@@ -51,8 +52,20 @@ const BudgetApprovalPage = () => {
     setIsSubmitting(true);
 
     try {
+      console.log('🔍 Budget ID:', budget.id || budget.firestoreId);
+      console.log('🔍 Itens selecionados:', selectedItems.size, 'de', budget.items.length);
+      
       const approvedItemsList = budget.items.filter(item => selectedItems.has(item.id));
-      const result = await approveBudget(budget.firestoreId, approvedItemsList);
+      console.log('📋 Itens aprovados:', approvedItemsList.map(i => i.name));
+      
+      const budgetId = budget.id || budget.firestoreId;
+      if (!budgetId) {
+        throw new Error('ID do orçamento não encontrado');
+      }
+      
+      const result = await approveBudget(budgetId, approvedItemsList);
+
+      console.log('✅ Resultado da aprovação:', result);
 
       if (result.success) {
         toast.success('Orçamento aprovado com sucesso!');
@@ -60,10 +73,196 @@ const BudgetApprovalPage = () => {
       } else {
         toast.error(result.error || 'Erro ao aprovar orçamento');
       }
-    } catch {
-      toast.error('Erro ao processar aprovação');
+    } catch (error) {
+      console.error('❌ Erro ao aprovar:', error);
+      toast.error(error.message || 'Erro ao processar aprovação');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDownloadPDF = () => {
+    try {
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      let yPos = 20;
+
+      // Header - Título
+      doc.setFillColor(59, 130, 246); // Blue
+      doc.rect(0, 0, pageWidth, 35, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(24);
+      doc.setFont('helvetica', 'bold');
+      doc.text('ORÇAMENTO', pageWidth / 2, 20, { align: 'center' });
+      
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.text(budget.budgetNumber, pageWidth / 2, 28, { align: 'center' });
+
+      yPos = 45;
+
+      // Informações do Cliente
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Dados do Cliente', 15, yPos);
+      yPos += 8;
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Cliente: ${budget.clientName}`, 15, yPos);
+      yPos += 6;
+
+      if (budget.vehiclePlate) {
+        doc.text(`Veículo: ${budget.vehicleBrand} ${budget.vehicleModel}`, 15, yPos);
+        yPos += 6;
+        doc.text(`Placa: ${budget.vehiclePlate}`, 15, yPos);
+        yPos += 6;
+      }
+
+      yPos += 5;
+
+      // Datas
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Informações do Orçamento', 15, yPos);
+      yPos += 8;
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Data de Emissão: ${new Date(budget.createdAt).toLocaleDateString('pt-BR')}`, 15, yPos);
+      yPos += 6;
+      doc.text(`Validade: ${new Date(budget.expiresAt).toLocaleDateString('pt-BR')}`, 15, yPos);
+      yPos += 6;
+
+      if (budget.approvedAt) {
+        doc.text(`Data de Aprovação: ${new Date(budget.approvedAt).toLocaleDateString('pt-BR')}`, 15, yPos);
+        yPos += 6;
+      }
+
+      const statusText = budget.status === 'approved' ? 'Aprovado' 
+        : budget.status === 'partially_approved' ? 'Parcialmente Aprovado'
+        : budget.status === 'expired' ? 'Expirado'
+        : 'Pendente';
+      doc.text(`Status: ${statusText}`, 15, yPos);
+      yPos += 10;
+
+      // Tabela de Itens
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Itens', 15, yPos);
+      yPos += 8;
+
+      // Cabeçalho da tabela
+      doc.setFillColor(240, 240, 240);
+      doc.rect(15, yPos - 5, pageWidth - 30, 8, 'F');
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Item', 18, yPos);
+      doc.text('Qtd', pageWidth - 80, yPos);
+      doc.text('Preço Unit.', pageWidth - 60, yPos);
+      doc.text('Total', pageWidth - 30, yPos, { align: 'right' });
+      yPos += 8;
+
+      // Itens
+      doc.setFont('helvetica', 'normal');
+      const itemsToShow = isAlreadyProcessed && budget.approvedItems ? budget.items : budget.items;
+      
+      itemsToShow.forEach((item) => {
+        const isApproved = isAlreadyProcessed ? approvedItemIds.has(item.id) : true;
+        
+        // Verificar se precisa de nova página
+        if (yPos > pageHeight - 30) {
+          doc.addPage();
+          yPos = 20;
+        }
+
+        // Cor diferente para itens rejeitados
+        if (!isApproved) {
+          doc.setTextColor(150, 150, 150);
+        } else {
+          doc.setTextColor(0, 0, 0);
+        }
+
+        const itemName = item.name + (item.description ? ` - ${item.description}` : '');
+        const maxWidth = pageWidth - 110;
+        const lines = doc.splitTextToSize(itemName, maxWidth);
+        
+        doc.text(lines[0], 18, yPos);
+        doc.text(item.quantity.toString(), pageWidth - 80, yPos);
+        doc.text(`R$ ${item.price.toFixed(2)}`, pageWidth - 60, yPos);
+        doc.text(`R$ ${(item.price * item.quantity).toFixed(2)}`, pageWidth - 18, yPos, { align: 'right' });
+        
+        if (!isApproved) {
+          doc.setTextColor(220, 38, 38);
+          doc.setFontSize(7);
+          doc.text('(NÃO APROVADO)', 18, yPos + 3);
+          doc.setFontSize(9);
+        }
+        
+        yPos += 8;
+      });
+
+      yPos += 5;
+
+      // Totais
+      doc.setDrawColor(200, 200, 200);
+      doc.line(15, yPos, pageWidth - 15, yPos);
+      yPos += 8;
+
+      if (isAlreadyProcessed && budget.approvedItems && budget.approvedItems.length < budget.items.length) {
+        doc.setTextColor(150, 150, 150);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Total Original:', pageWidth - 80, yPos);
+        const originalTotal = budget.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        doc.text(`R$ ${originalTotal.toFixed(2)}`, pageWidth - 18, yPos, { align: 'right' });
+        yPos += 8;
+      }
+
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('TOTAL:', pageWidth - 80, yPos);
+      
+      const finalTotal = isAlreadyProcessed && budget.approvedItems
+        ? budget.approvedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+        : budget.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      
+      doc.setTextColor(59, 130, 246);
+      doc.setFontSize(14);
+      doc.text(`R$ ${finalTotal.toFixed(2)}`, pageWidth - 18, yPos, { align: 'right' });
+
+      // Observações
+      if (budget.notes) {
+        yPos += 15;
+        if (yPos > pageHeight - 40) {
+          doc.addPage();
+          yPos = 20;
+        }
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Observações:', 15, yPos);
+        yPos += 8;
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        const notesLines = doc.splitTextToSize(budget.notes, pageWidth - 30);
+        doc.text(notesLines, 15, yPos);
+      }
+
+      // Footer
+      const footerY = pageHeight - 15;
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')}`, pageWidth / 2, footerY, { align: 'center' });
+
+      // Salvar PDF
+      doc.save(`Orcamento-${budget.budgetNumber}.pdf`);
+      toast.success('PDF baixado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      toast.error('Erro ao gerar PDF');
     }
   };
 
@@ -92,6 +291,11 @@ const BudgetApprovalPage = () => {
 
   const isExpired = new Date(budget.expiresAt) < new Date();
   const isAlreadyProcessed = budget.status !== 'pending';
+  
+  // Criar set de IDs aprovados para verificação rápida
+  const approvedItemIds = isAlreadyProcessed && budget.approvedItems
+    ? new Set(budget.approvedItems.map(item => item.id))
+    : new Set();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 py-12 px-4">
@@ -193,67 +397,103 @@ const BudgetApprovalPage = () => {
           transition={{ delay: 0.1 }}
           className="bg-white rounded-3xl shadow-xl p-8 mb-6"
         >
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Itens do Orçamento</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Itens do Orçamento
+          </h2>
           
           <div className="space-y-3">
             <AnimatePresence>
-              {budget.items?.map((item, index) => (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  onClick={() => !isExpired && !isAlreadyProcessed && toggleItemSelection(item.id)}
-                  className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${
-                    selectedItems.has(item.id)
-                      ? 'border-green-500 bg-green-50'
-                      : 'border-gray-200 bg-gray-50 hover:border-gray-300'
-                  } ${(isExpired || isAlreadyProcessed) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 flex-1">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        selectedItems.has(item.id)
-                          ? 'bg-green-500'
-                          : 'bg-gray-300'
-                      }`}>
-                        {selectedItems.has(item.id) ? (
-                          <Check className="w-5 h-5 text-white" />
-                        ) : (
-                          <X className="w-5 h-5 text-white" />
-                        )}
+              {budget.items?.map((item, index) => {
+                const isApproved = isAlreadyProcessed ? approvedItemIds.has(item.id) : selectedItems.has(item.id);
+                const isRejected = isAlreadyProcessed && !approvedItemIds.has(item.id);
+                
+                return (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    onClick={() => !isExpired && !isAlreadyProcessed && toggleItemSelection(item.id)}
+                    className={`p-4 rounded-xl border-2 transition-all ${
+                      isRejected 
+                        ? 'border-red-300 bg-red-50 opacity-60'
+                        : isApproved
+                          ? 'border-green-500 bg-green-50'
+                          : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                    } ${(!isExpired && !isAlreadyProcessed) ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 flex-1">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          isRejected
+                            ? 'bg-red-500'
+                            : isApproved
+                              ? 'bg-green-500'
+                              : 'bg-gray-300'
+                        }`}>
+                          {isRejected ? (
+                            <X className="w-5 h-5 text-white" />
+                          ) : isApproved ? (
+                            <Check className="w-5 h-5 text-white" />
+                          ) : (
+                            <X className="w-5 h-5 text-white" />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <p className={`font-bold ${isRejected ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
+                            {item.name}
+                          </p>
+                          {item.description && (
+                            <p className={`text-sm ${isRejected ? 'text-gray-400 line-through' : 'text-gray-600'}`}>
+                              {item.description}
+                            </p>
+                          )}
+                          <p className={`text-sm mt-1 ${isRejected ? 'text-gray-400 line-through' : 'text-gray-500'}`}>
+                            {item.quantity}x R$ {item.price.toFixed(2)}
+                          </p>
+                          {isRejected && (
+                            <p className="text-xs text-red-600 font-semibold mt-1">
+                              ❌ Item não aprovado
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <p className="font-bold text-gray-900">{item.name}</p>
-                        {item.description && (
-                          <p className="text-sm text-gray-600">{item.description}</p>
-                        )}
-                        <p className="text-sm text-gray-500 mt-1">
-                          {item.quantity}x R$ {item.price.toFixed(2)}
+                      <div className="text-right">
+                        <p className={`text-xl font-bold ${isRejected ? 'text-gray-400 line-through' : 'text-gray-900'}`}>
+                          R$ {item.total.toFixed(2)}
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-xl font-bold text-gray-900">
-                        R$ {item.total.toFixed(2)}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                );
+              })}
             </AnimatePresence>
           </div>
 
           {/* Total */}
           <div className="mt-6 pt-6 border-t-2 border-gray-200">
-            <div className="flex items-center justify-between">
-              <span className="text-xl font-bold text-gray-900">Total</span>
-              <span className="text-3xl font-bold text-blue-600">
-                R$ {budget.items
-                  ?.filter(item => selectedItems.has(item.id))
-                  .reduce((sum, item) => sum + item.total, 0)
-                  .toFixed(2)}
-              </span>
+            <div className="space-y-3">
+              {isAlreadyProcessed && budget.approvedItems && budget.approvedItems.length < budget.items.length && (
+                <div className="flex items-center justify-between text-gray-500">
+                  <span className="text-sm">Total Original</span>
+                  <span className="text-lg line-through">
+                    R$ {budget.items.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center justify-between">
+                <span className="text-xl font-bold text-gray-900">
+                  {isAlreadyProcessed ? 'Total Aprovado' : 'Total'}
+                </span>
+                <span className="text-3xl font-bold text-blue-600">
+                  R$ {isAlreadyProcessed && budget.approvedItems
+                    ? budget.approvedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)
+                    : budget.items
+                        ?.filter(item => selectedItems.has(item.id))
+                        .reduce((sum, item) => sum + item.total, 0)
+                        .toFixed(2)}
+                </span>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -272,13 +512,13 @@ const BudgetApprovalPage = () => {
         )}
 
         {/* Action Buttons */}
-        {!isExpired && !isAlreadyProcessed && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="flex gap-4"
-          >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="flex flex-col sm:flex-row gap-4"
+        >
+          {!isExpired && !isAlreadyProcessed && (
             <button
               onClick={handleApprove}
               disabled={isSubmitting || selectedItems.size === 0}
@@ -287,8 +527,16 @@ const BudgetApprovalPage = () => {
               <CheckCircle className="w-6 h-6" />
               {isSubmitting ? 'Processando...' : 'Aprovar Orçamento'}
             </button>
-          </motion.div>
-        )}
+          )}
+          
+          <button
+            onClick={handleDownloadPDF}
+            className="flex-1 flex items-center justify-center gap-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-lg transition-all"
+          >
+            <Download className="w-6 h-6" />
+            Baixar PDF
+          </button>
+        </motion.div>
 
         {/* Info */}
         <motion.div
