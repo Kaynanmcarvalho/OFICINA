@@ -126,7 +126,12 @@ export const whatsappService = {
       console.log('✅ Mensagem enviada via empresaId:', empresaId, 'de:', result.sentFrom);
       return result;
     } catch (error) {
-      console.error('Erro ao enviar mensagem WhatsApp:', error);
+      // Detectar erro de CORS ou falha de rede
+      if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+        console.error('❌ Erro de CORS');
+        throw new Error('Erro de CORS: O servidor WhatsApp não está acessível. Verifique se o backend está rodando.');
+      }
+      console.error('❌ Erro ao enviar mensagem:', error);
       throw error;
     }
   },
@@ -161,7 +166,12 @@ export const whatsappService = {
         empresaId: data.empresaId
       };
     } catch (error) {
-      console.error('Erro ao verificar status WhatsApp:', error);
+      // Detectar erro de CORS ou falha de rede
+      if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+        console.error('❌ Erro de CORS');
+      } else {
+        console.error('❌ Erro ao verificar status:', error);
+      }
       return {
         success: false,
         exists: false,
@@ -222,7 +232,14 @@ export const whatsappService = {
         empresaId: data.empresaId
       };
     } catch (error) {
-      console.error('Erro ao conectar WhatsApp:', error);
+      // Detectar erro de CORS ou falha de rede
+      if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+        console.error('❌ Erro de CORS ou servidor inacessível');
+        const corsError = new Error('Erro de CORS: O servidor WhatsApp não está acessível ou não permite requisições do frontend. Verifique se o backend está rodando e configurado corretamente.');
+        corsError.code = 'CORS_ERROR';
+        throw corsError;
+      }
+      console.error('❌ Erro ao conectar:', error);
       throw error;
     }
   },
@@ -256,7 +273,12 @@ export const whatsappService = {
       console.log('✅ Desconectado empresaId:', result.empresaId);
       return result;
     } catch (error) {
-      console.error('Erro ao desconectar WhatsApp:', error);
+      // Detectar erro de CORS ou falha de rede
+      if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+        console.error('❌ Erro de CORS');
+        throw new Error('Erro de CORS: O servidor WhatsApp não está acessível.');
+      }
+      console.error('❌ Erro ao desconectar:', error);
       throw error;
     }
   },
