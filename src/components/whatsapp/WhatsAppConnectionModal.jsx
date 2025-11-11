@@ -170,10 +170,12 @@ export default function WhatsAppConnectionModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6">
+    <AnimatePresence mode="wait">
+      {isOpen && (
+      <div key="whatsapp-modal" className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6">
         {/* Backdrop */}
         <div
+          key="backdrop"
           onClick={handleClose}
           className="absolute inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-md"
         />
@@ -391,6 +393,7 @@ export default function WhatsAppConnectionModal({ isOpen, onClose }) {
           </div>
         </div>
       </div>
+      )}
 
       {/* Confirm Dialog - Desconectar */}
       <ConfirmDialog
