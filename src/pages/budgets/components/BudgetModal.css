@@ -1,0 +1,282 @@
+/**
+ * Budget Modal - Apple Style Premium
+ * Design minimalista, elegante e responsivo
+ */
+
+/* ========================================
+   MODAL CONTAINER
+   ======================================== */
+
+.budget-modal-overlay {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.budget-modal-container {
+  max-height: 90vh;
+  max-width: 95vw;
+}
+
+/* Responsividade do Modal */
+@media (min-width: 640px) {
+  .budget-modal-container {
+    max-width: 90vw;
+  }
+}
+
+@media (min-width: 768px) {
+  .budget-modal-container {
+    max-width: 85vw;
+  }
+}
+
+@media (min-width: 1024px) {
+  .budget-modal-container {
+    max-width: 1200px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .budget-modal-container {
+    max-width: 1400px;
+  }
+}
+
+/* ========================================
+   SCROLLBAR CUSTOMIZADA
+   ======================================== */
+
+.budget-modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.budget-modal-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.budget-modal-content::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 4px;
+}
+
+.budget-modal-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.5);
+}
+
+.dark .budget-modal-content::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.5);
+}
+
+.dark .budget-modal-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.7);
+}
+
+/* ========================================
+   DROPDOWNS
+   ======================================== */
+
+.budget-dropdown {
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   ITEM CARDS
+   ======================================== */
+
+.budget-item-card {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.budget-item-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dark .budget-item-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================
+   INPUTS PREMIUM
+   ======================================== */
+
+.budget-input {
+  transition: all 0.2s ease;
+}
+
+.budget-input:focus {
+  transform: translateY(-1px);
+}
+
+/* ========================================
+   BOTÕES
+   ======================================== */
+
+.budget-btn-primary {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.budget-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+}
+
+.budget-btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+/* ========================================
+   SEÇÕES
+   ======================================== */
+
+.budget-section {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   GRID RESPONSIVO
+   ======================================== */
+
+.budget-grid-responsive {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .budget-grid-responsive {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .budget-grid-responsive {
+    gap: 2rem;
+  }
+}
+
+/* ========================================
+   TOTAL DESTACADO
+   ======================================== */
+
+.budget-total {
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.1) 0%, 
+    rgba(147, 51, 234, 0.1) 100%
+  );
+  border: 2px solid rgba(59, 130, 246, 0.2);
+}
+
+.dark .budget-total {
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.15) 0%, 
+    rgba(147, 51, 234, 0.15) 100%
+  );
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* ========================================
+   BADGES
+   ======================================== */
+
+.budget-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.budget-badge-success {
+  background: rgba(16, 185, 129, 0.1);
+  color: rgb(16, 185, 129);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.budget-badge-warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: rgb(245, 158, 11);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.budget-badge-danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: rgb(239, 68, 68);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.dark .budget-badge-success {
+  background: rgba(16, 185, 129, 0.15);
+  color: rgb(52, 211, 153);
+}
+
+.dark .budget-badge-warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: rgb(251, 191, 36);
+}
+
+.dark .budget-badge-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: rgb(248, 113, 113);
+}
+
+/* ========================================
+   LOADING STATE
+   ======================================== */
+
+.budget-loading {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ========================================
+   MOBILE OPTIMIZATIONS
+   ======================================== */
+
+@media (max-width: 640px) {
+  .budget-modal-container {
+    border-radius: 1rem 1rem 0 0;
+    max-height: 95vh;
+  }
+  
+  .budget-section {
+    padding: 1rem;
+  }
+  
+  .budget-grid-responsive {
+    gap: 1rem;
+  }
+}

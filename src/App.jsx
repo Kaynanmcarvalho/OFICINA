@@ -17,7 +17,7 @@ const RegisterPage = React.lazy(() => import('./pages/auth/RegisterPage'));
 const CompleteProfilePage = React.lazy(() => import('./pages/auth/CompleteProfilePage'));
 const DashboardPage = React.lazy(() => import('./pages/dashboard/index'));
 const EmployeeManagementPage = React.lazy(() => import('./pages/EmployeeManagementPage'));
-const CheckinPage = React.lazy(() => import('./pages/checkin/index'));
+const CheckinPage = React.lazy(() => import('./pages/CheckInPage'));
 const CheckInDetailsPage = React.lazy(() => import('./pages/CheckInDetailsPage'));
 const ClientsPage = React.lazy(() => import('./pages/ClientsPage'));
 const InventoryPage = React.lazy(() => import('./pages/InventoryPage'));
@@ -66,17 +66,26 @@ function App() {
   }, [initializeStores]);
 
   useEffect(() => {
-    // Setup real-time listeners when user is authenticated AND empresaId is available
+    // Setup real-time listeners when user is authenticated
     if (user) {
-      // Aguardar empresaId estar disponível no sessionStorage
+      // Aguardar empresaId estar disponível no sessionStorage OU verificar se é Super Admin
       let attempts = 0;
       const maxAttempts = 50; // 5 segundos máximo (50 * 100ms)
       
       const checkEmpresaId = () => {
         const empresaId = sessionStorage.getItem('empresaId');
+        const userId = sessionStorage.getItem('userId');
         
-        if (empresaId) {
-          console.log('[App] empresaId available, setting up listeners');
+        // Super Admin não tem empresaId, mas tem userId
+        const isSuperAdmin = !empresaId && userId;
+        
+        if (empresaId || isSuperAdmin) {
+          if (isSuperAdmin) {
+            console.log('[App] 🌟 Super Admin detected - setting up listeners without empresaId');
+          } else {
+            console.log('[App] empresaId available, setting up listeners');
+          }
+          
           try {
             const unsubscribe = setupRealtimeListeners();
             return unsubscribe;
@@ -87,12 +96,24 @@ function App() {
         } else {
           attempts++;
           if (attempts < maxAttempts) {
-            console.log(`[App] Waiting for empresaId... (attempt ${attempts}/${maxAttempts})`);
+            console.log(`[App] Waiting for empresaId or Super Admin detection... (attempt ${attempts}/${maxAttempts})`);
             // Tentar novamente após um pequeno delay
             const timer = setTimeout(checkEmpresaId, 100);
             return () => clearTimeout(timer);
           } else {
-            console.warn('[App] empresaId not available after max attempts, skipping listeners');
+            console.warn('[App] empresaId not available after max attempts, checking if Super Admin...');
+            // Última tentativa: verificar se é Super Admin
+            if (userId) {
+              console.log('[App] 🌟 Super Admin detected on final attempt - proceeding without empresaId');
+              try {
+                const unsubscribe = setupRealtimeListeners();
+                return unsubscribe;
+              } catch (error) {
+                console.error('[App] Error setting up listeners:', error);
+                return () => {};
+              }
+            }
+            console.warn('[App] Not Super Admin and no empresaId - skipping listeners');
             return () => {};
           }
         }

@@ -10,16 +10,29 @@ import { getAllDocuments, subscribeToCollection } from '../../../services/storeH
  */
 export const buscarEstatisticasGerais = async () => {
   try {
-    const [clientesData, veiculosData, ferramentasData, estoqueData] = await Promise.all([
+    const [clientesData, veiculosData, ferramentasData, estoqueData, orcamentosData, checkinsData] = await Promise.all([
       getAllDocuments('clients'),
       getAllDocuments('vehicles'),
       getAllDocuments('tools'),
-      getAllDocuments('inventory')
+      getAllDocuments('inventory'),
+      getAllDocuments('budgets'),
+      getAllDocuments('checkins')
     ]);
+
+    // Calcular veículos ativos (apenas em atendimento)
+    const statusAtivos = ['Em Montagem', 'Aguardando Peças', 'Teste', 'em_servico', 'in_service', 'aguardando_pecas', 'waiting_parts', 'teste', 'testing'];
+    const veiculosAtivos = checkinsData.filter(checkin => 
+      checkin.status && statusAtivos.includes(checkin.status)
+    ).length;
 
     // Calcular ferramentas em uso
     const ferramentasEmUso = ferramentasData.filter(f => 
       f.status === 'Em Uso' || f.status === 'em_uso' || f.status === 'in_use'
+    ).length;
+
+    // Calcular ferramentas em manutenção
+    const ferramentasManutencao = ferramentasData.filter(f => 
+      f.status === 'Manutenção' || f.status === 'manutencao' || f.status === 'maintenance'
     ).length;
 
     // Calcular estoque total (soma de quantidades)
@@ -30,19 +43,42 @@ export const buscarEstatisticasGerais = async () => {
       (item.quantity || item.currentStock || 0) <= (item.minQuantity || item.minStock || 5)
     ).length;
 
+    // Calcular receita mensal (orçamentos aprovados do mês atual)
+    const hoje = new Date();
+    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    const orcamentosMesAtual = orcamentosData.filter(orc => {
+      if (!orc.createdAt) return false;
+      const dataOrc = orc.createdAt.seconds ? new Date(orc.createdAt.seconds * 1000) : new Date(orc.createdAt);
+      return dataOrc >= inicioMes && (orc.status === 'approved' || orc.status === 'aprovado');
+    });
+    const receitaMensal = orcamentosMesAtual.reduce((sum, orc) => sum + (orc.total || 0), 0);
+
+    // Calcular serviços hoje
+    const servicosHoje = checkinsData.filter(checkin => {
+      if (!checkin.createdAt) return false;
+      const dataCheckin = checkin.createdAt.seconds ? new Date(checkin.createdAt.seconds * 1000) : new Date(checkin.createdAt);
+      return dataCheckin.toDateString() === hoje.toDateString();
+    }).length;
+
     return {
       totalClientes: clientesData.length,
       totalVeiculos: veiculosData.length,
+      veiculosAtivos,
       totalFerramentas: ferramentasData.length,
       ferramentasEmUso,
-      ferramentasDisponiveis: ferramentasData.length - ferramentasEmUso,
+      ferramentasDisponiveis: ferramentasData.length - ferramentasEmUso - ferramentasManutencao,
+      ferramentasManutencao,
       totalProdutos: estoqueData.length,
       totalEstoque: estoqueTotal,
       produtosBaixoEstoque,
+      receitaMensal,
+      servicosHoje,
       clientes: clientesData,
       veiculos: veiculosData,
       ferramentas: ferramentasData,
-      estoque: estoqueData
+      estoque: estoqueData,
+      orcamentos: orcamentosData,
+      checkins: checkinsData
     };
   } catch (error) {
     console.error('[Dashboard] Erro ao buscar estatísticas:', error);
@@ -377,7 +413,11 @@ export const calcularTendencias = async () => {
 
     // Calcular tendências
     const getTendencia = (atual, anterior) => {
+      // Se ambos são zero, não há dados suficientes
+      if (anterior === 0 && atual === 0) return 'stable';
+      // Se anterior é zero mas atual tem dados, considerar crescimento
       if (anterior === 0) return atual > 0 ? 'up' : 'stable';
+      
       const diferenca = ((atual - anterior) / anterior) * 100;
       if (diferenca > 5) return 'up';
       if (diferenca < -5) return 'down';
@@ -385,7 +425,11 @@ export const calcularTendencias = async () => {
     };
 
     const getPercentual = (atual, anterior) => {
+      // Se ambos são zero, retornar 0
+      if (anterior === 0 && atual === 0) return 0;
+      // Se anterior é zero mas atual tem dados
       if (anterior === 0) return atual > 0 ? 100 : 0;
+      
       return Math.abs(((atual - anterior) / anterior) * 100).toFixed(1);
     };
 
@@ -425,7 +469,9 @@ export const subscribeToAllCollections = (callback) => {
     subscribeToCollection('clients', () => callback('clients')),
     subscribeToCollection('vehicles', () => callback('vehicles')),
     subscribeToCollection('tools', () => callback('tools')),
-    subscribeToCollection('inventory', () => callback('inventory'))
+    subscribeToCollection('inventory', () => callback('inventory')),
+    subscribeToCollection('budgets', () => callback('budgets')),
+    subscribeToCollection('checkins', () => callback('checkins'))
   );
 
   // Retornar função para cancelar todos os listeners

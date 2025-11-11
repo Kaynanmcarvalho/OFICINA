@@ -1,0 +1,56 @@
+/* Animações otimizadas para o modal de detalhes */
+
+/* Esconder scrollbar mas manter funcionalidade */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Otimização de performance para animações */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* Transições suaves para botões de aba */
+.tab-button {
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animação de fade elegante */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOutDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fade-out-down {
+  animation: fadeOutDown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}

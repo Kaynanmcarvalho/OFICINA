@@ -14,36 +14,36 @@ const BudgetCard = forwardRef(({ budget, onEdit, onSend, onCheckin }, ref) => {
         icon: Clock,
         label: 'Pendente',
         color: 'text-white',
-        bg: 'bg-yellow-50 dark:bg-yellow-900/20',
-        border: 'border-yellow-200 dark:border-yellow-800'
+        bg: 'bg-yellow-500 dark:bg-yellow-600',
+        border: 'border-yellow-600 dark:border-yellow-700'
       },
       sent: {
         icon: Send,
         label: 'Enviado',
         color: 'text-white',
-        bg: 'bg-blue-50 dark:bg-blue-900/20',
-        border: 'border-blue-200 dark:border-blue-800'
+        bg: 'bg-blue-500 dark:bg-blue-600',
+        border: 'border-blue-600 dark:border-blue-700'
       },
       approved: {
         icon: CheckCircle,
         label: 'Aprovado',
         color: 'text-white',
-        bg: 'bg-green-50 dark:bg-green-900/20',
-        border: 'border-green-200 dark:border-green-800'
+        bg: 'bg-green-500 dark:bg-green-600',
+        border: 'border-green-600 dark:border-green-700'
       },
       partially_approved: {
         icon: AlertCircle,
         label: 'Parcialmente Aprovado',
         color: 'text-white',
-        bg: 'bg-blue-50 dark:bg-blue-900/20',
-        border: 'border-blue-200 dark:border-blue-800'
+        bg: 'bg-blue-500 dark:bg-blue-600',
+        border: 'border-blue-600 dark:border-blue-700'
       },
       expired: {
         icon: XCircle,
         label: 'Expirado',
         color: 'text-white',
-        bg: 'bg-gray-50 dark:bg-gray-900/20',
-        border: 'border-gray-200 dark:border-gray-800'
+        bg: 'bg-gray-500 dark:bg-gray-600',
+        border: 'border-gray-600 dark:border-gray-700'
       }
     };
     return configs[status] || configs.pending;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, Search } from 'lucide-react';
+import { X, Search, Car } from 'lucide-react';
 import { useClientStore } from '../../store';
+import { consultarPlaca, isValidPlate } from '../../services/vehicleApiService';
 import toast from 'react-hot-toast';
 
 const MotorcycleForm = ({ onClose, onSubmit, motorcycle = null }) => {
@@ -24,6 +25,7 @@ const MotorcycleForm = ({ onClose, onSubmit, motorcycle = null }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [isConsultingPlate, setIsConsultingPlate] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -115,6 +117,69 @@ const MotorcycleForm = ({ onClose, onSubmit, motorcycle = null }) => {
     setFormData(prev => ({ ...prev, plate: formatted }));
   };
 
+  const handleConsultarPlaca = async () => {
+    console.log('[VehicleForm] handleConsultarPlaca called');
+    console.log('[VehicleForm] Placa:', formData.plate);
+    
+    if (!formData.plate) {
+      console.log('[VehicleForm] Placa vazia');
+      toast.error('Digite uma placa para consultar');
+      return;
+    }
+
+    if (!isValidPlate(formData.plate)) {
+      console.log('[VehicleForm] Placa inválida:', formData.plate);
+      toast.error('Placa inválida. Use o formato ABC-1234 ou ABC1D23');
+      return;
+    }
+
+    console.log('[VehicleForm] Iniciando consulta...');
+    setIsConsultingPlate(true);
+    const loadingToast = toast.loading('Consultando placa...');
+
+    try {
+      console.log('[VehicleForm] Chamando consultarPlaca...');
+      const result = await consultarPlaca(formData.plate);
+      console.log('[VehicleForm] Resultado:', result);
+
+      if (result.success) {
+        // Preencher formulário com dados da API
+        setFormData(prev => ({
+          ...prev,
+          brand: result.data.brand || prev.brand,
+          model: result.data.model || prev.model,
+          year: result.data.year || prev.year,
+          color: result.data.color || prev.color,
+          chassisNumber: result.data.chassisNumber || prev.chassisNumber,
+          renavam: result.data.renavam || prev.renavam,
+          engineSize: result.data.engineSize || prev.engineSize,
+        }));
+
+        toast.success('Dados do veículo carregados com sucesso!', {
+          id: loadingToast,
+        });
+
+        // Mostrar informações adicionais se disponíveis
+        if (result.data.owner) {
+          toast.success(`Proprietário: ${result.data.owner}`, {
+            duration: 5000,
+          });
+        }
+      } else {
+        toast.error(result.error || 'Erro ao consultar placa', {
+          id: loadingToast,
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao consultar placa:', error);
+      toast.error('Erro ao consultar placa. Tente novamente.', {
+        id: loadingToast,
+      });
+    } finally {
+      setIsConsultingPlate(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -193,7 +258,45 @@ const MotorcycleForm = ({ onClose, onSubmit, motorcycle = null }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Placa com botão de busca */}
+      <div className="grid grid-cols-1 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Placa *
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              name="plate"
+              value={formData.plate}
+              onChange={handlePlateChange}
+              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="ABC-1234 ou ABC1D23"
+              maxLength={8}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => {
+                console.log('[VehicleForm] Botão clicado!');
+                handleConsultarPlaca();
+              }}
+              disabled={isConsultingPlate || !formData.plate}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-lg transition-all duration-200 font-semibold shadow-lg hover:shadow-xl disabled:cursor-not-allowed whitespace-nowrap"
+              title="Consultar dados do veículo pela placa"
+            >
+              <Car className="w-4 h-4" />
+              {isConsultingPlate ? 'Consultando...' : 'Buscar Veículo'}
+            </button>
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            💡 Digite a placa e clique em "Buscar Veículo" para preencher automaticamente os dados
+          </p>
+        </div>
+      </div>
+
+      {/* Ano e Cor */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Ano
@@ -207,22 +310,6 @@ const MotorcycleForm = ({ onClose, onSubmit, motorcycle = null }) => {
             max={new Date().getFullYear() + 1}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="2023"
-          />
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Placa *
-          </label>
-          <input
-            type="text"
-            name="plate"
-            value={formData.plate}
-            onChange={handlePlateChange}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="ABC-1234 ou ABC1D23"
-            maxLength={8}
-            required
           />
         </div>
         

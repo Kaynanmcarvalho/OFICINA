@@ -1,260 +1,222 @@
-import { getVehicleFromCache, saveVehicleToCache, incrementCacheHit } from './vehicleCacheService';
-import { correctVehicleType } from './vehicleTypeDetector';
+/**
+ * Vehicle API Service
+ * Integração com API de consulta de placas
+ */
 
-// URL do backend (já inclui /api no .env)
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://torq.up.railway.app/api';
+const API_BASE_URL = 'https://torq.up.railway.app';
 
-// Endpoints (sem /api pois já está no API_BASE_URL)
-// Baseado na documentação: /api/vehicles/plate/:plate
-const ENDPOINTS = {
-    searchPlate: '/vehicles/plate',
-    brands: '/vehicles/brands',
-    models: '/vehicles/models',
-    years: '/vehicles/years'
+// Mock de dados para teste (remover quando API estiver funcionando)
+const MOCK_DATA = {
+  'ECO4087': {
+    marca: 'Honda',
+    modelo: 'CB 600F Hornet',
+    ano: '2023',
+    cor: 'Vermelha',
+    chassi: '9C2JC50001R000001',
+    renavam: '12345678901',
+    cilindrada: '600',
+    combustivel: 'Gasolina',
+    categoria: 'Motocicleta',
+  },
+  'ABC1234': {
+    marca: 'Yamaha',
+    modelo: 'MT-07',
+    ano: '2022',
+    cor: 'Azul',
+    chassi: '9C6KE1110NR000001',
+    renavam: '98765432109',
+    cilindrada: '689',
+    combustivel: 'Gasolina',
+    categoria: 'Motocicleta',
+  }
 };
 
 /**
- * Busca informações do veículo pela placa
- * 1. Primeiro tenta buscar no cache do Firebase (instantâneo)
- * 2. Se não encontrar, faz scraping e salva no cache
+ * Consulta dados do veículo pela placa
+ * @param {string} plate - Placa do veículo (formato: ABC1234 ou ABC-1234)
+ * @returns {Promise<Object>} Dados do veículo
+ */
+export const consultarPlaca = async (plate) => {
+  try {
+    // Remover caracteres especiais da placa
+    const cleanPlate = plate.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    
+    if (!cleanPlate || cleanPlate.length < 7) {
+      throw new Error('Placa inválida');
+    }
+
+    console.log('[VehicleAPI] Consultando placa:', cleanPlate);
+
+    // MODO MOCK: Verificar se existe nos dados de teste
+    if (MOCK_DATA[cleanPlate]) {
+      console.log('[VehicleAPI] 🎭 MODO MOCK - Usando dados de teste');
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simular delay da API
+      
+      const mockData = MOCK_DATA[cleanPlate];
+      console.log('[VehicleAPI] Dados mock:', mockData);
+      
+      return {
+        success: true,
+        data: {
+          plate: cleanPlate,
+          brand: mockData.marca || '',
+          model: mockData.modelo || '',
+          year: mockData.ano || '',
+          color: mockData.cor || '',
+          chassisNumber: mockData.chassi || '',
+          renavam: mockData.renavam || '',
+          engineSize: mockData.cilindrada || '',
+          fuel: mockData.combustivel || '',
+          category: mockData.categoria || '',
+        }
+      };
+    }
+
+    // Tentar API real
+    console.log('[VehicleAPI] Tentando API real...');
+    const response = await fetch(`${API_BASE_URL}/api/vehicle/${cleanPlate}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('Veículo não encontrado na base de dados');
+      }
+      throw new Error(`Erro na consulta: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('[VehicleAPI] Dados recebidos da API:', data);
+
+    return {
+      success: true,
+      data: {
+        plate: cleanPlate,
+        brand: data.marca || data.brand || '',
+        model: data.modelo || data.model || '',
+        year: data.ano || data.year || '',
+        color: data.cor || data.color || '',
+        chassisNumber: data.chassi || data.chassis || data.chassisNumber || '',
+        renavam: data.renavam || '',
+        engineSize: data.cilindrada || data.engineSize || '',
+        // Campos adicionais que a API pode retornar
+        fuel: data.combustivel || data.fuel || '',
+        category: data.categoria || data.category || '',
+        owner: data.proprietario || data.owner || '',
+        city: data.cidade || data.city || '',
+        state: data.estado || data.state || '',
+      }
+    };
+  } catch (error) {
+    console.error('[VehicleAPI] Erro na consulta:', error);
+    return {
+      success: false,
+      error: error.message || 'Erro ao consultar placa'
+    };
+  }
+};
+
+/**
+ * Formata placa para o padrão brasileiro
+ * @param {string} plate - Placa sem formatação
+ * @returns {string} Placa formatada (ABC-1234 ou ABC1D23)
+ */
+export const formatPlate = (plate) => {
+  const clean = plate.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+  
+  // Placa antiga: ABC-1234
+  if (/^[A-Z]{3}\d{4}$/.test(clean)) {
+    return `${clean.slice(0, 3)}-${clean.slice(3)}`;
+  }
+  
+  // Placa Mercosul: ABC1D23
+  if (/^[A-Z]{3}\d{1}[A-Z]{1}\d{2}$/.test(clean)) {
+    return clean;
+  }
+  
+  return clean;
+};
+
+/**
+ * Valida formato de placa
+ * @param {string} plate - Placa a ser validada
+ * @returns {boolean} True se válida
+ */
+export const isValidPlate = (plate) => {
+  const clean = plate.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+  
+  // Placa antiga: ABC1234
+  const oldFormat = /^[A-Z]{3}\d{4}$/;
+  
+  // Placa Mercosul: ABC1D23
+  const mercosulFormat = /^[A-Z]{3}\d{1}[A-Z]{1}\d{2}$/;
+  
+  return oldFormat.test(clean) || mercosulFormat.test(clean);
+};
+
+export default {
+  consultarPlaca,
+  formatPlate,
+  isValidPlate
+};
+
+
+/**
+ * Busca marcas de veículos
+ * @returns {Promise<Array>} Lista de marcas
+ */
+export const fetchBrands = async () => {
+  // Mock de marcas - substitua pela API real quando disponível
+  return [
+    'Honda', 'Yamaha', 'Suzuki', 'Kawasaki', 'BMW', 'Ducati',
+    'Harley-Davidson', 'Triumph', 'KTM', 'Aprilia', 'Volkswagen',
+    'Fiat', 'Chevrolet', 'Ford', 'Toyota', 'Hyundai', 'Nissan',
+    'Renault', 'Peugeot', 'Citroën', 'Jeep', 'Mitsubishi'
+  ];
+};
+
+/**
+ * Busca modelos de uma marca específica
+ * @param {string} brand - Marca do veículo
+ * @returns {Promise<Array>} Lista de modelos
+ */
+export const fetchModels = async (brand) => {
+  // Mock de modelos - substitua pela API real quando disponível
+  const models = {
+    'Honda': ['CB 600F Hornet', 'CB 500', 'CG 160', 'Civic', 'City', 'HR-V'],
+    'Yamaha': ['MT-07', 'MT-09', 'Fazer 250', 'YBR 125'],
+    'Volkswagen': ['Gol', 'Polo', 'Virtus', 'T-Cross', 'Tiguan'],
+    'Fiat': ['Argo', 'Cronos', 'Mobi', 'Toro', 'Strada'],
+    'Chevrolet': ['Onix', 'Tracker', 'S10', 'Spin'],
+    'Toyota': ['Corolla', 'Hilux', 'SW4', 'Yaris'],
+  };
+  
+  return models[brand] || [];
+};
+
+/**
+ * Busca veículo por placa
+ * @param {string} plate - Placa do veículo
+ * @returns {Promise<Object>} Dados do veículo
  */
 export const searchVehicleByPlate = async (plate) => {
-    try {
-        const cleanPlate = plate.replace(/[^A-Z0-9]/g, '').toUpperCase();
-
-        if (cleanPlate.length !== 7) {
-            return {
-                success: false,
-                error: 'Placa inválida. Use o formato ABC1234 ou ABC1D23'
-            };
-        }
-
-        console.log(`[VEHICLE API] 🔍 Buscando placa: ${cleanPlate}`);
-
-        // 1. Tenta buscar no cache primeiro (RÁPIDO - < 1s)
-        console.log(`[VEHICLE API] 📦 Verificando cache...`);
-        const cachedData = await getVehicleFromCache(cleanPlate);
-
-        if (cachedData && cachedData.success) {
-            console.log(`[VEHICLE API] ✅ Cache HIT! Retornando dados instantaneamente`);
-
-            // Corrige o tipo do veículo se necessário
-            const correctedData = {
-                ...cachedData,
-                data: correctVehicleType(cachedData.data)
-            };
-
-            // Incrementa contador de hits em background
-            incrementCacheHit(cleanPlate).catch(err =>
-                console.error('Erro ao incrementar hit:', err)
-            );
-
-            return correctedData;
-        }
-
-        // 2. Não encontrou no cache, faz scraping
-        console.log(`[VEHICLE API] ❌ Cache MISS. Iniciando scraping...`);
-
-        // Cria AbortController para timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 35000); // 35 segundos
-
-        const apiUrl = `${API_BASE_URL}${ENDPOINTS.searchPlate}/${cleanPlate}`;
-        console.log(`[VEHICLE API] 🌐 URL da requisição:`, apiUrl);
-
-        try {
-            const response = await fetch(apiUrl, {
-                signal: controller.signal,
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            });
-            clearTimeout(timeoutId);
-
-            // Verifica status da resposta primeiro
-            if (!response.ok) {
-                console.error('[VEHICLE API] ❌ Erro HTTP:', response.status);
-                return {
-                    success: false,
-                    error: `Erro ao consultar placa (${response.status}). Preencha manualmente.`,
-                    fallbackToManual: true
-                };
-            }
-
-            // Verifica se a resposta é JSON
-            const contentType = response.headers.get('content-type');
-            if (!contentType || !contentType.includes('application/json')) {
-                console.error('[VEHICLE API] ❌ Resposta não é JSON:', contentType);
-                console.error('[VEHICLE API] Status:', response.status, response.statusText);
-                console.error('[VEHICLE API] URL:', apiUrl);
-                
-                // Tenta ler o corpo da resposta para debug
-                try {
-                    const text = await response.text();
-                    console.error('[VEHICLE API] Corpo da resposta (primeiros 200 chars):', text.substring(0, 200));
-                } catch (readError) {
-                    console.error('[VEHICLE API] Não foi possível ler o corpo da resposta:', readError.message);
-                }
-                
-                return {
-                    success: false,
-                    error: 'Serviço de consulta de placas indisponível. Preencha os dados manualmente.',
-                    fallbackToManual: true
-                };
-            }
-
-            // Tenta fazer parse do JSON com tratamento de erro
-            let data;
-            try {
-                data = await response.json();
-            } catch (jsonError) {
-                console.error('[VEHICLE API] ❌ Erro ao fazer parse do JSON:', jsonError);
-                return {
-                    success: false,
-                    error: 'Erro ao processar resposta. Preencha os dados manualmente.',
-                    fallbackToManual: true
-                };
-            }
-
-            if (data.success && data.data) {
-                // Corrige o tipo do veículo antes de salvar
-                const correctedData = correctVehicleType(data.data);
-
-                // Salva no cache para próximas consultas
-                console.log(`[VEHICLE API] 💾 Salvando no cache para futuras consultas...`);
-                await saveVehicleToCache(cleanPlate, correctedData);
-                console.log(`[VEHICLE API] ✅ Dados salvos no cache com sucesso!`);
-
-                // Retorna dados corrigidos
-                return {
-                    ...data,
-                    data: correctedData
-                };
-            }
-
-            return data;
-        } catch (fetchError) {
-            clearTimeout(timeoutId);
-            if (fetchError.name === 'AbortError') {
-                console.error('[VEHICLE API] ⏱️ Timeout ao consultar placa');
-                return {
-                    success: false,
-                    error: 'Tempo esgotado ao consultar placa. Preencha manualmente.',
-                    fallbackToManual: true
-                };
-            }
-            // Erro de rede ou outro erro não tratado
-            console.error('[VEHICLE API] ❌ Erro de rede:', fetchError);
-            return {
-                success: false,
-                error: 'Erro de conexão. Preencha os dados manualmente.',
-                fallbackToManual: true
-            };
-        }
-
-    } catch (error) {
-        console.error('[VEHICLE API] ❌ Erro ao buscar veículo:', error);
-        return {
-            success: false,
-            error: 'Serviço de consulta indisponível no momento. Preencha manualmente.',
-            fallbackToManual: true
-        };
-    }
+  return consultarPlaca(plate);
 };
 
 /**
- * Busca marcas de veículos através do backend
- */
-export const fetchBrands = async (vehicleType = 'motos') => {
-    try {
-        const response = await fetch(`${API_BASE_URL}${ENDPOINTS.brands}/${vehicleType}`);
-        
-        // Verifica se a resposta é JSON
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-            console.error('[VEHICLE API] ❌ Resposta não é JSON ao buscar marcas');
-            return {
-                success: false,
-                error: 'Serviço temporariamente indisponível'
-            };
-        }
-        
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('Erro ao buscar marcas:', error);
-        return {
-            success: false,
-            error: 'Erro ao buscar marcas'
-        };
-    }
-};
-
-/**
- * Busca modelos de uma marca específica através do backend
- */
-export const fetchModels = async (vehicleType, brandCode) => {
-    try {
-        const response = await fetch(`${API_BASE_URL}${ENDPOINTS.models}/${vehicleType}/${brandCode}`);
-        
-        // Verifica se a resposta é JSON
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-            console.error('[VEHICLE API] ❌ Resposta não é JSON ao buscar modelos');
-            return {
-                success: false,
-                error: 'Serviço temporariamente indisponível'
-            };
-        }
-        
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('Erro ao buscar modelos:', error);
-        return {
-            success: false,
-            error: 'Erro ao buscar modelos'
-        };
-    }
-};
-
-/**
- * Busca anos de um modelo específico através do backend
- */
-export const fetchYears = async (vehicleType, brandCode, modelCode) => {
-    try {
-        const response = await fetch(`${API_BASE_URL}${ENDPOINTS.years}/${vehicleType}/${brandCode}/${modelCode}`);
-        
-        // Verifica se a resposta é JSON
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-            console.error('[VEHICLE API] ❌ Resposta não é JSON ao buscar anos');
-            return {
-                success: false,
-                error: 'Serviço temporariamente indisponível'
-            };
-        }
-        
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('Erro ao buscar anos:', error);
-        return {
-            success: false,
-            error: 'Erro ao buscar anos'
-        };
-    }
-};
-
-/**
- * Converte tipo de veículo para formato da API
+ * Obtém o tipo de veículo para API
+ * @param {string} type - Tipo do veículo
+ * @returns {string} Tipo formatado para API
  */
 export const getVehicleTypeForApi = (type) => {
-    const types = {
-        'moto': 'moto',
-        'carro': 'carro',
-        'caminhao': 'caminhao'
-    };
-    return types[type] || 'moto';
+  const types = {
+    'motorcycle': 'moto',
+    'car': 'carro',
+    'truck': 'caminhao',
+    'van': 'van'
+  };
+  return types[type] || 'carro';
 };

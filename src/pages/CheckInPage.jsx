@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { LogIn, LogOut } from 'lucide-react';
-import ModalCheckin from './checkin/componentes/ModalCheckin';
+import ModalCheckin from './checkin/componentes/ModalCheckinPremium';
 import ModalCheckout from './checkin/componentes/ModalCheckout';
 import ModalEditarCheckin from './checkin/componentes/ModalEditarCheckin';
 import BudgetModal from './budgets/components/BudgetModal';
+import CheckinDetailsModal from './checkin/components/details/CheckinDetailsModal';
 import RecentSectionThemeAware from '../components/recent/RecentSectionThemeAware';
 import OperationalDashboard from './checkin/componentes/dashboard/OperationalDashboard';
-
 import { useCheckinStore } from '../store';
 import './checkin/estilos/checkin.css';
 
@@ -20,6 +19,8 @@ const CheckInPage = () => {
   const [isCheckOutModalOpen, setIsCheckOutModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [detailsCheckinId, setDetailsCheckinId] = useState(null);
   const [selectedCheckin, setSelectedCheckin] = useState(null);
   const [selectedForCheckout, setSelectedForCheckout] = useState(null);
   const [checkinToEdit, setCheckinToEdit] = useState(null);
@@ -60,18 +61,18 @@ const CheckInPage = () => {
       const model = (checkin.vehicleModel || '').toLowerCase();
       const brand = (checkin.vehicleBrand || '').toLowerCase();
       const fullText = `${brand} ${model}`.toLowerCase();
-      
+
       // Motorcycle detection - more comprehensive
       if (
-        model.includes('moto') || 
-        model.includes('fazer') || 
-        model.includes('cb') || 
-        model.includes('ninja') || 
-        model.includes('hornet') || 
-        model.includes('titan') || 
-        model.includes('biz') || 
-        model.includes('pop') || 
-        model.includes('fan') || 
+        model.includes('moto') ||
+        model.includes('fazer') ||
+        model.includes('cb') ||
+        model.includes('ninja') ||
+        model.includes('hornet') ||
+        model.includes('titan') ||
+        model.includes('biz') ||
+        model.includes('pop') ||
+        model.includes('fan') ||
         model.includes('bros') ||
         brand.includes('yamaha') && (model.includes('250') || model.includes('150') || model.includes('blueflex')) ||
         brand.includes('honda') && (model.includes('cb') || model.includes('titan') || model.includes('biz')) ||
@@ -80,7 +81,7 @@ const CheckInPage = () => {
         fullText.includes('motocicleta') ||
         fullText.includes('scooter')
       ) return 'motorcycle';
-      
+
       if (model.includes('truck') || model.includes('caminhão')) return 'truck';
       if (model.includes('van') || model.includes('furgão')) return 'van';
       return 'car';
@@ -95,6 +96,26 @@ const CheckInPage = () => {
       }
     };
 
+    // Garantir que a data seja válida
+    const getValidDate = () => {
+      try {
+        // Tentar usar createdAt, checkinDate ou data atual
+        const dateValue = checkin.createdAt || checkin.checkinDate || new Date().toISOString();
+        const date = new Date(dateValue);
+        
+        // Verificar se a data é válida
+        if (isNaN(date.getTime())) {
+          console.warn('Data inválida no checkin:', checkin.id, dateValue);
+          return new Date(); // Retornar data atual se inválida
+        }
+        
+        return date;
+      } catch (error) {
+        console.error('Erro ao processar data do checkin:', checkin.id, error);
+        return new Date(); // Retornar data atual em caso de erro
+      }
+    };
+
     return {
       id: checkin.firestoreId || checkin.id,
       type: getVehicleType(),
@@ -103,7 +124,7 @@ const CheckInPage = () => {
       secondaryText: `${checkin.vehicleBrand || ''} ${checkin.vehicleModel || 'Veículo não especificado'}`.trim(),
       plate: checkin.vehiclePlate || '---',
       model: checkin.vehicleModel || 'Modelo não especificado',
-      date: new Date(checkin.createdAt || Date.now()),
+      date: getValidDate(),
       tags: checkin.services ? [checkin.services] : [],
       metadata: {
         clientId: checkin.clientId,
@@ -145,7 +166,9 @@ const CheckInPage = () => {
 
     switch (action.type) {
       case 'open':
-        handleCheckinClick(checkin);
+        // Abrir modal de detalhes
+        setDetailsCheckinId(checkin.firestoreId || checkin.id);
+        setShowDetailsModal(true);
         break;
       case 'edit':
         setCheckinToEdit(checkin);
@@ -205,7 +228,7 @@ const CheckInPage = () => {
             transition={{ duration: 1, delay: 0.2 }}
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-1 bg-gradient-to-r from-transparent via-orange-500/70 to-transparent"
           />
-          
+
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -218,7 +241,7 @@ const CheckInPage = () => {
           >
             Check-in / Check-out
           </motion.h1>
-          
+
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -266,7 +289,6 @@ const CheckInPage = () => {
             <div className="relative bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 rounded-[2rem] p-8 shadow-[0_6px_18px_rgba(0,0,0,0.12)] hover:shadow-[0_12px_30px_rgba(0,0,0,0.18)] dark:shadow-2xl border-[3px] border-gray-700 dark:border-gray-700 overflow-hidden">
               {/* Gradiente de fundo sutil */}
               <div className="absolute inset-0 bg-gradient-to-br from-blue-50/70 to-transparent dark:from-blue-900/10 dark:to-transparent" />
-              
               <div className="relative space-y-6">
                 <div className="flex items-center space-x-4">
                   <motion.div
@@ -276,7 +298,7 @@ const CheckInPage = () => {
                   >
                     <LogIn className="w-8 h-8 text-white" />
                   </motion.div>
-                  <h2 
+                  <h2
                     className="text-3xl font-extrabold text-gray-950 dark:text-white"
                     style={{
                       textShadow: '0 1px 2px rgba(0,0,0,0.1)',
@@ -286,8 +308,8 @@ const CheckInPage = () => {
                     Check-in
                   </h2>
                 </div>
-                
-                <p 
+
+                <p
                   className="text-gray-800 dark:text-gray-200 text-lg leading-relaxed font-bold"
                   style={{
                     textShadow: '0 1px 2px rgba(0,0,0,0.1)'
@@ -295,7 +317,7 @@ const CheckInPage = () => {
                 >
                   Registre a entrada de veículos com agilidade e precisão
                 </p>
-                
+
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.98 }}
@@ -318,7 +340,6 @@ const CheckInPage = () => {
             <div className="relative bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 rounded-[2rem] p-8 shadow-[0_6px_18px_rgba(0,0,0,0.12)] hover:shadow-[0_12px_30px_rgba(0,0,0,0.18)] dark:shadow-2xl border-[3px] border-gray-700 dark:border-gray-700 overflow-hidden">
               {/* Gradiente de fundo sutil */}
               <div className="absolute inset-0 bg-gradient-to-br from-gray-50/70 to-transparent dark:from-gray-700/10 dark:to-transparent" />
-              
               <div className="relative space-y-6">
                 <div className="flex items-center space-x-4">
                   <motion.div
@@ -332,7 +353,7 @@ const CheckInPage = () => {
                   >
                     <LogOut className="w-8 h-8 text-white" />
                   </motion.div>
-                  <h2 
+                  <h2
                     className="text-3xl font-extrabold text-gray-950 dark:text-white"
                     style={{
                       textShadow: '0 1px 2px rgba(0,0,0,0.1)',
@@ -342,19 +363,19 @@ const CheckInPage = () => {
                     Check-out
                   </h2>
                 </div>
-                
-                <p 
+
+                <p
                   className="text-gray-800 dark:text-gray-200 text-lg leading-relaxed font-bold"
                   style={{
                     textShadow: '0 1px 2px rgba(0,0,0,0.1)'
                   }}
                 >
-                  {selectedForCheckout 
+                  {selectedForCheckout
                     ? `Selecionado: ${selectedForCheckout.clientName}`
                     : 'Finalize o atendimento selecionando um registro ativo abaixo'
                   }
                 </p>
-                
+
                 <motion.button
                   whileHover={selectedForCheckout ? { scale: 1.05 } : {}}
                   whileTap={selectedForCheckout ? { scale: 0.98 } : {}}
@@ -449,6 +470,20 @@ const CheckInPage = () => {
           items: []
         } : null}
       />
+
+      {/* Modal de Detalhes Premium */}
+      <AnimatePresence mode="wait">
+        {showDetailsModal && detailsCheckinId && (
+          <CheckinDetailsModal
+            key="checkin-details"
+            checkinId={detailsCheckinId}
+            onClose={() => {
+              setShowDetailsModal(false);
+              setDetailsCheckinId(null);
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

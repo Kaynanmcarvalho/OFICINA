@@ -7,6 +7,7 @@ import { useClientStore } from '../../../store';
 import { useInventoryStore } from '../../../store/inventoryStore';
 import { searchVehicleByPlate } from '../../../services/vehicleApiService';
 import toast from 'react-hot-toast';
+import './BudgetModal.css';
 
 const BudgetModal = ({ isOpen, onClose, budget }) => {
   const { createBudget, updateBudget } = useBudgetStore();
@@ -287,36 +288,39 @@ const BudgetModal = ({ isOpen, onClose, budget }) => {
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          initial={{ opacity: 0, scale: 0.96, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ type: "spring", duration: 0.5, bounce: 0 }}
-          className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden"
-          style={{
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
-          }}
+          exit={{ opacity: 0, scale: 0.96, y: 20 }}
+          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="budget-modal-container bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-gray-200/50 dark:border-gray-700/50"
         >
-          {/* Header - Apple Style */}
-          <div className="flex items-center justify-between px-8 py-5 border-b border-gray-200/50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-800/50">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                <FileText className="w-5 h-5 text-white" strokeWidth={2.5} />
+          {/* Header - Apple Style Premium */}
+          <div className="flex items-center justify-between px-6 sm:px-8 py-4 sm:py-5 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50/80 to-white dark:from-gray-800/80 dark:to-gray-900">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
+                <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-white" strokeWidth={2.5} />
               </div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white tracking-tight">
-                {budget ? 'Editar Orçamento' : 'Novo Orçamento'}
-              </h2>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                  {budget ? 'Editar Orçamento' : 'Novo Orçamento'}
+                </h2>
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                  {budget ? 'Atualize as informações do orçamento' : 'Preencha os dados para criar um novo orçamento'}
+                </p>
+              </div>
             </div>
             <button
               onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-all duration-200"
+              type="button"
+              className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200"
             >
-              <X className="w-5 h-5 text-gray-500 dark:text-gray-400" strokeWidth={2} />
+              <X className="w-5 h-5 text-gray-500 dark:text-gray-400" strokeWidth={2.5} />
             </button>
           </div>
 
           {/* Content - Scrollable */}
-          <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
-            <div className="px-8 py-6 space-y-8">
+          <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto budget-modal-content">
+            <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
               {/* Client Search - Apple Style */}
               <div className="relative client-search-container">
                 <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">
@@ -797,18 +801,18 @@ const BudgetModal = ({ isOpen, onClose, budget }) => {
             </div>
           </form>
 
-          {/* Footer - Apple Style Fixed */}
-          <div className="flex-shrink-0 flex items-center justify-end gap-3 px-8 py-5 border-t border-gray-200/50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-800/50">
+          {/* Footer - Apple Style Premium */}
+          <div className="flex-shrink-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 border-t border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50/80 to-white dark:from-gray-800/80 dark:to-gray-900">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg font-medium text-sm transition-all"
+              className="px-6 py-3 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 text-gray-700 dark:text-gray-300 border-2 border-gray-300 dark:border-gray-600 rounded-xl font-semibold text-sm transition-all duration-200 hover:shadow-md"
             >
               Cancelar
             </button>
             <button
               onClick={handleSubmit}
-              className="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg font-medium text-sm transition-all hover:shadow-lg hover:shadow-blue-500/30"
+              className="budget-btn-primary px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 active:from-blue-800 active:to-blue-700 text-white rounded-xl font-semibold text-sm shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-200"
             >
               {budget ? 'Atualizar' : 'Criar'} Orçamento
             </button>

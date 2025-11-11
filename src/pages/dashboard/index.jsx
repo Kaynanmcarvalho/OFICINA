@@ -204,8 +204,8 @@ const DashboardPage = memo(() => {
           />
           
           <CartaoIndicador
-            titulo="Veículos"
-            valor={estatisticas?.totalVeiculos || 0}
+            titulo="Veículos Ativos"
+            valor={estatisticas?.veiculosAtivos || 0}
             icone={Car}
             cor="purple"
             tendencia={tendencias?.tendenciaVeiculos}
@@ -213,8 +213,8 @@ const DashboardPage = memo(() => {
           />
           
           <CartaoIndicador
-            titulo="Ferramentas"
-            valor={estatisticas?.totalFerramentas || 0}
+            titulo="Ferramentas Disponíveis"
+            valor={estatisticas?.ferramentasDisponiveis || 0}
             icone={Wrench}
             cor="orange"
             tendencia={tendencias?.tendenciaFerramentas}
@@ -222,8 +222,8 @@ const DashboardPage = memo(() => {
           />
           
           <CartaoIndicador
-            titulo="Estoque"
-            valor={estatisticas?.totalEstoque || 0}
+            titulo="Produtos em Estoque"
+            valor={estatisticas?.totalProdutos || 0}
             icone={Package}
             cor="green"
             tendencia={tendencias?.tendenciaEstoque}

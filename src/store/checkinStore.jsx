@@ -25,11 +25,28 @@ export const useCheckinStore = create((set, get) => ({
   createCheckin: async (checkinData) => {
     set({ isLoading: true, error: null });
     try {
+      const userId = sessionStorage.getItem('userId') || 'unknown';
+      const userName = sessionStorage.getItem('userName') || 'Usuário';
+      const empresaId = sessionStorage.getItem('empresaId') || 'default';
+      
+      const now = new Date().toISOString();
+      
       const newCheckin = {
         ...checkinData,
         id: `CHK-${Date.now()}`,
-        checkinDate: new Date().toISOString(),
+        checkinDate: now,
+        createdAt: now,
+        updatedAt: now,
         status: 'in-progress',
+        currentStage: 'checkin',
+        stages: {
+          checkin: {
+            completed: true,
+            timestamp: now,
+            userId,
+            userName
+          }
+        }
       };
 
       const docId = await firestoreService.create('checkins', newCheckin);

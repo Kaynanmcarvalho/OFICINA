@@ -14,23 +14,39 @@ export interface ItemMetaRowProps {
 }
 
 /**
+ * Validates if date is valid
+ */
+const isValidDate = (date: any): boolean => {
+  if (!date) return false;
+  const d = date instanceof Date ? date : new Date(date);
+  return d instanceof Date && !isNaN(d.getTime());
+};
+
+/**
  * Formats relative time in Portuguese
  */
 const getRelativeTime = (date: Date): string | null => {
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
+  if (!isValidDate(date)) return null;
+  
+  try {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
 
-  // Only show relative time for last 24 hours
-  if (diffDays >= 1) return null;
+    // Only show relative time for last 24 hours
+    if (diffDays >= 1) return null;
 
-  if (diffMins < 1) return 'agora mesmo';
-  if (diffMins < 60) return `há ${diffMins} ${diffMins === 1 ? 'minuto' : 'minutos'}`;
-  if (diffHours < 24) return `há ${diffHours} ${diffHours === 1 ? 'hora' : 'horas'}`;
+    if (diffMins < 1) return 'agora mesmo';
+    if (diffMins < 60) return `há ${diffMins} ${diffMins === 1 ? 'minuto' : 'minutos'}`;
+    if (diffHours < 24) return `há ${diffHours} ${diffHours === 1 ? 'hora' : 'horas'}`;
 
-  return null;
+    return null;
+  } catch (error) {
+    console.error('Error calculating relative time:', error);
+    return null;
+  }
 };
 
 /**
@@ -51,18 +67,42 @@ const ItemMetaRow: React.FC<ItemMetaRowProps> = ({
   tags = [],
   showRelativeTime = false,
 }) => {
-  // Format date
-  const relativeTime = showRelativeTime ? getRelativeTime(date) : null;
-  const formattedDate = relativeTime || new Intl.DateTimeFormat('pt-BR', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  }).format(date);
+  // Validate date
+  if (!isValidDate(date)) {
+    console.warn('ItemMetaRow: Invalid date provided', date);
+    return (
+      <div className="flex items-center gap-3 text-xs font-bold text-gray-700 dark:text-neutral-400">
+        {plate && (
+          <span className="font-mono font-medium">{plate.toUpperCase()}</span>
+        )}
+        {model && <span>{model}</span>}
+        <span className="text-red-500">Data inválida</span>
+      </div>
+    );
+  }
 
-  const formattedTime = new Intl.DateTimeFormat('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(date);
+  // Format date
+  let formattedDate = '';
+  let formattedTime = '';
+  let relativeTime: string | null = null;
+  
+  try {
+    relativeTime = showRelativeTime ? getRelativeTime(date) : null;
+    formattedDate = relativeTime || new Intl.DateTimeFormat('pt-BR', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }).format(date);
+
+    formattedTime = new Intl.DateTimeFormat('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    formattedDate = 'Data inválida';
+    formattedTime = '';
+  }
 
   // Format plate
   const formattedPlate = plate?.toUpperCase();

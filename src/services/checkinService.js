@@ -25,10 +25,22 @@ import { db } from '../config/firebase';
  */
 export const createCheckin = async (checkinData, empresaId) => {
   try {
+    const userId = sessionStorage.getItem('userId') || 'unknown';
+    const userName = sessionStorage.getItem('userName') || 'Usuário';
+    
     const docData = {
       ...checkinData,
       empresaId,
       status: 'em_atendimento',
+      currentStage: 'checkin',
+      stages: {
+        checkin: {
+          completed: true,
+          timestamp: serverTimestamp(),
+          userId,
+          userName
+        }
+      },
       criadoEm: serverTimestamp(),
       atualizadoEm: serverTimestamp()
     };

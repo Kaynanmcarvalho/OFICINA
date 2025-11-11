@@ -22,6 +22,13 @@ const SendBudgetModal = ({ isOpen, onClose, budget }) => {
 
   const approvalLink = budget ? `${window.location.origin}/orcamento/aprovar/${budget.approvalLink}` : '';
 
+  // Debug: verificar se cada orçamento tem um link único
+  useEffect(() => {
+    if (budget && budget.approvalLink) {
+      console.log('[SendBudgetModal] Orçamento:', budget.budgetNumber, 'Link:', budget.approvalLink);
+    }
+  }, [budget]);
+
   const generateWhatsAppMessage = useCallback(() => {
     if (!budget) return '';
     
@@ -289,53 +296,53 @@ Qualquer dúvida, estamos à disposição!`;
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-gray-900/95 backdrop-blur-xl rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] dark:shadow-2xl w-full max-w-7xl xl:max-w-[90vw] 2xl:max-w-[85vw] max-h-[90vh] border border-gray-200 dark:border-gray-700/50 overflow-hidden flex flex-col"
+              className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-6xl max-h-[90vh] border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col"
             >
-          {/* Header */}
-          <div className="relative px-7 py-5 border-b border-gray-200 dark:border-gray-700/50 bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-pink-50/30 dark:from-gray-800/30 dark:via-gray-800/20 dark:to-gray-800/10">
+          {/* Header - Apple Style */}
+          <div className="relative px-6 sm:px-8 py-6 border-b border-gray-200 dark:border-gray-700">
             <button
               onClick={onClose}
-              className="absolute top-5 right-6 p-2 hover:bg-gray-200 dark:hover:bg-gray-700/60 rounded-full transition-all duration-200 hover:scale-110 active:scale-95 group shadow-sm hover:shadow-md"
+              className="absolute top-6 right-6 sm:right-8 p-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-all duration-200 hover:scale-105 active:scale-95"
             >
-              <X className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors" />
+              <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
             </button>
-            <div className="space-y-0.5">
-              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white tracking-tight">
+            <div className="pr-12">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1.5">
                 Enviar Orçamento
               </h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Escolha o método de envio e personalize sua mensagem
               </p>
             </div>
           </div>
 
           {/* Content - Grid Layout */}
-          <div className="flex-1 overflow-y-auto p-3 sm:p-5 lg:p-7">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-7">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Left Column - Info & Settings */}
               <div className="space-y-5">
-                {/* Budget Info Card */}
+                {/* Budget Info Card - Apple Style */}
                 <motion.div 
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="p-5 bg-gradient-to-br from-blue-50 via-indigo-50/50 to-purple-50/30 dark:from-gray-800/50 dark:to-gray-800/30 rounded-2xl border border-blue-100 dark:border-gray-700/50 shadow-lg shadow-blue-100/50 dark:shadow-none"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 }}
+                  className="p-6 bg-gray-50 dark:bg-gray-800/30 rounded-2xl border border-gray-200 dark:border-gray-700"
                 >
-                  <h3 className="text-xs font-semibold text-indigo-600 dark:text-gray-400 uppercase tracking-wider mb-3">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
                     Detalhes do Orçamento
                   </h3>
-                  <div className="space-y-2.5">
-                    <div className="flex items-center justify-between py-1.5 border-b border-indigo-100 dark:border-gray-700/50">
-                      <span className="text-xs text-gray-700 dark:text-gray-400">Número</span>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Número</span>
                       <span className="text-sm font-semibold text-gray-900 dark:text-white">{budget.budgetNumber}</span>
                     </div>
-                    <div className="flex items-center justify-between py-1.5 border-b border-indigo-100 dark:border-gray-700/50">
-                      <span className="text-xs text-gray-700 dark:text-gray-400">Cliente</span>
+                    <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Cliente</span>
                       <span className="text-sm font-semibold text-gray-900 dark:text-white">{budget.clientName}</span>
                     </div>
-                    <div className="flex items-center justify-between py-1.5">
-                      <span className="text-xs text-gray-700 dark:text-gray-400">Valor Total</span>
-                      <span className="text-lg font-bold bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">
+                    <div className="flex items-center justify-between py-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Valor Total</span>
+                      <span className="text-lg font-bold text-green-600 dark:text-green-500">
                         R$ {budget.total?.toFixed(2)}
                       </span>
                     </div>

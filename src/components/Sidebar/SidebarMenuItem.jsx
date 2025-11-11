@@ -80,9 +80,9 @@ export function SidebarMenuItem({ icon: Icon, label, path, isExpanded, onClick }
       aria-label={label}
       role="link"
       className={`
-        w-full flex items-center gap-3 px-4 py-3 mx-2 rounded-2xl
+        w-full flex items-center gap-3 rounded-2xl
         transition-all duration-200 cursor-pointer
-        ${isExpanded ? 'justify-start' : 'justify-center'}
+        ${isExpanded ? 'px-4 py-3 mx-2 justify-start' : 'px-3 py-3 mx-auto justify-center w-12'}
         ${isActive 
           ? `bg-gradient-to-r from-orange-500/15 to-red-500/15 
              dark:from-orange-400/25 dark:to-red-400/25
