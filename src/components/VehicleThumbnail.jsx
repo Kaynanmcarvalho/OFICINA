@@ -85,7 +85,7 @@ const VehicleThumbnail = ({
     const IconComponent = getVehicleIcon(vehicle?.type);
     return (
       <div className={`${sizes[size]} bg-neutral-100 dark:bg-neutral-800 rounded-lg flex items-center justify-center border border-neutral-200 dark:border-neutral-700`}>
-        <IconComponent className="w-1/2 h-1/2 text-neutral-500 dark:text-neutral-400" />
+        <IconComponent className="w-1/2 h-1/2 text-neutral-500 dark:text-white" />
       </div>
     );
   };
@@ -93,14 +93,14 @@ const VehicleThumbnail = ({
   // Renderizar loading
   const renderLoading = () => (
     <div className={`${sizes[size]} bg-neutral-100 dark:bg-neutral-800 rounded-lg flex items-center justify-center border border-neutral-200 dark:border-neutral-700`}>
-      <Loader2 className="w-1/2 h-1/2 text-neutral-500 dark:text-neutral-400 animate-spin" />
+      <Loader2 className="w-1/2 h-1/2 text-neutral-500 dark:text-white animate-spin" />
     </div>
   );
 
   // Renderizar erro
   const renderError = () => (
     <div className={`${sizes[size]} bg-neutral-100 dark:bg-neutral-800 rounded-lg flex items-center justify-center border border-neutral-200 dark:border-neutral-700`}>
-      <AlertCircle className="w-1/2 h-1/2 text-neutral-400 dark:text-neutral-500" />
+      <AlertCircle className="w-1/2 h-1/2 text-neutral-400 dark:text-white" />
     </div>
   );
 

@@ -44,8 +44,8 @@ const Step1Basic = ({ formData, updateFormData }) => {
               w-full px-4 py-3 rounded-xl text-sm
               transition-all
               ${isDarkMode
-                ? 'bg-gray-800 border-[2px] border-gray-700 text-white placeholder-gray-500 focus:border-blue-500'
-                : 'bg-white border-[2px] border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500'
+                ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white placeholder-gray-500 focus:border-blue-500'
+                : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900 placeholder-gray-400 focus:border-blue-500'
               }
             `}
           />
@@ -66,8 +66,8 @@ const Step1Basic = ({ formData, updateFormData }) => {
               w-full px-4 py-3 rounded-xl text-sm
               transition-all
               ${isDarkMode
-                ? 'bg-gray-800 border-[2px] border-gray-700 text-white placeholder-gray-500 focus:border-blue-500'
-                : 'bg-white border-[2px] border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500'
+                ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white placeholder-gray-500 focus:border-blue-500'
+                : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900 placeholder-gray-400 focus:border-blue-500'
               }
             `}
           />
@@ -90,8 +90,8 @@ const Step1Basic = ({ formData, updateFormData }) => {
             w-full px-4 py-3 rounded-xl text-sm
             transition-all
             ${isDarkMode
-              ? 'bg-gray-800 border-[2px] border-gray-700 text-white placeholder-gray-500 focus:border-blue-500'
-              : 'bg-white border-[2px] border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500'
+              ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white placeholder-gray-500 focus:border-blue-500'
+              : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900 placeholder-gray-400 focus:border-blue-500'
             }
           `}
         />
@@ -112,8 +112,8 @@ const Step1Basic = ({ formData, updateFormData }) => {
               w-full px-4 py-3 rounded-xl text-sm
               transition-all
               ${isDarkMode
-                ? 'bg-gray-800 border-[2px] border-gray-700 text-white focus:border-blue-500'
-                : 'bg-white border-[2px] border-gray-200 text-gray-900 focus:border-blue-500'
+                ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white focus:border-blue-500'
+                : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900 focus:border-blue-500'
               }
             `}
           >
@@ -139,8 +139,8 @@ const Step1Basic = ({ formData, updateFormData }) => {
               w-full px-4 py-3 rounded-xl text-sm
               transition-all
               ${isDarkMode
-                ? 'bg-gray-800 border-[2px] border-gray-700 text-white placeholder-gray-500 focus:border-blue-500'
-                : 'bg-white border-[2px] border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500'
+                ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white placeholder-gray-500 focus:border-blue-500'
+                : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900 placeholder-gray-400 focus:border-blue-500'
               }
             `}
           />
@@ -163,8 +163,8 @@ const Step1Basic = ({ formData, updateFormData }) => {
             w-full px-4 py-3 rounded-xl text-sm resize-none
             transition-all
             ${isDarkMode
-              ? 'bg-gray-800 border-[2px] border-gray-700 text-white placeholder-gray-500 focus:border-blue-500'
-              : 'bg-white border-[2px] border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500'
+              ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white placeholder-gray-500 focus:border-blue-500'
+              : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900 placeholder-gray-400 focus:border-blue-500'
             }
           `}
         />
@@ -185,8 +185,8 @@ const Step1Basic = ({ formData, updateFormData }) => {
               w-full px-4 py-3 rounded-xl text-sm
               transition-all
               ${isDarkMode
-                ? 'bg-gray-800 border-[2px] border-gray-700 text-white focus:border-blue-500'
-                : 'bg-white border-[2px] border-gray-200 text-gray-900 focus:border-blue-500'
+                ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white focus:border-blue-500'
+                : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900 focus:border-blue-500'
               }
             `}
           >
@@ -211,8 +211,8 @@ const Step1Basic = ({ formData, updateFormData }) => {
               w-full px-4 py-3 rounded-xl text-sm
               transition-all
               ${isDarkMode
-                ? 'bg-gray-800 border-[2px] border-gray-700 text-white placeholder-gray-500 focus:border-blue-500'
-                : 'bg-white border-[2px] border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500'
+                ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white placeholder-gray-500 focus:border-blue-500'
+                : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900 placeholder-gray-400 focus:border-blue-500'
               }
             `}
           />
@@ -233,8 +233,8 @@ const Step1Basic = ({ formData, updateFormData }) => {
               w-full px-4 py-3 rounded-xl text-sm
               transition-all
               ${isDarkMode
-                ? 'bg-gray-800 border-[2px] border-gray-700 text-white placeholder-gray-500 focus:border-blue-500'
-                : 'bg-white border-[2px] border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500'
+                ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white placeholder-gray-500 focus:border-blue-500'
+                : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900 placeholder-gray-400 focus:border-blue-500'
               }
             `}
           />
@@ -259,8 +259,8 @@ const Step1Basic = ({ formData, updateFormData }) => {
               flex-1 px-4 py-3 rounded-xl text-sm
               transition-all
               ${isDarkMode
-                ? 'bg-gray-800 border-[2px] border-gray-700 text-white placeholder-gray-500 focus:border-blue-500'
-                : 'bg-white border-[2px] border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500'
+                ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white placeholder-gray-500 focus:border-blue-500'
+                : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900 placeholder-gray-400 focus:border-blue-500'
               }
             `}
           />
@@ -310,3 +310,5 @@ const Step1Basic = ({ formData, updateFormData }) => {
 };
 
 export default Step1Basic;
+
+

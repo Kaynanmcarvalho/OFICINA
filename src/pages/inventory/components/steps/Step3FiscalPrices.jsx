@@ -77,8 +77,8 @@ const Step3FiscalPrices = ({ formData, updateFormData }) => {
                 className={`
                   w-full pl-12 pr-4 py-3 rounded-xl text-sm
                   ${isDarkMode
-                    ? 'bg-gray-800 border-[2px] border-gray-700 text-white placeholder-gray-500'
-                    : 'bg-white border-[2px] border-gray-200 text-gray-900 placeholder-gray-400'
+                    ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white placeholder-gray-500'
+                    : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900 placeholder-gray-400'
                   }
                 `}
               />
@@ -107,8 +107,8 @@ const Step3FiscalPrices = ({ formData, updateFormData }) => {
                 className={`
                   w-full pl-12 pr-4 py-3 rounded-xl text-sm
                   ${isDarkMode
-                    ? 'bg-gray-800 border-[2px] border-gray-700 text-white placeholder-gray-500'
-                    : 'bg-white border-[2px] border-gray-200 text-gray-900 placeholder-gray-400'
+                    ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white placeholder-gray-500'
+                    : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900 placeholder-gray-400'
                   }
                 `}
               />
@@ -128,8 +128,8 @@ const Step3FiscalPrices = ({ formData, updateFormData }) => {
               className={`
                 w-full px-4 py-3 rounded-xl text-sm font-semibold
                 ${isDarkMode
-                  ? 'bg-gray-900 border-[2px] border-gray-700 text-green-400'
-                  : 'bg-gray-50 border-[2px] border-gray-200 text-green-600'
+                  ? 'bg-gray-900 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-green-400'
+                  : 'bg-gray-50 border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-green-600'
                 }
               `}
             />
@@ -151,8 +151,8 @@ const Step3FiscalPrices = ({ formData, updateFormData }) => {
               className={`
                 w-full px-4 py-3 rounded-xl text-sm
                 ${isDarkMode
-                  ? 'bg-gray-800 border-[2px] border-gray-700 text-white placeholder-gray-500'
-                  : 'bg-white border-[2px] border-gray-200 text-gray-900 placeholder-gray-400'
+                  ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white placeholder-gray-500'
+                  : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900 placeholder-gray-400'
                 }
               `}
             />
@@ -207,8 +207,8 @@ const Step3FiscalPrices = ({ formData, updateFormData }) => {
               className={`
                 w-full px-4 py-3 rounded-xl text-sm
                 ${isDarkMode
-                  ? 'bg-gray-800 border-[2px] border-gray-700 text-white'
-                  : 'bg-white border-[2px] border-gray-200 text-gray-900'
+                  ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white'
+                  : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900'
                 }
               `}
             >
@@ -240,8 +240,8 @@ const Step3FiscalPrices = ({ formData, updateFormData }) => {
               className={`
                 w-full px-4 py-3 rounded-xl text-sm
                 ${isDarkMode
-                  ? 'bg-gray-800 border-[2px] border-gray-700 text-white'
-                  : 'bg-white border-[2px] border-gray-200 text-gray-900'
+                  ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white'
+                  : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900'
                 }
               `}
             >
@@ -273,8 +273,8 @@ const Step3FiscalPrices = ({ formData, updateFormData }) => {
               className={`
                 w-full px-4 py-3 rounded-xl text-sm
                 ${isDarkMode
-                  ? 'bg-gray-800 border-[2px] border-gray-700 text-white'
-                  : 'bg-white border-[2px] border-gray-200 text-gray-900'
+                  ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white'
+                  : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900'
                 }
               `}
             >
@@ -306,8 +306,8 @@ const Step3FiscalPrices = ({ formData, updateFormData }) => {
               className={`
                 w-full px-4 py-3 rounded-xl text-sm
                 ${isDarkMode
-                  ? 'bg-gray-800 border-[2px] border-gray-700 text-white'
-                  : 'bg-white border-[2px] border-gray-200 text-gray-900'
+                  ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white'
+                  : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900'
                 }
               `}
             >
@@ -349,8 +349,8 @@ const Step3FiscalPrices = ({ formData, updateFormData }) => {
               className={`
                 w-full px-4 py-3 rounded-xl text-sm
                 ${isDarkMode
-                  ? 'bg-gray-800 border-[2px] border-gray-700 text-white'
-                  : 'bg-white border-[2px] border-gray-200 text-gray-900'
+                  ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white'
+                  : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900'
                 }
               `}
             >
@@ -381,8 +381,8 @@ const Step3FiscalPrices = ({ formData, updateFormData }) => {
               className={`
                 w-full px-4 py-3 rounded-xl text-sm
                 ${isDarkMode
-                  ? 'bg-gray-800 border-[2px] border-gray-700 text-white'
-                  : 'bg-white border-[2px] border-gray-200 text-gray-900'
+                  ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white'
+                  : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900'
                 }
               `}
             >
@@ -429,8 +429,8 @@ const Step3FiscalPrices = ({ formData, updateFormData }) => {
               className={`
                 w-full px-4 py-3 rounded-xl text-sm
                 ${isDarkMode
-                  ? 'bg-gray-800 border-[2px] border-gray-700 text-white placeholder-gray-500'
-                  : 'bg-white border-[2px] border-gray-200 text-gray-900 placeholder-gray-400'
+                  ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white placeholder-gray-500'
+                  : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900 placeholder-gray-400'
                 }
               `}
             />
@@ -453,8 +453,8 @@ const Step3FiscalPrices = ({ formData, updateFormData }) => {
               className={`
                 w-full px-4 py-3 rounded-xl text-sm
                 ${isDarkMode
-                  ? 'bg-gray-800 border-[2px] border-gray-700 text-white placeholder-gray-500'
-                  : 'bg-white border-[2px] border-gray-200 text-gray-900 placeholder-gray-400'
+                  ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white placeholder-gray-500'
+                  : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900 placeholder-gray-400'
                 }
               `}
             />
@@ -477,8 +477,8 @@ const Step3FiscalPrices = ({ formData, updateFormData }) => {
               className={`
                 w-full px-4 py-3 rounded-xl text-sm
                 ${isDarkMode
-                  ? 'bg-gray-800 border-[2px] border-gray-700 text-white placeholder-gray-500'
-                  : 'bg-white border-[2px] border-gray-200 text-gray-900 placeholder-gray-400'
+                  ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white placeholder-gray-500'
+                  : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900 placeholder-gray-400'
                 }
               `}
             />
@@ -501,8 +501,8 @@ const Step3FiscalPrices = ({ formData, updateFormData }) => {
               className={`
                 w-full px-4 py-3 rounded-xl text-sm
                 ${isDarkMode
-                  ? 'bg-gray-800 border-[2px] border-gray-700 text-white placeholder-gray-500'
-                  : 'bg-white border-[2px] border-gray-200 text-gray-900 placeholder-gray-400'
+                  ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white placeholder-gray-500'
+                  : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900 placeholder-gray-400'
                 }
               `}
             />
@@ -514,3 +514,5 @@ const Step3FiscalPrices = ({ formData, updateFormData }) => {
 };
 
 export default Step3FiscalPrices;
+
+

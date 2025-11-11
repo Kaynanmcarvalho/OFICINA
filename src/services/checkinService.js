@@ -1,58 +1,41 @@
-import { localDB } from './localStorageService';
-
 /**
- * Converte fotos para base64 (armazenamento local)
+ * Checkin Service
+ * Gerencia check-ins no Firestore
  */
-export const uploadPhotos = async (files) => {
-  if (!files || files.length === 0) {
-    return [];
-  }
 
-  try {
-    const photoPromises = files.map(async (file) => {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          resolve({
-            url: reader.result,
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            uploadedAt: new Date().toISOString()
-          });
-        };
-        reader.readAsDataURL(file);
-      });
-    });
-
-    return await Promise.all(photoPromises);
-  } catch (error) {
-    console.error('Erro ao processar fotos:', error);
-    throw new Error('Falha ao processar as fotos');
-  }
-};
+import { 
+  collection, 
+  addDoc, 
+  query, 
+  where, 
+  getDocs, 
+  orderBy, 
+  limit,
+  serverTimestamp,
+  doc,
+  updateDoc
+} from 'firebase/firestore';
+import { db } from '../config/firebase';
 
 /**
  * Cria um novo check-in
+ * @param {object} checkinData - Dados do check-in
+ * @param {string} empresaId - ID da empresa
+ * @returns {Promise<string>} ID do documento criado
  */
-export const createCheckin = async (checkinData, photoFiles = []) => {
+export const createCheckin = async (checkinData, empresaId) => {
   try {
-    // Processar fotos se houver
-    let photos = [];
-    if (photoFiles.length > 0) {
-      photos = await uploadPhotos(photoFiles, 'temp');
-    }
-
-    // Criar check-in
-    const newCheckin = await localDB.createCheckin({
+    const docData = {
       ...checkinData,
-      photos
-    });
-
-    return {
-      ...newCheckin,
-      checkInDate: new Date(newCheckin.checkInDate)
+      empresaId,
+      status: 'em_atendimento',
+      criadoEm: serverTimestamp(),
+      atualizadoEm: serverTimestamp()
     };
+    
+    const docRef = await addDoc(collection(db, 'checkins'), docData);
+    console.log('Check-in criado:', docRef.id);
+    return docRef.id;
   } catch (error) {
     console.error('Erro ao criar check-in:', error);
     throw error;
@@ -60,117 +43,129 @@ export const createCheckin = async (checkinData, photoFiles = []) => {
 };
 
 /**
- * Lista todos os check-ins
+ * Busca histórico de check-ins de uma placa
+ * @param {string} placa - Placa do veículo
+ * @param {string} empresaId - ID da empresa
+ * @returns {Promise<Array>} Lista de check-ins
  */
-export const getCheckins = async (filters = {}) => {
+export const getCheckinHistory = async (placa, empresaId) => {
   try {
-    const checkins = await localDB.getCheckins(filters);
+    const q = query(
+      collection(db, 'checkins'),
+      where('empresaId', '==', empresaId),
+      where('placa', '==', placa),
+      orderBy('criadoEm', 'desc'),
+      limit(5)
+    );
     
-    return checkins.map(checkin => ({
-      ...checkin,
-      checkInDate: new Date(checkin.checkInDate),
-      checkOutDate: checkin.checkOutDate ? new Date(checkin.checkOutDate) : null
-    }));
-  } catch (error) {
-    console.error('Erro ao buscar check-ins:', error);
-    throw error;
-  }
-};
-
-/**
- * Busca um check-in por ID
- */
-export const getCheckinById = async (id) => {
-  try {
-    const checkin = await localDB.getCheckinById(id);
-    
-    if (!checkin) {
-      throw new Error('Check-in não encontrado');
-    }
-    
-    return {
-      ...checkin,
-      checkInDate: new Date(checkin.checkInDate),
-      checkOutDate: checkin.checkOutDate ? new Date(checkin.checkOutDate) : null
-    };
-  } catch (error) {
-    console.error('Erro ao buscar check-in:', error);
-    throw error;
-  }
-};
-
-/**
- * Realiza o checkout de um check-in
- */
-export const checkoutCheckin = async (id, checkoutData, photoFiles = []) => {
-  try {
-    // Processar fotos de checkout se houver
-    let checkoutPhotos = [];
-    if (photoFiles.length > 0) {
-      checkoutPhotos = await uploadPhotos(photoFiles, id);
-    }
-    
-    const updatedCheckin = await localDB.checkoutCheckin(id, {
-      ...checkoutData,
-      checkoutPhotos
-    });
-    
-    return {
-      ...updatedCheckin,
-      checkInDate: new Date(updatedCheckin.checkInDate),
-      checkOutDate: new Date(updatedCheckin.checkOutDate)
-    };
-  } catch (error) {
-    console.error('Erro ao fazer checkout:', error);
-    throw error;
-  }
-};
-
-/**
- * Cancela um check-in
- */
-export const cancelCheckin = async () => {
-  return true;
-};
-
-/**
- * Verifica se existe check-in ativo para uma placa
- */
-export const checkDuplicatePlate = async (plate) => {
-  try {
-    return await localDB.checkDuplicatePlate(plate);
-  } catch (error) {
-    console.error('Erro ao verificar placa duplicada:', error);
-    throw error;
-  }
-};
-
-/**
- * Busca estatísticas de check-ins
- */
-export const getCheckinStats = async () => {
-  try {
-    return await localDB.getCheckinStats();
-  } catch (error) {
-    console.error('Erro ao buscar estatísticas:', error);
-    throw error;
-  }
-};
-
-/**
- * Busca histórico de check-ins de um cliente
- */
-export const getClientHistory = async (clientId) => {
-  try {
-    const history = await localDB.getClientHistory(clientId);
-    
-    return history.map(item => ({
-      ...item,
-      checkInDate: new Date(item.checkInDate),
-      checkOutDate: item.checkOutDate ? new Date(item.checkOutDate) : null
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ 
+      id: doc.id, 
+      ...doc.data(),
+      criadoEm: doc.data().criadoEm?.toDate()
     }));
   } catch (error) {
     console.error('Erro ao buscar histórico:', error);
+    return [];
+  }
+};
+
+/**
+ * Atualiza um check-in existente
+ * @param {string} checkinId - ID do check-in
+ * @param {object} updates - Dados a atualizar
+ * @returns {Promise<void>}
+ */
+export const updateCheckin = async (checkinId, updates) => {
+  try {
+    const docRef = doc(db, 'checkins', checkinId);
+    await updateDoc(docRef, {
+      ...updates,
+      atualizadoEm: serverTimestamp()
+    });
+    console.log('Check-in atualizado:', checkinId);
+  } catch (error) {
+    console.error('Erro ao atualizar check-in:', error);
     throw error;
   }
+};
+
+/**
+ * Gera PIN único de 6 dígitos
+ * @returns {string} PIN gerado
+ */
+export const generatePIN = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+/**
+ * Valida PIN
+ * @param {string} pin - PIN a validar
+ * @returns {boolean} True se válido
+ */
+export const validatePIN = (pin) => {
+  return /^\d{6}$/.test(pin);
+};
+
+/**
+ * Realiza checkout de um check-in
+ * @param {string} checkinId - ID do check-in
+ * @param {object} checkoutData - Dados do checkout
+ * @param {Array} photoFiles - Arquivos de fotos (opcional)
+ * @returns {Promise<object>} Check-in atualizado
+ */
+export const checkoutCheckin = async (checkinId, checkoutData, photoFiles = []) => {
+  try {
+    // Upload de fotos se houver
+    let fotosUrls = [];
+    if (photoFiles && photoFiles.length > 0) {
+      // Importar storageService dinamicamente para evitar dependência circular
+      const { uploadCheckinPhoto } = await import('./storageService');
+      
+      for (const file of photoFiles) {
+        try {
+          const url = await uploadCheckinPhoto(`checkout-${checkinId}`, file);
+          fotosUrls.push(url);
+        } catch (error) {
+          console.error('Erro ao fazer upload de foto:', error);
+        }
+      }
+    }
+
+    // Atualizar check-in com dados do checkout
+    const docRef = doc(db, 'checkins', checkinId);
+    const updateData = {
+      status: 'concluido',
+      checkout: {
+        servicosRealizados: checkoutData.servicesPerformed || '',
+        valorTotal: checkoutData.totalCost || 0,
+        metodoPagamento: checkoutData.paymentMethod || '',
+        observacoes: checkoutData.checkoutObservations || '',
+        fotos: fotosUrls,
+        dataHora: serverTimestamp()
+      },
+      atualizadoEm: serverTimestamp()
+    };
+
+    await updateDoc(docRef, updateData);
+    
+    console.log('Checkout realizado:', checkinId);
+    
+    return {
+      id: checkinId,
+      ...updateData
+    };
+  } catch (error) {
+    console.error('Erro ao realizar checkout:', error);
+    throw new Error('Erro ao realizar checkout: ' + error.message);
+  }
+};
+
+export default {
+  createCheckin,
+  getCheckinHistory,
+  updateCheckin,
+  generatePIN,
+  validatePIN,
+  checkoutCheckin
 };

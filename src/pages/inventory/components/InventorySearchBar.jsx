@@ -10,8 +10,8 @@ const InventorySearchBar = ({ value, onChange, isLoading, resultCount }) => {
         relative flex items-center gap-3 px-4 py-3 rounded-xl
         backdrop-blur-xl transition-all duration-300
         ${isDarkMode
-          ? 'bg-gray-900/80 border-[2px] border-gray-700/80 focus-within:border-blue-500'
-          : 'bg-white/80 border-[2px] border-gray-200 focus-within:border-blue-500'
+          ? 'bg-gray-900/80 border-[3px] border-gray-600/80 focus-within:border-blue-500 shadow-[0_8px_30px_rgba(0,0,0,0.4)]'
+          : 'bg-white/80 border-[3px] border-gray-400/80 focus-within:border-blue-500 shadow-[0_8px_30px_rgba(0,0,0,0.25)]'
         }
       `}>
         <Search className={`w-5 h-5 ${

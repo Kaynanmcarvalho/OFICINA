@@ -1,0 +1,71 @@
+{
+  "Honda": {
+    "Civic": {
+      "combustivel": "Flex",
+      "consumo": "12 km/l (cidade) / 15 km/l (estrada)",
+      "motor": "2.0 16V i-VTEC",
+      "alertas": [
+        "Correia dentada aos 60.000 km",
+        "Velas aos 40.000 km",
+        "Fluido de transmissão CVT aos 80.000 km"
+      ]
+    },
+    "City": {
+      "combustivel": "Flex",
+      "consumo": "13 km/l (cidade) / 16 km/l (estrada)",
+      "motor": "1.5 16V i-VTEC",
+      "alertas": [
+        "Correia dentada aos 60.000 km",
+        "Velas aos 40.000 km"
+      ]
+    },
+    "CG": {
+      "combustivel": "Gasolina",
+      "consumo": "35 km/l",
+      "motor": "160cc monocilíndrico",
+      "alertas": [
+        "Corrente a cada 1.000 km",
+        "Vela a cada 10.000 km"
+      ]
+    }
+  },
+  "Toyota": {
+    "Corolla": {
+      "combustivel": "Flex/Híbrido",
+      "consumo": "14 km/l (cidade) / 17 km/l (estrada)",
+      "motor": "2.0 16V VVT-i",
+      "alertas": [
+        "Bateria híbrida (verificação anual)",
+        "Correia aos 100.000 km"
+      ]
+    },
+    "Hilux": {
+      "combustivel": "Diesel",
+      "consumo": "10 km/l (cidade) / 13 km/l (estrada)",
+      "motor": "2.8 Turbo Diesel",
+      "alertas": [
+        "Filtro de combustível a cada 20.000 km",
+        "Óleo diesel de qualidade"
+      ]
+    }
+  },
+  "Volkswagen": {
+    "Gol": {
+      "combustivel": "Flex",
+      "consumo": "11 km/l (cidade) / 14 km/l (estrada)",
+      "motor": "1.0 ou 1.6 Total Flex",
+      "alertas": [
+        "Correia dentada aos 60.000 km"
+      ]
+    }
+  },
+  "default": {
+    "combustivel": "Flex",
+    "consumo": "10-12 km/l",
+    "motor": "Informação não disponível",
+    "alertas": [
+      "Manutenção preventiva regular",
+      "Consulte o manual do proprietário"
+    ]
+  }
+}

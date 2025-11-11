@@ -227,3 +227,5 @@ const Step6History = ({ formData, product }) => {
 };
 
 export default Step6History;
+
+

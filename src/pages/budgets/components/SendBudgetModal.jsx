@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Mail, AlertCircle, LogOut, WifiOff, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -21,7 +22,7 @@ const SendBudgetModal = ({ isOpen, onClose, budget }) => {
 
   const approvalLink = budget ? `${window.location.origin}/orcamento/aprovar/${budget.approvalLink}` : '';
 
-  const generateWhatsAppMessage = () => {
+  const generateWhatsAppMessage = useCallback(() => {
     if (!budget) return '';
     
     return `Olá ${budget.clientName}! 👋
@@ -38,14 +39,14 @@ ${approvalLink}
 ⏰ *Importante:* Este orçamento é válido por 48 horas para garantir a disponibilidade dos itens.
 
 Qualquer dúvida, estamos à disposição!`;
-  };
+  });
 
   // Inicializar mensagem customizada quando modal abre
   useEffect(() => {
     if (isOpen && budget && !customMessage) {
       setCustomMessage(generateWhatsAppMessage());
     }
-  }, [isOpen, budget]);
+  }, [isOpen, budget, customMessage, generateWhatsAppMessage]);
 
   // Verificar status do WhatsApp quando modal abre
   useEffect(() => {
@@ -119,41 +120,54 @@ Qualquer dúvida, estamos à disposição!`;
   
 
   const handleSendWhatsApp = async (skipConnectionCheck = false) => {
+    console.log('[SendBudget] handleSendWhatsApp iniciado');
     const phone = phoneNumber || budget.clientPhone;
     
+    console.log('[SendBudget] Telefone:', phone);
+    console.log('[SendBudget] Mensagem:', customMessage?.substring(0, 50) + '...');
+    
     if (!phone) {
+      console.error('[SendBudget] Telefone não informado');
       toast.error('Número de telefone não informado');
       return;
     }
 
     if (!customMessage.trim()) {
+      console.error('[SendBudget] Mensagem vazia');
       toast.error('Mensagem não pode estar vazia');
       return;
     }
 
     // Se não deve pular a verificação, verificar conexão primeiro
+    console.log('[SendBudget] skipConnectionCheck:', skipConnectionCheck);
     if (!skipConnectionCheck) {
-      try {
-        const status = await checkConnectionStatus();
-        console.log('[SendBudget] Status da conexão:', status);
-        
-        // Se NÃO está conectado E NÃO tem sessão salva, mostrar alerta
-        if (!status.connected && !status.exists) {
-          console.log('[SendBudget] WhatsApp sem sessão - mostrando alerta');
+      // Se já verificamos que está conectado, pular verificação
+      if (isWhatsAppConnected) {
+        console.log('[SendBudget] WhatsApp já verificado como conectado - pulando verificação');
+      } else {
+        console.log('[SendBudget] Verificando conexão WhatsApp...');
+        try {
+          const status = await checkConnectionStatus();
+          console.log('[SendBudget] Status da conexão:', status);
+          
+          // Se NÃO está conectado E NÃO tem sessão salva, mostrar alerta
+          if (!status.connected && !status.exists) {
+            console.log('[SendBudget] WhatsApp sem sessão - mostrando alerta');
+            setIsWhatsAppConnected(false);
+            setShowDisconnectedAlert(true);
+            return;
+          }
+          
+          // Se está conectado OU tem sessão, continuar com envio
+          console.log('[SendBudget] WhatsApp disponível - enviando...');
+          setIsWhatsAppConnected(true);
+        } catch (error) {
+          console.error('Erro ao verificar conexão:', error);
+          // Só mostrar alerta se realmente não conseguir verificar
           setIsWhatsAppConnected(false);
           setShowDisconnectedAlert(true);
           return;
         }
-        
-        // Se está conectado OU tem sessão, continuar com envio
-        console.log('[SendBudget] WhatsApp disponível - enviando...');
-        setIsWhatsAppConnected(true);
-      } catch (error) {
-        console.error('Erro ao verificar conexão:', error);
-        // Só mostrar alerta se realmente não conseguir verificar
-        setIsWhatsAppConnected(false);
-        setShowDisconnectedAlert(true);
-        return;
       }
     }
 
@@ -246,9 +260,12 @@ Qualquer dúvida, estamos à disposição!`;
   };
 
   const handleSend = () => {
+    console.log('[SendBudget] handleSend chamado - método:', sendMethod);
     if (sendMethod === 'whatsapp') {
+      console.log('[SendBudget] Chamando handleSendWhatsApp...');
       handleSendWhatsApp();
     } else {
+      console.log('[SendBudget] Chamando handleSendEmail...');
       handleSendEmail();
     }
   };

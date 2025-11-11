@@ -1,0 +1,87 @@
+{
+  "Honda": {
+    "Civic": {
+      "recomendacoes": [
+        "Troca de óleo a cada 10.000 km",
+        "Revisão de freios a cada 20.000 km",
+        "Alinhamento e balanceamento a cada 15.000 km",
+        "Verificação de correia dentada aos 60.000 km"
+      ]
+    },
+    "City": {
+      "recomendacoes": [
+        "Troca de óleo a cada 10.000 km",
+        "Verificação de correia dentada aos 60.000 km",
+        "Revisão de suspensão a cada 30.000 km"
+      ]
+    },
+    "CG": {
+      "recomendacoes": [
+        "Troca de óleo a cada 3.000 km",
+        "Regulagem de corrente a cada 1.000 km",
+        "Troca de velas a cada 10.000 km"
+      ]
+    }
+  },
+  "Toyota": {
+    "Corolla": {
+      "recomendacoes": [
+        "Troca de óleo a cada 10.000 km",
+        "Revisão completa a cada 20.000 km",
+        "Verificação de sistema híbrido (se aplicável)"
+      ]
+    },
+    "Hilux": {
+      "recomendacoes": [
+        "Troca de óleo a cada 10.000 km",
+        "Revisão de suspensão a cada 20.000 km",
+        "Verificação de tração 4x4"
+      ]
+    }
+  },
+  "Volkswagen": {
+    "Gol": {
+      "recomendacoes": [
+        "Troca de óleo a cada 10.000 km",
+        "Revisão de freios a cada 20.000 km",
+        "Alinhamento a cada 15.000 km"
+      ]
+    },
+    "Polo": {
+      "recomendacoes": [
+        "Troca de óleo a cada 15.000 km",
+        "Revisão completa a cada 30.000 km"
+      ]
+    }
+  },
+  "Chevrolet": {
+    "Onix": {
+      "recomendacoes": [
+        "Troca de óleo a cada 10.000 km",
+        "Revisão de freios a cada 20.000 km"
+      ]
+    }
+  },
+  "Fiat": {
+    "Uno": {
+      "recomendacoes": [
+        "Troca de óleo a cada 10.000 km",
+        "Revisão de suspensão a cada 20.000 km"
+      ]
+    },
+    "Argo": {
+      "recomendacoes": [
+        "Troca de óleo a cada 10.000 km",
+        "Revisão completa a cada 20.000 km"
+      ]
+    }
+  },
+  "default": {
+    "recomendacoes": [
+      "Troca de óleo regular conforme manual",
+      "Verificação de freios periodicamente",
+      "Manutenção preventiva recomendada",
+      "Alinhamento e balanceamento quando necessário"
+    ]
+  }
+}

@@ -90,8 +90,8 @@ const InventoryStats = ({ stats }) => {
             relative p-5 rounded-2xl backdrop-blur-xl
             transition-all duration-300
             ${isDarkMode
-              ? 'bg-gray-900/80 border-[2px] border-gray-700/80 hover:border-gray-600 shadow-[0_8px_30px_rgba(0,0,0,0.4)]'
-              : 'bg-white/80 border-[2px] border-gray-200 hover:border-gray-300 shadow-[0_8px_30px_rgba(0,0,0,0.08)]'
+              ? 'bg-gray-900/80 border-[3px] border-gray-600/80 hover:border-gray-500 shadow-[0_8px_30px_rgba(0,0,0,0.4)]'
+              : 'bg-white border-[3px] border-gray-400/80 hover:border-gray-500 shadow-[0_8px_30px_rgba(0,0,0,0.25)]'
             }
           `}
         >

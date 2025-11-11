@@ -1,0 +1,61 @@
+{
+  "quilometragem": {
+    "5000": [
+      { "id": "oleo", "nome": "Troca de óleo", "prioridade": "alta", "descricao": "Primeira troca de óleo" },
+      { "id": "filtro_oleo", "nome": "Filtro de óleo", "prioridade": "alta", "descricao": "Substituição do filtro" }
+    ],
+    "10000": [
+      { "id": "oleo", "nome": "Troca de óleo", "prioridade": "alta", "descricao": "Manutenção regular" },
+      { "id": "filtros", "nome": "Troca de filtros", "prioridade": "alta", "descricao": "Ar, óleo e combustível" },
+      { "id": "rodizio", "nome": "Rodízio de pneus", "prioridade": "media", "descricao": "Aumenta vida útil dos pneus" }
+    ],
+    "20000": [
+      { "id": "oleo", "nome": "Troca de óleo", "prioridade": "alta", "descricao": "Manutenção regular" },
+      { "id": "freios", "nome": "Revisão de freios", "prioridade": "alta", "descricao": "Pastilhas e discos" },
+      { "id": "alinhamento", "nome": "Alinhamento e balanceamento", "prioridade": "media", "descricao": "Melhora dirigibilidade" },
+      { "id": "suspensao", "nome": "Verificação de suspensão", "prioridade": "media", "descricao": "Amortecedores e molas" }
+    ],
+    "30000": [
+      { "id": "oleo", "nome": "Troca de óleo", "prioridade": "alta", "descricao": "Manutenção regular" },
+      { "id": "velas", "nome": "Troca de velas", "prioridade": "alta", "descricao": "Melhora desempenho" },
+      { "id": "filtros", "nome": "Todos os filtros", "prioridade": "alta", "descricao": "Ar, óleo, combustível e cabine" },
+      { "id": "fluidos", "nome": "Verificação de fluidos", "prioridade": "media", "descricao": "Freio, direção e arrefecimento" }
+    ],
+    "40000": [
+      { "id": "oleo", "nome": "Troca de óleo", "prioridade": "alta", "descricao": "Manutenção regular" },
+      { "id": "revisao", "nome": "Revisão completa", "prioridade": "alta", "descricao": "Verificação geral" },
+      { "id": "freios", "nome": "Sistema de freios", "prioridade": "alta", "descricao": "Pastilhas, discos e fluido" }
+    ],
+    "60000": [
+      { "id": "oleo", "nome": "Troca de óleo", "prioridade": "alta", "descricao": "Manutenção regular" },
+      { "id": "correia", "nome": "Correia dentada", "prioridade": "critica", "descricao": "Substituição obrigatória" },
+      { "id": "revisao_completa", "nome": "Revisão completa", "prioridade": "alta", "descricao": "Todos os sistemas" },
+      { "id": "velas", "nome": "Velas de ignição", "prioridade": "alta", "descricao": "Substituição" }
+    ]
+  },
+  "ano": {
+    "2023-2024": [
+      { "id": "preventiva", "nome": "Manutenção preventiva", "prioridade": "media", "descricao": "Veículo novo" }
+    ],
+    "2020-2022": [
+      { "id": "preventiva", "nome": "Manutenção preventiva", "prioridade": "alta", "descricao": "Manutenção regular" },
+      { "id": "bateria", "nome": "Verificação de bateria", "prioridade": "media", "descricao": "Vida útil média 3 anos" }
+    ],
+    "2015-2019": [
+      { "id": "preventiva", "nome": "Manutenção preventiva", "prioridade": "alta", "descricao": "Atenção redobrada" },
+      { "id": "correia", "nome": "Verificação de correias", "prioridade": "alta", "descricao": "Desgaste natural" },
+      { "id": "suspensao", "nome": "Revisão de suspensão", "prioridade": "media", "descricao": "Componentes com desgaste" }
+    ],
+    "2010-2014": [
+      { "id": "revisao", "nome": "Revisão completa", "prioridade": "critica", "descricao": "Veículo com idade" },
+      { "id": "correia", "nome": "Troca de correia dentada", "prioridade": "critica", "descricao": "Substituição obrigatória" },
+      { "id": "suspensao", "nome": "Revisão de suspensão", "prioridade": "alta", "descricao": "Desgaste avançado" },
+      { "id": "eletrica", "nome": "Sistema elétrico", "prioridade": "media", "descricao": "Verificação geral" }
+    ],
+    "antes-2010": [
+      { "id": "revisao_geral", "nome": "Revisão geral completa", "prioridade": "critica", "descricao": "Veículo antigo" },
+      { "id": "motor", "nome": "Verificação do motor", "prioridade": "alta", "descricao": "Desgaste natural" },
+      { "id": "transmissao", "nome": "Sistema de transmissão", "prioridade": "alta", "descricao": "Atenção especial" }
+    ]
+  }
+}

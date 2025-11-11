@@ -17,7 +17,7 @@ const RegisterPage = React.lazy(() => import('./pages/auth/RegisterPage'));
 const CompleteProfilePage = React.lazy(() => import('./pages/auth/CompleteProfilePage'));
 const DashboardPage = React.lazy(() => import('./pages/dashboard/index'));
 const EmployeeManagementPage = React.lazy(() => import('./pages/EmployeeManagementPage'));
-const CheckinPage = React.lazy(() => import('./pages/CheckInPage'));
+const CheckinPage = React.lazy(() => import('./pages/checkin/index'));
 const CheckInDetailsPage = React.lazy(() => import('./pages/CheckInDetailsPage'));
 const ClientsPage = React.lazy(() => import('./pages/ClientsPage'));
 const InventoryPage = React.lazy(() => import('./pages/InventoryPage'));

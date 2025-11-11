@@ -33,32 +33,32 @@ const ItemAvatar: React.FC<ItemAvatarProps> = ({
       case 'car':
         return {
           background: 'bg-gradient-to-br from-blue-500/10 to-blue-600/20',
-          iconColor: 'text-blue-600 dark:text-blue-400',
+          iconColor: 'text-blue-600 dark:text-white',
         };
       case 'motorcycle':
         return {
           background: 'bg-gradient-to-br from-red-500/15 to-orange-500/25 dark:from-red-400/20 dark:to-orange-400/30',
-          iconColor: 'text-red-600 dark:text-red-400',
+          iconColor: 'text-red-600 dark:text-white',
         };
       case 'truck':
         return {
           background: 'bg-gradient-to-br from-purple-500/10 to-purple-600/20',
-          iconColor: 'text-purple-600 dark:text-purple-400',
+          iconColor: 'text-purple-600 dark:text-white',
         };
       case 'van':
         return {
           background: 'bg-gradient-to-br from-emerald-500/10 to-emerald-600/20',
-          iconColor: 'text-emerald-600 dark:text-emerald-400',
+          iconColor: 'text-emerald-600 dark:text-white',
         };
       case 'client':
         return {
           background: 'bg-gradient-to-br from-neutral-500/10 to-neutral-600/20',
-          iconColor: 'text-neutral-600 dark:text-neutral-400',
+          iconColor: 'text-neutral-600 dark:text-white',
         };
       default:
         return {
           background: 'bg-gradient-to-br from-neutral-500/10 to-neutral-600/20',
-          iconColor: 'text-neutral-600 dark:text-neutral-400',
+          iconColor: 'text-neutral-600 dark:text-white',
         };
     }
   };

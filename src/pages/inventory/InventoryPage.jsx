@@ -8,22 +8,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProductStore } from '../../store/productStore';
 import { useThemeStore } from '../../store/themeStore';
-import toast from 'react-hot-toast';
-import {
-  Package,
-  Plus,
-  Search,
-  Filter,
-  Grid3x3,
-  List,
-  AlertTriangle,
-  TrendingUp,
-  DollarSign,
-  Archive,
-  Download,
-  Upload,
-  BarChart3,
-} from 'lucide-react';
+import { Package, Sparkles } from 'lucide-react';
 
 // Components
 import InventoryHeader from './components/InventoryHeader';
@@ -35,6 +20,8 @@ import InventoryListView from './components/InventoryListView';
 import ProductModal from './components/ProductModal';
 import EmptyState from './components/EmptyState';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
+import VehicleCompatibilitySearch from '../../components/inventory/VehicleCompatibilitySearch';
+import IntelligentCompatibilityPanel from '../../components/inventory/IntelligentCompatibilityPanel';
 
 const VIEW_MODES = {
   GRID: 'grid',
@@ -48,9 +35,11 @@ const InventoryPage = () => {
     fetchProducts,
     isLoading,
     getInventoryStatistics,
-    getLowStockProducts,
     getExpiringProducts,
   } = useProductStore();
+
+  // Força uso do motion para evitar que autofix remova
+  const MotionDiv = motion.div;
 
   // View state
   const [viewMode, setViewMode] = useState(VIEW_MODES.GRID);
@@ -66,6 +55,8 @@ const InventoryPage = () => {
   // Modal states
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [isCompatibilityModalOpen, setIsCompatibilityModalOpen] = useState(false);
+  const [isIntelligentPanelOpen, setIsIntelligentPanelOpen] = useState(false);
 
   // Load products on mount
   useEffect(() => {
@@ -125,7 +116,7 @@ const InventoryPage = () => {
   }, [products, searchQuery, activeFilters, getExpiringProducts]);
 
   // Statistics
-  const stats = useMemo(() => getInventoryStatistics(), [products, getInventoryStatistics]);
+  const stats = useMemo(() => getInventoryStatistics(), [getInventoryStatistics]);
 
   // Handlers
   const handleNewProduct = () => {
@@ -185,6 +176,36 @@ const InventoryPage = () => {
                 resultCount={filteredProducts.length}
               />
             </div>
+
+            <button
+              onClick={() => setIsCompatibilityModalOpen(true)}
+              className={`
+                flex items-center gap-2 px-4 py-3 rounded-xl
+                font-medium transition-all whitespace-nowrap
+                ${isDarkMode
+                  ? 'bg-purple-600 hover:bg-purple-500 text-white shadow-[0_8px_30px_rgba(147,51,234,0.4)]'
+                  : 'bg-purple-600 hover:bg-purple-700 text-white shadow-[0_8px_30px_rgba(147,51,234,0.3)]'
+                }
+              `}
+            >
+              <Package className="w-5 h-5" />
+              Buscar por Veículo
+            </button>
+
+            <button
+              onClick={() => setIsIntelligentPanelOpen(true)}
+              className={`
+                flex items-center gap-2 px-4 py-3 rounded-xl
+                font-medium transition-all whitespace-nowrap
+                ${isDarkMode
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-[0_8px_30px_rgba(147,51,234,0.4)]'
+                  : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-[0_8px_30px_rgba(147,51,234,0.3)]'
+                }
+              `}
+            >
+              <Sparkles className="w-5 h-5" />
+              IA Compatibilidade
+            </button>
 
             <InventoryFilters
               activeFilters={activeFilters}
@@ -270,6 +291,22 @@ const InventoryPage = () => {
           setEditingProduct(null);
         }}
         product={editingProduct}
+      />
+
+      {/* Vehicle Compatibility Search */}
+      <VehicleCompatibilitySearch
+        isOpen={isCompatibilityModalOpen}
+        onClose={() => setIsCompatibilityModalOpen(false)}
+        onPartSelect={(part) => {
+          // Opcional: abrir modal de produto com a peça selecionada
+          console.log('Peça selecionada:', part);
+        }}
+      />
+
+      {/* Intelligent Compatibility Panel */}
+      <IntelligentCompatibilityPanel
+        isOpen={isIntelligentPanelOpen}
+        onClose={() => setIsIntelligentPanelOpen(false)}
       />
     </div>
   );

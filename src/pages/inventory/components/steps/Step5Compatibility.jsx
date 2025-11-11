@@ -226,10 +226,10 @@ const Step5Compatibility = ({ formData, updateFormData }) => {
                 onClick={handleApplySuggestions}
                 className={`
                   flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold
-                  transition-all
+                  transition-all border-[2px]
                   ${isDarkMode
-                    ? 'bg-purple-600 hover:bg-purple-500 text-white'
-                    : 'bg-purple-600 hover:bg-purple-700 text-white'
+                    ? 'bg-purple-600 border-purple-500/60 hover:bg-purple-500 text-white shadow-[0_4px_12px_rgba(168,85,247,0.4)]'
+                    : 'bg-purple-600 border-purple-500/60 hover:bg-purple-700 text-white shadow-[0_4px_12px_rgba(147,51,234,0.3)]'
                   }
                 `}
               >
@@ -243,10 +243,10 @@ const Step5Compatibility = ({ formData, updateFormData }) => {
                   onClick={handleApplySelectedSuggestions}
                   className={`
                     flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold
-                    transition-all
+                    transition-all border-[2px]
                     ${isDarkMode
-                      ? 'bg-blue-600 hover:bg-blue-500 text-white'
-                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                      ? 'bg-blue-600 border-blue-500/60 hover:bg-blue-500 text-white shadow-[0_4px_12px_rgba(59,130,246,0.4)]'
+                      : 'bg-blue-600 border-blue-500/60 hover:bg-blue-700 text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)]'
                     }
                   `}
                 >
@@ -260,8 +260,8 @@ const Step5Compatibility = ({ formData, updateFormData }) => {
 
         {/* Add Form */}
         <div className={`
-          p-4 rounded-xl mb-4
-          ${isDarkMode ? 'bg-gray-800/50' : 'bg-gray-50'}
+          p-4 rounded-xl mb-4 border-[2px]
+          ${isDarkMode ? 'bg-gray-800/50 border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)]' : 'bg-gray-50 border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)]'}
         `}>
           <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-3">
             <input
@@ -272,8 +272,8 @@ const Step5Compatibility = ({ formData, updateFormData }) => {
               className={`
                 px-3 py-2 rounded-lg text-sm
                 ${isDarkMode
-                  ? 'bg-gray-800 border border-gray-700 text-white'
-                  : 'bg-white border border-gray-200 text-gray-900'
+                  ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white'
+                  : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900'
                 }
               `}
             />
@@ -285,8 +285,8 @@ const Step5Compatibility = ({ formData, updateFormData }) => {
               className={`
                 px-3 py-2 rounded-lg text-sm
                 ${isDarkMode
-                  ? 'bg-gray-800 border border-gray-700 text-white'
-                  : 'bg-white border border-gray-200 text-gray-900'
+                  ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white'
+                  : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900'
                 }
               `}
             />
@@ -298,8 +298,8 @@ const Step5Compatibility = ({ formData, updateFormData }) => {
               className={`
                 px-3 py-2 rounded-lg text-sm
                 ${isDarkMode
-                  ? 'bg-gray-800 border border-gray-700 text-white'
-                  : 'bg-white border border-gray-200 text-gray-900'
+                  ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white'
+                  : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900'
                 }
               `}
             />
@@ -311,8 +311,8 @@ const Step5Compatibility = ({ formData, updateFormData }) => {
               className={`
                 px-3 py-2 rounded-lg text-sm
                 ${isDarkMode
-                  ? 'bg-gray-800 border border-gray-700 text-white'
-                  : 'bg-white border border-gray-200 text-gray-900'
+                  ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white'
+                  : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900'
                 }
               `}
             />
@@ -324,8 +324,8 @@ const Step5Compatibility = ({ formData, updateFormData }) => {
               className={`
                 px-3 py-2 rounded-lg text-sm
                 ${isDarkMode
-                  ? 'bg-gray-800 border border-gray-700 text-white'
-                  : 'bg-white border border-gray-200 text-gray-900'
+                  ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)] text-white'
+                  : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)] text-gray-900'
                 }
               `}
             />
@@ -335,9 +335,10 @@ const Step5Compatibility = ({ formData, updateFormData }) => {
             onClick={handleAdd}
             className={`
               flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold
+              border-[2px]
               ${isDarkMode
-                ? 'bg-blue-600 hover:bg-blue-500 text-white'
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
+                ? 'bg-blue-600 border-blue-500/60 hover:bg-blue-500 text-white shadow-[0_4px_12px_rgba(59,130,246,0.4)]'
+                : 'bg-blue-600 border-blue-500/60 hover:bg-blue-700 text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)]'
               }
             `}
           >
@@ -355,8 +356,8 @@ const Step5Compatibility = ({ formData, updateFormData }) => {
                 className={`
                   flex items-center justify-between p-4 rounded-xl
                   ${isDarkMode
-                    ? 'bg-gray-800 border border-gray-700'
-                    : 'bg-white border border-gray-200'
+                    ? 'bg-gray-800 border-[2px] border-gray-600/70 shadow-[0_4px_12px_rgba(0,0,0,0.3)]'
+                    : 'bg-white border-[2px] border-gray-400/70 shadow-[0_4px_12px_rgba(0,0,0,0.15)]'
                   }
                 `}
               >
@@ -394,3 +395,6 @@ const Step5Compatibility = ({ formData, updateFormData }) => {
 };
 
 export default Step5Compatibility;
+
+
+

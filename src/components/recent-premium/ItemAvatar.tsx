@@ -15,11 +15,11 @@ const sizeMap = {
 };
 
 const typeColors = {
-  car: 'bg-blue-500/10 text-blue-500 dark:bg-blue-500/20 dark:text-blue-400',
-  motorcycle: 'bg-orange-500/10 text-orange-500 dark:bg-orange-500/20 dark:text-orange-400',
-  truck: 'bg-purple-500/10 text-purple-500 dark:bg-purple-500/20 dark:text-purple-400',
-  van: 'bg-green-500/10 text-green-500 dark:bg-green-500/20 dark:text-green-400',
-  client: 'bg-neutral-500/10 text-neutral-500 dark:bg-neutral-500/20 dark:text-neutral-400',
+  car: 'bg-blue-500/10 text-blue-500 dark:bg-blue-500/20 dark:text-white',
+  motorcycle: 'bg-orange-500/10 text-orange-500 dark:bg-orange-500/20 dark:text-white',
+  truck: 'bg-purple-500/10 text-purple-500 dark:bg-purple-500/20 dark:text-white',
+  van: 'bg-green-500/10 text-green-500 dark:bg-green-500/20 dark:text-white',
+  client: 'bg-neutral-500/10 text-neutral-500 dark:bg-neutral-500/20 dark:text-white',
 };
 
 /**

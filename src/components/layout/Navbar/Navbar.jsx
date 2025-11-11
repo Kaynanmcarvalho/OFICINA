@@ -8,8 +8,8 @@ const Navbar = ({ onSearch }) => {
   const { isDarkMode } = useThemeStore();
 
   const navbarClasses = isDarkMode
-    ? 'fixed top-0 left-0 right-0 z-50 h-16 bg-[rgba(18,18,20,0.95)] border-b border-white/[0.08] backdrop-blur-xl'
-    : 'fixed top-0 left-0 right-0 z-50 h-16 bg-white/[0.95] border-b border-black/[0.06] backdrop-blur-md';
+    ? 'fixed top-0 left-0 right-0 z-50 h-16 bg-[rgba(18,18,20,0.95)] border-b border-black/60 shadow-[0_2px_12px_rgba(0,0,0,0.4)] backdrop-blur-xl'
+    : 'fixed top-0 left-0 right-0 z-50 h-16 bg-white/[0.95] border-b border-black/25 shadow-[0_2px_12px_rgba(0,0,0,0.16)] backdrop-blur-md';
 
   return (
     <header

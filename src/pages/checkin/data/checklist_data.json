@@ -1,0 +1,225 @@
+{
+  "carro": [
+    { 
+      "id": "oleo_motor", 
+      "label": "Nível de óleo do motor", 
+      "icon": "droplet", 
+      "categoria": "Motor",
+      "descricao": "Verificar nível e qualidade"
+    },
+    { 
+      "id": "agua_radiador", 
+      "label": "Nível de água do radiador", 
+      "icon": "droplet", 
+      "categoria": "Motor",
+      "descricao": "Sistema de arrefecimento"
+    },
+    { 
+      "id": "fluido_freio", 
+      "label": "Fluido de freio", 
+      "icon": "disc", 
+      "categoria": "Freios",
+      "descricao": "Nível e cor do fluido"
+    },
+    { 
+      "id": "pastilhas_freio", 
+      "label": "Pastilhas de freio", 
+      "icon": "disc", 
+      "categoria": "Freios",
+      "descricao": "Espessura e desgaste"
+    },
+    { 
+      "id": "pneus_estado", 
+      "label": "Estado dos pneus", 
+      "icon": "circle", 
+      "categoria": "Rodas",
+      "descricao": "Desgaste e danos"
+    },
+    { 
+      "id": "pneus_pressao", 
+      "label": "Pressão dos pneus", 
+      "icon": "gauge", 
+      "categoria": "Rodas",
+      "descricao": "Calibragem adequada"
+    },
+    { 
+      "id": "pneu_estepe", 
+      "label": "Pneu estepe", 
+      "icon": "circle", 
+      "categoria": "Rodas",
+      "descricao": "Condição e pressão"
+    },
+    { 
+      "id": "farois", 
+      "label": "Faróis", 
+      "icon": "lightbulb", 
+      "categoria": "Elétrica",
+      "descricao": "Alto e baixo"
+    },
+    { 
+      "id": "lanternas", 
+      "label": "Lanternas traseiras", 
+      "icon": "lightbulb", 
+      "categoria": "Elétrica",
+      "descricao": "Freio e posição"
+    },
+    { 
+      "id": "setas", 
+      "label": "Setas", 
+      "icon": "arrow-right", 
+      "categoria": "Elétrica",
+      "descricao": "Dianteiras e traseiras"
+    },
+    { 
+      "id": "freio_mao", 
+      "label": "Freio de mão", 
+      "icon": "hand", 
+      "categoria": "Freios",
+      "descricao": "Funcionamento e ajuste"
+    },
+    { 
+      "id": "limpadores", 
+      "label": "Limpadores de para-brisa", 
+      "icon": "wind", 
+      "categoria": "Geral",
+      "descricao": "Palhetas e funcionamento"
+    },
+    { 
+      "id": "bateria", 
+      "label": "Bateria", 
+      "icon": "battery", 
+      "categoria": "Elétrica",
+      "descricao": "Carga e terminais"
+    },
+    { 
+      "id": "buzina", 
+      "label": "Buzina", 
+      "icon": "volume-2", 
+      "categoria": "Elétrica",
+      "descricao": "Funcionamento"
+    },
+    { 
+      "id": "cintos", 
+      "label": "Cintos de segurança", 
+      "icon": "shield", 
+      "categoria": "Segurança",
+      "descricao": "Todos os assentos"
+    },
+    { 
+      "id": "triangulo", 
+      "label": "Triângulo de sinalização", 
+      "icon": "alert-triangle", 
+      "categoria": "Segurança",
+      "descricao": "Presença e condição"
+    },
+    { 
+      "id": "macaco", 
+      "label": "Macaco e chave de roda", 
+      "icon": "tool", 
+      "categoria": "Ferramentas",
+      "descricao": "Presença e funcionamento"
+    }
+  ],
+  "moto": [
+    { 
+      "id": "oleo_motor", 
+      "label": "Nível de óleo do motor", 
+      "icon": "droplet", 
+      "categoria": "Motor",
+      "descricao": "Verificar nível"
+    },
+    { 
+      "id": "corrente", 
+      "label": "Tensão da corrente", 
+      "icon": "link", 
+      "categoria": "Transmissão",
+      "descricao": "Folga e lubrificação"
+    },
+    { 
+      "id": "pneus", 
+      "label": "Estado dos pneus", 
+      "icon": "circle", 
+      "categoria": "Rodas",
+      "descricao": "Desgaste e pressão"
+    },
+    { 
+      "id": "freios", 
+      "label": "Pastilhas de freio", 
+      "icon": "disc", 
+      "categoria": "Freios",
+      "descricao": "Dianteiro e traseiro"
+    },
+    { 
+      "id": "luzes", 
+      "label": "Sistema de iluminação", 
+      "icon": "lightbulb", 
+      "categoria": "Elétrica",
+      "descricao": "Farol, lanterna e setas"
+    },
+    { 
+      "id": "buzina", 
+      "label": "Buzina", 
+      "icon": "volume-2", 
+      "categoria": "Elétrica",
+      "descricao": "Funcionamento"
+    },
+    { 
+      "id": "suspensao", 
+      "label": "Suspensão", 
+      "icon": "move-vertical", 
+      "categoria": "Suspensão",
+      "descricao": "Amortecedores"
+    },
+    { 
+      "id": "bateria", 
+      "label": "Bateria", 
+      "icon": "battery", 
+      "categoria": "Elétrica",
+      "descricao": "Carga e terminais"
+    }
+  ],
+  "caminhao": [
+    { 
+      "id": "oleo_motor", 
+      "label": "Nível de óleo do motor", 
+      "icon": "droplet", 
+      "categoria": "Motor",
+      "descricao": "Verificar nível"
+    },
+    { 
+      "id": "agua_radiador", 
+      "label": "Sistema de arrefecimento", 
+      "icon": "droplet", 
+      "categoria": "Motor",
+      "descricao": "Nível e vazamentos"
+    },
+    { 
+      "id": "freios", 
+      "label": "Sistema de freios", 
+      "icon": "disc", 
+      "categoria": "Freios",
+      "descricao": "Ar comprimido e lonas"
+    },
+    { 
+      "id": "pneus", 
+      "label": "Todos os pneus", 
+      "icon": "circle", 
+      "categoria": "Rodas",
+      "descricao": "Estado e pressão"
+    },
+    { 
+      "id": "luzes", 
+      "label": "Sistema de iluminação", 
+      "icon": "lightbulb", 
+      "categoria": "Elétrica",
+      "descricao": "Todas as luzes"
+    },
+    { 
+      "id": "suspensao", 
+      "label": "Suspensão", 
+      "icon": "move-vertical", 
+      "categoria": "Suspensão",
+      "descricao": "Molas e amortecedores"
+    }
+  ]
+}

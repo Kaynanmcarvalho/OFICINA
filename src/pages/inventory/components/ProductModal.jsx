@@ -257,8 +257,8 @@ const ProductModal = ({ isOpen, onClose, product }) => {
         >
           {/* Header */}
           <div className={`
-            flex items-center justify-between px-8 py-6 border-b
-            ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}
+            flex items-center justify-between px-8 py-6 border-b-[2px]
+            ${isDarkMode ? 'border-gray-600/70 shadow-[0_2px_8px_rgba(0,0,0,0.2)]' : 'border-gray-400/70 shadow-[0_2px_8px_rgba(0,0,0,0.1)]'}
           `}>
             <div className="flex-1">
               <h2 className={`text-2xl font-bold ${
@@ -303,8 +303,8 @@ const ProductModal = ({ isOpen, onClose, product }) => {
 
           {/* Progress Steps */}
           <div className={`
-            px-8 py-4 border-b
-            ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}
+            px-8 py-4 border-b-[2px]
+            ${isDarkMode ? 'border-gray-600/70 shadow-[0_2px_8px_rgba(0,0,0,0.2)]' : 'border-gray-400/70 shadow-[0_2px_8px_rgba(0,0,0,0.1)]'}
           `}>
             <div className="flex items-center justify-between">
               {STEPS.map((step, index) => (
@@ -330,17 +330,18 @@ const ProductModal = ({ isOpen, onClose, product }) => {
                     <div className={`
                       w-8 h-8 rounded-full flex items-center justify-center
                       font-bold text-sm transition-all
+                      border-[2px]
                       ${currentStep === step.id
                         ? isDarkMode
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-blue-600 text-white'
+                          ? 'bg-blue-600 text-white border-blue-400/60 shadow-[0_4px_12px_rgba(59,130,246,0.5)]'
+                          : 'bg-blue-600 text-white border-blue-500/60 shadow-[0_4px_12px_rgba(37,99,235,0.4)]'
                         : currentStep > step.id
                           ? isDarkMode
-                            ? 'bg-green-600 text-white'
-                            : 'bg-green-600 text-white'
+                            ? 'bg-green-600 text-white border-green-400/60 shadow-[0_4px_12px_rgba(34,197,94,0.5)]'
+                            : 'bg-green-600 text-white border-green-500/60 shadow-[0_4px_12px_rgba(22,163,74,0.4)]'
                           : isDarkMode
-                            ? 'bg-gray-800 text-gray-600'
-                            : 'bg-gray-200 text-gray-400'
+                            ? 'bg-gray-800 text-gray-600 border-gray-600/60 shadow-[0_4px_12px_rgba(0,0,0,0.3)]'
+                            : 'bg-gray-200 text-gray-400 border-gray-400/60 shadow-[0_4px_12px_rgba(0,0,0,0.15)]'
                       }
                     `}>
                       {currentStep > step.id ? (
@@ -356,14 +357,14 @@ const ProductModal = ({ isOpen, onClose, product }) => {
                   
                   {index < STEPS.length - 1 && (
                     <div className={`
-                      flex-1 h-0.5 mx-2
+                      flex-1 h-1 mx-2 rounded-full
                       ${currentStep > step.id
                         ? isDarkMode
-                          ? 'bg-green-600'
-                          : 'bg-green-600'
+                          ? 'bg-green-600 shadow-[0_2px_8px_rgba(34,197,94,0.4)]'
+                          : 'bg-green-600 shadow-[0_2px_8px_rgba(22,163,74,0.3)]'
                         : isDarkMode
-                          ? 'bg-gray-800'
-                          : 'bg-gray-200'
+                          ? 'bg-gray-700/60 shadow-[0_2px_8px_rgba(0,0,0,0.2)]'
+                          : 'bg-gray-300/60 shadow-[0_2px_8px_rgba(0,0,0,0.1)]'
                       }
                     `} />
                   )}
@@ -393,8 +394,8 @@ const ProductModal = ({ isOpen, onClose, product }) => {
 
           {/* Footer */}
           <div className={`
-            flex items-center justify-between px-8 py-6 border-t
-            ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}
+            flex items-center justify-between px-8 py-6 border-t-[2px]
+            ${isDarkMode ? 'border-gray-600/70 shadow-[0_-2px_8px_rgba(0,0,0,0.2)]' : 'border-gray-400/70 shadow-[0_-2px_8px_rgba(0,0,0,0.1)]'}
           `}>
             <button
               onClick={handlePrevious}

@@ -37,8 +37,8 @@ const Sidebar = memo(({ menuItems, footerItems, isCollapsed, toggleSidebar }) =>
   }, [isMobile, isMobileOpen]);
 
   const sidebarClasses = isDarkMode
-    ? 'fixed left-0 z-40 flex flex-col bg-gradient-to-b from-[#0d0d0f] to-[#1a1a1c] border-r border-white/[0.08] backdrop-blur-[22px]'
-    : 'fixed left-0 z-40 flex flex-col bg-white/[0.65] border-r border-black/[0.06] backdrop-blur-[20px]';
+    ? 'fixed left-0 z-40 flex flex-col bg-gradient-to-b from-[#0d0d0f] to-[#1a1a1c] border-r border-black/60 shadow-[2px_0_12px_rgba(0,0,0,0.4)] backdrop-blur-[22px]'
+    : 'fixed left-0 z-40 flex flex-col bg-white/[0.65] border-r border-black/25 shadow-[2px_0_12px_rgba(0,0,0,0.16)] backdrop-blur-[20px]';
 
   return (
     <>
