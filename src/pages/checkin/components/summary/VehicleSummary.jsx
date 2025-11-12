@@ -36,9 +36,9 @@ const VehicleSummary = ({ vehicleData, plate, empresaId, className = '' }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
       className={className}
     >
       {/* Apple-style Minimalist Card */}
@@ -56,17 +56,6 @@ const VehicleSummary = ({ vehicleData, plate, empresaId, className = '' }) => {
                 {color && <><span>•</span><span>{color}</span></>}
               </div>
             </div>
-            
-            {stats && stats.totalVisits > 0 && (
-              <div className="text-right">
-                <div className="text-2xl font-semibold text-gray-900 dark:text-white">
-                  {stats.totalVisits}
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                  {stats.totalVisits === 1 ? 'visita' : 'visitas'}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Clean Details */}

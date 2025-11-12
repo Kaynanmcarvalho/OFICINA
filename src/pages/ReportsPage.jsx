@@ -16,6 +16,7 @@ import {
 import { useCheckinStore } from '../store/checkinStore';
 import { useClientStore } from '../store/clientStore';
 import { useVehicleStore } from '../store/vehicleStore';
+import { formatPhone } from '../utils/formatters';
 import toast from 'react-hot-toast';
 
 const ReportsPage = () => {
@@ -265,7 +266,7 @@ const ReportsPage = () => {
                         {client.name}
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {client.phone}
+                        {client.phone ? formatPhone(client.phone) : '-'}
                       </p>
                     </div>
                   </div>
@@ -487,7 +488,7 @@ const ReportsPage = () => {
                   clients.slice(0, 10).map((client) => (
                     <tr key={client.firestoreId} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                       <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">{client.name}</td>
-                      <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{client.phone}</td>
+                      <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{client.phone ? formatPhone(client.phone) : '-'}</td>
                       <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{client.email || '-'}</td>
                       <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{client.totalServices || 0}</td>
                       <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">

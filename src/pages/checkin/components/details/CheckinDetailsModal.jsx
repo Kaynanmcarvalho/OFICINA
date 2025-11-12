@@ -22,6 +22,7 @@ import PhotoViewer3D from '../photos/PhotoViewer3D';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import { useVehicleHistory } from '../../hooks/useVehicleHistory';
 import { formatDateTime } from '../../utils/dateHelpers';
+import { formatPhone } from '../../../../utils/formatters';
 import './CheckinDetailsModal.css';
 
 const CheckinDetailsModal = ({ checkinId, onClose }) => {
@@ -146,20 +147,18 @@ const CheckinDetailsModal = ({ checkinId, onClose }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.15, ease: "easeInOut" }}
+        transition={{ duration: 0.12, ease: "easeOut" }}
         className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm overflow-y-auto"
         onClick={onClose}
       >
         <div className="min-h-screen flex items-start justify-center p-2 sm:p-4 md:p-6 py-8">
           <motion.div
-            initial={{ opacity: 0, scale: 0.96, y: 20 }}
+            initial={{ opacity: 0, scale: 0.97, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 20 }}
+            exit={{ opacity: 0, scale: 0.97, y: 10 }}
             transition={{ 
-              duration: 0.2, 
-              ease: [0.16, 1, 0.3, 1],
-              scale: { duration: 0.2 },
-              opacity: { duration: 0.15 }
+              duration: 0.15, 
+              ease: [0.16, 1, 0.3, 1]
             }}
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-[95vw] sm:max-w-[90vw] md:max-w-5xl lg:max-w-6xl xl:max-w-7xl"
@@ -234,46 +233,45 @@ const CheckinDetailsModal = ({ checkinId, onClose }) => {
                 {activeTab === 'overview' && (
                   <motion.div
                     key="overview"
-                    initial={{ opacity: 0, y: 8 }}
+                    initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
+                    exit={{ opacity: 0, y: -4 }}
                     transition={{ 
-                      duration: 0.2,
-                      ease: [0.16, 1, 0.3, 1]
+                      duration: 0.15,
+                      ease: "easeOut"
                     }}
-                    className="space-y-6"
+                    className="space-y-5"
                   >
                     {/* Client Info */}
-                    <div>
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-2xl p-6 border border-blue-100 dark:border-blue-900/30">
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                        <User className="w-5 h-5 text-orange-500" />
+                        <div className="p-2 rounded-lg bg-blue-500/10 dark:bg-blue-500/20">
+                          <User className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        </div>
                         Informações do Cliente
                       </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800">
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Nome</p>
-                          <p className="font-semibold text-gray-900 dark:text-white">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="p-4 rounded-xl bg-white/80 dark:bg-gray-900/50 backdrop-blur-sm border border-blue-100 dark:border-blue-900/30 shadow-sm">
+                          <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-2">Nome</p>
+                          <p className="font-semibold text-gray-900 dark:text-white text-lg">
                             {checkinData.clientName || 'Não informado'}
                           </p>
                         </div>
                         {checkinData.clientPhone && (
-                          <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800">
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1 flex items-center gap-1">
+                          <div className="p-4 rounded-xl bg-white/80 dark:bg-gray-900/50 backdrop-blur-sm border border-blue-100 dark:border-blue-900/30 shadow-sm">
+                            <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-1">
                               <Phone className="w-3 h-3" />
                               Telefone
                             </p>
-                            <p className="font-semibold text-gray-900 dark:text-white">
-                              {checkinData.clientPhone}
+                            <p className="font-semibold text-gray-900 dark:text-white text-lg">
+                              {formatPhone(checkinData.clientPhone)}
                             </p>
                           </div>
                         )}
                         {checkinData.clientEmail && (
-                          <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800">
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1 flex items-center gap-1">
-                              <Mail className="w-3 h-3" />
-                              Email
-                            </p>
-                            <p className="font-semibold text-gray-900 dark:text-white">
+                          <div className="p-4 rounded-xl bg-white/80 dark:bg-gray-900/50 backdrop-blur-sm border border-blue-100 dark:border-blue-900/30 shadow-sm md:col-span-2">
+                            <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-2">Email</p>
+                            <p className="font-semibold text-gray-900 dark:text-white text-lg">
                               {checkinData.clientEmail}
                             </p>
                           </div>
@@ -282,9 +280,11 @@ const CheckinDetailsModal = ({ checkinId, onClose }) => {
                     </div>
 
                     {/* Vehicle Info with Summary */}
-                    <div>
+                    <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20 rounded-2xl p-6 border border-orange-100 dark:border-orange-900/30">
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                        <Car className="w-5 h-5 text-orange-500" />
+                        <div className="p-2 rounded-lg bg-orange-500/10 dark:bg-orange-500/20">
+                          <Car className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                        </div>
                         Informações do Veículo
                       </h3>
                       <VehicleSummary
@@ -295,16 +295,18 @@ const CheckinDetailsModal = ({ checkinId, onClose }) => {
 
                     {/* Services */}
                     {checkinData.services && checkinData.services.length > 0 && (
-                      <div>
+                      <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 rounded-2xl p-6 border border-purple-100 dark:border-purple-900/30">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                          <Wrench className="w-5 h-5 text-orange-500" />
-                          Serviços
+                          <div className="p-2 rounded-lg bg-purple-500/10 dark:bg-purple-500/20">
+                            <Wrench className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                          </div>
+                          Serviços Solicitados
                         </h3>
                         <div className="flex flex-wrap gap-2">
                           {checkinData.services.map((service, index) => (
                             <span
                               key={index}
-                              className="px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-sm font-medium text-orange-600 dark:text-orange-400"
+                              className="px-4 py-2 rounded-xl bg-white/80 dark:bg-gray-900/50 backdrop-blur-sm border border-purple-100 dark:border-purple-900/30 text-sm font-semibold text-purple-700 dark:text-purple-300 shadow-sm"
                             >
                               {service}
                             </span>
@@ -315,13 +317,15 @@ const CheckinDetailsModal = ({ checkinId, onClose }) => {
 
                     {/* Notes */}
                     {checkinData.notes && (
-                      <div>
+                      <div className="bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-900/50 dark:to-slate-900/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                          <FileText className="w-5 h-5 text-orange-500" />
+                          <div className="p-2 rounded-lg bg-gray-500/10 dark:bg-gray-500/20">
+                            <FileText className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                          </div>
                           Observações
                         </h3>
-                        <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800">
-                          <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                        <div className="p-4 rounded-xl bg-white/80 dark:bg-gray-900/50 backdrop-blur-sm border border-gray-200 dark:border-gray-800">
+                          <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
                             {checkinData.notes}
                           </p>
                         </div>
@@ -330,27 +334,30 @@ const CheckinDetailsModal = ({ checkinId, onClose }) => {
 
                     {/* Photos Preview */}
                     {(checkinData.entryPhotos?.length > 0 || checkinData.exitPhotos?.length > 0) && (
-                      <div>
+                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-2xl p-6 border border-green-100 dark:border-green-900/30">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                          <ImageIcon className="w-5 h-5 text-orange-500" />
-                          Fotos
+                          <div className="p-2 rounded-lg bg-green-500/10 dark:bg-green-500/20">
+                            <ImageIcon className="w-5 h-5 text-green-600 dark:text-green-400" />
+                          </div>
+                          Fotos do Veículo
                         </h3>
                         <div className="grid grid-cols-2 gap-4">
                           {checkinData.entryPhotos?.length > 0 && (
                             <button
                               onClick={() => handleViewPhotos(checkinData.entryPhotos, 'entry')}
-                              className="relative group rounded-xl overflow-hidden aspect-video bg-gray-200 dark:bg-gray-700 hover:ring-2 hover:ring-orange-500 transition-all"
+                              className="relative group rounded-2xl overflow-hidden aspect-video bg-gray-200 dark:bg-gray-700 hover:ring-2 hover:ring-orange-500 transition-all shadow-lg hover:shadow-xl"
                             >
                               <img
                                 src={checkinData.entryPhotos[0]}
                                 alt="Foto de entrada"
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                loading="lazy"
                               />
-                              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
                                 <div className="text-white text-center">
-                                  <ImageIcon className="w-8 h-8 mx-auto mb-2" />
-                                  <p className="font-semibold">Fotos de Entrada</p>
-                                  <p className="text-sm">{checkinData.entryPhotos.length} foto(s)</p>
+                                  <ImageIcon className="w-6 h-6 mx-auto mb-1" />
+                                  <p className="font-semibold text-sm">Fotos de Entrada</p>
+                                  <p className="text-xs opacity-90">{checkinData.entryPhotos.length} foto(s)</p>
                                 </div>
                               </div>
                             </button>
@@ -358,18 +365,19 @@ const CheckinDetailsModal = ({ checkinId, onClose }) => {
                           {checkinData.exitPhotos?.length > 0 && (
                             <button
                               onClick={() => handleViewPhotos(checkinData.exitPhotos, 'exit')}
-                              className="relative group rounded-xl overflow-hidden aspect-video bg-gray-200 dark:bg-gray-700 hover:ring-2 hover:ring-green-500 transition-all"
+                              className="relative group rounded-2xl overflow-hidden aspect-video bg-gray-200 dark:bg-gray-700 hover:ring-2 hover:ring-green-500 transition-all shadow-lg hover:shadow-xl"
                             >
                               <img
                                 src={checkinData.exitPhotos[0]}
                                 alt="Foto de saída"
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                loading="lazy"
                               />
-                              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
                                 <div className="text-white text-center">
-                                  <ImageIcon className="w-8 h-8 mx-auto mb-2" />
-                                  <p className="font-semibold">Fotos de Saída</p>
-                                  <p className="text-sm">{checkinData.exitPhotos.length} foto(s)</p>
+                                  <ImageIcon className="w-6 h-6 mx-auto mb-1" />
+                                  <p className="font-semibold text-sm">Fotos de Saída</p>
+                                  <p className="text-xs opacity-90">{checkinData.exitPhotos.length} foto(s)</p>
                                 </div>
                               </div>
                             </button>
@@ -384,12 +392,12 @@ const CheckinDetailsModal = ({ checkinId, onClose }) => {
                 {activeTab === 'timeline' && (
                   <motion.div
                     key="timeline"
-                    initial={{ opacity: 0, y: 8 }}
+                    initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
+                    exit={{ opacity: 0, y: -4 }}
                     transition={{ 
-                      duration: 0.2,
-                      ease: [0.16, 1, 0.3, 1]
+                      duration: 0.15,
+                      ease: "easeOut"
                     }}
                   >
                     <VehicleTimeline checkinId={checkinId} />
@@ -400,12 +408,12 @@ const CheckinDetailsModal = ({ checkinId, onClose }) => {
                 {activeTab === 'history' && (
                   <motion.div
                     key="history"
-                    initial={{ opacity: 0, y: 8 }}
+                    initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
+                    exit={{ opacity: 0, y: -4 }}
                     transition={{ 
-                      duration: 0.2,
-                      ease: [0.16, 1, 0.3, 1]
+                      duration: 0.15,
+                      ease: "easeOut"
                     }}
                   >
                     <VisitHistory
@@ -419,12 +427,12 @@ const CheckinDetailsModal = ({ checkinId, onClose }) => {
                 {activeTab === 'photos' && (
                   <motion.div
                     key="photos"
-                    initial={{ opacity: 0, y: 8 }}
+                    initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
+                    exit={{ opacity: 0, y: -4 }}
                     transition={{ 
-                      duration: 0.2,
-                      ease: [0.16, 1, 0.3, 1]
+                      duration: 0.15,
+                      ease: "easeOut"
                     }}
                     className="space-y-6"
                   >

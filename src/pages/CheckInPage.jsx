@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LogIn, LogOut } from 'lucide-react';
 import ModalCheckin from './checkin/componentes/ModalCheckinPremium';
-import ModalCheckout from './checkin/componentes/ModalCheckout';
+import ModalCheckout from './checkin/componentes/ModalCheckoutPremium';
 import ModalEditarCheckin from './checkin/componentes/ModalEditarCheckin';
-import BudgetModal from './budgets/components/BudgetModal';
+import BudgetModal from './budgets/components/BudgetModalPremium';
 import CheckinDetailsModal from './checkin/components/details/CheckinDetailsModal';
 import RecentSectionThemeAware from '../components/recent/RecentSectionThemeAware';
 import OperationalDashboard from './checkin/componentes/dashboard/OperationalDashboard';
@@ -25,6 +25,8 @@ const CheckInPage = () => {
   const [selectedForCheckout, setSelectedForCheckout] = useState(null);
   const [checkinToEdit, setCheckinToEdit] = useState(null);
   const [checkinForBudget, setCheckinForBudget] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [checkinToDelete, setCheckinToDelete] = useState(null);
 
   useEffect(() => {
     fetchCheckins();
@@ -182,10 +184,8 @@ const CheckInPage = () => {
         handleSelectForCheckout(checkin);
         break;
       case 'delete':
-        if (window.confirm('Tem certeza que deseja excluir este registro?')) {
-          // TODO: Implement delete functionality
-          console.log('Delete checkin:', checkin);
-        }
+        setCheckinToDelete(checkin);
+        setShowDeleteModal(true);
         break;
       default:
         break;
@@ -470,6 +470,74 @@ const CheckInPage = () => {
           items: []
         } : null}
       />
+
+      {/* Modal de Confirmação de Exclusão */}
+      <AnimatePresence>
+        {showDeleteModal && (
+          <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setShowDeleteModal(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 max-w-md w-full p-6"
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    Excluir Registro
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                    Tem certeza que deseja excluir este registro?
+                  </p>
+                  {checkinToDelete && (
+                    <p className="text-sm font-medium text-gray-900 dark:text-white mt-2">
+                      {checkinToDelete.vehiclePlate} - {checkinToDelete.clientName}
+                    </p>
+                  )}
+                  <p className="text-xs text-red-600 dark:text-red-400 mt-2">
+                    Esta ação não pode ser desfeita.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setCheckinToDelete(null);
+                  }}
+                  className="flex-1 px-4 py-2.5 rounded-xl border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all font-medium"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={() => {
+                    // TODO: Implement delete functionality
+                    console.log('Delete checkin:', checkinToDelete);
+                    setShowDeleteModal(false);
+                    setCheckinToDelete(null);
+                  }}
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold transition-all shadow-lg shadow-red-500/30"
+                >
+                  Excluir
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Modal de Detalhes Premium */}
       <AnimatePresence mode="wait">

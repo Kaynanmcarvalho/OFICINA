@@ -50,12 +50,12 @@ const VisitCard = ({ visit, onClick }) => {
       hover={true}
     >
       {/* Image */}
-      <div className="relative h-40 bg-gray-200 dark:bg-gray-700 overflow-hidden">
+      <div className="relative h-36 bg-gray-200 dark:bg-gray-700 overflow-hidden">
         {visit.entryPhotos && visit.entryPhotos[0] && !imageError ? (
           <>
             {!imageLoaded && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                <div className="w-7 h-7 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
               </div>
             )}
             <img
@@ -70,13 +70,13 @@ const VisitCard = ({ visit, onClick }) => {
           </>
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <Wrench className="w-12 h-12 text-gray-400" />
+            <Wrench className="w-10 h-10 text-gray-400" />
           </div>
         )}
 
         {/* Status Badge */}
-        <div className={`absolute top-2 right-2 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${statusConfig.className}`}>
-          <StatusIcon className="w-3 h-3" />
+        <div className={`absolute top-1.5 right-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1 ${statusConfig.className}`}>
+          <StatusIcon className="w-2.5 h-2.5" />
           {statusConfig.label}
         </div>
 
@@ -85,16 +85,16 @@ const VisitCard = ({ visit, onClick }) => {
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-3">
+      <div className="p-3 space-y-2.5">
         {/* Date and Value */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <Calendar className="w-4 h-4" />
+          <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400">
+            <Calendar className="w-3.5 h-3.5" />
             <span>{formatDate(visit.createdAt)}</span>
           </div>
           {visit.totalValue && (
-            <div className="flex items-center gap-1 text-sm font-bold text-orange-600 dark:text-orange-400">
-              <DollarSign className="w-4 h-4" />
+            <div className="flex items-center gap-1 text-xs font-bold text-orange-600 dark:text-orange-400">
+              <DollarSign className="w-3.5 h-3.5" />
               <span>
                 {visit.totalValue.toLocaleString('pt-BR', {
                   style: 'currency',
@@ -112,13 +112,13 @@ const VisitCard = ({ visit, onClick }) => {
             {visit.services.slice(0, 2).map((service, index) => (
               <span
                 key={index}
-                className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
               >
                 {service}
               </span>
             ))}
             {visit.services.length > 2 && (
-              <span className="text-xs px-2 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 font-medium">
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 font-medium">
                 +{visit.services.length - 2}
               </span>
             )}
@@ -127,14 +127,14 @@ const VisitCard = ({ visit, onClick }) => {
 
         {/* Duration */}
         {duration && (
-          <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-            <Clock className="w-3 h-3" />
+          <div className="flex items-center gap-1.5 text-[10px] text-gray-500 dark:text-gray-400">
+            <Clock className="w-2.5 h-2.5" />
             <span>{Math.abs(duration)}h de atendimento</span>
           </div>
         )}
 
         {/* Click indicator */}
-        <div className="text-xs text-center text-gray-400 dark:text-gray-500 pt-2 border-t border-gray-200 dark:border-gray-700">
+        <div className="text-[10px] text-center text-gray-400 dark:text-gray-500 pt-1.5 border-t border-gray-200 dark:border-gray-700">
           Clique para ver detalhes
         </div>
       </div>

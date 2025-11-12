@@ -36,11 +36,11 @@ const VisitHistory = ({ history, loading, className = '' }) => {
 
   if (!history || history.length === 0) {
     return (
-      <div className={`text-center py-8 ${className}`}>
-        <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4">
-          <History className="w-8 h-8 text-gray-400" />
+      <div className={`text-center py-6 ${className}`}>
+        <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-3">
+          <History className="w-7 h-7 text-gray-400" />
         </div>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-gray-500 dark:text-gray-400">
           Nenhuma visita anterior encontrada
         </p>
       </div>
@@ -50,31 +50,31 @@ const VisitHistory = ({ history, loading, className = '' }) => {
   return (
     <div className={className}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <div>
-          <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h4 className="text-base font-semibold text-gray-900 dark:text-white">
             Histórico de Visitas
           </h4>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-xs text-gray-600 dark:text-gray-400">
             {history.length} visita{history.length !== 1 ? 's' : ''} anterior{history.length !== 1 ? 'es' : ''}
           </p>
         </div>
 
         {/* Navigation Buttons */}
         {history.length > 3 && (
-          <div className="flex gap-2">
+          <div className="flex gap-1.5">
             <button
               onClick={() => handleScroll('left')}
               disabled={scrollPosition <= 0}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-400" />
             </button>
             <button
               onClick={() => handleScroll('right')}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
-              <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-400" />
             </button>
           </div>
         )}
@@ -83,7 +83,7 @@ const VisitHistory = ({ history, loading, className = '' }) => {
       {/* Scroll Container */}
       <div
         ref={scrollContainerRef}
-        className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide"
+        className="flex gap-3 overflow-x-auto pb-3 snap-x snap-mandatory scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {history.map((visit, index) => (
@@ -92,7 +92,7 @@ const VisitHistory = ({ history, loading, className = '' }) => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="flex-shrink-0 w-72 snap-start"
+            className="flex-shrink-0 w-64 snap-start"
           >
             <VisitCard
               visit={visit}

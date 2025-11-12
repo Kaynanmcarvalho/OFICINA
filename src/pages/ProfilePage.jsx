@@ -4,6 +4,7 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
 import { MdBusiness, MdLocationOn, MdPhone, MdEmail, MdSchedule, MdEdit, MdSave, MdCancel, MdCamera } from 'react-icons/md';
+import { formatPhone } from '../utils/formatters';
 import toast from 'react-hot-toast';
 
 const ProfilePage = () => {
@@ -169,7 +170,7 @@ const ProfilePage = () => {
               </div>
               <div className="flex items-center mb-3">
                 <span className="w-8 text-gray-500 dark:text-gray-400">📱</span>
-                <span className="text-gray-700 dark:text-gray-300">{user.phone || 'Não informado'}</span>
+                <span className="text-gray-700 dark:text-gray-300">{user.phone ? formatPhone(user.phone) : 'Não informado'}</span>
               </div>
               <div className="flex items-center mb-3">
                 <span className="w-8 text-gray-500 dark:text-gray-400">🏢</span>
@@ -197,7 +198,7 @@ const ProfilePage = () => {
               </div>
               <div className="flex items-center">
                 <MdPhone className="w-4 h-4 mr-2 text-gray-500" />
-                <span className="text-gray-700 dark:text-gray-300">{organizationInfo.phone}</span>
+                <span className="text-gray-700 dark:text-gray-300">{organizationInfo.phone ? formatPhone(organizationInfo.phone) : 'Não informado'}</span>
               </div>
               <div className="flex items-center">
                 <MdEmail className="w-4 h-4 mr-2 text-gray-500" />

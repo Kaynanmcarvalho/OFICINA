@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Trash2, AlertCircle, FileText, Search } from 'lucide-react';
@@ -6,8 +7,10 @@ import { useBudgetStore } from '../../../store/budgetStore';
 import { useClientStore } from '../../../store';
 import { useInventoryStore } from '../../../store/inventoryStore';
 import { searchVehicleByPlate } from '../../../services/vehicleApiService';
+import CampoBuscaCliente from '../../checkin/componentes/CampoBuscaCliente';
 import toast from 'react-hot-toast';
 import './BudgetModal.css';
+import '../../../styles/budget-modal-scale-20.css';
 
 const BudgetModal = ({ isOpen, onClose, budget }) => {
   const { createBudget, updateBudget } = useBudgetStore();
@@ -30,13 +33,14 @@ const BudgetModal = ({ isOpen, onClose, budget }) => {
     internalNotes: ''
   });
 
-  const [clientSearchTerm, setClientSearchTerm] = useState('');
-  const [showClientDropdown, setShowClientDropdown] = useState(false);
-  const [filteredClients, setFilteredClients] = useState([]);
+  const [selectedClient, setSelectedClient] = useState(null);
   
   const [productSearchTerm, setProductSearchTerm] = useState('');
   const [showProductDropdown, setShowProductDropdown] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const productInputRef = useRef(null);
+  const productDropdownRef = useRef(null);
+  const [productDropdownPosition, setProductDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
   
   const [isSearchingPlate, setIsSearchingPlate] = useState(false);
 
@@ -55,20 +59,42 @@ const BudgetModal = ({ isOpen, onClose, budget }) => {
     fetchParts();
   }, [fetchClients, fetchParts]);
 
-  // Fechar dropdowns ao clicar fora
+  // Atualizar posição do dropdown de produtos
+  useEffect(() => {
+    const updateProductPosition = () => {
+      if (productInputRef.current && showProductDropdown) {
+        const rect = productInputRef.current.getBoundingClientRect();
+        setProductDropdownPosition({
+          top: rect.bottom + 8,
+          left: rect.left,
+          width: rect.width
+        });
+      }
+    };
+
+    updateProductPosition();
+    window.addEventListener('scroll', updateProductPosition, true);
+    window.addEventListener('resize', updateProductPosition);
+
+    return () => {
+      window.removeEventListener('scroll', updateProductPosition, true);
+      window.removeEventListener('resize', updateProductPosition);
+    };
+  }, [showProductDropdown]);
+
+  // Fechar dropdown de produtos ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (showClientDropdown && !event.target.closest('.client-search-container')) {
-        setShowClientDropdown(false);
-      }
-      if (showProductDropdown && !event.target.closest('.product-search-container')) {
+      if (showProductDropdown && 
+          productInputRef.current && !productInputRef.current.contains(event.target) &&
+          productDropdownRef.current && !productDropdownRef.current.contains(event.target)) {
         setShowProductDropdown(false);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showClientDropdown, showProductDropdown]);
+  }, [showProductDropdown]);
 
   useEffect(() => {
     if (budget) {
@@ -81,52 +107,49 @@ const BudgetModal = ({ isOpen, onClose, budget }) => {
         vehiclePlate: budget.vehiclePlate || '',
         vehicleBrand: budget.vehicleBrand || '',
         vehicleModel: budget.vehicleModel || '',
+        vehicleYear: budget.vehicleYear || '',
+        vehicleColor: budget.vehicleColor || '',
         items: budget.items || [],
         notes: budget.notes || '',
         internalNotes: budget.internalNotes || ''
       };
       setFormData(clientData);
       
-      // Se veio com cliente pré-selecionado, mostrar o nome na busca
+      // Se veio com cliente pré-selecionado
       if (budget.clientName) {
-        setClientSearchTerm(budget.clientName);
+        setSelectedClient({
+          id: budget.clientId,
+          name: budget.clientName,
+          phone: budget.clientPhone,
+          email: budget.clientEmail
+        });
       }
     } else {
-      // Reset quando não há budget
-      setClientSearchTerm('');
+      setSelectedClient(null);
     }
   }, [budget]);
 
   const handleClientSelect = (client) => {
-    setFormData(prev => ({
-      ...prev,
-      clientId: client.firestoreId,
-      clientName: client.name,
-      clientPhone: client.phone,
-      clientEmail: client.email
-    }));
-    setClientSearchTerm(client.name);
-    setShowClientDropdown(false);
-  };
-
-  const handleClientSearch = (value) => {
-    setClientSearchTerm(value);
-    
-    if (value.trim() === '') {
-      setFilteredClients([]);
-      setShowClientDropdown(false);
+    if (!client) {
+      setSelectedClient(null);
+      setFormData(prev => ({
+        ...prev,
+        clientId: '',
+        clientName: '',
+        clientPhone: '',
+        clientEmail: ''
+      }));
       return;
     }
 
-    const searchLower = value.toLowerCase();
-    const filtered = clients.filter(client => 
-      client.name?.toLowerCase().includes(searchLower) ||
-      client.phone?.includes(value) ||
-      client.email?.toLowerCase().includes(searchLower)
-    ).slice(0, 5);
-
-    setFilteredClients(filtered);
-    setShowClientDropdown(filtered.length > 0);
+    setSelectedClient(client);
+    setFormData(prev => ({
+      ...prev,
+      clientId: client.id || client.firestoreId,
+      clientName: client.name,
+      clientPhone: client.phone || '',
+      clientEmail: client.email || ''
+    }));
   };
 
   const handleProductSearch = (value) => {
@@ -286,19 +309,30 @@ const BudgetModal = ({ isOpen, onClose, budget }) => {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 overflow-y-auto">
+        {/* Backdrop */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.96, y: 20 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[9998] bg-black/50 backdrop-blur-sm"
+          onClick={onClose}
+        />
+        
+        {/* Modal - Apple-like Design - Centralizado e Responsivo */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.97, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.96, y: 20 }}
+          exit={{ opacity: 0, scale: 0.97, y: 10 }}
           transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="budget-modal-container bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-gray-200/50 dark:border-gray-700/50"
+          className="budget-modal-container relative z-[9999] w-full max-w-6xl my-auto bg-white dark:bg-gray-900 rounded-3xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 max-h-[90vh] flex flex-col"
+          style={{ isolation: 'auto', overflow: 'visible' }}
         >
           {/* Header - Apple Style Premium */}
-          <div className="flex items-center justify-between px-6 sm:px-8 py-4 sm:py-5 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50/80 to-white dark:from-gray-800/80 dark:to-gray-900">
+          <div className="flex items-center justify-between px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6 border-b border-gray-200/50 dark:border-gray-700/50 bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-950/20 dark:to-purple-950/20 rounded-t-3xl">
             <div className="flex items-center gap-3 sm:gap-4">
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
-                <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-white" strokeWidth={2.5} />
+                <FileText className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.5} style={{ color: 'white', stroke: 'white' }} />
               </div>
               <div>
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
@@ -319,86 +353,58 @@ const BudgetModal = ({ isOpen, onClose, budget }) => {
           </div>
 
           {/* Content - Scrollable */}
-          <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto budget-modal-content">
-            <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
-              {/* Client Search - Apple Style */}
-              <div className="relative client-search-container">
-                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">
-                  Cliente
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={clientSearchTerm}
-                    onChange={(e) => handleClientSearch(e.target.value)}
-                    onFocus={() => {
-                      if (filteredClients.length > 0) {
-                        setShowClientDropdown(true);
-                      }
-                    }}
-                    placeholder="Buscar por nome, telefone ou email..."
-                    className="w-full px-4 py-3 pr-11 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
-                  />
-                  <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
-                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </div>
-                </div>
-
-                {/* Dropdown de resultados - Apple Style */}
-                {showClientDropdown && filteredClients.length > 0 && (
-                  <div className="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden">
-                    <div className="max-h-64 overflow-y-auto">
-                      {filteredClients.map((client, index) => (
-                        <button
-                          key={client.firestoreId}
-                          type="button"
-                          onClick={() => handleClientSelect(client)}
-                          className={`w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${
-                            index !== filteredClients.length - 1 ? 'border-b border-gray-100 dark:border-gray-700/50' : ''
-                          }`}
-                        >
-                          <div className="font-medium text-gray-900 dark:text-white text-sm">
-                            {client.name}
-                          </div>
-                          <div className="flex items-center gap-4 mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                            {client.phone && (
-                              <span className="flex items-center gap-1.5">
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                </svg>
-                                {client.phone}
-                              </span>
-                            )}
-                            {client.email && (
-                              <span className="flex items-center gap-1.5">
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                </svg>
-                                {client.email}
-                              </span>
-                            )}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Mensagem quando não há resultados */}
-                {clientSearchTerm && filteredClients.length === 0 && showClientDropdown && (
-                  <div className="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl p-6 text-center">
-                    <svg className="w-12 h-12 mx-auto text-gray-300 dark:text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Nenhum cliente encontrado</p>
-                  </div>
-                )}
+          <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto budget-modal-content scroll-smooth">
+            <div className="p-4 sm:p-6 md:p-8 space-y-6">
+              {/* Client Search - Usando componente que funciona */}
+              <div className="relative" style={{ zIndex: 1 }}>
+                <CampoBuscaCliente
+                  value={selectedClient}
+                  onSelect={handleClientSelect}
+                  error={null}
+                />
               </div>
 
+              {/* Dados do Cliente Selecionado */}
+              {selectedClient && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 relative" style={{ zIndex: 0 }}>
+                  {/* Telefone */}
+                  {selectedClient.phone && (
+                    <div>
+                      <label className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+                        <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                          <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                          </svg>
+                        </div>
+                        Telefone
+                      </label>
+                      <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white">
+                        {selectedClient.phone}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Email */}
+                  {selectedClient.email && (
+                    <div>
+                      <label className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+                        <div className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                          <svg className="w-4 h-4 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        Email
+                      </label>
+                      <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white">
+                        {selectedClient.email}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Vehicle Info - Apple Style */}
-              <div>
+              <div className="mt-8 relative" style={{ zIndex: 0 }}>
                 <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">
                   Veículo
                 </label>
@@ -525,6 +531,7 @@ const BudgetModal = ({ isOpen, onClose, budget }) => {
                       {currentItem.type === 'product' ? (
                         <>
                           <input
+                            ref={productInputRef}
                             type="text"
                             value={productSearchTerm}
                             onChange={(e) => handleProductSearch(e.target.value)}
@@ -543,8 +550,18 @@ const BudgetModal = ({ isOpen, onClose, budget }) => {
                           </div>
 
                           {/* Dropdown de Produtos */}
-                          {showProductDropdown && filteredProducts.length > 0 && (
-                            <div className="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden">
+                          {showProductDropdown && filteredProducts.length > 0 && createPortal(
+                            <div 
+                              ref={productDropdownRef}
+                              className="fixed bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden pointer-events-auto"
+                              style={{
+                                top: `${productDropdownPosition.top}px`,
+                                left: `${productDropdownPosition.left}px`,
+                                width: `${productDropdownPosition.width}px`,
+                                zIndex: 999999,
+                                isolation: 'isolate'
+                              }}
+                            >
                               <div className="max-h-64 overflow-y-auto">
                                 {filteredProducts.map((product, index) => (
                                   <button
@@ -584,17 +601,29 @@ const BudgetModal = ({ isOpen, onClose, budget }) => {
                                   </button>
                                 ))}
                               </div>
-                            </div>
+                            </div>,
+                            document.body
                           )}
 
                           {/* Empty State */}
-                          {productSearchTerm && filteredProducts.length === 0 && showProductDropdown && (
-                            <div className="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl p-6 text-center">
+                          {productSearchTerm && filteredProducts.length === 0 && showProductDropdown && createPortal(
+                            <div 
+                              ref={productDropdownRef}
+                              className="fixed bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl p-6 text-center pointer-events-auto"
+                              style={{
+                                top: `${productDropdownPosition.top}px`,
+                                left: `${productDropdownPosition.left}px`,
+                                width: `${productDropdownPosition.width}px`,
+                                zIndex: 999999,
+                                isolation: 'isolate'
+                              }}
+                            >
                               <svg className="w-10 h-10 mx-auto text-gray-300 dark:text-gray-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                               </svg>
                               <p className="text-xs text-gray-500 dark:text-gray-400">Nenhum produto encontrado</p>
-                            </div>
+                            </div>,
+                            document.body
                           )}
                         </>
                       ) : (
@@ -802,7 +831,7 @@ const BudgetModal = ({ isOpen, onClose, budget }) => {
           </form>
 
           {/* Footer - Apple Style Premium */}
-          <div className="flex-shrink-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 border-t border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50/80 to-white dark:from-gray-800/80 dark:to-gray-900">
+          <div className="flex-shrink-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 px-4 sm:px-6 md:px-8 py-4 sm:py-5 border-t border-gray-200/50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-900/50 backdrop-blur-sm">
             <button
               type="button"
               onClick={onClose}

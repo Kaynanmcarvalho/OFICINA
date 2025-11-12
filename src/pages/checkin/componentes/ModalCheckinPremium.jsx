@@ -12,6 +12,7 @@ import UploaderFotos from './UploaderFotos';
 import ModalNovoCliente from './ModalNovoCliente';
 import VehicleThumbnail from '../../../components/VehicleThumbnail';
 import { useCheckinStore } from '../../../store';
+import { formatPhone } from '../../../utils/formatters';
 
 const STEPS = [
   { id: 1, title: 'Cliente', icon: User, description: 'Dados do cliente' },
@@ -20,21 +21,98 @@ const STEPS = [
   { id: 4, title: 'Fotos', icon: Upload, description: 'Registro fotográfico' }
 ];
 
+// SVG Icons para Nível de Combustível - Apple Style
+const FuelIcon = ({ level }) => {
+  const fillPercentages = {
+    empty: 0,
+    '1/4': 25,
+    '1/2': 50,
+    '3/4': 75,
+    full: 100
+  };
+  
+  const fillPercent = fillPercentages[level] || 0;
+  const fillHeight = (14 * fillPercent) / 100;
+  const fillY = 6 + (14 - fillHeight);
+  
+  return (
+    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Tank outline */}
+      <rect x="4" y="6" width="12" height="14" rx="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      {/* Fuel fill */}
+      {fillPercent > 0 && (
+        <rect 
+          x="6" 
+          y={fillY} 
+          width="8" 
+          height={fillHeight} 
+          rx="1" 
+          fill="currentColor" 
+          opacity="0.4"
+        />
+      )}
+      {/* Nozzle */}
+      <path d="M16 10H18C19.1 10 20 10.9 20 12V14C20 15.1 19.1 16 18 16H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <circle cx="18" cy="13" r="1.5" fill="currentColor"/>
+    </svg>
+  );
+};
+
 const FUEL_LEVELS = [
-  { value: 'empty', label: 'Vazio', icon: '🔴' },
-  { value: '1/4', label: '1/4', icon: '🟡' },
-  { value: '1/2', label: '1/2', icon: '🟡' },
-  { value: '3/4', label: '3/4', icon: '🟢' },
-  { value: 'full', label: 'Cheio', icon: '🟢' }
+  { value: 'empty', label: 'Vazio' },
+  { value: '1/4', label: '1/4' },
+  { value: '1/2', label: '1/2' },
+  { value: '3/4', label: '3/4' },
+  { value: 'full', label: 'Cheio' }
 ];
 
+// SVG Icons para Condições do Veículo
+const ConditionIcons = {
+  scratches: () => (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 3L21 21M8 8L16 16M5 12L12 19M12 5L19 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  ),
+  dents: () => (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2"/>
+      <path d="M8 12C8 12 10 14 12 14C14 14 16 12 16 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  ),
+  broken_parts: () => (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2L2 22H22L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+      <path d="M12 9V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <circle cx="12" cy="17" r="1" fill="currentColor"/>
+    </svg>
+  ),
+  missing_items: () => (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2"/>
+      <path d="M15 9L9 15M9 9L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  ),
+  dirty: () => (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2.69L17 7.19V13.69C17 17.69 14.5 21.19 12 22.19C9.5 21.19 7 17.69 7 13.69V7.19L12 2.69Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+      <path d="M12 8V12M12 16H12.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  ),
+  good_condition: () => (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2"/>
+      <path d="M8 12L11 15L16 9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  )
+};
+
 const VEHICLE_CONDITIONS = [
-  { id: 'scratches', label: 'Arranhões', icon: '🔸' },
-  { id: 'dents', label: 'Amassados', icon: '🔹' },
-  { id: 'broken_parts', label: 'Peças quebradas', icon: '⚠️' },
-  { id: 'missing_items', label: 'Itens faltando', icon: '❌' },
-  { id: 'dirty', label: 'Sujo', icon: '💧' },
-  { id: 'good_condition', label: 'Bom estado', icon: '✅' }
+  { id: 'scratches', label: 'Arranhões' },
+  { id: 'dents', label: 'Amassados' },
+  { id: 'broken_parts', label: 'Peças quebradas' },
+  { id: 'missing_items', label: 'Itens faltando' },
+  { id: 'dirty', label: 'Sujo' },
+  { id: 'good_condition', label: 'Bom estado' }
 ];
 
 const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
@@ -223,61 +301,70 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
     <>
       {createPortal(
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-md overflow-y-auto"
-        onClick={onClose}
-      >
-        <div className="min-h-screen flex items-center justify-center p-4 py-8">
+      {isOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 overflow-y-auto">
+          {/* Backdrop */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={onClose}
+          />
+          
+          {/* Modal Container - Apple-like */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            exit={{ opacity: 0, scale: 0.97, y: 10 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-6xl bg-white dark:bg-gray-900 rounded-2xl border-[3px] border-gray-700 dark:border-gray-700 shadow-[0_20px_60px_rgba(0,0,0,0.3)] overflow-hidden"
+            className="relative w-full max-w-5xl my-auto bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 max-h-[90vh] flex flex-col overflow-hidden"
           >
-            {/* Header */}
-            <div className="relative px-6 py-5 border-b-2 border-gray-200 dark:border-gray-800 bg-gradient-to-r from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+            {/* Header - Apple Style */}
+            <div className="relative px-6 py-4 border-b border-gray-200/50 dark:border-gray-700/50 bg-gradient-to-r from-blue-50/50 to-cyan-50/50 dark:from-blue-950/20 dark:to-cyan-950/20">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-xl bg-blue-500/10 dark:bg-blue-500/20">
-                    <currentStepData.icon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                  </div>
+                  <motion.div
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                    className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30"
+                  >
+                    <currentStepData.icon className="w-5 h-5" stroke="white" strokeWidth={2.5} />
+                  </motion.div>
                   <div>
-                    <h2 className="text-2xl font-extrabold text-gray-950 dark:text-white">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
                       Novo Check-in
                     </h2>
-                    <p className="text-sm font-bold text-gray-600 dark:text-gray-400 mt-0.5">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
                       {currentStepData.description}
                     </p>
                   </div>
                 </div>
                 <motion.button
-                  whileHover={{ scale: 1.1, rotate: 90 }}
-                  whileTap={{ scale: 0.9 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={onClose}
-                  className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  className="w-10 h-10 rounded-xl bg-gray-100/80 dark:bg-gray-800/80 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center transition-all backdrop-blur-sm"
                 >
-                  <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 </motion.button>
               </div>
 
-              {/* Progress Bar */}
-              <div className="mt-4">
-                <div className="flex items-center justify-between mb-2">
+              {/* Steps Indicator - Apple Style */}
+              <div className="mt-3">
+                <div className="flex items-center justify-between gap-2">
                   {STEPS.map((step, index) => (
                     <div key={step.id} className="flex items-center flex-1">
-                      <div className="flex flex-col items-center">
+                      <div className="flex flex-col items-center w-full">
                         <motion.div
-                          className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center font-semibold text-xs transition-all ${
                             currentStep >= step.id
-                              ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
-                              : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                              ? 'bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-lg shadow-blue-500/30'
+                              : 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-400 dark:text-gray-500 border-2 border-gray-200/50 dark:border-gray-700/50'
                           }`}
-                          whileHover={{ scale: 1.1 }}
+                          whileHover={{ scale: 1.05 }}
                         >
                           {currentStep > step.id ? (
                             <CheckCircle2 className="w-5 h-5" />
@@ -310,109 +397,173 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
             </div>
 
             {/* Content */}
-            <div className="p-6 max-h-[60vh] overflow-y-auto">
+            <div className="flex-1 p-5 overflow-y-auto scroll-smooth">
               <AnimatePresence mode="wait">
-                {/* Step 1: Cliente */}
+                {/* Step 1: Cliente - Apple Design */}
                 {currentStep === 1 && (
                   <motion.div
                     key="step1"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
-                    className="space-y-5"
+                    className="space-y-7"
                   >
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                      <div className="lg:col-span-2">
-                        <label className="block text-sm font-extrabold text-gray-900 dark:text-gray-100 mb-2">
-                          Cliente <span className="text-red-500">*</span>
-                        </label>
-                        <CampoBuscaCliente
-                          value={formData.cliente}
-                          onSelect={handleClienteSelect}
-                          error={errors.cliente}
-                        />
-                        {errors.cliente && (
-                          <p className="mt-1 text-xs text-red-500 font-bold">{errors.cliente}</p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-extrabold text-gray-900 dark:text-gray-100 mb-2">
-                          Telefone <span className="text-red-500">*</span>
-                        </label>
-                        <div className="relative">
-                          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                          <input
-                            type="tel"
-                            value={formData.telefone}
-                            onChange={(e) => {
-                              setFormData({ ...formData, telefone: e.target.value });
-                              setErrors({ ...errors, telefone: null });
-                            }}
-                            placeholder="(11) 98765-4321"
-                            className={`w-full pl-10 pr-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border-2 ${
-                              errors.telefone
-                                ? 'border-red-500'
-                                : 'border-gray-200 dark:border-gray-700'
-                            } text-gray-900 dark:text-gray-100 placeholder-gray-400 font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
-                          />
+                    {/* Busca de Cliente - Apple Style */}
+                    <div className="relative bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm overflow-visible">
+                      <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 dark:text-white mb-4">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
+                          <User className="w-4 h-4" stroke="white" strokeWidth={2.5} />
                         </div>
-                        {errors.telefone && (
-                          <p className="mt-1 text-xs text-red-500 font-bold">{errors.telefone}</p>
-                        )}
+                        <span className="tracking-tight">Selecione o Cliente</span>
+                        <span className="text-red-500 text-xs ml-1">*</span>
+                      </label>
+                      <CampoBuscaCliente
+                        value={formData.cliente}
+                        onSelect={handleClienteSelect}
+                        error={errors.cliente}
+                      />
+                      {errors.cliente && (
+                        <motion.p
+                          initial={{ opacity: 0, y: -5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="mt-2.5 text-xs text-red-500 font-semibold flex items-center gap-1.5"
+                        >
+                          <AlertTriangle className="w-3.5 h-3.5" />
+                          {errors.cliente}
+                        </motion.p>
+                      )}
+                      <p className="mt-2.5 text-xs text-gray-500 dark:text-gray-400 font-medium">
+                        Busque por nome, telefone ou documento do cliente
+                      </p>
+                    </div>
+
+                    {/* Telefone - Apple Style */}
+                    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+                      <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 dark:text-white mb-4">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/25">
+                          <Phone className="w-4 h-4" stroke="white" strokeWidth={2.5} />
+                        </div>
+                        <span className="tracking-tight">Telefone de Contato</span>
+                        <span className="text-red-500 text-xs ml-1">*</span>
+                      </label>
+                      <div className="relative">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                          <Phone className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                        </div>
+                        <input
+                          type="tel"
+                          value={formData.telefone}
+                          onChange={(e) => {
+                            const formatted = formatPhone(e.target.value);
+                            setFormData({ ...formData, telefone: formatted });
+                            setErrors({ ...errors, telefone: null });
+                          }}
+                          placeholder="(11) 98765-4321"
+                          maxLength={15}
+                          className={`w-full pl-16 pr-4 py-3.5 rounded-xl bg-white dark:bg-gray-900 border ${
+                            errors.telefone
+                              ? 'border-red-500 focus:ring-red-500/50'
+                              : 'border-gray-300/50 dark:border-gray-600/50 focus:ring-blue-500/50'
+                          } text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base font-medium focus:ring-2 focus:border-blue-500 transition-all outline-none`}
+                        />
                       </div>
+                      {errors.telefone && (
+                        <motion.p
+                          initial={{ opacity: 0, y: -5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="mt-2.5 text-xs text-red-500 font-semibold flex items-center gap-1.5"
+                        >
+                          <AlertTriangle className="w-3.5 h-3.5" />
+                          {errors.telefone}
+                        </motion.p>
+                      )}
+                      <p className="mt-2.5 text-xs text-gray-500 dark:text-gray-400 font-medium">
+                        Número principal para contato com o cliente
+                      </p>
                     </div>
                   </motion.div>
                 )}
 
-                {/* Step 2: Veículo */}
+                {/* Step 2: Veículo - Apple Design */}
                 {currentStep === 2 && (
                   <motion.div
                     key="step2"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
-                    className="space-y-8"
+                    className="space-y-7"
                   >
-                    {/* Preview Minimalista */}
+                    {/* Preview Premium do Veículo */}
                     {formData.placa && formData.modelo && (
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="flex items-center gap-5 p-6 rounded-3xl bg-gray-50/80 dark:bg-gray-800/40 border border-gray-200/60 dark:border-gray-700/40"
+                        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 border border-blue-200/50 dark:border-blue-800/50 p-6 shadow-lg"
                       >
-                        <VehicleThumbnail
-                          vehicle={{
-                            brand: formData.marca || formData.modelo.split(' ')[0],
-                            model: formData.modelo,
-                            plate: formData.placa,
-                            type: 'car'
-                          }}
-                          size="lg"
-                          showLabel={false}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                            {formData.placa}
-                          </div>
-                          <div className="text-xl font-semibold text-gray-900 dark:text-white truncate">
-                            {formData.marca && `${formData.marca} `}{formData.modelo}
-                          </div>
-                          {(formData.ano || formData.cor) && (
-                            <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                              {formData.ano} {formData.cor && `• ${formData.cor}`}
+                        <div className="flex items-center gap-5">
+                          <div className="relative flex-shrink-0">
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-2xl blur-xl" />
+                            <div className="relative w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl flex items-center justify-center shadow-lg">
+                              <svg className="w-11 h-11 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 13L7 7H17L19 13M5 13V17C5 17.5523 5.44772 18 6 18H7M5 13H19M19 13V17C19 17.5523 18.5523 18 18 18H17M7 18C7 19.1046 7.89543 20 9 20C10.1046 20 11 19.1046 11 18M7 18C7 16.8954 7.89543 16 9 16C10.1046 16 11 16.8954 11 18M17 18C17 19.1046 16.1046 20 15 20C13.8954 20 13 19.1046 13 18M17 18C17 16.8954 16.1046 16 15 16C13.8954 16 13 16.8954 13 18M11 18H13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M7 10L8 7H16L17 10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
                             </div>
-                          )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 mb-2">
+                              <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none">
+                                <rect x="2" y="10" width="20" height="8" rx="2" stroke="currentColor" strokeWidth="2"/>
+                                <path d="M6 14H8M16 14H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                              </svg>
+                              <span className="text-sm font-bold text-gray-900 dark:text-white tracking-wider">
+                                {formData.placa}
+                              </span>
+                            </div>
+                            <div className="text-2xl font-bold text-gray-900 dark:text-white truncate mb-1">
+                              {formData.marca && `${formData.marca} `}{formData.modelo}
+                            </div>
+                            {(formData.ano || formData.cor) && (
+                              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 font-medium">
+                                {formData.ano && (
+                                  <span className="flex items-center gap-1">
+                                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                                      <rect x="3" y="6" width="18" height="15" rx="2" stroke="currentColor" strokeWidth="2"/>
+                                      <path d="M3 10H21M8 3V6M16 3V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                    </svg>
+                                    {formData.ano}
+                                  </span>
+                                )}
+                                {formData.cor && (
+                                  <>
+                                    <span className="w-1 h-1 rounded-full bg-gray-400" />
+                                    <span className="flex items-center gap-1">
+                                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2"/>
+                                      </svg>
+                                      {formData.cor}
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </motion.div>
                     )}
 
-                    {/* Campos */}
-                    <div className="space-y-6">
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    {/* Placa e Modelo - Apple Style */}
+                    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+                      <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 dark:text-white mb-4">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-lg shadow-red-500/25">
+                          <Car className="w-4 h-4" stroke="white" strokeWidth={2.5} />
+                        </div>
+                        <span className="tracking-tight">Identificação do Veículo</span>
+                      </label>
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         {/* Placa */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2.5">
+                          <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-2">
                             Placa <span className="text-red-500">*</span>
                           </label>
                           <input
@@ -424,20 +575,27 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                             }}
                             placeholder="ABC-1234"
                             maxLength={8}
-                            className={`w-full px-4 py-3.5 rounded-2xl bg-white dark:bg-gray-800 border ${
+                            className={`w-full px-4 py-3.5 rounded-xl bg-white dark:bg-gray-900 border ${
                               errors.placa
-                                ? 'border-red-400'
-                                : 'border-gray-300 dark:border-gray-600'
-                            } text-gray-900 dark:text-gray-100 placeholder-gray-400 uppercase font-semibold text-lg tracking-wide focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all`}
+                                ? 'border-red-500 focus:ring-red-500/50'
+                                : 'border-gray-300/50 dark:border-gray-600/50 focus:ring-blue-500/50'
+                            } text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 uppercase font-bold text-lg tracking-widest text-center focus:ring-2 focus:border-blue-500 transition-all outline-none`}
                           />
                           {errors.placa && (
-                            <p className="mt-2 text-xs text-red-500">{errors.placa}</p>
+                            <motion.p
+                              initial={{ opacity: 0, y: -5 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="mt-2 text-xs text-red-500 font-semibold flex items-center gap-1.5"
+                            >
+                              <AlertTriangle className="w-3.5 h-3.5" />
+                              {errors.placa}
+                            </motion.p>
                           )}
                         </div>
 
                         {/* Modelo */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2.5">
+                          <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-2">
                             Modelo <span className="text-red-500">*</span>
                           </label>
                           <input
@@ -448,22 +606,43 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                               setErrors({ ...errors, modelo: null });
                             }}
                             placeholder="Civic, CB 600F..."
-                            className={`w-full px-4 py-3.5 rounded-2xl bg-white dark:bg-gray-800 border ${
+                            className={`w-full px-4 py-3.5 rounded-xl bg-white dark:bg-gray-900 border ${
                               errors.modelo
-                                ? 'border-red-400'
-                                : 'border-gray-300 dark:border-gray-600'
-                            } text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all`}
+                                ? 'border-red-500 focus:ring-red-500/50'
+                                : 'border-gray-300/50 dark:border-gray-600/50 focus:ring-blue-500/50'
+                            } text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base font-medium focus:ring-2 focus:border-blue-500 transition-all outline-none`}
                           />
                           {errors.modelo && (
-                            <p className="mt-2 text-xs text-red-500">{errors.modelo}</p>
+                            <motion.p
+                              initial={{ opacity: 0, y: -5 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="mt-2 text-xs text-red-500 font-semibold flex items-center gap-1.5"
+                            >
+                              <AlertTriangle className="w-3.5 h-3.5" />
+                              {errors.modelo}
+                            </motion.p>
                           )}
                         </div>
                       </div>
+                    </div>
 
-                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    {/* Detalhes Adicionais - Apple Style */}
+                    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+                      <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 dark:text-white mb-4">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-lg shadow-purple-500/25">
+                          <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none">
+                            <path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+                            <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" strokeWidth="2.5"/>
+                            <path d="M9 12H15M9 16H12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+                          </svg>
+                        </div>
+                        <span className="tracking-tight">Detalhes Adicionais</span>
+                        <span className="text-xs font-medium text-gray-500 dark:text-gray-400 ml-auto">(opcional)</span>
+                      </label>
+                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                         {/* Marca */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2.5">
+                          <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-2">
                             Marca
                           </label>
                           <input
@@ -471,13 +650,13 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                             value={formData.marca}
                             onChange={(e) => setFormData({ ...formData, marca: e.target.value })}
                             placeholder="Honda, Toyota..."
-                            className="w-full px-4 py-3.5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
+                            className="w-full px-4 py-3.5 rounded-xl bg-white dark:bg-gray-900 border border-gray-300/50 dark:border-gray-600/50 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base font-medium focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all outline-none"
                           />
                         </div>
 
                         {/* Ano */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2.5">
+                          <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-2">
                             Ano
                           </label>
                           <input
@@ -486,13 +665,13 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                             onChange={(e) => setFormData({ ...formData, ano: e.target.value })}
                             placeholder="2024"
                             maxLength={4}
-                            className="w-full px-4 py-3.5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
+                            className="w-full px-4 py-3.5 rounded-xl bg-white dark:bg-gray-900 border border-gray-300/50 dark:border-gray-600/50 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base font-medium focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all outline-none"
                           />
                         </div>
 
                         {/* Cor */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2.5">
+                          <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-2">
                             Cor
                           </label>
                           <input
@@ -500,7 +679,7 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                             value={formData.cor}
                             onChange={(e) => setFormData({ ...formData, cor: e.target.value })}
                             placeholder="Preto, Branco..."
-                            className="w-full px-4 py-3.5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
+                            className="w-full px-4 py-3.5 rounded-xl bg-white dark:bg-gray-900 border border-gray-300/50 dark:border-gray-600/50 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base font-medium focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all outline-none"
                           />
                         </div>
                       </div>
@@ -508,94 +687,141 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                   </motion.div>
                 )}
 
-                {/* Step 3: Detalhes */}
+                {/* Step 3: Detalhes - Apple Design */}
                 {currentStep === 3 && (
                   <motion.div
                     key="step3"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
-                    className="space-y-5"
+                    className="space-y-7"
                   >
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                      {/* Kilometragem */}
-                      <div>
-                        <label className="block text-sm font-extrabold text-gray-900 dark:text-gray-100 mb-2">
-                          <Gauge className="w-4 h-4 inline mr-1" />
-                          Kilometragem (opcional)
-                        </label>
-                        <input
-                          type="number"
-                          value={formData.kilometragem}
-                          onChange={(e) => setFormData({ ...formData, kilometragem: e.target.value })}
-                          placeholder="Ex: 45000"
-                          className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                        />
-                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                          Registre a km atual do veículo
-                        </p>
-                      </div>
-
-                      {/* Nível de Combustível */}
-                      <div>
-                        <label className="block text-sm font-extrabold text-gray-900 dark:text-gray-100 mb-2">
-                          <Fuel className="w-4 h-4 inline mr-1" />
-                          Nível de Combustível (opcional)
-                        </label>
-                        <div className="grid grid-cols-5 gap-2">
-                          {FUEL_LEVELS.map((level) => (
-                            <motion.button
-                              key={level.value}
-                              type="button"
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                              onClick={() => setFormData({ ...formData, nivelCombustivel: level.value })}
-                              className={`p-3 rounded-xl border-2 font-bold text-xs transition-all ${
-                                formData.nivelCombustivel === level.value
-                                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                                  : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
-                              }`}
-                            >
-                              <div className="text-2xl mb-1">{level.icon}</div>
-                              {level.label}
-                            </motion.button>
-                          ))}
+                    {/* Kilometragem - Apple Style */}
+                    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+                      <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 dark:text-white mb-4">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
+                          <Gauge className="w-4 h-4" stroke="white" strokeWidth={2.5} />
                         </div>
-                      </div>
+                        <span className="tracking-tight">Kilometragem</span>
+                        <span className="text-xs font-medium text-gray-500 dark:text-gray-400 ml-auto">(opcional)</span>
+                      </label>
+                      <input
+                        type="number"
+                        value={formData.kilometragem}
+                        onChange={(e) => setFormData({ ...formData, kilometragem: e.target.value })}
+                        placeholder="45.000 km"
+                        className="w-full px-4 py-3.5 rounded-xl bg-white dark:bg-gray-900 border border-gray-300/50 dark:border-gray-600/50 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base font-medium focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all outline-none"
+                      />
+                      <p className="mt-2.5 text-xs text-gray-500 dark:text-gray-400 font-medium">
+                        Registre a quilometragem atual do veículo
+                      </p>
                     </div>
 
-                    {/* Condições do Veículo */}
-                    <div>
-                      <label className="block text-sm font-extrabold text-gray-900 dark:text-gray-100 mb-3">
-                        <AlertTriangle className="w-4 h-4 inline mr-1" />
-                        Condições do Veículo (opcional)
+                    {/* Nível de Combustível - Apple Style */}
+                    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+                      <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 dark:text-white mb-4">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-lg shadow-orange-500/25">
+                          <Fuel className="w-4 h-4" stroke="white" strokeWidth={2.5} />
+                        </div>
+                        <span className="tracking-tight">Nível de Combustível</span>
+                        <span className="text-xs font-medium text-gray-500 dark:text-gray-400 ml-auto">(opcional)</span>
                       </label>
-                      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-                        {VEHICLE_CONDITIONS.map((condition) => (
+                      <div className="grid grid-cols-5 gap-2.5">
+                        {FUEL_LEVELS.map((level) => (
                           <motion.button
-                            key={condition.id}
+                            key={level.value}
                             type="button"
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => toggleCondition(condition.id)}
-                            className={`p-3 rounded-xl border-2 font-bold text-sm transition-all text-left ${
-                              formData.condicoesVeiculo.includes(condition.id)
-                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-700 dark:text-gray-300'
+                            whileHover={{ scale: 1.03 }}
+                            whileTap={{ scale: 0.97 }}
+                            onClick={() => setFormData({ ...formData, nivelCombustivel: level.value })}
+                            className={`relative p-3.5 rounded-xl transition-all ${
+                              formData.nivelCombustivel === level.value
+                                ? 'bg-gradient-to-br from-blue-500 to-cyan-600 shadow-lg shadow-blue-500/30'
+                                : 'bg-white dark:bg-gray-900 border border-gray-300/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-gray-500'
                             }`}
                           >
-                            <span className="text-xl mr-2">{condition.icon}</span>
-                            {condition.label}
+                            <div className="flex flex-col items-center gap-1.5">
+                              <FuelIcon level={level.value} />
+                              <span className={`text-xs font-semibold tracking-tight ${
+                                formData.nivelCombustivel === level.value
+                                  ? 'text-white'
+                                  : 'text-gray-700 dark:text-gray-300'
+                              }`}>
+                                {level.label}
+                              </span>
+                            </div>
                           </motion.button>
                         ))}
                       </div>
                     </div>
 
-                    {/* Serviço Solicitado */}
-                    <div>
-                      <label className="block text-sm font-extrabold text-gray-900 dark:text-gray-100 mb-2">
-                        <Wrench className="w-4 h-4 inline mr-1" />
-                        Serviço Solicitado <span className="text-red-500">*</span>
+                    {/* Condições do Veículo - Apple Style */}
+                    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+                      <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 dark:text-white mb-4">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-lg shadow-purple-500/25">
+                          <AlertTriangle className="w-4 h-4" stroke="white" strokeWidth={2.5} />
+                        </div>
+                        <span className="tracking-tight">Condições do Veículo</span>
+                        <span className="text-xs font-medium text-gray-500 dark:text-gray-400 ml-auto">(opcional)</span>
+                      </label>
+                      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                        {VEHICLE_CONDITIONS.map((condition) => {
+                          const Icon = ConditionIcons[condition.id];
+                          const isSelected = formData.condicoesVeiculo.includes(condition.id);
+                          return (
+                            <motion.button
+                              key={condition.id}
+                              type="button"
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              onClick={() => toggleCondition(condition.id)}
+                              className={`relative p-4 rounded-xl transition-all text-left ${
+                                isSelected
+                                  ? 'bg-gradient-to-br from-blue-500 to-cyan-600 shadow-lg shadow-blue-500/30'
+                                  : 'bg-white dark:bg-gray-900 border border-gray-300/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-gray-500'
+                              }`}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                                  isSelected
+                                    ? 'bg-white/20'
+                                    : 'bg-gray-100 dark:bg-gray-800'
+                                }`}>
+                                  <div className={isSelected ? 'text-white' : 'text-gray-600 dark:text-gray-400'}>
+                                    <Icon />
+                                  </div>
+                                </div>
+                                <span className={`text-sm font-semibold tracking-tight ${
+                                  isSelected
+                                    ? 'text-white'
+                                    : 'text-gray-900 dark:text-white'
+                                }`}>
+                                  {condition.label}
+                                </span>
+                              </div>
+                              {isSelected && (
+                                <motion.div
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  className="absolute top-2 right-2 w-5 h-5 bg-white rounded-full flex items-center justify-center"
+                                >
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" strokeWidth={3} />
+                                </motion.div>
+                              )}
+                            </motion.button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Serviço Solicitado - Apple Style */}
+                    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+                      <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 dark:text-white mb-4">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25">
+                          <Wrench className="w-4 h-4" stroke="white" strokeWidth={2.5} />
+                        </div>
+                        <span className="tracking-tight">Serviço Solicitado</span>
+                        <span className="text-red-500 text-xs ml-1">*</span>
                       </label>
                       <input
                         type="text"
@@ -604,86 +830,157 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                           setFormData({ ...formData, servicoSolicitado: e.target.value });
                           setErrors({ ...errors, servicoSolicitado: null });
                         }}
-                        placeholder="Ex: Troca de óleo, Revisão completa, Alinhamento..."
-                        className={`w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border-2 ${
+                        placeholder="Troca de óleo, Revisão completa, Alinhamento..."
+                        className={`w-full px-4 py-3.5 rounded-xl bg-white dark:bg-gray-900 border ${
                           errors.servicoSolicitado
-                            ? 'border-red-500'
-                            : 'border-gray-200 dark:border-gray-700'
-                        } text-gray-900 dark:text-gray-100 placeholder-gray-400 font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
+                            ? 'border-red-500 focus:ring-red-500/50'
+                            : 'border-gray-300/50 dark:border-gray-600/50 focus:ring-blue-500/50'
+                        } text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base font-medium focus:ring-2 focus:border-blue-500 transition-all outline-none`}
                       />
                       {errors.servicoSolicitado && (
-                        <p className="mt-1 text-xs text-red-500 font-bold">{errors.servicoSolicitado}</p>
+                        <motion.p
+                          initial={{ opacity: 0, y: -5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="mt-2.5 text-xs text-red-500 font-semibold flex items-center gap-1.5"
+                        >
+                          <AlertTriangle className="w-3.5 h-3.5" />
+                          {errors.servicoSolicitado}
+                        </motion.p>
                       )}
                     </div>
 
-                    {/* Prioridade */}
-                    <div>
-                      <label className="block text-sm font-extrabold text-gray-900 dark:text-gray-100 mb-2">
-                        Prioridade
+                    {/* Prioridade - Apple Style */}
+                    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+                      <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 dark:text-white mb-4">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+                          <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                        <span className="tracking-tight">Prioridade</span>
                       </label>
                       <div className="grid grid-cols-3 gap-3">
                         <motion.button
                           type="button"
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
+                          whileHover={{ scale: 1.03 }}
+                          whileTap={{ scale: 0.97 }}
                           onClick={() => setFormData({ ...formData, prioridade: 'low' })}
-                          className={`p-3 rounded-xl border-2 font-bold transition-all ${
+                          className={`relative p-4 rounded-xl transition-all ${
                             formData.prioridade === 'low'
-                              ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300'
-                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-700 dark:text-gray-300'
+                              ? 'bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg shadow-green-500/30'
+                              : 'bg-white dark:bg-gray-900 border border-gray-300/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-gray-500'
                           }`}
                         >
-                          Baixa
+                          <div className="flex flex-col items-center gap-2">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                              formData.prioridade === 'low'
+                                ? 'bg-white/20'
+                                : 'bg-green-100 dark:bg-green-900/30'
+                            }`}>
+                              <svg className={`w-4 h-4 ${formData.prioridade === 'low' ? 'text-white' : 'text-green-600 dark:text-green-400'}`} viewBox="0 0 24 24" fill="none">
+                                <path d="M7 13L12 18L17 13" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M7 7L12 12L17 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </div>
+                            <span className={`text-sm font-semibold tracking-tight ${
+                              formData.prioridade === 'low'
+                                ? 'text-white'
+                                : 'text-gray-900 dark:text-white'
+                            }`}>
+                              Baixa
+                            </span>
+                          </div>
                         </motion.button>
                         <motion.button
                           type="button"
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
+                          whileHover={{ scale: 1.03 }}
+                          whileTap={{ scale: 0.97 }}
                           onClick={() => setFormData({ ...formData, prioridade: 'normal' })}
-                          className={`p-3 rounded-xl border-2 font-bold transition-all ${
+                          className={`relative p-4 rounded-xl transition-all ${
                             formData.prioridade === 'normal'
-                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-700 dark:text-gray-300'
+                              ? 'bg-gradient-to-br from-blue-500 to-cyan-600 shadow-lg shadow-blue-500/30'
+                              : 'bg-white dark:bg-gray-900 border border-gray-300/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-gray-500'
                           }`}
                         >
-                          Normal
+                          <div className="flex flex-col items-center gap-2">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                              formData.prioridade === 'normal'
+                                ? 'bg-white/20'
+                                : 'bg-blue-100 dark:bg-blue-900/30'
+                            }`}>
+                              <svg className={`w-4 h-4 ${formData.prioridade === 'normal' ? 'text-white' : 'text-blue-600 dark:text-blue-400'}`} viewBox="0 0 24 24" fill="none">
+                                <path d="M5 12H19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+                              </svg>
+                            </div>
+                            <span className={`text-sm font-semibold tracking-tight ${
+                              formData.prioridade === 'normal'
+                                ? 'text-white'
+                                : 'text-gray-900 dark:text-white'
+                            }`}>
+                              Normal
+                            </span>
+                          </div>
                         </motion.button>
                         <motion.button
                           type="button"
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
+                          whileHover={{ scale: 1.03 }}
+                          whileTap={{ scale: 0.97 }}
                           onClick={() => setFormData({ ...formData, prioridade: 'high' })}
-                          className={`p-3 rounded-xl border-2 font-bold transition-all ${
+                          className={`relative p-4 rounded-xl transition-all ${
                             formData.prioridade === 'high'
-                              ? 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300'
-                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-700 dark:text-gray-300'
+                              ? 'bg-gradient-to-br from-red-500 to-rose-600 shadow-lg shadow-red-500/30'
+                              : 'bg-white dark:bg-gray-900 border border-gray-300/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-gray-500'
                           }`}
                         >
-                          Alta
+                          <div className="flex flex-col items-center gap-2">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                              formData.prioridade === 'high'
+                                ? 'bg-white/20'
+                                : 'bg-red-100 dark:bg-red-900/30'
+                            }`}>
+                              <svg className={`w-4 h-4 ${formData.prioridade === 'high' ? 'text-white' : 'text-red-600 dark:text-red-400'}`} viewBox="0 0 24 24" fill="none">
+                                <path d="M7 11L12 6L17 11" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M7 17L12 12L17 17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </div>
+                            <span className={`text-sm font-semibold tracking-tight ${
+                              formData.prioridade === 'high'
+                                ? 'text-white'
+                                : 'text-gray-900 dark:text-white'
+                            }`}>
+                              Alta
+                            </span>
+                          </div>
                         </motion.button>
                       </div>
                     </div>
 
-                    {/* Observações */}
-                    <div>
-                      <label className="block text-sm font-extrabold text-gray-900 dark:text-gray-100 mb-2">
-                        <FileText className="w-4 h-4 inline mr-1" />
-                        Observações
+                    {/* Observações - Apple Style */}
+                    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+                      <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 dark:text-white mb-4">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-500 to-gray-600 flex items-center justify-center shadow-lg shadow-slate-500/25">
+                          <FileText className="w-4 h-4" stroke="white" strokeWidth={2.5} />
+                        </div>
+                        <span className="tracking-tight">Observações</span>
+                        <span className="text-xs font-medium text-gray-500 dark:text-gray-400 ml-auto">(opcional)</span>
                       </label>
                       <textarea
                         value={formData.observacoes}
                         onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
-                        placeholder="Descreva detalhes importantes, problemas relatados pelo cliente, etc..."
+                        placeholder="Descreva detalhes importantes, problemas relatados pelo cliente..."
                         rows={4}
-                        className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"
+                        className="w-full px-4 py-3.5 rounded-xl bg-white dark:bg-gray-900 border border-gray-300/50 dark:border-gray-600/50 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base font-medium focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all resize-none outline-none"
                       />
                     </div>
 
-                    {/* Responsável */}
-                    <div>
-                      <label className="block text-sm font-extrabold text-gray-900 dark:text-gray-100 mb-2">
-                        <UserCircle className="w-4 h-4 inline mr-1" />
-                        Responsável pelo Atendimento <span className="text-red-500">*</span>
+                    {/* Responsável - Apple Style */}
+                    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+                      <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 dark:text-white mb-4">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/25">
+                          <UserCircle className="w-4 h-4" stroke="white" strokeWidth={2.5} />
+                        </div>
+                        <span className="tracking-tight">Responsável pelo Atendimento</span>
+                        <span className="text-red-500 text-xs ml-1">*</span>
                       </label>
                       <input
                         type="text"
@@ -692,15 +989,22 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                           setFormData({ ...formData, responsavel: e.target.value });
                           setErrors({ ...errors, responsavel: null });
                         }}
-                        placeholder="Nome do mecânico/atendente"
-                        className={`w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border-2 ${
+                        placeholder="Nome do mecânico ou atendente"
+                        className={`w-full px-4 py-3.5 rounded-xl bg-white dark:bg-gray-900 border ${
                           errors.responsavel
-                            ? 'border-red-500'
-                            : 'border-gray-200 dark:border-gray-700'
-                        } text-gray-900 dark:text-gray-100 placeholder-gray-400 font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
+                            ? 'border-red-500 focus:ring-red-500/50'
+                            : 'border-gray-300/50 dark:border-gray-600/50 focus:ring-blue-500/50'
+                        } text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base font-medium focus:ring-2 focus:border-blue-500 transition-all outline-none`}
                       />
                       {errors.responsavel && (
-                        <p className="mt-1 text-xs text-red-500 font-bold">{errors.responsavel}</p>
+                        <motion.p
+                          initial={{ opacity: 0, y: -5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="mt-2.5 text-xs text-red-500 font-semibold flex items-center gap-1.5"
+                        >
+                          <AlertTriangle className="w-3.5 h-3.5" />
+                          {errors.responsavel}
+                        </motion.p>
                       )}
                     </div>
                   </motion.div>
@@ -741,55 +1045,58 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
               </AnimatePresence>
             </div>
 
-            {/* Footer */}
-            <div className="flex items-center justify-between px-6 py-4 border-t-2 border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50">
-              <div className="text-sm font-bold text-gray-600 dark:text-gray-400">
-                Passo {currentStep} de {STEPS.length}
+            {/* Footer - Apple Style */}
+            <div className="flex items-center justify-between px-6 py-2.5 border-t border-gray-200/50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-900/50 backdrop-blur-sm">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  Passo <span className="font-bold text-gray-900 dark:text-white">{currentStep}</span> de {STEPS.length}
+                </span>
               </div>
 
               <div className="flex gap-3">
                 {currentStep > 1 && (
                   <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={handlePrevious}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition-all"
+                    className="flex items-center gap-2 px-5 py-2 rounded-xl border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all font-semibold"
                   >
-                    <ChevronLeft className="w-4 h-4" />
+                    <ChevronLeft className="w-5 h-5" />
                     Voltar
                   </motion.button>
                 )}
 
                 {currentStep < STEPS.length ? (
                   <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={handleNext}
-                    className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-bold shadow-lg shadow-blue-500/30 transition-all"
+                    className="flex items-center gap-2 px-6 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold shadow-lg shadow-blue-500/30 transition-all"
                   >
                     Próximo
-                    <ChevronRight className="w-4 h-4" />
+                    <ChevronRight className="w-5 h-5" />
                   </motion.button>
                 ) : (
                   <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={handleSubmit}
                     disabled={isSubmitting}
-                    className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-green-500 hover:bg-green-600 text-white font-bold shadow-lg shadow-green-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 px-6 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold shadow-lg shadow-blue-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? (
                       <>
                         <motion.div
                           animate={{ rotate: 360 }}
                           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                          className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
                         />
                         Processando...
                       </>
                     ) : (
                       <>
-                        <CheckCircle2 className="w-4 h-4" />
+                        <CheckCircle2 className="w-5 h-5" />
                         Confirmar Check-in
                       </>
                     )}
@@ -799,7 +1106,7 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
             </div>
           </motion.div>
         </div>
-      </motion.div>
+      )}
     </AnimatePresence>,
     document.body
       )}

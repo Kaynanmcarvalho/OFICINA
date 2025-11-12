@@ -12,6 +12,7 @@ import { collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp } from 'fi
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { db, auth } from '../config/firebase';
 import { useEmpresa } from '../contexts/EmpresaContext';
+import { formatPhone } from '../utils/formatters';
 import toast from 'react-hot-toast';
 
 const GerenciarUsuarios = () => {
@@ -250,7 +251,7 @@ const UsuarioCard = ({ usuario, onDelete }) => {
         {usuario.telefone && (
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
             <Phone className="w-4 h-4" />
-            {usuario.telefone}
+            {formatPhone(usuario.telefone)}
           </div>
         )}
         {usuario.cargo && (

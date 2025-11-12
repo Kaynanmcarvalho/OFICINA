@@ -1,0 +1,220 @@
+/* Redução de 20% no Modal de Orçamento - Aplicação Proporcional */
+
+/* Container do Modal */
+.budget-modal-container {
+  max-width: 800px !important; /* Reduzido de ~1000px */
+  overflow: visible !important; /* Garantir que dropdowns não sejam cortados */
+}
+
+/* Header do Modal */
+.budget-modal-container > div:first-child {
+  padding: 12.8px 19.2px !important; /* Reduzido de 16px 24px (20%) */
+}
+
+/* Ícone do Header */
+.budget-modal-container > div:first-child .w-10,
+.budget-modal-container > div:first-child .sm\\:w-12 {
+  width: 38.4px !important; /* Reduzido de 48px (20%) */
+  height: 38.4px !important;
+}
+
+.budget-modal-container > div:first-child .w-10 svg,
+.budget-modal-container > div:first-child .sm\\:w-12 svg {
+  width: 19.2px !important; /* Reduzido de 24px (20%) */
+  height: 19.2px !important;
+}
+
+/* Título do Modal */
+.budget-modal-container h2 {
+  font-size: 19.2px !important; /* Reduzido de 24px (20%) */
+  line-height: 28.8px !important;
+}
+
+/* Subtítulo do Modal */
+.budget-modal-container > div:first-child p {
+  font-size: 11.2px !important; /* Reduzido de 14px (20%) */
+}
+
+/* Botão de Fechar */
+.budget-modal-container > div:first-child button {
+  width: 32px !important; /* Reduzido de 40px (20%) */
+  height: 32px !important;
+}
+
+.budget-modal-container > div:first-child button svg {
+  width: 16px !important; /* Reduzido de 20px (20%) */
+  height: 16px !important;
+}
+
+/* Conteúdo do Modal */
+.budget-modal-container > div:nth-child(2) {
+  padding: 19.2px !important; /* Reduzido de 24px (20%) */
+}
+
+/* Labels */
+.budget-modal-container label {
+  font-size: 11.2px !important; /* Reduzido de 14px (20%) */
+  margin-bottom: 6.4px !important; /* Reduzido de 8px (20%) */
+}
+
+/* Inputs e Textareas */
+.budget-modal-container input,
+.budget-modal-container textarea,
+.budget-modal-container select {
+  font-size: 12.8px !important; /* Reduzido de 16px (20%) */
+  padding: 9.6px 12.8px !important; /* Reduzido de 12px 16px (20%) */
+  border-radius: 9.6px !important; /* Reduzido de 12px (20%) */
+}
+
+/* Botões Principais */
+.budget-modal-container button:not(.budget-modal-container > div:first-child button) {
+  font-size: 12.8px !important; /* Reduzido de 16px (20%) */
+  padding: 9.6px 19.2px !important; /* Reduzido de 12px 24px (20%) */
+  border-radius: 9.6px !important;
+}
+
+/* Ícones dentro de botões */
+.budget-modal-container button svg:not(.budget-modal-container > div:first-child button svg) {
+  width: 16px !important; /* Reduzido de 20px (20%) */
+  height: 16px !important;
+}
+
+/* Seções do Formulário */
+.budget-modal-container > div:nth-child(2) > div {
+  gap: 12.8px !important; /* Reduzido de 16px (20%) */
+  margin-bottom: 12.8px !important;
+}
+
+/* Títulos de Seção */
+.budget-modal-container h3 {
+  font-size: 16px !important; /* Reduzido de 20px (20%) */
+  margin-bottom: 12.8px !important;
+}
+
+/* Dropdown de Cliente */
+.client-search-container input {
+  font-size: 12.8px !important;
+  padding: 9.6px 12.8px !important;
+}
+
+.client-search-container .dropdown-item {
+  font-size: 12.8px !important;
+  padding: 9.6px 12.8px !important;
+}
+
+/* Dropdown de Produto */
+.product-search-container input {
+  font-size: 12.8px !important;
+  padding: 9.6px 12.8px !important;
+}
+
+.product-search-container .dropdown-item {
+  font-size: 12.8px !important;
+  padding: 9.6px 12.8px !important;
+}
+
+/* Tabela de Itens */
+.budget-modal-container table {
+  font-size: 12.8px !important;
+}
+
+.budget-modal-container table th {
+  padding: 9.6px 12.8px !important;
+  font-size: 11.2px !important;
+}
+
+.budget-modal-container table td {
+  padding: 9.6px 12.8px !important;
+}
+
+/* Botões de Ação na Tabela */
+.budget-modal-container table button {
+  padding: 6.4px !important; /* Reduzido de 8px (20%) */
+}
+
+.budget-modal-container table button svg {
+  width: 12.8px !important; /* Reduzido de 16px (20%) */
+  height: 12.8px !important;
+}
+
+/* Footer do Modal */
+.budget-modal-container > div:last-child {
+  padding: 12.8px 19.2px !important; /* Reduzido de 16px 24px (20%) */
+}
+
+/* Botões do Footer */
+.budget-modal-container > div:last-child button {
+  font-size: 12.8px !important;
+  padding: 9.6px 19.2px !important;
+}
+
+/* Total do Orçamento */
+.budget-modal-container .total-section {
+  font-size: 16px !important; /* Reduzido de 20px (20%) */
+  padding: 12.8px !important;
+}
+
+.budget-modal-container .total-section .total-value {
+  font-size: 22.4px !important; /* Reduzido de 28px (20%) */
+}
+
+/* Badges e Tags */
+.budget-modal-container .badge,
+.budget-modal-container .tag {
+  font-size: 11.2px !important; /* Reduzido de 14px (20%) */
+  padding: 4.8px 9.6px !important; /* Reduzido de 6px 12px (20%) */
+  border-radius: 6.4px !important;
+}
+
+/* Ícones Gerais */
+.budget-modal-container svg {
+  width: 16px !important; /* Reduzido de 20px (20%) */
+  height: 16px !important;
+}
+
+/* Espaçamentos entre elementos */
+.budget-modal-container .space-y-4 > * + * {
+  margin-top: 12.8px !important; /* Reduzido de 16px (20%) */
+}
+
+.budget-modal-container .space-y-3 > * + * {
+  margin-top: 9.6px !important; /* Reduzido de 12px (20%) */
+}
+
+.budget-modal-container .gap-4 {
+  gap: 12.8px !important;
+}
+
+.budget-modal-container .gap-3 {
+  gap: 9.6px !important;
+}
+
+.budget-modal-container .gap-2 {
+  gap: 6.4px !important;
+}
+
+/* Ajuste de Grid */
+.budget-modal-container .grid {
+  gap: 12.8px !important;
+}
+
+/* Scrollbar customizada (opcional) */
+.budget-modal-container::-webkit-scrollbar {
+  width: 9.6px !important; /* Reduzido de 12px (20%) */
+}
+
+.budget-modal-container::-webkit-scrollbar-thumb {
+  border-radius: 4.8px !important; /* Reduzido de 6px (20%) */
+}
+
+/* Responsividade mantida */
+@media (max-width: 640px) {
+  .budget-modal-container {
+    max-width: 100% !important;
+  }
+  
+  .budget-modal-container > div:first-child,
+  .budget-modal-container > div:last-child {
+    padding: 9.6px 12.8px !important;
+  }
+}

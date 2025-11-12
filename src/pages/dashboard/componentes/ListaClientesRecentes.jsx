@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Users, Mail, Phone, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { formatPhone } from '../../../utils/formatters';
 import LoaderAnimado from './LoaderAnimado';
 
 /**
@@ -139,7 +140,7 @@ const ListaClientesRecentes = ({ clientes, isLoading = false }) => {
                   {cliente.telefone && (
                     <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400">
                       <Phone className="w-3 h-3 flex-shrink-0" />
-                      <span>{cliente.telefone}</span>
+                      <span>{formatPhone(cliente.telefone)}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-500">

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Plus } from 'lucide-react';
 import { useBudgetStore } from '../store/budgetStore';
-import BudgetModal from './budgets/components/BudgetModal';
+import BudgetModal from './budgets/components/BudgetModalPremium';
 import BudgetCard from './budgets/components/BudgetCard';
 import BudgetFilters from './budgets/components/BudgetFilters';
 import BudgetStats from './budgets/components/BudgetStats';
