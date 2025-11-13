@@ -1,0 +1,198 @@
+/* Redução de 10% na Página de Orçamentos - Aplicação Proporcional */
+
+/* Container Principal */
+.budgets-page {
+  font-size: 90% !important;
+}
+
+/* Header da Página */
+.budgets-page h1 {
+  font-size: 25.2px !important; /* Reduzido de 28px (10%) */
+  line-height: 32.4px !important;
+}
+
+.budgets-page h2 {
+  font-size: 18px !important; /* Reduzido de 20px (10%) */
+  line-height: 25.2px !important;
+}
+
+/* Botões do Header */
+.budgets-page .header-button {
+  font-size: 12.6px !important; /* Reduzido de 14px (10%) */
+  padding: 9px 16.2px !important; /* Reduzido de 10px 18px (10%) */
+  border-radius: 9px !important; /* Reduzido de 10px (10%) */
+}
+
+/* Ícones */
+.budgets-page svg {
+  width: 18px !important; /* Reduzido de 20px (10%) */
+  height: 18px !important;
+}
+
+.budgets-page .icon-large svg {
+  width: 21.6px !important; /* Reduzido de 24px (10%) */
+  height: 21.6px !important;
+}
+
+/* Cards de Orçamento */
+.budgets-page .budget-card {
+  padding: 14.4px !important; /* Reduzido de 16px (10%) */
+  border-radius: 10.8px !important; /* Reduzido de 12px (10%) */
+  gap: 10.8px !important;
+}
+
+/* Título do Card */
+.budgets-page .budget-card h3 {
+  font-size: 14.4px !important; /* Reduzido de 16px (10%) */
+  line-height: 19.8px !important;
+}
+
+/* Texto do Card */
+.budgets-page .budget-card p {
+  font-size: 12.6px !important; /* Reduzido de 14px (10%) */
+  line-height: 18px !important;
+}
+
+/* Texto Pequeno */
+.budgets-page .text-xs {
+  font-size: 10.8px !important; /* Reduzido de 12px (10%) */
+}
+
+.budgets-page .text-sm {
+  font-size: 12.6px !important; /* Reduzido de 14px (10%) */
+}
+
+/* Badges e Tags */
+.budgets-page .badge,
+.budgets-page .tag {
+  font-size: 10.8px !important; /* Reduzido de 12px (10%) */
+  padding: 3.6px 9px !important; /* Reduzido de 4px 10px (10%) */
+  border-radius: 7.2px !important; /* Reduzido de 8px (10%) */
+}
+
+/* Valores Monetários */
+.budgets-page .price,
+.budgets-page .total {
+  font-size: 16.2px !important; /* Reduzido de 18px (10%) */
+  font-weight: 600;
+}
+
+.budgets-page .price-large {
+  font-size: 21.6px !important; /* Reduzido de 24px (10%) */
+}
+
+/* Filtros e Busca */
+.budgets-page .search-input,
+.budgets-page .filter-select {
+  font-size: 12.6px !important; /* Reduzido de 14px (10%) */
+  padding: 8.1px 12.6px !important; /* Reduzido de 9px 14px (10%) */
+  border-radius: 9px !important;
+}
+
+/* Tabs/Abas */
+.budgets-page .tab-button {
+  font-size: 12.6px !important;
+  padding: 7.2px 14.4px !important; /* Reduzido de 8px 16px (10%) */
+  border-radius: 7.2px !important;
+}
+
+/* Grid de Cards */
+.budgets-page .grid {
+  gap: 14.4px !important; /* Reduzido de 16px (10%) */
+}
+
+/* Espaçamentos */
+.budgets-page .space-y-4 > * + * {
+  margin-top: 14.4px !important; /* Reduzido de 16px (10%) */
+}
+
+.budgets-page .space-y-6 > * + * {
+  margin-top: 21.6px !important; /* Reduzido de 24px (10%) */
+}
+
+.budgets-page .gap-4 {
+  gap: 14.4px !important;
+}
+
+.budgets-page .gap-6 {
+  gap: 21.6px !important;
+}
+
+/* Padding do Container */
+.budgets-page .container {
+  padding: 18px !important; /* Reduzido de 20px (10%) */
+}
+
+/* Botões de Ação */
+.budgets-page button {
+  font-size: 12.6px !important;
+  padding: 8.1px 14.4px !important; /* Reduzido de 9px 16px (10%) */
+  border-radius: 7.2px !important;
+}
+
+.budgets-page button svg {
+  width: 16.2px !important; /* Reduzido de 18px (10%) */
+  height: 16.2px !important;
+}
+
+/* Status Indicators */
+.budgets-page .status-dot {
+  width: 7.2px !important; /* Reduzido de 8px (10%) */
+  height: 7.2px !important;
+}
+
+/* Avatar/Ícones Circulares */
+.budgets-page .avatar {
+  width: 32.4px !important; /* Reduzido de 36px (10%) */
+  height: 32.4px !important;
+}
+
+.budgets-page .avatar-large {
+  width: 43.2px !important; /* Reduzido de 48px (10%) */
+  height: 43.2px !important;
+}
+
+/* Dividers */
+.budgets-page .divider {
+  margin: 14.4px 0 !important; /* Reduzido de 16px (10%) */
+}
+
+/* Empty State */
+.budgets-page .empty-state {
+  padding: 36px !important; /* Reduzido de 40px (10%) */
+}
+
+.budgets-page .empty-state svg {
+  width: 54px !important; /* Reduzido de 60px (10%) */
+  height: 54px !important;
+}
+
+/* Tooltips */
+.budgets-page .tooltip {
+  font-size: 11.7px !important; /* Reduzido de 13px (10%) */
+  padding: 5.4px 9px !important; /* Reduzido de 6px 10px (10%) */
+  border-radius: 5.4px !important;
+}
+
+/* Loading Spinner */
+.budgets-page .spinner {
+  width: 18px !important; /* Reduzido de 20px (10%) */
+  height: 18px !important;
+}
+
+/* Responsividade Mantida */
+@media (max-width: 640px) {
+  .budgets-page {
+    font-size: 85% !important;
+  }
+  
+  .budgets-page .container {
+    padding: 13.5px !important; /* Reduzido de 15px (10%) */
+  }
+}
+
+@media (min-width: 1024px) {
+  .budgets-page .container {
+    padding: 27px !important; /* Reduzido de 30px (10%) */
+  }
+}

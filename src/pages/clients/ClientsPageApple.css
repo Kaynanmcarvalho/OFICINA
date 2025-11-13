@@ -1,0 +1,120 @@
+/* ClientsPageApple - Estilos Premium Apple-like */
+
+.clients-apple-page {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Scrollbar Customizada */
+.clients-apple-page ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.clients-apple-page ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.clients-apple-page ::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.clients-apple-page ::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.5);
+}
+
+.clients-apple-page.dark ::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.5);
+}
+
+.clients-apple-page.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.7);
+}
+
+/* Smooth Scroll */
+.clients-apple-page {
+  scroll-behavior: smooth;
+}
+
+/* Glassmorphism Effects */
+.clients-apple-page .backdrop-blur-md {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Transições Suaves */
+.clients-apple-page * {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Hover Effects */
+.clients-apple-page button:hover {
+  transform: translateY(-1px);
+}
+
+.clients-apple-page button:active {
+  transform: translateY(0);
+}
+
+/* Focus Styles */
+.clients-apple-page input:focus,
+.clients-apple-page button:focus {
+  outline: none;
+}
+
+/* Animações de Entrada */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Sombras em Camadas */
+.shadow-layered {
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 4px 8px rgba(0, 0, 0, 0.05),
+    0 8px 16px rgba(0, 0, 0, 0.05);
+}
+
+.dark .shadow-layered {
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.2),
+    0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .clients-apple-page {
+    font-size: 14px;
+  }
+}
+
+/* Acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+  .clients-apple-page * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -6,8 +6,6 @@ import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import Layout from './components/layout/LayoutPremium';
-import { EmpresaProvider } from './contexts/EmpresaContext';
-import ImpersonationBanner from './components/ImpersonationBanner';
 import './utils/preloadIcons'; // Import direto para executar o pré-carregamento
 import './i18n/index.jsx';
 
@@ -34,10 +32,6 @@ const DevPage = React.lazy(() => import('./pages/DevPage'));
 const BudgetsPage = React.lazy(() => import('./pages/BudgetsPage'));
 const BudgetApprovalPage = React.lazy(() => import('./pages/BudgetApprovalPage'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
-
-// Admin pages (super-admin only)
-const SaaSDashboard = React.lazy(() => import('./pages/admin/SaaSDashboard'));
-const OnboardingEmpresa = React.lazy(() => import('./pages/admin/OnboardingEmpresa'));
 
 function App() {
   const { initializeStores, setupRealtimeListeners, isGlobalLoading } = useStore();
@@ -68,58 +62,8 @@ function App() {
   useEffect(() => {
     // Setup real-time listeners when user is authenticated
     if (user) {
-      // Aguardar empresaId estar disponível no sessionStorage OU verificar se é Super Admin
-      let attempts = 0;
-      const maxAttempts = 50; // 5 segundos máximo (50 * 100ms)
-      
-      const checkEmpresaId = () => {
-        const empresaId = sessionStorage.getItem('empresaId');
-        const userId = sessionStorage.getItem('userId');
-        
-        // Super Admin não tem empresaId, mas tem userId
-        const isSuperAdmin = !empresaId && userId;
-        
-        if (empresaId || isSuperAdmin) {
-          if (isSuperAdmin) {
-            console.log('[App] 🌟 Super Admin detected - setting up listeners without empresaId');
-          } else {
-            console.log('[App] empresaId available, setting up listeners');
-          }
-          
-          try {
-            const unsubscribe = setupRealtimeListeners();
-            return unsubscribe;
-          } catch (error) {
-            console.error('[App] Error setting up listeners:', error);
-            return () => {};
-          }
-        } else {
-          attempts++;
-          if (attempts < maxAttempts) {
-            console.log(`[App] Waiting for empresaId or Super Admin detection... (attempt ${attempts}/${maxAttempts})`);
-            // Tentar novamente após um pequeno delay
-            const timer = setTimeout(checkEmpresaId, 100);
-            return () => clearTimeout(timer);
-          } else {
-            console.warn('[App] empresaId not available after max attempts, checking if Super Admin...');
-            // Última tentativa: verificar se é Super Admin
-            if (userId) {
-              console.log('[App] 🌟 Super Admin detected on final attempt - proceeding without empresaId');
-              try {
-                const unsubscribe = setupRealtimeListeners();
-                return unsubscribe;
-              } catch (error) {
-                console.error('[App] Error setting up listeners:', error);
-                return () => {};
-              }
-            }
-            console.warn('[App] Not Super Admin and no empresaId - skipping listeners');
-            return () => {};
-          }
-        }
-      };
-      
-      return checkEmpresaId();
+      const unsubscribe = setupRealtimeListeners();
+      return unsubscribe;
     }
   }, [user, setupRealtimeListeners]);
 
@@ -143,19 +87,15 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <EmpresaProvider>
-        <Router>
-          <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-            {/* Banner de Impersonation (apenas quando ativo) */}
-            <ImpersonationBanner />
-            
-            <Suspense
-              fallback={
-                <div className="min-h-screen flex items-center justify-center">
-                  <LoadingSpinner size="lg" />
-                </div>
-              }
-            >
+      <Router>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+          <Suspense
+            fallback={
+              <div className="min-h-screen flex items-center justify-center">
+                <LoadingSpinner size="lg" />
+              </div>
+            }
+          >
             <Routes>
               {/* Public routes */}
               <Route
@@ -211,10 +151,6 @@ function App() {
                 <Route path="integrations" element={<IntegrationsPage />} />
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="employees" element={<EmployeeManagementPage />} />
-                
-                {/* Admin routes (super-admin only) */}
-                <Route path="admin/dashboard" element={<SaaSDashboard />} />
-                <Route path="admin/onboarding" element={<OnboardingEmpresa />} />
               </Route>
 
               {/* Catch all route */}
@@ -222,35 +158,34 @@ function App() {
             </Routes>
           </Suspense>
 
-            {/* Toast notifications */}
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                duration: 4000,
-                className: 'glass-card',
-                style: {
-                  background: isDarkMode ? 'rgba(31, 41, 55, 0.8)' : 'rgba(255, 255, 255, 0.8)',
-                  color: isDarkMode ? '#f9fafb' : '#111827',
-                  backdropFilter: 'blur(10px)',
-                  border: isDarkMode ? '1px solid rgba(75, 85, 99, 0.3)' : '1px solid rgba(209, 213, 219, 0.3)',
+          {/* Toast notifications */}
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              className: 'glass-card',
+              style: {
+                background: isDarkMode ? 'rgba(31, 41, 55, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+                color: isDarkMode ? '#f9fafb' : '#111827',
+                backdropFilter: 'blur(10px)',
+                border: isDarkMode ? '1px solid rgba(75, 85, 99, 0.3)' : '1px solid rgba(209, 213, 219, 0.3)',
+              },
+              success: {
+                iconTheme: {
+                  primary: '#10b981',
+                  secondary: '#ffffff',
                 },
-                success: {
-                  iconTheme: {
-                    primary: '#10b981',
-                    secondary: '#ffffff',
-                  },
+              },
+              error: {
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: '#ffffff',
                 },
-                error: {
-                  iconTheme: {
-                    primary: '#ef4444',
-                    secondary: '#ffffff',
-                  },
-                },
-              }}
-            />
-          </div>
-        </Router>
-      </EmpresaProvider>
+              },
+            }}
+          />
+        </div>
+      </Router>
     </ErrorBoundary>
   );
 }

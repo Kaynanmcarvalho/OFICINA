@@ -1,0 +1,22 @@
+# Car Damage Detection Dataset
+path: C:\Users\brcal\OneDrive\Documentos\sistemas\OFICINA\OFICINA\functions\yolov8-detector\datasets\car-damage
+train: images/train
+val: images/val
+test: images/test
+
+# Classes
+names:
+  0: broken_glass
+  1: broken_light
+  2: bumper_damage
+  3: dent
+  4: scratch
+  5: rust
+  6: paint_damage
+  7: flat_tire
+  8: tire_wear
+  9: mirror_damage
+  10: door_damage
+  11: hood_damage
+  12: trunk_damage
+  13: wheel_damage

@@ -232,13 +232,13 @@ const ClientsPagePremium = () => {
   return (
     <div 
       data-page="clients"
-      className={`clients-page-container transition-colors duration-300 min-h-screen ${
+      className={`clients-page-container min-h-screen transition-colors duration-300 ${
         isDarkMode 
-          ? 'bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950' 
-          : 'bg-gradient-to-b from-gray-50 via-white to-gray-50'
+          ? 'bg-gradient-to-br from-gray-900 to-gray-800' 
+          : 'bg-gradient-to-br from-gray-50 to-gray-100'
       }`}
     >
-      <div className="w-full" style={{ padding: '24px', boxSizing: 'border-box', minHeight: '100vh' }}>
+      <div className="w-full space-y-4 md:space-y-6 px-3 md:px-4 lg:px-6 py-4 md:py-6">
         {/* Header */}
         <ClientsHeader 
           clientCount={stats.total}
@@ -251,7 +251,7 @@ const ClientsPagePremium = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-6 space-y-4"
+          className="space-y-4"
         >
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1">
@@ -296,7 +296,6 @@ const ClientsPagePremium = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className=""
             >
               <EmptyState 
                 hasClients={clients.length > 0}
@@ -315,7 +314,6 @@ const ClientsPagePremium = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className=""
             >
               {viewMode === VIEW_MODES.GRID ? (
                 <ClientsGridView

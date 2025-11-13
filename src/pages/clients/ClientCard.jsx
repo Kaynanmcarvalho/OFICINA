@@ -54,10 +54,26 @@ const ClientCard = ({ client, onView, onEdit, onDelete }) => {
           : 'glass-effect'
         }
       `}
-      style={{ minWidth: '320px' }}
     >
-      {/* Avatar e Nome */}
-      <div className="flex items-start gap-4 mb-3">
+      {/* Status Badge */}
+      <div className="absolute top-4 right-4">
+        <div className={`
+          px-2.5 py-1 rounded-full text-xs font-semibold
+          ${isActive
+            ? isDarkMode
+              ? 'bg-green-500/20 text-green-400'
+              : 'bg-green-100 text-green-700'
+            : isDarkMode
+              ? 'bg-gray-700 text-gray-400'
+              : 'bg-gray-200 text-gray-600'
+          }
+        `}>
+          {isActive ? 'Ativo' : 'Inativo'}
+        </div>
+      </div>
+
+      {/* Avatar */}
+      <div className="flex items-start gap-4 mb-4">
         <div className={`
           w-16 h-16 rounded-2xl flex items-center justify-center
           text-xl font-bold flex-shrink-0
@@ -83,23 +99,6 @@ const ClientCard = ({ client, onView, onEdit, onDelete }) => {
               CPF: {formatCPF(client.cpf)}
             </p>
           )}
-        </div>
-      </div>
-
-      {/* Status Badge - Movido para baixo do nome */}
-      <div className="mb-4">
-        <div className={`
-          inline-flex px-2.5 py-1 rounded-full text-xs font-semibold
-          ${isActive
-            ? isDarkMode
-              ? 'bg-green-500/20 text-green-400'
-              : 'bg-green-100 text-green-700'
-            : isDarkMode
-              ? 'bg-gray-700 text-gray-400'
-              : 'bg-gray-200 text-gray-600'
-          }
-        `}>
-          {isActive ? 'Ativo' : 'Inativo'}
         </div>
       </div>
 
