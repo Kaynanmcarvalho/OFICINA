@@ -1,0 +1,42 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Função auxiliar para verificar autenticação
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Função auxiliar para verificar empresa
+    function belongsToCompany(empresaId) {
+      return isAuthenticated() && 
+             request.auth.token.empresaId == empresaId;
+    }
+    
+    // Coleção de histórico veicular
+    match /vehicle_history/{historyId} {
+      // Leitura: usuário autenticado da mesma empresa
+      allow read: if isAuthenticated() && 
+        historyId.matches('^' + request.auth.token.empresaId + '_.*');
+      
+      // Escrita: apenas Cloud Functions (service account)
+      allow write: if false;
+    }
+    
+    // Coleção de rate limiting
+    match /rate_limits/{userId} {
+      // Apenas Cloud Functions podem ler/escrever
+      allow read, write: if false;
+    }
+    
+    // Logs de consultas (opcional)
+    match /vehicle_history_logs/{logId} {
+      // Leitura: usuário autenticado da mesma empresa
+      allow read: if isAuthenticated() && 
+        resource.data.empresaId == request.auth.token.empresaId;
+      
+      // Escrita: apenas Cloud Functions
+      allow write: if false;
+    }
+  }
+}

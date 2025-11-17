@@ -11,10 +11,16 @@ import {
 import { useThemeStore } from '../../store/themeStore';
 import { useState } from 'react';
 import { formatCPF, formatPhone, formatDate, formatAddress } from '../../utils/formatters';
+import { VehicleHistoryBadge } from '../../components/vehicle-history/VehicleHistoryBadge';
+import { VehicleHistoryModal } from '../../components/vehicle-history/VehicleHistoryModal';
 
 const ClientCard = ({ client, onView, onEdit, onDelete }) => {
   const { isDarkMode } = useThemeStore();
   const [showActions, setShowActions] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  
+  // Pega a placa do primeiro veículo (se existir)
+  const vehiclePlate = client.vehicles?.[0]?.plate || client.vehicles?.[0]?.placa;
 
   const getInitials = (name) => {
     if (!name) return '?';
@@ -56,7 +62,18 @@ const ClientCard = ({ client, onView, onEdit, onDelete }) => {
       `}
     >
       {/* Status Badge */}
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 flex items-center gap-2">
+        {/* Vehicle History Badge */}
+        {vehiclePlate && (
+          <VehicleHistoryBadge 
+            placa={vehiclePlate}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowHistoryModal(true);
+            }}
+          />
+        )}
+        
         <div className={`
           px-2.5 py-1 rounded-full text-xs font-semibold
           ${isActive
@@ -328,6 +345,15 @@ const ClientCard = ({ client, onView, onEdit, onDelete }) => {
             </button>
           </motion.div>
         </>
+      )}
+      
+      {/* Vehicle History Modal */}
+      {vehiclePlate && (
+        <VehicleHistoryModal
+          placa={vehiclePlate}
+          isOpen={showHistoryModal}
+          onClose={() => setShowHistoryModal(false)}
+        />
       )}
     </motion.div>
   );

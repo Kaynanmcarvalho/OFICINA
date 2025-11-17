@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "source": ".",
+    "predeploy": [],
+    "runtime": "nodejs18"
+  }
+}
