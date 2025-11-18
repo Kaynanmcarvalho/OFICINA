@@ -12,6 +12,10 @@ const INTENTS = {
   FINALIZE: 'finalize',
   CANCEL: 'cancel',
   HELP: 'help',
+  // Novos intents fiscais
+  INVOICE_SALE: 'invoice_sale',
+  INVOICE_SERVICE: 'invoice_service',
+  INVOICE_BOTH: 'invoice_both',
   UNKNOWN: 'unknown'
 };
 
@@ -67,6 +71,26 @@ const PATTERNS = {
     /socorro/i,
     /como\s+(?:funciona|usar|fazer)/i,
     /o\s+que\s+posso\s+fazer/i
+  ],
+
+  // Padrões para faturamento
+  [INTENTS.INVOICE_SALE]: [
+    /(?:fatura|faturo|vende|vendo|emite\s+nota\s+(?:de|da)?)[\s\w]*\s+(?:o\s+|a\s+)?(.+?)\s+para\s+(?:o\s+|a\s+)?(.+)$/i,
+    /(?:emite|emitir)\s+(?:nf-?e|nota\s+fiscal)[\s\w]*\s+(?:do|da|de)\s+(.+?)\s+para\s+(?:o\s+|a\s+)?(.+)$/i,
+    /(?:venda|vender)\s+(.+?)\s+para\s+(?:o\s+|a\s+)?(.+)$/i,
+    /(?:nota\s+fiscal\s+(?:do|da|de)\s+)?(.+?)\s+(?:cliente|para)\s+(.+)$/i
+  ],
+
+  [INTENTS.INVOICE_SERVICE]: [
+    /(?:emite|emitir)\s+(?:nfs-?e|nota\s+de\s+serviço)[\s\w]*\s+(?:do|da|de)\s+(.+?)\s+para\s+(?:o\s+|a\s+)?(.+)$/i,
+    /(?:nota\s+de\s+serviço\s+(?:do|da|de)\s+)?(.+?)\s+(?:cliente|para)\s+(.+)$/i,
+    /(?:serviço\s+de\s+)?(.+?)\s+para\s+(?:o\s+|a\s+)?(.+)$/i
+  ],
+
+  [INTENTS.INVOICE_BOTH]: [
+    /(?:emite|emitir)\s+(?:a\s+)?nota\s+fiscal[\s\w]*\s+(?:do|da|de)\s+(.+?)\s+e\s+(?:a\s+)?nota\s+de\s+serviço[\s\w]*\s+(?:do|da|de)\s+(.+?)\s+para\s+(?:o\s+|a\s+)?(.+)$/i,
+    /(?:fatura|faturo)\s+(.+?)\s+e\s+(.+?)\s+para\s+(?:o\s+|a\s+)?(.+)$/i,
+    /(?:vende|vendo)\s+(.+?)\s+e\s+(?:faz|fazer|executa|executar)\s+(.+?)\s+para\s+(?:o\s+|a\s+)?(.+)$/i
   ]
 };
 
@@ -108,6 +132,25 @@ const extractParams = (intent, match, text) => {
         params.itemType = detectItemType(text);
       }
       break;
+
+    case INTENTS.INVOICE_SALE:
+      params.products = extractProducts(match[1] || '');
+      params.customerName = extractCustomerName(match[2] || '');
+      params.type = 'nfe';
+      break;
+
+    case INTENTS.INVOICE_SERVICE:
+      params.services = extractServices(match[1] || '');
+      params.customerName = extractCustomerName(match[2] || '');
+      params.type = 'nfse';
+      break;
+
+    case INTENTS.INVOICE_BOTH:
+      params.products = extractProducts(match[1] || '');
+      params.services = extractServices(match[2] || '');
+      params.customerName = extractCustomerName(match[3] || '');
+      params.type = 'both';
+      break;
   }
 
   return params;
@@ -130,6 +173,80 @@ const detectItemType = (text) => {
   if (/serviço|mão\s*de\s*obra|trabalho/i.test(text)) return 'service';
   if (/peça|produto|material|item/i.test(text)) return 'part';
   return 'unknown';
+};
+
+/**
+ * Extrai produtos do comando de faturamento
+ * @param {string} text - Texto do produto
+ * @returns {Array} Lista de produtos
+ */
+const extractProducts = (text) => {
+  if (!text) return [];
+  
+  const products = [];
+  
+  // Remove palavras de comando
+  let cleanText = text
+    .replace(/(?:fatura|faturo|vende|vendo|emite\s+nota\s+(?:de|da)?|nota\s+fiscal\s+(?:do|da|de)?|da\s+venda\s+)/gi, '')
+    .trim();
+
+  // Extrai quantidade se especificada
+  const quantityMatch = cleanText.match(/(\d+)\s+(?:litros?\s+de\s+|unidades?\s+de\s+|de\s+)?(.+)/i);
+  if (quantityMatch) {
+    products.push({
+      name: quantityMatch[2].trim(),
+      quantity: parseInt(quantityMatch[1])
+    });
+  } else if (cleanText) {
+    // Produto sem quantidade específica (assume 1)
+    products.push({
+      name: cleanText.trim(),
+      quantity: 1
+    });
+  }
+
+  return products;
+};
+
+/**
+ * Extrai serviços do comando
+ * @param {string} text - Texto do serviço
+ * @returns {Array} Lista de serviços
+ */
+const extractServices = (text) => {
+  if (!text) return [];
+  
+  const services = [];
+  
+  // Remove palavras de comando
+  let cleanText = text
+    .replace(/(?:emite|emitir)\s+(?:nfs-?e|nota\s+de\s+serviço)\s+(?:do|da|de)\s+/gi, '')
+    .replace(/(?:serviço\s+de\s+)/gi, '')
+    .trim();
+
+  if (cleanText) {
+    services.push({
+      name: cleanText.trim(),
+      quantity: 1
+    });
+  }
+
+  return services;
+};
+
+/**
+ * Extrai nome do cliente
+ * @param {string} text - Texto com nome do cliente
+ * @returns {string} Nome do cliente
+ */
+const extractCustomerName = (text) => {
+  if (!text) return null;
+  
+  // Remove artigos e palavras extras
+  return text
+    .replace(/^(?:o\s+|a\s+|os\s+|as\s+)?/i, '')
+    .replace(/\s+cliente\s+/gi, ' ')
+    .trim();
 };
 
 export { INTENTS };

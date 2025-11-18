@@ -206,35 +206,35 @@ const BudgetsPage = () => {
             )}
           </AnimatePresence>
         </div>
+
+        {/* Modals */}
+        <BudgetModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedBudget(null);
+          }}
+          budget={selectedBudget}
+        />
+
+        <SendBudgetModal
+          isOpen={isSendModalOpen}
+          onClose={() => {
+            setIsSendModalOpen(false);
+            setSelectedBudget(null);
+          }}
+          budget={selectedBudget}
+        />
+
+        <CheckinFromBudgetModal
+          isOpen={isCheckinModalOpen}
+          onClose={() => {
+            setIsCheckinModalOpen(false);
+            setSelectedBudget(null);
+          }}
+          budget={selectedBudget}
+        />
       </div>
-
-      {/* Modals */}
-      <BudgetModal
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setSelectedBudget(null);
-        }}
-        budget={selectedBudget}
-      />
-
-      <SendBudgetModal
-        isOpen={isSendModalOpen}
-        onClose={() => {
-          setIsSendModalOpen(false);
-          setSelectedBudget(null);
-        }}
-        budget={selectedBudget}
-      />
-
-      <CheckinFromBudgetModal
-        isOpen={isCheckinModalOpen}
-        onClose={() => {
-          setIsCheckinModalOpen(false);
-          setSelectedBudget(null);
-        }}
-        budget={selectedBudget}
-      />
     </div>
   );
 };
