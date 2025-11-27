@@ -5,10 +5,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import vehicleHistoryService from '../services/vehicleHistoryService';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuthStore } from '../store/authStore';
 
 export function useVehicleHistory(placa) {
-  const { empresaId } = useAuth();
+  const { user } = useAuthStore();
+  const empresaId = user?.organizationId || sessionStorage.getItem('empresaId');
   const [history, setHistory] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

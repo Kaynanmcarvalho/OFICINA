@@ -1,27 +1,35 @@
 /**
  * InventoryPage - Página principal do módulo de inventário
- * Design Apple-like premium com funcionalidades completas
+ * Otimizado para carregamento rápido com lazy loading
  */
 
 import '../../styles/inventory-scale-20.css';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProductStore } from '../../store/productStore';
 import { useThemeStore } from '../../store/themeStore';
 import { Package, Sparkles } from 'lucide-react';
-
-// Components
-import InventoryHeader from './components/InventoryHeader';
-import InventoryStats from './components/InventoryStats';
-import InventorySearchBar from './components/InventorySearchBar';
-import InventoryFilters from './components/InventoryFilters';
-import InventoryGridView from './components/InventoryGridView';
-import InventoryListView from './components/InventoryListView';
-import ProductModal from './components/ProductModal';
-import EmptyState from './components/EmptyState';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
-import VehicleCompatibilitySearch from '../../components/inventory/VehicleCompatibilitySearch';
-import IntelligentCompatibilityPanel from '../../components/inventory/IntelligentCompatibilityPanel';
+
+// Lazy load components
+const InventoryHeader = lazy(() => import('./components/InventoryHeader'));
+const InventoryStats = lazy(() => import('./components/InventoryStats'));
+const InventorySearchBar = lazy(() => import('./components/InventorySearchBar'));
+const InventoryFilters = lazy(() => import('./components/InventoryFilters'));
+const InventoryGridView = lazy(() => import('./components/InventoryGridView'));
+const InventoryListView = lazy(() => import('./components/InventoryListView'));
+const ProductModal = lazy(() => import('./components/ProductModal'));
+const EmptyState = lazy(() => import('./components/EmptyState'));
+const VehicleCompatibilitySearch = lazy(() => import('../../components/inventory/VehicleCompatibilitySearch'));
+const IntelligentCompatibilityPanel = lazy(() => import('../../components/inventory/IntelligentCompatibilityPanel'));
+
+// Skeleton loader
+const SkeletonCard = () => (
+  <div className="animate-pulse bg-white/50 dark:bg-gray-800/50 rounded-2xl p-6 h-32">
+    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
+    <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+  </div>
+);
 
 const VIEW_MODES = {
   GRID: 'grid',
@@ -145,10 +153,12 @@ const InventoryPage = () => {
     >
       <div className="w-full" style={{ padding: '24px', boxSizing: 'border-box', minHeight: '100vh' }}>
         {/* Header */}
-        <InventoryHeader
-          productCount={products.length}
-          onNewProduct={handleNewProduct}
-        />
+        <Suspense fallback={<SkeletonCard />}>
+          <InventoryHeader
+            productCount={products.length}
+            onNewProduct={handleNewProduct}
+          />
+        </Suspense>
 
         {/* Statistics Cards */}
         <motion.div
@@ -157,7 +167,9 @@ const InventoryPage = () => {
           transition={{ delay: 0.1 }}
           className="mb-6"
         >
-          <InventoryStats stats={stats} />
+          <Suspense fallback={<SkeletonCard />}>
+            <InventoryStats stats={stats} />
+          </Suspense>
         </motion.div>
 
         {/* Search and Filters */}
@@ -283,31 +295,42 @@ const InventoryPage = () => {
         </AnimatePresence>
       </div>
 
-      {/* Product Modal */}
-      <ProductModal
-        isOpen={isProductModalOpen}
-        onClose={() => {
-          setIsProductModalOpen(false);
-          setEditingProduct(null);
-        }}
-        product={editingProduct}
-      />
+      {/* Product Modal - só carrega quando abre */}
+      {isProductModalOpen && (
+        <Suspense fallback={null}>
+          <ProductModal
+            isOpen={isProductModalOpen}
+            onClose={() => {
+              setIsProductModalOpen(false);
+              setEditingProduct(null);
+            }}
+            product={editingProduct}
+          />
+        </Suspense>
+      )}
 
-      {/* Vehicle Compatibility Search */}
-      <VehicleCompatibilitySearch
-        isOpen={isCompatibilityModalOpen}
-        onClose={() => setIsCompatibilityModalOpen(false)}
-        onPartSelect={(part) => {
-          // Opcional: abrir modal de produto com a peça selecionada
-          console.log('Peça selecionada:', part);
-        }}
-      />
+      {/* Vehicle Compatibility Search - só carrega quando abre */}
+      {isCompatibilityModalOpen && (
+        <Suspense fallback={null}>
+          <VehicleCompatibilitySearch
+            isOpen={isCompatibilityModalOpen}
+            onClose={() => setIsCompatibilityModalOpen(false)}
+            onPartSelect={(part) => {
+              console.log('Peça selecionada:', part);
+            }}
+          />
+        </Suspense>
+      )}
 
-      {/* Intelligent Compatibility Panel */}
-      <IntelligentCompatibilityPanel
-        isOpen={isIntelligentPanelOpen}
-        onClose={() => setIsIntelligentPanelOpen(false)}
-      />
+      {/* Intelligent Compatibility Panel - só carrega quando abre */}
+      {isIntelligentPanelOpen && (
+        <Suspense fallback={null}>
+          <IntelligentCompatibilityPanel
+            isOpen={isIntelligentPanelOpen}
+            onClose={() => setIsIntelligentPanelOpen(false)}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

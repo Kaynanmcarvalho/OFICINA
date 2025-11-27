@@ -1,12 +1,11 @@
-import React, { useEffect, Suspense, useState } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { useStore, useAuthStore, useThemeStore } from './store/index.jsx';
+import { useAuthStore, useThemeStore } from './store/index.jsx';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import Layout from './components/layout/LayoutPremium';
-import './utils/preloadIcons'; // Import direto para executar o pré-carregamento
 import './i18n/index.jsx';
 
 // Lazy load pages for better performance
@@ -33,39 +32,26 @@ const BudgetsPage = React.lazy(() => import('./pages/BudgetsPage'));
 const BudgetApprovalPage = React.lazy(() => import('./pages/BudgetApprovalPage'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 
+// Loading fallback component
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+    <LoadingSpinner size="lg" />
+  </div>
+);
+
 function App() {
-  const { initializeStores, setupRealtimeListeners, isGlobalLoading } = useStore();
-  const { user, isLoading: authLoading } = useAuthStore();
+  const { user, isLoading: authLoading, initializeAuth } = useAuthStore();
   const { isDarkMode, initializeTheme } = useThemeStore();
-  const [iconsReady, setIconsReady] = useState(false);
 
-  // Preload icons FIRST (critical for UI) - executa de forma síncrona
-  useEffect(() => {
-    // Pequeno delay para garantir que o módulo foi carregado
-    const timer = setTimeout(() => {
-      setIconsReady(true);
-      console.log('✅ App: Ícones prontos para renderização');
-    }, 50);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Initialize theme SECOND (before anything else)
+  // Initialize theme immediately
   useEffect(() => {
     initializeTheme();
   }, [initializeTheme]);
 
+  // Initialize auth
   useEffect(() => {
-    // Initialize all stores on app start
-    initializeStores();
-  }, [initializeStores]);
-
-  useEffect(() => {
-    // Setup real-time listeners when user is authenticated
-    if (user) {
-      const unsubscribe = setupRealtimeListeners();
-      return unsubscribe;
-    }
-  }, [user, setupRealtimeListeners]);
+    initializeAuth();
+  }, [initializeAuth]);
 
   // Apply dark mode class to document
   useEffect(() => {
@@ -76,39 +62,25 @@ function App() {
     }
   }, [isDarkMode]);
 
-  // Show loading spinner while initializing or waiting for icons
-  if (!iconsReady || authLoading || isGlobalLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
+  // Show loading only during auth check
+  if (authLoading) {
+    return <PageLoader />;
   }
 
   return (
     <ErrorBoundary>
       <Router>
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-          <Suspense
-            fallback={
-              <div className="min-h-screen flex items-center justify-center">
-                <LoadingSpinner size="lg" />
-              </div>
-            }
-          >
+          <Suspense fallback={<PageLoader />}>
             <Routes>
               {/* Public routes */}
               <Route
                 path="/login"
-                element={
-                  user ? <Navigate to="/dashboard" replace /> : <LoginPage />
-                }
+                element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />}
               />
               <Route
                 path="/register"
-                element={
-                  user ? <Navigate to="/dashboard" replace /> : <RegisterPage />
-                }
+                element={user ? <Navigate to="/dashboard" replace /> : <RegisterPage />}
               />
 
               {/* Public budget approval route */}
@@ -163,24 +135,17 @@ function App() {
             position="top-right"
             toastOptions={{
               duration: 4000,
-              className: 'glass-card',
               style: {
-                background: isDarkMode ? 'rgba(31, 41, 55, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+                background: isDarkMode ? 'rgba(31, 41, 55, 0.95)' : 'rgba(255, 255, 255, 0.95)',
                 color: isDarkMode ? '#f9fafb' : '#111827',
                 backdropFilter: 'blur(10px)',
                 border: isDarkMode ? '1px solid rgba(75, 85, 99, 0.3)' : '1px solid rgba(209, 213, 219, 0.3)',
               },
               success: {
-                iconTheme: {
-                  primary: '#10b981',
-                  secondary: '#ffffff',
-                },
+                iconTheme: { primary: '#10b981', secondary: '#ffffff' },
               },
               error: {
-                iconTheme: {
-                  primary: '#ef4444',
-                  secondary: '#ffffff',
-                },
+                iconTheme: { primary: '#ef4444', secondary: '#ffffff' },
               },
             }}
           />

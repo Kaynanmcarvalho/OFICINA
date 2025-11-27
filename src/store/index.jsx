@@ -1,118 +1,135 @@
 import { create } from 'zustand';
-import { persist, subscribeWithSelector } from 'zustand/middleware';
-import { useAuthStore } from './authStore.jsx';
-import { useThemeStore } from './themeStore.jsx';
-import { useNotificationStore } from './notificationStore.jsx';
-import { useCheckinStore } from './checkinStore.jsx';
-import { useClientStore } from './clientStore.jsx';
-import { useInventoryStore } from './inventoryStore.jsx';
-import { useProductStore } from './productStore.jsx';
-import { useVehicleStore } from './vehicleStore.jsx';
-import { useToolStore } from './toolStore.jsx';
-import { useTeamStore } from './teamStore.jsx';
-import { useSettingsStore } from './settingsStore.jsx';
-import { useOrganizationStore } from './organizationStore.jsx';
-import { useBudgetStore } from './budgetStore.jsx';
+import { subscribeWithSelector } from 'zustand/middleware';
 
-// Main store combining all stores
+// Lazy imports for stores - only load when needed
+let checkinStore = null;
+let clientStore = null;
+let inventoryStore = null;
+let productStore = null;
+let vehicleStore = null;
+let toolStore = null;
+let teamStore = null;
+let budgetStore = null;
+
+// Lazy store getters
+export const getCheckinStore = () => {
+  if (!checkinStore) {
+    checkinStore = require('./checkinStore.jsx').useCheckinStore;
+  }
+  return checkinStore;
+};
+
+export const getClientStore = () => {
+  if (!clientStore) {
+    clientStore = require('./clientStore.jsx').useClientStore;
+  }
+  return clientStore;
+};
+
+export const getInventoryStore = () => {
+  if (!inventoryStore) {
+    inventoryStore = require('./inventoryStore.jsx').useInventoryStore;
+  }
+  return inventoryStore;
+};
+
+export const getProductStore = () => {
+  if (!productStore) {
+    productStore = require('./productStore.jsx').useProductStore;
+  }
+  return productStore;
+};
+
+export const getVehicleStore = () => {
+  if (!vehicleStore) {
+    vehicleStore = require('./vehicleStore.jsx').useVehicleStore;
+  }
+  return vehicleStore;
+};
+
+export const getToolStore = () => {
+  if (!toolStore) {
+    toolStore = require('./toolStore.jsx').useToolStore;
+  }
+  return toolStore;
+};
+
+export const getTeamStore = () => {
+  if (!teamStore) {
+    teamStore = require('./teamStore.jsx').useTeamStore;
+  }
+  return teamStore;
+};
+
+export const getBudgetStore = () => {
+  if (!budgetStore) {
+    budgetStore = require('./budgetStore.jsx').useBudgetStore;
+  }
+  return budgetStore;
+};
+
+// Main store - minimal, fast initialization
 export const useStore = create(
-  subscribeWithSelector(
-    persist(
-      (set, get) => ({
-        // Global loading state
-        isGlobalLoading: false,
-        setGlobalLoading: (loading) => set({ isGlobalLoading: loading }),
+  subscribeWithSelector((set, get) => ({
+    // Global loading state
+    isGlobalLoading: false,
+    setGlobalLoading: (loading) => set({ isGlobalLoading: loading }),
 
-        // Global error state
-        globalError: null,
-        setGlobalError: (error) => set({ globalError: error }),
-        clearGlobalError: () => set({ globalError: null }),
+    // Global error state
+    globalError: null,
+    setGlobalError: (error) => set({ globalError: error }),
+    clearGlobalError: () => set({ globalError: null }),
 
-        // Initialize all stores
-        initializeStores: async () => {
-          try {
-            set({ isGlobalLoading: true });
-            
-            // Initialize auth store
-            const authStore = useAuthStore.getState();
-            await authStore.initializeAuth();
-            
-            // Initialize theme store
-            const themeStore = useThemeStore.getState();
-            themeStore.initializeTheme();
-            
-            // Initialize data stores if user is authenticated
-            if (authStore.user) {
-              await Promise.all([
-                useCheckinStore.getState().fetchCheckins(),
-                useClientStore.getState().fetchClients(),
-                useInventoryStore.getState().fetchParts(),
-                useProductStore.getState().fetchProducts(),
-                useVehicleStore.getState().fetchVehicles(),
-                useToolStore.getState().fetchTools(),
-                useTeamStore.getState().fetchMembers(),
-                useBudgetStore.getState().fetchBudgets(),
-              ]);
-            }
-            
-            set({ isGlobalLoading: false });
-          } catch (error) {
-            set({ 
-              globalError: error.message, 
-              isGlobalLoading: false 
-            });
-          }
-        },
+    // Loaded stores tracking
+    loadedStores: new Set(),
 
-        // Reset all stores
-        resetStores: () => {
-          useAuthStore.getState().logout();
-          useNotificationStore.getState().clearNotifications();
-          useCheckinStore.getState().clearError();
-          useClientStore.getState().clearError();
-          useInventoryStore.getState().clearError();
-          useVehicleStore.getState().clearError();
-          useToolStore.getState().clearError();
-          useTeamStore.getState().clearError();
-          set({ globalError: null, isGlobalLoading: false });
-        },
+    // Load a specific store on demand
+    loadStore: async (storeName) => {
+      const { loadedStores } = get();
+      if (loadedStores.has(storeName)) return;
 
-        // Setup real-time listeners
-        setupRealtimeListeners: () => {
-          const unsubscribers = [];
-          
-          // Setup listeners for all stores
-          unsubscribers.push(
-            useCheckinStore.getState().subscribeToCheckins(),
-            useClientStore.getState().subscribeToClients(),
-            useInventoryStore.getState().subscribeToInventory(),
-            useProductStore.getState().subscribeToProducts(),
-            useVehicleStore.getState().subscribeToVehicles(),
-            useToolStore.getState().subscribeToTools(),
-            useTeamStore.getState().subscribeToMembers(),
-            useTeamStore.getState().subscribeToSchedules(),
-            useBudgetStore.getState().subscribeToBudgets()
-          );
-          
-          return () => {
-            unsubscribers.forEach(unsubscribe => unsubscribe());
-          };
-        },
-      }),
-      {
-        name: 'oficina-main-store',
-        partialize: (state) => ({
-          // Only persist specific state
-          theme: useThemeStore.getState().theme,
-          language: useThemeStore.getState().language,
-          user: useAuthStore.getState().user,
-        }),
+      try {
+        switch (storeName) {
+          case 'checkin':
+            await getCheckinStore().getState().fetchCheckins();
+            break;
+          case 'client':
+            await getClientStore().getState().fetchClients();
+            break;
+          case 'inventory':
+            await getInventoryStore().getState().fetchParts();
+            break;
+          case 'product':
+            await getProductStore().getState().fetchProducts();
+            break;
+          case 'vehicle':
+            await getVehicleStore().getState().fetchVehicles();
+            break;
+          case 'tool':
+            await getToolStore().getState().fetchTools();
+            break;
+          case 'team':
+            await getTeamStore().getState().fetchMembers();
+            break;
+          case 'budget':
+            await getBudgetStore().getState().fetchBudgets();
+            break;
+        }
+        loadedStores.add(storeName);
+        set({ loadedStores: new Set(loadedStores) });
+      } catch (error) {
+        console.error(`Error loading ${storeName} store:`, error);
       }
-    )
-  )
+    },
+
+    // Reset all stores
+    resetStores: () => {
+      set({ globalError: null, isGlobalLoading: false, loadedStores: new Set() });
+    },
+  }))
 );
 
-// Export individual stores for direct access
+// Export individual stores for direct access (lazy loaded)
 export { useAuthStore } from './authStore.jsx';
 export { useThemeStore } from './themeStore.jsx';
 export { useNotificationStore } from './notificationStore.jsx';

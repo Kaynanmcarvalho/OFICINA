@@ -3,7 +3,7 @@
  * Serviço para consulta de histórico veicular (recalls, leilões, sinistros)
  */
 
-import { db } from '../firebase/config';
+import { db } from '../config/firebase';
 import { 
   collection, 
   doc, 

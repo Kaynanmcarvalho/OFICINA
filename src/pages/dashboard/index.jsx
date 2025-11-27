@@ -1,37 +1,33 @@
-import { useState, useEffect, lazy, Suspense, memo, useMemo } from 'react';
+import { useState, useEffect, lazy, Suspense, memo, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Users, Package, Wrench, Car } from '@/utils/icons';
-import CartaoIndicador from './componentes/CartaoIndicador';
-import LoaderAnimado from './componentes/LoaderAnimado';
-import CentralAlertas from './componentes/CentralAlertas';
-import WidgetClima from './componentes/WidgetClima';
-import ListaClientesRecentes from './componentes/ListaClientesRecentes';
-import EstoqueCritico from './componentes/EstoqueCritico';
-import FerramentasEmUso from './componentes/FerramentasEmUso';
-import VeiculosAtivos from './componentes/VeiculosAtivos';
+import { Users, Package, Wrench, Car } from 'lucide-react';
 import ErrorBoundary from './componentes/ErrorBoundary';
-import {
-  buscarEstatisticasGerais,
-  buscarAlertas,
-  buscarClientesRecentes,
-  buscarEstoqueCritico,
-  buscarFerramentasEmUso,
-  buscarVeiculosAtivos,
-  calcularInsightsClientes,
-  gerarDadosGraficoMovimentacao,
-  calcularTendencias,
-  subscribeToAllCollections
-} from './servicos/dashboardService';
 import './estilos/dashboard.css';
 import './estilos/dashboard-light-premium.css';
 import './estilos/dashboard-ultra-depth.css';
 import './estilos/dashboard-theme-colors.css';
 import './estilos/dashboard-backgrounds.css';
 
-// Lazy loading para componentes de gráficos
+// Lazy loading para TODOS os componentes pesados
+const CartaoIndicador = lazy(() => import('./componentes/CartaoIndicador'));
+const LoaderAnimado = lazy(() => import('./componentes/LoaderAnimado'));
+const CentralAlertas = lazy(() => import('./componentes/CentralAlertas'));
+const WidgetClima = lazy(() => import('./componentes/WidgetClima'));
+const ListaClientesRecentes = lazy(() => import('./componentes/ListaClientesRecentes'));
+const EstoqueCritico = lazy(() => import('./componentes/EstoqueCritico'));
+const FerramentasEmUso = lazy(() => import('./componentes/FerramentasEmUso'));
+const VeiculosAtivos = lazy(() => import('./componentes/VeiculosAtivos'));
 const GraficoFinanceiro = lazy(() => import('./componentes/GraficoFinanceiro'));
 const InsightsClientes = lazy(() => import('./componentes/InsightsClientes'));
 const GraficoMovimentacao = lazy(() => import('./componentes/GraficoMovimentacao'));
+
+// Skeleton loader inline para evitar import
+const SkeletonCard = () => (
+  <div className="animate-pulse bg-white/50 dark:bg-gray-800/50 rounded-2xl p-6 h-32">
+    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
+    <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+  </div>
+);
 
 const DashboardPage = memo(() => {
   const [estatisticas, setEstatisticas] = useState(null);
@@ -44,119 +40,103 @@ const DashboardPage = memo(() => {
   const [veiculosAtivos, setVeiculosAtivos] = useState([]);
   const [dadosGrafico, setDadosGrafico] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const serviceRef = useRef(null);
+  const mountedRef = useRef(true);
 
-  useEffect(() => {
-    // Carregar dados iniciais
-    carregarDadosDashboard(true);
-
-    // Debounce mais agressivo para evitar múltiplas atualizações
-    let timeoutId = null;
-    let updateCount = 0;
-    const MAX_UPDATES_PER_MINUTE = 3;
-    
-    // Configurar listeners em tempo real com debounce e throttle
-    const unsubscribe = subscribeToAllCollections((collection) => {
-      // Limitar atualizações
-      updateCount++;
-      if (updateCount > MAX_UPDATES_PER_MINUTE) {
-        return;
-      }
-      
-      // Cancelar timeout anterior se existir
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-      
-      // Aguardar 3 segundos antes de atualizar (aumentado de 2s)
-      timeoutId = setTimeout(() => {
-        carregarDadosDashboard(false);
-      }, 3000);
-    });
-
-    // Reset do contador a cada minuto
-    const resetInterval = setInterval(() => {
-      updateCount = 0;
-    }, 60000);
-
-    // Cleanup: cancelar listeners e timeout ao desmontar
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-      clearInterval(resetInterval);
-      unsubscribe();
-    };
+  // Lazy load do service
+  const getService = useCallback(async () => {
+    if (!serviceRef.current) {
+      serviceRef.current = await import('./servicos/dashboardService');
+    }
+    return serviceRef.current;
   }, []);
 
-  const carregarDadosDashboard = async (isInitialLoad = false) => {
-    // Só mostrar loading na primeira carga
+  const carregarDadosDashboard = useCallback(async (isInitialLoad = false) => {
+    if (!mountedRef.current) return;
+    
     if (isInitialLoad) {
       setIsLoading(true);
     }
     
     try {
-      const [
-        stats,
-        trends,
-        alerts,
-        clientInsights,
-        recentClients,
-        criticalStock,
-        toolsInUse,
-        activeVehicles,
-        chartData
-      ] = await Promise.all([
-        buscarEstatisticasGerais(),
-        calcularTendencias(),
-        buscarAlertas(),
-        calcularInsightsClientes(),
-        buscarClientesRecentes(),
-        buscarEstoqueCritico(),
-        buscarFerramentasEmUso(),
-        buscarVeiculosAtivos(),
-        gerarDadosGraficoMovimentacao()
+      const service = await getService();
+      
+      // Carregar dados críticos primeiro (KPIs)
+      const [stats, trends] = await Promise.all([
+        service.buscarEstatisticasGerais(),
+        service.calcularTendencias(),
       ]);
 
-      // Verificar se houve mudanças significativas antes de atualizar
-      const hasSignificantChanges = !estatisticas || 
-        estatisticas.totalClientes !== stats.totalClientes ||
-        estatisticas.totalVeiculos !== stats.totalVeiculos ||
-        estatisticas.totalFerramentas !== stats.totalFerramentas ||
-        estatisticas.totalEstoque !== stats.totalEstoque;
+      if (!mountedRef.current) return;
+      
+      setEstatisticas(stats);
+      setTendencias(trends);
+      setIsLoading(false);
 
-      // Só atualizar se houver mudanças significativas ou for a primeira carga
-      if (hasSignificantChanges || isInitialLoad) {
-        // Usar batch updates para evitar múltiplos re-renders
-        requestAnimationFrame(() => {
-          setEstatisticas(stats);
-          setTendencias(trends);
-          setAlertas(alerts);
-          setInsights(clientInsights);
-          setClientesRecentes(recentClients);
-          setEstoqueCritico(criticalStock);
-          setFerramentasEmUso(toolsInUse);
-          setVeiculosAtivos(activeVehicles);
-          setDadosGrafico(chartData);
-        });
-      }
+      // Carregar dados secundários em background
+      const [alerts, clientInsights, recentClients, criticalStock, toolsInUse, activeVehicles, chartData] = 
+        await Promise.all([
+          service.buscarAlertas(),
+          service.calcularInsightsClientes(),
+          service.buscarClientesRecentes(),
+          service.buscarEstoqueCritico(),
+          service.buscarFerramentasEmUso(),
+          service.buscarVeiculosAtivos(),
+          service.gerarDadosGraficoMovimentacao()
+        ]);
+
+      if (!mountedRef.current) return;
+
+      // Batch update para dados secundários
+      requestAnimationFrame(() => {
+        setAlertas(alerts);
+        setInsights(clientInsights);
+        setClientesRecentes(recentClients);
+        setEstoqueCritico(criticalStock);
+        setFerramentasEmUso(toolsInUse);
+        setVeiculosAtivos(activeVehicles);
+        setDadosGrafico(chartData);
+      });
     } catch (error) {
       console.error('[Dashboard] Erro ao carregar dados:', error);
-    } finally {
-      if (isInitialLoad) {
-        setIsLoading(false);
-      }
+      if (isInitialLoad) setIsLoading(false);
     }
-  };
+  }, [getService]);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    carregarDadosDashboard(true);
+
+    // Setup listeners com throttle agressivo
+    let timeoutId = null;
+    let unsubscribe = null;
+
+    const setupListeners = async () => {
+      const service = await getService();
+      unsubscribe = service.subscribeToAllCollections(() => {
+        if (timeoutId) clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => carregarDadosDashboard(false), 5000);
+      });
+    };
+
+    // Delay listener setup para não bloquear render inicial
+    const listenerTimeout = setTimeout(setupListeners, 2000);
+
+    return () => {
+      mountedRef.current = false;
+      clearTimeout(listenerTimeout);
+      if (timeoutId) clearTimeout(timeoutId);
+      if (unsubscribe) unsubscribe();
+    };
+  }, [carregarDadosDashboard, getService]);
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6">
         <div className="max-w-7xl mx-auto space-y-6">
-          <LoaderAnimado tipo="card" />
+          <SkeletonCard />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map(i => (
-              <LoaderAnimado key={i} tipo="card" />
-            ))}
+            {[1, 2, 3, 4].map(i => <SkeletonCard key={i} />)}
           </div>
         </div>
       </div>
@@ -183,7 +163,9 @@ const DashboardPage = memo(() => {
             </p>
           </div>
           
-          <WidgetClima />
+          <Suspense fallback={null}>
+            <WidgetClima />
+          </Suspense>
         </motion.div>
 
         {/* KPIs */}
@@ -194,41 +176,49 @@ const DashboardPage = memo(() => {
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4"
           style={{ width: '100%', maxWidth: '100%' }}
         >
-          <CartaoIndicador
-            titulo="Clientes"
-            valor={estatisticas?.totalClientes || 0}
-            icone={Users}
-            cor="blue"
-            tendencia={tendencias?.tendenciaClientes}
-            percentual={tendencias?.percentualClientes}
-          />
+          <Suspense fallback={<SkeletonCard />}>
+            <CartaoIndicador
+              titulo="Clientes"
+              valor={estatisticas?.totalClientes || 0}
+              icone={Users}
+              cor="blue"
+              tendencia={tendencias?.tendenciaClientes}
+              percentual={tendencias?.percentualClientes}
+            />
+          </Suspense>
           
-          <CartaoIndicador
-            titulo="Veículos Ativos"
-            valor={estatisticas?.veiculosAtivos || 0}
-            icone={Car}
-            cor="purple"
-            tendencia={tendencias?.tendenciaVeiculos}
-            percentual={tendencias?.percentualVeiculos}
-          />
+          <Suspense fallback={<SkeletonCard />}>
+            <CartaoIndicador
+              titulo="Veículos Ativos"
+              valor={estatisticas?.veiculosAtivos || 0}
+              icone={Car}
+              cor="purple"
+              tendencia={tendencias?.tendenciaVeiculos}
+              percentual={tendencias?.percentualVeiculos}
+            />
+          </Suspense>
           
-          <CartaoIndicador
-            titulo="Ferramentas Disponíveis"
-            valor={estatisticas?.ferramentasDisponiveis || 0}
-            icone={Wrench}
-            cor="orange"
-            tendencia={tendencias?.tendenciaFerramentas}
-            percentual={tendencias?.percentualFerramentas}
-          />
+          <Suspense fallback={<SkeletonCard />}>
+            <CartaoIndicador
+              titulo="Ferramentas Disponíveis"
+              valor={estatisticas?.ferramentasDisponiveis || 0}
+              icone={Wrench}
+              cor="orange"
+              tendencia={tendencias?.tendenciaFerramentas}
+              percentual={tendencias?.percentualFerramentas}
+            />
+          </Suspense>
           
-          <CartaoIndicador
-            titulo="Produtos em Estoque"
-            valor={estatisticas?.totalProdutos || 0}
-            icone={Package}
-            cor="green"
-            tendencia={tendencias?.tendenciaEstoque}
-            percentual={tendencias?.percentualEstoque}
-          />
+          <Suspense fallback={<SkeletonCard />}>
+            <CartaoIndicador
+              titulo="Produtos em Estoque"
+              valor={estatisticas?.totalProdutos || 0}
+              icone={Package}
+              cor="green"
+              tendencia={tendencias?.tendenciaEstoque}
+              percentual={tendencias?.percentualEstoque}
+            />
+          </Suspense>
         </motion.div>
 
         {/* Alertas */}
@@ -238,7 +228,9 @@ const DashboardPage = memo(() => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <CentralAlertas alertas={alertas} />
+            <Suspense fallback={<SkeletonCard />}>
+              <CentralAlertas alertas={alertas} />
+            </Suspense>
           </motion.div>
         )}
 
@@ -250,10 +242,10 @@ const DashboardPage = memo(() => {
           className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4"
           style={{ width: '100%', maxWidth: '100%' }}
         >
-          <Suspense fallback={<LoaderAnimado tipo="chart" />}>
-            <GraficoMovimentacao dados={dadosGrafico} isLoading={isLoading} />
+          <Suspense fallback={<SkeletonCard />}>
+            <GraficoMovimentacao dados={dadosGrafico} isLoading={false} />
           </Suspense>
-          <Suspense fallback={<LoaderAnimado tipo="chart" />}>
+          <Suspense fallback={<SkeletonCard />}>
             <InsightsClientes insights={insights} />
           </Suspense>
         </motion.div>
@@ -264,7 +256,7 @@ const DashboardPage = memo(() => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <Suspense fallback={<LoaderAnimado tipo="chart" />}>
+          <Suspense fallback={<SkeletonCard />}>
             <GraficoFinanceiro />
           </Suspense>
         </motion.div>
@@ -277,8 +269,12 @@ const DashboardPage = memo(() => {
           className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4"
           style={{ width: '100%', maxWidth: '100%' }}
         >
-          <ListaClientesRecentes clientes={clientesRecentes} isLoading={isLoading} />
-          <EstoqueCritico produtos={estoqueCritico} isLoading={isLoading} />
+          <Suspense fallback={<SkeletonCard />}>
+            <ListaClientesRecentes clientes={clientesRecentes} isLoading={false} />
+          </Suspense>
+          <Suspense fallback={<SkeletonCard />}>
+            <EstoqueCritico produtos={estoqueCritico} isLoading={false} />
+          </Suspense>
         </motion.div>
 
         {/* Ferramentas e Veículos */}
@@ -289,8 +285,12 @@ const DashboardPage = memo(() => {
           className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4"
           style={{ width: '100%', maxWidth: '100%' }}
         >
-          <FerramentasEmUso ferramentas={ferramentasEmUso} isLoading={isLoading} />
-          <VeiculosAtivos veiculos={veiculosAtivos} isLoading={isLoading} />
+          <Suspense fallback={<SkeletonCard />}>
+            <FerramentasEmUso ferramentas={ferramentasEmUso} isLoading={false} />
+          </Suspense>
+          <Suspense fallback={<SkeletonCard />}>
+            <VeiculosAtivos veiculos={veiculosAtivos} isLoading={false} />
+          </Suspense>
         </motion.div>
 
         </div>

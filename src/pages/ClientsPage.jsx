@@ -1,33 +1,37 @@
 /**
  * ClientsPagePremium - Gestão de Clientes Premium
- * Design Apple-like com experiência imersiva e funcionalidades inteligentes
- * 
- * Features:
- * - Grid e Lista view com transições suaves
- * - Busca inteligente em tempo real
- * - Filtros avançados com Smart Segments
- * - Slide-over premium para detalhes do cliente
- * - Integração completa com Firebase
- * - WhatsApp integration
- * - Micro-animações e feedback visual
+ * Otimizado para carregamento rápido com lazy loading
  */
 
 import './clients/estilos/clients-premium-light.css';
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useClientStore } from '../store/clientStore';
 import { useThemeStore } from '../store/themeStore';
 import toast from 'react-hot-toast';
 
-// Components
-import ClientsHeader from './clients/ClientsHeader';
-import ClientsSearchBar from './clients/ClientsSearchBar';
-import ClientsFilters from './clients/ClientsFilters';
-import ClientsGridView from './clients/ClientsGridView';
-import ClientsListView from './clients/ClientsListView';
-import ClientSlideOver from './clients/ClientSlideOver';
-import ModalNovoCliente from './checkin/componentes/ModalNovoCliente';
-import EmptyState from './clients/EmptyState';
+// Lazy load components
+const ClientsHeader = lazy(() => import('./clients/ClientsHeader'));
+const ClientsSearchBar = lazy(() => import('./clients/ClientsSearchBar'));
+const ClientsFilters = lazy(() => import('./clients/ClientsFilters'));
+const ClientsGridView = lazy(() => import('./clients/ClientsGridView'));
+const ClientsListView = lazy(() => import('./clients/ClientsListView'));
+const ClientSlideOver = lazy(() => import('./clients/ClientSlideOver'));
+const ModalNovoCliente = lazy(() => import('./checkin/componentes/ModalNovoCliente'));
+const EmptyState = lazy(() => import('./clients/EmptyState'));
+
+// Skeleton loader
+const SkeletonLoader = () => (
+  <div className="animate-pulse space-y-4">
+    <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl w-1/3"></div>
+    <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {[1,2,3,4,5,6].map(i => (
+        <div key={i} className="h-48 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+      ))}
+    </div>
+  </div>
+);
 
 // View modes
 const VIEW_MODES = {
@@ -232,46 +236,47 @@ const ClientsPagePremium = () => {
   return (
     <div 
       data-page="clients"
-      className={`clients-page-container min-h-screen transition-colors duration-300 ${
+      className={`clients-page-container min-h-screen transition-colors duration-200 ${
         isDarkMode 
           ? 'bg-gradient-to-br from-gray-900 to-gray-800' 
           : 'bg-gradient-to-br from-gray-50 to-gray-100'
       }`}
     >
-      <div className="w-full space-y-4 md:space-y-6 px-3 md:px-4 lg:px-6 py-4 md:py-6">
-        {/* Header */}
-        <ClientsHeader 
-          clientCount={stats.total}
-          activeCount={stats.active}
-          onNewClient={handleNewClient}
-        />
+      <Suspense fallback={<div className="p-6"><SkeletonLoader /></div>}>
+        <div className="w-full space-y-4 md:space-y-6 px-3 md:px-4 lg:px-6 py-4 md:py-6">
+          {/* Header */}
+          <ClientsHeader 
+            clientCount={stats.total}
+            activeCount={stats.active}
+            onNewClient={handleNewClient}
+          />
 
-        {/* Search and Filters */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="space-y-4"
-        >
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1">
-              <ClientsSearchBar
-                value={searchQuery}
-                onChange={setSearchQuery}
-                isLoading={isLoading}
-                resultCount={filteredClients.length}
+          {/* Search and Filters */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="space-y-4"
+          >
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex-1">
+                <ClientsSearchBar
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  isLoading={isLoading}
+                  resultCount={filteredClients.length}
+                />
+              </div>
+              
+              <ClientsFilters
+                activeFilters={activeFilters}
+                onFilterChange={setActiveFilters}
+                stats={stats}
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
               />
             </div>
-            
-            <ClientsFilters
-              activeFilters={activeFilters}
-              onFilterChange={setActiveFilters}
-              stats={stats}
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
-            />
-          </div>
-        </motion.div>
+          </motion.div>
 
         {/* Content */}
         <AnimatePresence mode="wait">
@@ -333,34 +338,43 @@ const ClientsPagePremium = () => {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+        </div>
+      </Suspense>
 
-      {/* Modal Novo Cliente (mesmo do checkin) */}
-      <ModalNovoCliente
-        isOpen={isClientModalOpen}
-        onClose={() => {
-          setIsClientModalOpen(false);
-          setEditingClient(null);
-        }}
-        onSuccess={() => {
-          setIsClientModalOpen(false);
-          setEditingClient(null);
-          fetchClients(); // Recarrega a lista de clientes
-        }}
-        existingClient={editingClient}
-      />
+      {/* Modal Novo Cliente - só carrega quando abre */}
+      {isClientModalOpen && (
+        <Suspense fallback={null}>
+          <ModalNovoCliente
+            isOpen={isClientModalOpen}
+            onClose={() => {
+              setIsClientModalOpen(false);
+              setEditingClient(null);
+            }}
+            onSuccess={() => {
+              setIsClientModalOpen(false);
+              setEditingClient(null);
+              fetchClients();
+            }}
+            existingClient={editingClient}
+          />
+        </Suspense>
+      )}
 
-      {/* Client Slide Over */}
-      <ClientSlideOver
-        isOpen={isSlideOverOpen}
-        onClose={() => {
-          setIsSlideOverOpen(false);
-          setSelectedClient(null);
-        }}
-        client={selectedClient}
-        onEdit={handleEditClient}
-        onDelete={handleDeleteClient}
-      />
+      {/* Client Slide Over - só carrega quando abre */}
+      {isSlideOverOpen && (
+        <Suspense fallback={null}>
+          <ClientSlideOver
+            isOpen={isSlideOverOpen}
+            onClose={() => {
+              setIsSlideOverOpen(false);
+              setSelectedClient(null);
+            }}
+            client={selectedClient}
+            onEdit={handleEditClient}
+            onDelete={handleDeleteClient}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

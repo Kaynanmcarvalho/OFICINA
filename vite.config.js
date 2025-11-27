@@ -10,24 +10,64 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src')
     }
   },
+  build: {
+    // Optimize chunk splitting
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunks - separate heavy libraries
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
+          'vendor-ui': ['framer-motion', 'lucide-react', 'react-hot-toast'],
+          'vendor-charts': ['recharts'],
+          'vendor-forms': ['react-hook-form', '@hookform/resolvers', 'zod'],
+          'vendor-utils': ['date-fns', 'axios', 'zustand', 'clsx', 'tailwind-merge'],
+        },
+      },
+    },
+    // Increase chunk size warning limit
+    chunkSizeWarningLimit: 1000,
+    // Enable minification
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
+    // Enable source maps for production debugging
+    sourcemap: false,
+  },
   optimizeDeps: {
     include: [
-      'axios', 
-      'jspdf', 
-      'browser-image-compression',
+      'react',
+      'react-dom',
+      'react-router-dom',
+      'axios',
+      'zustand',
       'lucide-react',
-      'react-icons',
-      'react-icons/fa',
-      'react-icons/fi',
-      'react-icons/hi',
-      'react-icons/md',
-      'framer-motion'
+      'framer-motion',
+      'date-fns',
+      'clsx',
+      'tailwind-merge',
     ],
-    force: true
+    // Exclude heavy libraries from pre-bundling
+    exclude: ['jspdf', 'recharts'],
   },
   server: {
     fs: {
       strict: false
-    }
-  }
+    },
+    // Enable faster HMR
+    hmr: {
+      overlay: true,
+    },
+  },
+  // Enable caching
+  cacheDir: 'node_modules/.vite',
+  // Faster esbuild
+  esbuild: {
+    target: 'esnext',
+    legalComments: 'none',
+  },
 })

@@ -1,16 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LogIn, LogOut } from 'lucide-react';
-import ModalCheckin from './checkin/componentes/ModalCheckinPremium';
-import ModalCheckout from './checkin/componentes/ModalCheckoutPremium';
-import ModalEditarCheckin from './checkin/componentes/ModalEditarCheckin';
-import BudgetModal from './budgets/components/BudgetModalPremium';
-import CheckinDetailsModal from './checkin/components/details/CheckinDetailsModal';
-import RecentSectionThemeAware from '../components/recent/RecentSectionThemeAware';
-import OperationalDashboard from './checkin/componentes/dashboard/OperationalDashboard';
 import { useCheckinStore } from '../store';
 import './checkin/estilos/checkin.css';
+
+// Lazy load heavy components
+const ModalCheckin = lazy(() => import('./checkin/componentes/ModalCheckinPremium'));
+const ModalCheckout = lazy(() => import('./checkin/componentes/ModalCheckoutPremium'));
+const ModalEditarCheckin = lazy(() => import('./checkin/componentes/ModalEditarCheckin'));
+const BudgetModal = lazy(() => import('./budgets/components/BudgetModalPremium'));
+const CheckinDetailsModal = lazy(() => import('./checkin/components/details/CheckinDetailsModal'));
+const RecentSectionThemeAware = lazy(() => import('../components/recent/RecentSectionThemeAware'));
+const OperationalDashboard = lazy(() => import('./checkin/componentes/dashboard/OperationalDashboard'));
+
+// Skeleton for dashboard
+const DashboardSkeleton = () => (
+  <div className="animate-pulse bg-white/50 dark:bg-gray-800/50 rounded-2xl p-6 h-32">
+    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
+    <div className="grid grid-cols-4 gap-4">
+      {[1,2,3,4].map(i => <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded"></div>)}
+    </div>
+  </div>
+);
 
 const CheckInPage = () => {
   const navigate = useNavigate();
@@ -262,14 +274,15 @@ const CheckInPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
         >
-          <OperationalDashboard
-            checkins={checkins}
-            dailyTarget={10}
-            onFilterChange={(filters) => {
-              console.log('Filtros aplicados:', filters);
-              // Aqui você pode adicionar lógica adicional de filtro se necessário
-            }}
-          />
+          <Suspense fallback={<DashboardSkeleton />}>
+            <OperationalDashboard
+              checkins={checkins}
+              dailyTarget={10}
+              onFilterChange={(filters) => {
+                console.log('Filtros aplicados:', filters);
+              }}
+            />
+          </Suspense>
         </motion.div>
 
         {/* Cards de Ação */}
@@ -396,80 +409,97 @@ const CheckInPage = () => {
 
 
         {/* Lista de Registros com Tema Inteligente */}
-        <RecentSectionThemeAware
-          items={checkins.slice(0, 10).map(convertCheckinToRecordItem)}
-          isLoading={isLoading}
-          onItemClick={(item) => {
-            const checkin = checkins.find(c => (c.firestoreId || c.id) === item.id);
-            if (checkin) handleCheckinClick(checkin);
-          }}
-          onItemAction={handleItemAction}
-          onItemSelect={(id) => {
-            const checkin = checkins.find(c => (c.firestoreId || c.id) === id);
-            if (checkin) handleSelectForCheckout(checkin);
-          }}
-          selectedItems={new Set(selectedForCheckout ? [selectedForCheckout.firestoreId || selectedForCheckout.id] : [])}
-          title="Registros Recentes"
-        />
+        <Suspense fallback={<DashboardSkeleton />}>
+          <RecentSectionThemeAware
+            items={checkins.slice(0, 10).map(convertCheckinToRecordItem)}
+            isLoading={isLoading}
+            onItemClick={(item) => {
+              const checkin = checkins.find(c => (c.firestoreId || c.id) === item.id);
+              if (checkin) handleCheckinClick(checkin);
+            }}
+            onItemAction={handleItemAction}
+            onItemSelect={(id) => {
+              const checkin = checkins.find(c => (c.firestoreId || c.id) === id);
+              if (checkin) handleSelectForCheckout(checkin);
+            }}
+            selectedItems={new Set(selectedForCheckout ? [selectedForCheckout.firestoreId || selectedForCheckout.id] : [])}
+            title="Registros Recentes"
+          />
+        </Suspense>
       </div>
 
-      {/* Modais */}
-      <ModalCheckin
-        isOpen={isCheckInModalOpen}
-        onClose={() => setIsCheckInModalOpen(false)}
-        onSuccess={handleCheckInSuccess}
-      />
+      {/* Modais - só carregam quando abertos */}
+      {isCheckInModalOpen && (
+        <Suspense fallback={null}>
+          <ModalCheckin
+            isOpen={isCheckInModalOpen}
+            onClose={() => setIsCheckInModalOpen(false)}
+            onSuccess={handleCheckInSuccess}
+          />
+        </Suspense>
+      )}
 
-      <ModalCheckout
-        isOpen={isCheckOutModalOpen}
-        onClose={() => {
-          setIsCheckOutModalOpen(false);
-          setSelectedCheckin(null);
-          setSelectedForCheckout(null);
-        }}
-        onSuccess={() => {
-          handleCheckOutSuccess();
-          setSelectedForCheckout(null);
-        }}
-        checkinData={selectedCheckin}
-      />
+      {isCheckOutModalOpen && (
+        <Suspense fallback={null}>
+          <ModalCheckout
+            isOpen={isCheckOutModalOpen}
+            onClose={() => {
+              setIsCheckOutModalOpen(false);
+              setSelectedCheckin(null);
+              setSelectedForCheckout(null);
+            }}
+            onSuccess={() => {
+              handleCheckOutSuccess();
+              setSelectedForCheckout(null);
+            }}
+            checkinData={selectedCheckin}
+          />
+        </Suspense>
+      )}
 
-      <ModalEditarCheckin
-        isOpen={isEditModalOpen}
-        onClose={() => {
-          setIsEditModalOpen(false);
-          setCheckinToEdit(null);
-        }}
-        checkinData={checkinToEdit}
-        onSave={(updatedCheckin) => {
-          console.log('Checkin atualizado:', updatedCheckin);
-          // TODO: Implementar salvamento real
-          fetchCheckins(); // Recarregar lista
-        }}
-      />
+      {isEditModalOpen && (
+        <Suspense fallback={null}>
+          <ModalEditarCheckin
+            isOpen={isEditModalOpen}
+            onClose={() => {
+              setIsEditModalOpen(false);
+              setCheckinToEdit(null);
+            }}
+            checkinData={checkinToEdit}
+            onSave={(updatedCheckin) => {
+              console.log('Checkin atualizado:', updatedCheckin);
+              fetchCheckins();
+            }}
+          />
+        </Suspense>
+      )}
 
       {/* Modal de Orçamento */}
-      <BudgetModal
-        isOpen={isBudgetModalOpen}
-        onClose={() => {
-          setIsBudgetModalOpen(false);
-          setCheckinForBudget(null);
-        }}
-        budget={checkinForBudget ? {
-          clientId: checkinForBudget.clientId,
-          clientName: checkinForBudget.clientName,
-          clientPhone: checkinForBudget.clientPhone,
-          clientEmail: checkinForBudget.clientEmail,
-          vehicleId: checkinForBudget.vehicleId,
-          vehiclePlate: checkinForBudget.vehiclePlate,
-          vehicleBrand: checkinForBudget.vehicleBrand,
-          vehicleModel: checkinForBudget.vehicleModel,
-          vehicleYear: checkinForBudget.vehicleYear,
-          vehicleColor: checkinForBudget.vehicleColor,
-          notes: `Orçamento criado a partir do check-in #${checkinForBudget.id}`,
-          items: []
-        } : null}
-      />
+      {isBudgetModalOpen && (
+        <Suspense fallback={null}>
+          <BudgetModal
+            isOpen={isBudgetModalOpen}
+            onClose={() => {
+              setIsBudgetModalOpen(false);
+              setCheckinForBudget(null);
+            }}
+            budget={checkinForBudget ? {
+              clientId: checkinForBudget.clientId,
+              clientName: checkinForBudget.clientName,
+              clientPhone: checkinForBudget.clientPhone,
+              clientEmail: checkinForBudget.clientEmail,
+              vehicleId: checkinForBudget.vehicleId,
+              vehiclePlate: checkinForBudget.vehiclePlate,
+              vehicleBrand: checkinForBudget.vehicleBrand,
+              vehicleModel: checkinForBudget.vehicleModel,
+              vehicleYear: checkinForBudget.vehicleYear,
+              vehicleColor: checkinForBudget.vehicleColor,
+              notes: `Orçamento criado a partir do check-in #${checkinForBudget.id}`,
+              items: []
+            } : null}
+          />
+        </Suspense>
+      )}
 
       {/* Modal de Confirmação de Exclusão */}
       <AnimatePresence>
@@ -542,14 +572,16 @@ const CheckInPage = () => {
       {/* Modal de Detalhes Premium */}
       <AnimatePresence mode="wait">
         {showDetailsModal && detailsCheckinId && (
-          <CheckinDetailsModal
-            key="checkin-details"
-            checkinId={detailsCheckinId}
-            onClose={() => {
-              setShowDetailsModal(false);
-              setDetailsCheckinId(null);
-            }}
-          />
+          <Suspense fallback={null}>
+            <CheckinDetailsModal
+              key="checkin-details"
+              checkinId={detailsCheckinId}
+              onClose={() => {
+                setShowDetailsModal(false);
+                setDetailsCheckinId(null);
+              }}
+            />
+          </Suspense>
         )}
       </AnimatePresence>
     </div>
