@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import CampoBuscaCliente from './CampoBuscaCliente';
-import UploaderFotos from './UploaderFotos';
+import UploaderFotosComAnalise from './UploaderFotosComAnalise';
 import ModalNovoCliente from './ModalNovoCliente';
 import VehicleThumbnail from '../../../components/VehicleThumbnail';
 import { useCheckinStore } from '../../../store';
@@ -1029,16 +1029,33 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                       </p>
                     </div>
 
-                    <UploaderFotos
+                    <UploaderFotosComAnalise
                       fotos={formData.fotos}
                       onChange={(fotos) => setFormData({ ...formData, fotos })}
                       maxFotos={10}
+                      autoAnalyze={true}
+                      vehicleInfo={{
+                        plate: formData.placa,
+                        brand: formData.marca,
+                        model: formData.modelo,
+                        year: formData.ano ? parseInt(formData.ano) : undefined,
+                      }}
                     />
 
-                    <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-4">
-                      <p className="text-sm font-bold text-blue-700 dark:text-blue-300">
-                        💡 Dica: Tire fotos de todos os ângulos do veículo, incluindo detalhes de danos existentes
-                      </p>
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 rounded-xl bg-blue-100 dark:bg-blue-900/50">
+                          <AlertTriangle className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-blue-800 dark:text-blue-200">
+                            Análise Automática de Danos
+                          </p>
+                          <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                            As fotos são analisadas automaticamente por IA para detectar riscos, amassados, trincas e outros danos.
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </motion.div>
                 )}

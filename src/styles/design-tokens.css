@@ -1,0 +1,339 @@
+/**
+ * TORQ Design Tokens - Apple-like Premium Design System
+ * 
+ * Este arquivo contém todas as variáveis CSS para manter
+ * consistência visual em todo o sistema.
+ */
+
+:root {
+  /* ========================================
+     CORES - LIGHT MODE (Padrão)
+     ======================================== */
+  
+  /* Backgrounds */
+  --color-bg-primary: #FAFAFA;
+  --color-bg-secondary: #F5F5F7;
+  --color-bg-tertiary: #FFFFFF;
+  --color-bg-elevated: #FFFFFF;
+  --color-bg-overlay: rgba(0, 0, 0, 0.4);
+  
+  /* Surfaces */
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F5F5F7;
+  --color-surface-active: #E8E8ED;
+  --color-surface-selected: rgba(0, 122, 255, 0.08);
+  
+  /* Text */
+  --color-text-primary: #1D1D1F;
+  --color-text-secondary: #86868B;
+  --color-text-tertiary: #AEAEB2;
+  --color-text-quaternary: #C7C7CC;
+  --color-text-inverse: #FFFFFF;
+  
+  /* Accent Colors */
+  --color-accent-primary: #007AFF;
+  --color-accent-primary-hover: #0066D6;
+  --color-accent-primary-active: #0055B3;
+  --color-accent-primary-light: rgba(0, 122, 255, 0.12);
+  
+  /* Semantic Colors */
+  --color-success: #34C759;
+  --color-success-light: rgba(52, 199, 89, 0.12);
+  --color-warning: #FF9500;
+  --color-warning-light: rgba(255, 149, 0, 0.12);
+  --color-error: #FF3B30;
+  --color-error-light: rgba(255, 59, 48, 0.12);
+  --color-info: #5856D6;
+  --color-info-light: rgba(88, 86, 214, 0.12);
+  
+  /* Borders */
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-border-strong: rgba(0, 0, 0, 0.12);
+  --color-border-focus: var(--color-accent-primary);
+  
+  /* ========================================
+     TIPOGRAFIA
+     ======================================== */
+  
+  --font-family-primary: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  
+  /* Font Sizes */
+  --font-size-xs: 0.6875rem;    /* 11px */
+  --font-size-sm: 0.8125rem;    /* 13px */
+  --font-size-base: 0.9375rem;  /* 15px */
+  --font-size-lg: 1.0625rem;    /* 17px */
+  --font-size-xl: 1.25rem;      /* 20px */
+  --font-size-2xl: 1.5rem;      /* 24px */
+  --font-size-3xl: 1.75rem;     /* 28px */
+  --font-size-4xl: 2.125rem;    /* 34px */
+  --font-size-5xl: 2.75rem;     /* 44px */
+  
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Line Heights */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  
+  /* Letter Spacing */
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.02em;
+  
+  /* ========================================
+     ESPAÇAMENTO
+     ======================================== */
+  
+  --spacing-0: 0;
+  --spacing-1: 0.25rem;   /* 4px */
+  --spacing-2: 0.5rem;    /* 8px */
+  --spacing-3: 0.75rem;   /* 12px */
+  --spacing-4: 1rem;      /* 16px */
+  --spacing-5: 1.25rem;   /* 20px */
+  --spacing-6: 1.5rem;    /* 24px */
+  --spacing-8: 2rem;      /* 32px */
+  --spacing-10: 2.5rem;   /* 40px */
+  --spacing-12: 3rem;     /* 48px */
+  --spacing-16: 4rem;     /* 64px */
+  --spacing-20: 5rem;     /* 80px */
+  
+  /* ========================================
+     BORDAS
+     ======================================== */
+  
+  --radius-none: 0;
+  --radius-sm: 0.375rem;  /* 6px */
+  --radius-md: 0.5rem;    /* 8px */
+  --radius-lg: 0.75rem;   /* 12px */
+  --radius-xl: 1rem;      /* 16px */
+  --radius-2xl: 1.25rem;  /* 20px */
+  --radius-3xl: 1.5rem;   /* 24px */
+  --radius-full: 9999px;
+  
+  /* ========================================
+     SOMBRAS
+     ======================================== */
+  
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16);
+  --shadow-2xl: 0 24px 64px rgba(0, 0, 0, 0.20);
+  
+  /* Sombras coloridas para cards destacados */
+  --shadow-primary: 0 4px 14px rgba(0, 122, 255, 0.25);
+  --shadow-success: 0 4px 14px rgba(52, 199, 89, 0.25);
+  --shadow-warning: 0 4px 14px rgba(255, 149, 0, 0.25);
+  --shadow-error: 0 4px 14px rgba(255, 59, 48, 0.25);
+  
+  /* ========================================
+     ANIMAÇÕES
+     ======================================== */
+  
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+  --transition-slower: 500ms ease;
+  
+  /* Easing functions */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* ========================================
+     Z-INDEX
+     ======================================== */
+  
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+  --z-toast: 800;
+  --z-voice-assistant: 900;
+  
+  /* ========================================
+     TAMANHOS DE COMPONENTES
+     ======================================== */
+  
+  /* Buttons */
+  --btn-height-sm: 2rem;      /* 32px */
+  --btn-height-md: 2.5rem;    /* 40px */
+  --btn-height-lg: 3rem;      /* 48px */
+  
+  /* Inputs */
+  --input-height-sm: 2rem;    /* 32px */
+  --input-height-md: 2.5rem;  /* 40px */
+  --input-height-lg: 3rem;    /* 48px */
+  
+  /* Icons */
+  --icon-size-xs: 0.875rem;   /* 14px */
+  --icon-size-sm: 1rem;       /* 16px */
+  --icon-size-md: 1.25rem;    /* 20px */
+  --icon-size-lg: 1.5rem;     /* 24px */
+  --icon-size-xl: 2rem;       /* 32px */
+  
+  /* Voice Assistant */
+  --voice-btn-size: 3.5rem;   /* 56px */
+  --voice-wave-size: 4.5rem;  /* 72px */
+}
+
+/* ========================================
+   DARK MODE
+   ======================================== */
+
+.dark,
+[data-theme="dark"] {
+  /* Backgrounds */
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #1C1C1E;
+  --color-bg-tertiary: #2C2C2E;
+  --color-bg-elevated: #3A3A3C;
+  --color-bg-overlay: rgba(0, 0, 0, 0.6);
+  
+  /* Surfaces */
+  --color-surface: #1C1C1E;
+  --color-surface-hover: #2C2C2E;
+  --color-surface-active: #3A3A3C;
+  --color-surface-selected: rgba(10, 132, 255, 0.15);
+  
+  /* Text */
+  --color-text-primary: #F5F5F7;
+  --color-text-secondary: #A1A1A6;
+  --color-text-tertiary: #636366;
+  --color-text-quaternary: #48484A;
+  --color-text-inverse: #1D1D1F;
+  
+  /* Accent Colors */
+  --color-accent-primary: #0A84FF;
+  --color-accent-primary-hover: #409CFF;
+  --color-accent-primary-active: #66B3FF;
+  --color-accent-primary-light: rgba(10, 132, 255, 0.20);
+  
+  /* Semantic Colors */
+  --color-success: #30D158;
+  --color-success-light: rgba(48, 209, 88, 0.20);
+  --color-warning: #FF9F0A;
+  --color-warning-light: rgba(255, 159, 10, 0.20);
+  --color-error: #FF453A;
+  --color-error-light: rgba(255, 69, 58, 0.20);
+  --color-info: #5E5CE6;
+  --color-info-light: rgba(94, 92, 230, 0.20);
+  
+  /* Borders */
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.15);
+  
+  /* Shadows - mais sutis no dark mode */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.4);
+  --shadow-2xl: 0 24px 64px rgba(0, 0, 0, 0.5);
+  
+  /* Sombras coloridas */
+  --shadow-primary: 0 4px 14px rgba(10, 132, 255, 0.35);
+  --shadow-success: 0 4px 14px rgba(48, 209, 88, 0.35);
+  --shadow-warning: 0 4px 14px rgba(255, 159, 10, 0.35);
+  --shadow-error: 0 4px 14px rgba(255, 69, 58, 0.35);
+}
+
+/* ========================================
+   CLASSES UTILITÁRIAS
+   ======================================== */
+
+/* Glass Effect */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+.dark .glass-effect {
+  background: rgba(28, 28, 30, 0.72);
+}
+
+/* Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-accent-primary), #5856D6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Focus Ring */
+.focus-ring {
+  outline: none;
+}
+
+.focus-ring:focus-visible {
+  box-shadow: 0 0 0 3px var(--color-accent-primary-light),
+              0 0 0 1px var(--color-accent-primary);
+}
+
+/* Smooth Scroll */
+.smooth-scroll {
+  scroll-behavior: smooth;
+}
+
+/* Hide Scrollbar */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-text-quaternary);
+  border-radius: var(--radius-full);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+/* Truncate Text */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Line Clamp */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

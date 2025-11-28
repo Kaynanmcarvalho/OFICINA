@@ -7,7 +7,11 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': path.resolve(__dirname, './src'),
+      // Fix lodash ESM compatibility - redirect to lodash-es
+      'lodash': 'lodash-es',
+      // Fix react-is compatibility for recharts
+      'react-is': path.resolve(__dirname, 'node_modules/react-is')
     }
   },
   build: {
@@ -50,9 +54,12 @@ export default defineConfig({
       'date-fns',
       'clsx',
       'tailwind-merge',
+      'lodash-es',
+      'recharts',
+      'react-is',
     ],
     // Exclude heavy libraries from pre-bundling
-    exclude: ['jspdf', 'recharts'],
+    exclude: ['jspdf'],
   },
   server: {
     fs: {

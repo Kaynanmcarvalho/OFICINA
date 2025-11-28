@@ -2,7 +2,7 @@
 import { X, Upload, User, Phone, Car, FileText, UserCircle } from '@/utils/icons';
 import toast from 'react-hot-toast';
 import CampoBuscaCliente from './CampoBuscaCliente';
-import UploaderFotos from './UploaderFotos';
+import UploaderFotosComAnalise from './UploaderFotosComAnalise';
 import ModalNovoCliente from './ModalNovoCliente';
 import VehicleThumbnail from '../../../components/VehicleThumbnail';
 import { useCheckinStore } from '../../../store';
