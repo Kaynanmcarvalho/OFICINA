@@ -34,6 +34,7 @@ interface UsePartsCompatibilityReturn {
   searchParts: (request: CompatibilitySearchRequest) => Promise<void>;
   searchByVehicle: (make: string, model: string, year: number, engine?: string) => Promise<void>;
   searchByPartNumber: (partNumber: string) => Promise<void>;
+  searchByPartName: (partName: string, vehicleInfo?: { make?: string; model?: string; year?: number }) => Promise<void>;
   selectPart: (partId: string) => Promise<void>;
   loadAlternatives: (partId: string) => Promise<void>;
   loadVehicleProfile: (
@@ -121,6 +122,22 @@ export function usePartsCompatibility(
     async (partNumber: string) => {
       await searchParts({
         partNumber,
+        inStockOnly,
+      });
+    },
+    [searchParts, inStockOnly]
+  );
+
+  /**
+   * Busca por nome da peça
+   */
+  const searchByPartName = useCallback(
+    async (partName: string, vehicleInfo?: { make?: string; model?: string; year?: number }) => {
+      await searchParts({
+        partName,
+        vehicleMake: vehicleInfo?.make,
+        vehicleModel: vehicleInfo?.model,
+        vehicleYear: vehicleInfo?.year,
         inStockOnly,
       });
     },
@@ -288,6 +305,7 @@ export function usePartsCompatibility(
     searchParts,
     searchByVehicle,
     searchByPartNumber,
+    searchByPartName,
     selectPart,
     loadAlternatives,
     loadVehicleProfile,

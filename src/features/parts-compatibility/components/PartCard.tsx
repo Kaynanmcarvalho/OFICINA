@@ -19,6 +19,7 @@ interface PartCardProps {
   part: PartWithCompatibility;
   onClick?: () => void;
   showDetails?: boolean;
+  highlight?: boolean;
   className?: string;
 }
 
@@ -26,6 +27,7 @@ export const PartCard: React.FC<PartCardProps> = ({
   part,
   onClick,
   showDetails = false,
+  highlight = false,
   className = '',
 }) => {
   const categoryColor = CATEGORY_COLORS[part.category];
@@ -36,7 +38,11 @@ export const PartCard: React.FC<PartCardProps> = ({
     <div
       onClick={onClick}
       className={`
-        bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700
+        bg-white dark:bg-gray-800 rounded-xl border 
+        ${highlight 
+          ? 'border-green-200 dark:border-green-800 ring-2 ring-green-100 dark:ring-green-900/30' 
+          : 'border-gray-100 dark:border-gray-700'
+        }
         hover:border-blue-200 dark:hover:border-blue-800 hover:shadow-md
         transition-all duration-200 cursor-pointer
         ${className}

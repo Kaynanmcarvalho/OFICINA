@@ -13,6 +13,7 @@ import { useClientStore } from '../../../store';
 import { useInventoryStore } from '../../../store/inventoryStore';
 import { searchVehicleByPlate } from '../../../services/vehicleApiService';
 import { formatPhone } from '../../../utils/formatters';
+import { scrollToFirstErrorField } from '../../../hooks/useScrollToError';
 
 const STEPS = [
   { id: 1, title: 'Cliente', icon: User, description: 'Dados do cliente' },
@@ -246,6 +247,10 @@ const BudgetModalPremium = ({ isOpen, onClose, budget, checkinData }) => {
       setCurrentStep(prev => Math.min(prev + 1, STEPS.length));
     } else {
       toast.error('Preencha todos os campos obrigatórios');
+      // Scroll automático para o primeiro campo com erro
+      setTimeout(() => {
+        scrollToFirstErrorField(errors);
+      }, 100);
     }
   };
 

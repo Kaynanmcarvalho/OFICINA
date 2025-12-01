@@ -1,11 +1,14 @@
 import { forwardRef } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
-import { Clock, CheckCircle, XCircle, AlertCircle, Send, LogIn, Edit } from 'lucide-react';
+import { Clock, CheckCircle, XCircle, AlertCircle, Send, LogIn, Edit, MessageCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import toast from 'react-hot-toast';
 import './BudgetCard.css';
+
+// TORQ AI Feature
+import { SendInvoiceButton } from '../../../features/invoice-whatsapp';
 
 const BudgetCard = forwardRef(({ budget, onEdit, onSend, onCheckin }, ref) => {
   const getStatusConfig = (status) => {
@@ -267,6 +270,26 @@ const BudgetCard = forwardRef(({ budget, onEdit, onSend, onCheckin }, ref) => {
           >
             <Edit className="w-4 h-4" />
           </motion.button>
+
+          {/* TORQ AI: Send Invoice via WhatsApp */}
+          {budget.clientPhone && (budget.status === 'approved' || budget.status === 'partially_approved') && (
+            <SendInvoiceButton
+              invoice={{
+                id: budget.firestoreId || budget.id,
+                number: budget.budgetNumber,
+                clientName: budget.clientName || 'Cliente',
+                clientPhone: budget.clientPhone,
+                clientDocument: budget.clientDocument || '',
+                totalValue: budget.total || 0,
+                issueDate: budget.createdAt || new Date().toISOString(),
+                vehiclePlate: budget.vehiclePlate || '',
+              }}
+              empresaId={sessionStorage.getItem('empresaId') || ''}
+              userId={sessionStorage.getItem('userId') || ''}
+              variant="icon"
+              size="sm"
+            />
+          )}
         </div>
       </div>
     </motion.div>

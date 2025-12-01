@@ -10,6 +10,7 @@ import {
   MessageSquare, Sparkles, Check, AlertCircle, 
   ChevronRight, ChevronLeft, Home, Hash, Navigation
 } from 'lucide-react';
+import { scrollToFirstErrorField } from '../../../hooks/useScrollToError';
 
 const ClientFormHorizontal = ({
   client = null,
@@ -150,6 +151,11 @@ const ClientFormHorizontal = ({
       if (currentStep < steps.length - 1) {
         setCurrentStep(currentStep + 1);
       }
+    } else {
+      // Scroll automático para o primeiro campo com erro
+      setTimeout(() => {
+        scrollToFirstErrorField(errors);
+      }, 100);
     }
   };
 

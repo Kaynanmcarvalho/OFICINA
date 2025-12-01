@@ -26,6 +26,13 @@ import { useCheckinStore } from '../store';
 import { useVehicleHistory } from './checkin/hooks/useVehicleHistory';
 import { generatePin, savePinToCheckin } from './checkin/services/pinService';
 
+// TORQ AI Features
+import { OBDScannerButton, OBDResultsPanel } from '../features/obd-scanner';
+import { VehicleHealthDashboard } from '../features/vehicle-health';
+import { DamageReportGenerator } from '../features/damage-report';
+import { MaintenanceHistoryPanel } from '../features/maintenance-history';
+import { Activity, FileText, History, Bluetooth } from 'lucide-react';
+
 import './checkin/estilos/checkin.css';
 
 const CheckInPagePremium = () => {
@@ -56,6 +63,14 @@ const CheckInPagePremium = () => {
   const [currentVehicleData, setCurrentVehicleData] = useState(null);
   const [currentPlate, setCurrentPlate] = useState('');
   const [currentCheckinId, setCurrentCheckinId] = useState(null);
+  
+  // TORQ AI Feature states
+  const [showOBDResults, setShowOBDResults] = useState(false);
+  const [obdData, setObdData] = useState(null);
+  const [showVehicleHealth, setShowVehicleHealth] = useState(false);
+  const [showDamageReport, setShowDamageReport] = useState(false);
+  const [showMaintenanceHistory, setShowMaintenanceHistory] = useState(false);
+  const [damageData, setDamageData] = useState(null);
 
   // Hook de histórico do veículo
   const { history: vehicleHistory, loading: loadingHistory } = useVehicleHistory(currentPlate);
@@ -334,6 +349,66 @@ const CheckInPagePremium = () => {
           </motion.div>
         )}
 
+        {/* TORQ AI Quick Actions */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.45 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+        >
+          {/* OBD Scanner */}
+          <motion.button
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setShowOBDResults(true)}
+            className="flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-900 rounded-2xl border-2 border-blue-200 dark:border-blue-800 shadow-lg hover:shadow-xl transition-all"
+          >
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+              <Bluetooth className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-sm font-semibold text-gray-900 dark:text-white">Scanner OBD</span>
+          </motion.button>
+
+          {/* Vehicle Health */}
+          <motion.button
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setShowVehicleHealth(true)}
+            className="flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-900 rounded-2xl border-2 border-emerald-200 dark:border-emerald-800 shadow-lg hover:shadow-xl transition-all"
+          >
+            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
+              <Activity className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-sm font-semibold text-gray-900 dark:text-white">Saúde do Veículo</span>
+          </motion.button>
+
+          {/* Damage Report */}
+          <motion.button
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setShowDamageReport(true)}
+            className="flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-900 rounded-2xl border-2 border-red-200 dark:border-red-800 shadow-lg hover:shadow-xl transition-all"
+          >
+            <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/30">
+              <FileText className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-sm font-semibold text-gray-900 dark:text-white">Relatório de Danos</span>
+          </motion.button>
+
+          {/* Maintenance History */}
+          <motion.button
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setShowMaintenanceHistory(true)}
+            className="flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-900 rounded-2xl border-2 border-purple-200 dark:border-purple-800 shadow-lg hover:shadow-xl transition-all"
+          >
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
+              <History className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-sm font-semibold text-gray-900 dark:text-white">Histórico Manutenção</span>
+          </motion.button>
+        </motion.div>
+
         {/* Cards de Ação */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -573,6 +648,199 @@ const CheckInPagePremium = () => {
             onClose={() => setShowPhotoViewer(false)}
             title="Fotos do Veículo"
           />
+        )}
+
+        {/* TORQ AI: OBD Scanner Results */}
+        {showOBDResults && (
+          <motion.div
+            key="obd-results"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowOBDResults(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-4xl max-h-[90vh] overflow-auto bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-6"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Scanner OBD-II</h2>
+                <button
+                  onClick={() => setShowOBDResults(false)}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  <span className="text-2xl text-gray-500">&times;</span>
+                </button>
+              </div>
+              <div className="mb-4">
+                <OBDScannerButton 
+                  onScanComplete={(data) => {
+                    setObdData(data);
+                  }}
+                />
+              </div>
+              {obdData && (
+                <OBDResultsPanel 
+                  result={obdData}
+                  onClose={() => setShowOBDResults(false)}
+                />
+              )}
+              {!obdData && (
+                <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+                  <Bluetooth className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                  <p>Clique no botão acima para iniciar o scan OBD-II</p>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* TORQ AI: Vehicle Health Dashboard */}
+        {showVehicleHealth && (
+          <motion.div
+            key="vehicle-health"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowVehicleHealth(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-6xl max-h-[90vh] overflow-auto bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-6"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Saúde do Veículo</h2>
+                <button
+                  onClick={() => setShowVehicleHealth(false)}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  <span className="text-2xl text-gray-500">&times;</span>
+                </button>
+              </div>
+              <VehicleHealthDashboard 
+                empresaId={empresaId || ''}
+                vehicleId={currentVehicleData?.vehicleId || ''}
+                vehiclePlate={currentPlate || ''}
+                vehicleInfo={{
+                  make: currentVehicleData?.vehicleBrand || 'N/A',
+                  model: currentVehicleData?.vehicleModel || 'N/A',
+                  year: parseInt(currentVehicleData?.vehicleYear) || 2020,
+                  mileage: parseInt(currentVehicleData?.mileage) || 0,
+                }}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* TORQ AI: Damage Report Generator */}
+        {showDamageReport && (
+          <motion.div
+            key="damage-report"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowDamageReport(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-4xl max-h-[90vh] overflow-auto bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-6"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Relatório de Danos</h2>
+                <button
+                  onClick={() => setShowDamageReport(false)}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  <span className="text-2xl text-gray-500">&times;</span>
+                </button>
+              </div>
+              <DamageReportGenerator 
+                empresaId={empresaId || ''}
+                report={{
+                  checkinId: currentCheckinId || '',
+                  vehicle: {
+                    plate: currentPlate || '',
+                    make: currentVehicleData?.vehicleBrand || '',
+                    model: currentVehicleData?.vehicleModel || '',
+                    year: parseInt(currentVehicleData?.vehicleYear) || 2020,
+                    color: currentVehicleData?.vehicleColor || '',
+                  },
+                  client: {
+                    name: currentVehicleData?.clientName || '',
+                    phone: currentVehicleData?.clientPhone || '',
+                  },
+                  inspector: 'Sistema TORQ',
+                  inspectionDate: new Date(),
+                  damages: damageData || [],
+                }}
+                onGenerated={(url) => {
+                  console.log('PDF gerado:', url);
+                  setShowDamageReport(false);
+                }}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* TORQ AI: Maintenance History Panel */}
+        {showMaintenanceHistory && (
+          <motion.div
+            key="maintenance-history"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowMaintenanceHistory(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-5xl max-h-[90vh] overflow-auto bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-6"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Histórico de Manutenção</h2>
+                <button
+                  onClick={() => setShowMaintenanceHistory(false)}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  <span className="text-2xl text-gray-500">&times;</span>
+                </button>
+              </div>
+              <MaintenanceHistoryPanel 
+                profile={{
+                  vehicleId: currentVehicleData?.vehicleId || '',
+                  vehiclePlate: currentPlate || '',
+                  vehicleInfo: {
+                    make: currentVehicleData?.vehicleBrand || 'N/A',
+                    model: currentVehicleData?.vehicleModel || 'N/A',
+                    year: parseInt(currentVehicleData?.vehicleYear) || 2020,
+                    currentMileage: parseInt(currentVehicleData?.mileage) || 0,
+                  },
+                  totalRecords: 0,
+                  totalSpent: 0,
+                  averageCostPerService: 0,
+                  upcomingMaintenance: [],
+                  alerts: [],
+                }}
+                records={[]}
+                onAddRecord={() => console.log('Adicionar registro')}
+              />
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

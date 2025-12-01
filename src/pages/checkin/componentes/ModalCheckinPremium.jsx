@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -13,6 +13,7 @@ import ModalNovoCliente from './ModalNovoCliente';
 import VehicleThumbnail from '../../../components/VehicleThumbnail';
 import { useCheckinStore } from '../../../store';
 import { formatPhone } from '../../../utils/formatters';
+import { scrollToFirstErrorField } from '../../../hooks/useScrollToError';
 
 const STEPS = [
   { id: 1, title: 'Cliente', icon: User, description: 'Dados do cliente' },
@@ -222,10 +223,38 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
   };
 
   const handleNext = () => {
-    if (validateStep(currentStep)) {
+    const newErrors = {};
+
+    // Validação por step
+    if (currentStep === 1) {
+      if (!formData.cliente) newErrors.cliente = 'Selecione um cliente';
+      if (!formData.telefone.trim()) newErrors.telefone = 'Telefone é obrigatório';
+    }
+
+    if (currentStep === 2) {
+      if (!formData.placa.trim()) {
+        newErrors.placa = 'Placa é obrigatória';
+      } else if (!/^[A-Z]{3}-?\d{4}$|^[A-Z]{3}\d[A-Z]\d{2}$/i.test(formData.placa)) {
+        newErrors.placa = 'Placa inválida';
+      }
+      if (!formData.modelo.trim()) newErrors.modelo = 'Modelo é obrigatório';
+    }
+
+    if (currentStep === 3) {
+      if (!formData.responsavel.trim()) newErrors.responsavel = 'Responsável é obrigatório';
+      if (!formData.servicoSolicitado.trim()) newErrors.servicoSolicitado = 'Serviço solicitado é obrigatório';
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
       setCurrentStep(prev => Math.min(prev + 1, STEPS.length));
     } else {
       toast.error('Preencha todos os campos obrigatórios');
+      // Scroll automático para o primeiro campo com erro
+      setTimeout(() => {
+        scrollToFirstErrorField(newErrors);
+      }, 100);
     }
   };
 
@@ -409,7 +438,7 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                     className="space-y-7"
                   >
                     {/* Busca de Cliente - Apple Style */}
-                    <div className="relative bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm overflow-visible">
+                    <div id="field-cliente" data-field="cliente" className="relative bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm overflow-visible">
                       <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 dark:text-white mb-4">
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
                           <User className="w-4 h-4" stroke="white" strokeWidth={2.5} />
@@ -438,7 +467,7 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                     </div>
 
                     {/* Telefone - Apple Style */}
-                    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+                    <div id="field-telefone" data-field="telefone" className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
                       <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 dark:text-white mb-4">
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/25">
                           <Phone className="w-4 h-4" stroke="white" strokeWidth={2.5} />
@@ -452,6 +481,7 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                         </div>
                         <input
                           type="tel"
+                          name="telefone"
                           value={formData.telefone}
                           onChange={(e) => {
                             const formatted = formatPhone(e.target.value);
@@ -562,12 +592,13 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                       </label>
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         {/* Placa */}
-                        <div>
+                        <div id="field-placa" data-field="placa">
                           <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-2">
                             Placa <span className="text-red-500">*</span>
                           </label>
                           <input
                             type="text"
+                            name="placa"
                             value={formData.placa}
                             onChange={(e) => {
                               setFormData({ ...formData, placa: e.target.value.toUpperCase() });
@@ -594,12 +625,13 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                         </div>
 
                         {/* Modelo */}
-                        <div>
+                        <div id="field-modelo" data-field="modelo">
                           <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-2">
                             Modelo <span className="text-red-500">*</span>
                           </label>
                           <input
                             type="text"
+                            name="modelo"
                             value={formData.modelo}
                             onChange={(e) => {
                               setFormData({ ...formData, modelo: e.target.value });
@@ -815,7 +847,7 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                     </div>
 
                     {/* Serviço Solicitado - Apple Style */}
-                    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+                    <div id="field-servicoSolicitado" data-field="servicoSolicitado" className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
                       <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 dark:text-white mb-4">
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25">
                           <Wrench className="w-4 h-4" stroke="white" strokeWidth={2.5} />
@@ -825,6 +857,7 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                       </label>
                       <input
                         type="text"
+                        name="servicoSolicitado"
                         value={formData.servicoSolicitado}
                         onChange={(e) => {
                           setFormData({ ...formData, servicoSolicitado: e.target.value });
@@ -974,7 +1007,7 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                     </div>
 
                     {/* Responsável - Apple Style */}
-                    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+                    <div id="field-responsavel" data-field="responsavel" className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
                       <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 dark:text-white mb-4">
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/25">
                           <UserCircle className="w-4 h-4" stroke="white" strokeWidth={2.5} />
@@ -984,6 +1017,7 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                       </label>
                       <input
                         type="text"
+                        name="responsavel"
                         value={formData.responsavel}
                         onChange={(e) => {
                           setFormData({ ...formData, responsavel: e.target.value });
