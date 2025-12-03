@@ -23,6 +23,12 @@ const EmptyState = lazy(() => import('./components/EmptyState'));
 const VehicleCompatibilitySearch = lazy(() => import('../../components/inventory/VehicleCompatibilitySearch'));
 const IntelligentCompatibilityPanel = lazy(() => import('../../components/inventory/IntelligentCompatibilityPanel'));
 
+// TORQ AI Features
+import { StockPredictionDashboard } from '../../features/stock-prediction';
+import { MultiusePartsDashboard } from '../../features/multiuse-parts';
+import { PartsSearchPanel } from '../../features/parts-compatibility';
+import { TrendingUp, Layers, Search } from 'lucide-react';
+
 // Skeleton loader
 const SkeletonCard = () => (
   <div className="animate-pulse bg-white/50 dark:bg-gray-800/50 rounded-2xl p-6 h-32">
@@ -46,9 +52,6 @@ const InventoryPage = () => {
     getExpiringProducts,
   } = useProductStore();
 
-  // Força uso do motion para evitar que autofix remova
-  const MotionDiv = motion.div;
-
   // View state
   const [viewMode, setViewMode] = useState(VIEW_MODES.GRID);
   const [searchQuery, setSearchQuery] = useState('');
@@ -65,6 +68,11 @@ const InventoryPage = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [isCompatibilityModalOpen, setIsCompatibilityModalOpen] = useState(false);
   const [isIntelligentPanelOpen, setIsIntelligentPanelOpen] = useState(false);
+  
+  // TORQ AI Feature states
+  const [showStockPrediction, setShowStockPrediction] = useState(false);
+  const [showMultiuseParts, setShowMultiuseParts] = useState(false);
+  const [showPartsSearch, setShowPartsSearch] = useState(false);
 
   // Load products on mount
   useEffect(() => {
@@ -177,10 +185,11 @@ const InventoryPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="mb-6 space-y-4"
+          className="mb-6 space-y-4 overflow-hidden"
         >
+          {/* Search Bar Row */}
           <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <InventorySearchBar
                 value={searchQuery}
                 onChange={setSearchQuery}
@@ -188,37 +197,6 @@ const InventoryPage = () => {
                 resultCount={filteredProducts.length}
               />
             </div>
-
-            <button
-              onClick={() => setIsCompatibilityModalOpen(true)}
-              className={`
-                flex items-center gap-2 px-4 py-3 rounded-xl
-                font-medium transition-all whitespace-nowrap
-                ${isDarkMode
-                  ? 'bg-purple-600 hover:bg-purple-500 text-white shadow-[0_8px_30px_rgba(147,51,234,0.4)]'
-                  : 'bg-purple-600 hover:bg-purple-700 text-white shadow-[0_8px_30px_rgba(147,51,234,0.3)]'
-                }
-              `}
-            >
-              <Package className="w-5 h-5" />
-              Buscar por Veículo
-            </button>
-
-            <button
-              onClick={() => setIsIntelligentPanelOpen(true)}
-              className={`
-                flex items-center gap-2 px-4 py-3 rounded-xl
-                font-medium transition-all whitespace-nowrap
-                ${isDarkMode
-                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-[0_8px_30px_rgba(147,51,234,0.4)]'
-                  : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-[0_8px_30px_rgba(147,51,234,0.3)]'
-                }
-              `}
-            >
-              <Sparkles className="w-5 h-5" />
-              IA Compatibilidade
-            </button>
-
             <InventoryFilters
               activeFilters={activeFilters}
               onFilterChange={setActiveFilters}
@@ -226,6 +204,84 @@ const InventoryPage = () => {
               viewMode={viewMode}
               onViewModeChange={setViewMode}
             />
+          </div>
+
+          {/* Action Buttons Row - Responsive Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <button
+              onClick={() => setShowStockPrediction(true)}
+              className={`
+                flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl
+                font-medium transition-all text-sm
+                ${isDarkMode
+                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-[0_4px_15px_rgba(16,185,129,0.3)]'
+                  : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-[0_4px_15px_rgba(16,185,129,0.2)]'
+                }
+              `}
+            >
+              <TrendingUp className="w-4 h-4 flex-shrink-0" />
+              <span className="truncate">Previsão</span>
+            </button>
+
+            <button
+              onClick={() => setShowMultiuseParts(true)}
+              className={`
+                flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl
+                font-medium transition-all text-sm
+                ${isDarkMode
+                  ? 'bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white shadow-[0_4px_15px_rgba(245,158,11,0.3)]'
+                  : 'bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white shadow-[0_4px_15px_rgba(245,158,11,0.2)]'
+                }
+              `}
+            >
+              <Layers className="w-4 h-4 flex-shrink-0" />
+              <span className="truncate">Multiuso</span>
+            </button>
+
+            <button
+              onClick={() => setShowPartsSearch(true)}
+              className={`
+                flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl
+                font-medium transition-all text-sm
+                ${isDarkMode
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-[0_4px_15px_rgba(59,130,246,0.3)]'
+                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-[0_4px_15px_rgba(59,130,246,0.2)]'
+                }
+              `}
+            >
+              <Search className="w-4 h-4 flex-shrink-0" />
+              <span className="truncate">Buscar Peças</span>
+            </button>
+
+            <button
+              onClick={() => setIsIntelligentPanelOpen(true)}
+              className={`
+                flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl
+                font-medium transition-all text-sm
+                ${isDarkMode
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-[0_4px_15px_rgba(147,51,234,0.3)]'
+                  : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-[0_4px_15px_rgba(147,51,234,0.2)]'
+                }
+              `}
+            >
+              <Sparkles className="w-4 h-4 flex-shrink-0" />
+              <span className="truncate">IA Compat.</span>
+            </button>
+
+            <button
+              onClick={() => setIsCompatibilityModalOpen(true)}
+              className={`
+                flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl
+                font-medium transition-all text-sm col-span-2 sm:col-span-1 lg:col-span-2
+                ${isDarkMode
+                  ? 'bg-purple-600 hover:bg-purple-500 text-white shadow-[0_4px_15px_rgba(147,51,234,0.3)]'
+                  : 'bg-purple-600 hover:bg-purple-700 text-white shadow-[0_4px_15px_rgba(147,51,234,0.2)]'
+                }
+              `}
+            >
+              <Package className="w-4 h-4 flex-shrink-0" />
+              <span className="truncate">Buscar por Veículo</span>
+            </button>
           </div>
         </motion.div>
 
@@ -331,6 +387,114 @@ const InventoryPage = () => {
           />
         </Suspense>
       )}
+
+      {/* TORQ AI: Stock Prediction Dashboard */}
+      <AnimatePresence>
+        {showStockPrediction && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowStockPrediction(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-6xl max-h-[90vh] overflow-auto bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-6"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Previsão de Estoque IA</h2>
+                <button
+                  onClick={() => setShowStockPrediction(false)}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  <span className="text-2xl text-gray-500">&times;</span>
+                </button>
+              </div>
+              <StockPredictionDashboard 
+                empresaId={sessionStorage.getItem('empresaId') || ''} 
+                onItemClick={(itemId) => console.log('Item clicked:', itemId)}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* TORQ AI: Multiuse Parts Dashboard */}
+      <AnimatePresence>
+        {showMultiuseParts && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowMultiuseParts(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-6xl max-h-[90vh] overflow-auto bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-6"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Peças Multiuso IA</h2>
+                <button
+                  onClick={() => setShowMultiuseParts(false)}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  <span className="text-2xl text-gray-500">&times;</span>
+                </button>
+              </div>
+              <MultiusePartsDashboard 
+                empresaId={sessionStorage.getItem('empresaId') || ''} 
+                onPartClick={(partId) => console.log('Part clicked:', partId)}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* TORQ AI: Parts Search Panel */}
+      <AnimatePresence>
+        {showPartsSearch && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowPartsSearch(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-5xl max-h-[90vh] overflow-auto bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-6"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Buscar Peças Compatíveis</h2>
+                <button
+                  onClick={() => setShowPartsSearch(false)}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  <span className="text-2xl text-gray-500">&times;</span>
+                </button>
+              </div>
+              <PartsSearchPanel 
+                empresaId={sessionStorage.getItem('empresaId') || ''}
+                onPartSelect={(partId) => {
+                  console.log('Peça selecionada:', partId);
+                  setShowPartsSearch(false);
+                }}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

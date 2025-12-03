@@ -16,6 +16,7 @@ import {
 import { useClientStore } from '../../../store/clientStore';
 import { useVehicleStore } from '../../../store/vehicleStore';
 import { consultarCNPJ, validarSituacaoEmpresa } from '../../../services/cnpjService';
+import { scrollToFirstErrorField } from '../../../hooks/useScrollToError';
 
 const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existingClient = null }) => {
     const { clients } = useClientStore();
@@ -693,6 +694,10 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
             setCurrentStep(prev => Math.min(prev + 1, steps.length));
         } else {
             toast.error('Preencha todos os campos obrigatórios corretamente');
+            // Scroll automático para o primeiro campo com erro
+            setTimeout(() => {
+                scrollToFirstErrorField(errors);
+            }, 100);
         }
     };
 

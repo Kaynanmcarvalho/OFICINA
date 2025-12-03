@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import UploaderFotos from './UploaderFotos';
 import { checkoutCheckin } from '../../../services/checkinService';
 import { useBudgetStore } from '../../../store/budgetStore';
+import { scrollToFirstErrorField } from '../../../hooks/useScrollToError';
 
 const STEPS = [
   { id: 1, title: 'Serviços', icon: Wrench, description: 'Serviços realizados' },
@@ -204,6 +205,10 @@ const ModalCheckoutPremium = ({ isOpen, onClose, onSuccess, checkinData }) => {
       setCurrentStep(prev => Math.min(prev + 1, STEPS.length));
     } else {
       toast.error('Preencha todos os campos obrigatórios');
+      // Scroll automático para o primeiro campo com erro
+      setTimeout(() => {
+        scrollToFirstErrorField(errors);
+      }, 100);
     }
   };
 

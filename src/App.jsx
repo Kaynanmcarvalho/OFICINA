@@ -6,7 +6,9 @@ import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import Layout from './components/layout/LayoutPremium';
+import { VoiceAssistantButton } from './features/voice-assistant';
 import './i18n/index.jsx';
+import './styles/design-tokens.css';
 
 // Lazy load pages for better performance
 const LoginPage = React.lazy(() => import('./pages/auth/LoginPage'));
@@ -129,6 +131,19 @@ function App() {
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Suspense>
+
+          {/* Voice Assistant - Disponível em todas as páginas */}
+          {user && (
+            <VoiceAssistantButton
+              onCommand={(command) => {
+                console.log('[VoiceAssistant] Comando recebido:', command);
+                // TODO: Implementar navegação e ações baseadas no comando
+              }}
+              onError={(error) => {
+                console.error('[VoiceAssistant] Erro:', error);
+              }}
+            />
+          )}
 
           {/* Toast notifications */}
           <Toaster
