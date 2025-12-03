@@ -50,9 +50,9 @@ export default defineConfig({
       'date-fns',
       'clsx',
       'tailwind-merge',
+      'recharts',
+      'lodash',
     ],
-    // Exclude heavy libraries from pre-bundling
-    exclude: ['jspdf', 'recharts'],
   },
   server: {
     fs: {
