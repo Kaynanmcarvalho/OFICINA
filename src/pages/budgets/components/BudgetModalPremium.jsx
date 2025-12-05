@@ -144,8 +144,12 @@ const BudgetModalPremium = ({ isOpen, onClose, budget, checkinData }) => {
 
     setIsSearchingPlate(true);
     try {
-      const vehicleData = await searchVehicleByPlate(formData.vehiclePlate);
-      if (vehicleData) {
+      console.log('[BudgetModal] 🔍 Buscando placa:', formData.vehiclePlate);
+      const response = await searchVehicleByPlate(formData.vehiclePlate);
+      console.log('[BudgetModal] 📡 Resposta da API:', response);
+      
+      if (response && response.success && response.data) {
+        const vehicleData = response.data;
         setFormData(prev => ({
           ...prev,
           vehicleBrand: vehicleData.brand || '',
@@ -154,9 +158,14 @@ const BudgetModalPremium = ({ isOpen, onClose, budget, checkinData }) => {
           vehicleColor: vehicleData.color || ''
         }));
         toast.success('Dados do veículo encontrados!');
+      } else {
+        const errorMsg = response?.error || 'Veículo não encontrado';
+        toast.error(errorMsg);
+        console.warn('[BudgetModal] ⚠️ Erro na busca:', errorMsg);
       }
     } catch (error) {
-      console.error('Erro ao buscar placa:', error);
+      console.error('[BudgetModal] ❌ Erro ao buscar placa:', error);
+      toast.error('Erro ao consultar placa. Tente novamente.');
     } finally {
       setIsSearchingPlate(false);
     }

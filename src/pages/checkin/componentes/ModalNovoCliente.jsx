@@ -310,27 +310,24 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                 console.log('[PLATE SEARCH] Modo de busca:', searchMode);
 
                 // Detecta o tipo de veículo baseado nos dados
-                let vehicleType = 'moto'; // padrão
-                if (vehicleData.tipo && ['moto', 'carro', 'caminhao'].includes(vehicleData.tipo.toLowerCase())) {
-                    vehicleType = vehicleData.tipo.toLowerCase();
-                } else {
-                    // Tenta detectar pelo modelo
-                    const modeloLower = (vehicleData.modelo || '').toLowerCase();
-                    if (modeloLower.includes('carro') || modeloLower.includes('sedan') || modeloLower.includes('suv')) {
-                        vehicleType = 'carro';
-                    } else if (modeloLower.includes('caminhao') || modeloLower.includes('truck')) {
-                        vehicleType = 'caminhao';
-                    }
-                    // Se não detectar, mantém 'moto' como padrão
+                let vehicleType = 'carro'; // padrão para carros
+                const categoria = (vehicleData.category || vehicleData.categoria || '').toLowerCase();
+                const modelo = (vehicleData.model || vehicleData.modelo || '').toLowerCase();
+                
+                if (categoria.includes('moto') || modelo.includes('moto') || modelo.includes('cb ') || modelo.includes('cg ') || modelo.includes('fazer') || modelo.includes('ybr')) {
+                    vehicleType = 'moto';
+                } else if (categoria.includes('caminhao') || categoria.includes('caminhão') || modelo.includes('truck')) {
+                    vehicleType = 'caminhao';
                 }
 
-                // Processa marca e modelo
-                let marca = vehicleData.marca || '';
-                let modelo = vehicleData.modelo || '';
-                let ano = vehicleData.ano || '';
+                // Processa marca e modelo - suporta tanto português quanto inglês
+                let marca = vehicleData.brand || vehicleData.marca || '';
+                let modeloVeiculo = vehicleData.model || vehicleData.modelo || '';
+                let ano = vehicleData.year || vehicleData.ano || '';
+                let cor = vehicleData.color || vehicleData.cor || '';
 
                 // Se marca ou modelo estiverem vazios, tenta extrair
-                if (!marca || !modelo) {
+                if (!marca || !modeloVeiculo) {
                     // Lista de marcas conhecidas (maiúsculas)
                     const marcasConhecidas = [
                         'YAMAHA', 'HONDA', 'SUZUKI', 'KAWASAKI', 'BMW', 'DUCATI', 'HARLEY', 'TRIUMPH', 'KTM',
@@ -339,14 +336,14 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                     ];
 
                     // Se marca está vazia e modelo contém tudo junto
-                    if (!marca && modelo) {
+                    if (!marca && modeloVeiculo) {
                         // Remove o ano do final do modelo se ele já estiver no campo ano
-                        if (ano && modelo.endsWith(ano)) {
-                            modelo = modelo.substring(0, modelo.length - ano.length).trim();
+                        if (ano && modeloVeiculo.endsWith(ano)) {
+                            modeloVeiculo = modeloVeiculo.substring(0, modeloVeiculo.length - ano.length).trim();
                         }
 
                         // Tenta encontrar marca conhecida no início do modelo
-                        const modeloUpper = modelo.toUpperCase();
+                        const modeloUpper = modeloVeiculo.toUpperCase();
                         let marcaEncontrada = null;
 
                         for (const marcaConhecida of marcasConhecidas) {
@@ -359,7 +356,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                         if (marcaEncontrada) {
                             // Encontrou marca conhecida
                             marca = marcaEncontrada;
-                            modelo = modelo.substring(marcaEncontrada.length).trim();
+                            modeloVeiculo = modeloVeiculo.substring(marcaEncontrada.length).trim();
                         } else {
                             // Não encontrou marca conhecida
                             marca = 'Marca não identificada';
@@ -375,9 +372,9 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                             ...v,
                             type: vehicleType,
                             brand: marca,
-                            model: modelo,
+                            model: modeloVeiculo,
                             year: ano,
-                            color: vehicleData.cor || ''
+                            color: cor
                         } : v
                     )
                 }));
@@ -387,9 +384,9 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                     processado: {
                         tipo: vehicleType,
                         marca: marca,
-                        modelo: modelo,
+                        modelo: modeloVeiculo,
                         ano: ano,
-                        cor: vehicleData.cor
+                        cor: cor
                     }
                 });
 
@@ -810,7 +807,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/60 backdrop-blur-sm animate-fadeIn">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/60 backdrop-blur-sm animate-fadeIn">
             <div 
                 className="w-full max-w-7xl bg-white dark:bg-neutral-900 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.15),0_8px_16px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.6)] border border-gray-300/40 dark:border-neutral-700 flex flex-col overflow-hidden max-h-[92vh] animate-scaleIn" 
                 style={{ 
@@ -1584,33 +1581,78 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                                                             <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">Digite a placa e clique em Buscar para preencher automaticamente</p>
                                                         </div>
 
-                                                        {/* Campos preenchidos automaticamente */}
+                                                        {/* Premium Vehicle Preview Card */}
                                                         {vehicle.brand && (
-                                                            <div className="grid grid-cols-2 gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                                                                <div>
-                                                                    <label className="block text-xs font-medium text-green-900 dark:text-green-300 mb-1">Tipo</label>
-                                                                    <p className="text-sm text-green-800 dark:text-green-400 capitalize">{vehicle.type}</p>
+                                                            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 border border-emerald-200/50 dark:border-emerald-800/50 p-5 shadow-lg">
+                                                                <div className="flex items-center gap-4">
+                                                                    <div className="relative flex-shrink-0">
+                                                                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-2xl blur-xl" />
+                                                                        <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
+                                                                            {vehicle.type === 'moto' ? (
+                                                                                <svg className="w-9 h-9 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                                    <circle cx="5" cy="17" r="3" stroke="currentColor" strokeWidth="1.8"/>
+                                                                                    <circle cx="19" cy="17" r="3" stroke="currentColor" strokeWidth="1.8"/>
+                                                                                    <path d="M5 17H8L10 12L14 8H17L19 17" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                                                                                    <path d="M14 8L12 12H16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                                                                                </svg>
+                                                                            ) : vehicle.type === 'caminhao' ? (
+                                                                                <svg className="w-9 h-9 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                                    <rect x="1" y="6" width="15" height="10" rx="1" stroke="currentColor" strokeWidth="1.8"/>
+                                                                                    <path d="M16 10H20L22 14V16H16V10Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/>
+                                                                                    <circle cx="6" cy="18" r="2" stroke="currentColor" strokeWidth="1.8"/>
+                                                                                    <circle cx="18" cy="18" r="2" stroke="currentColor" strokeWidth="1.8"/>
+                                                                                </svg>
+                                                                            ) : (
+                                                                                <svg className="w-9 h-9 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                                    <path d="M5 13L7 7H17L19 13M5 13V17C5 17.5523 5.44772 18 6 18H7M5 13H19M19 13V17C19 17.5523 18.5523 18 18 18H17M7 18C7 19.1046 7.89543 20 9 20C10.1046 20 11 19.1046 11 18M7 18C7 16.8954 7.89543 16 9 16C10.1046 16 11 16.8954 11 18M17 18C17 19.1046 16.1046 20 15 20C13.8954 20 13 19.1046 13 18M17 18C17 16.8954 16.1046 16 15 16C13.8954 16 13 16.8954 13 18M11 18H13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                                                                                    <path d="M7 10L8 7H16L17 10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                                                                                </svg>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 mb-2">
+                                                                            <svg className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" viewBox="0 0 24 24" fill="none">
+                                                                                <rect x="2" y="10" width="20" height="8" rx="2" stroke="currentColor" strokeWidth="2"/>
+                                                                                <path d="M6 14H8M16 14H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                                                            </svg>
+                                                                            <span className="text-xs font-bold text-gray-900 dark:text-white tracking-wider">
+                                                                                {vehicle.plate}
+                                                                            </span>
+                                                                        </div>
+                                                                        <div className="text-lg font-bold text-gray-900 dark:text-white truncate mb-1">
+                                                                            {vehicle.brand && `${vehicle.brand} `}{vehicle.model}
+                                                                        </div>
+                                                                        {(vehicle.year || vehicle.color) && (
+                                                                            <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 font-medium">
+                                                                                {vehicle.year && (
+                                                                                    <span className="flex items-center gap-1">
+                                                                                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
+                                                                                            <rect x="3" y="6" width="18" height="15" rx="2" stroke="currentColor" strokeWidth="2"/>
+                                                                                            <path d="M3 10H21M8 3V6M16 3V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                                                                        </svg>
+                                                                                        {vehicle.year}
+                                                                                    </span>
+                                                                                )}
+                                                                                {vehicle.color && (
+                                                                                    <>
+                                                                                        <span className="w-1 h-1 rounded-full bg-gray-400" />
+                                                                                        <span>{vehicle.color}</span>
+                                                                                    </>
+                                                                                )}
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
                                                                 </div>
-                                                                <div>
-                                                                    <label className="block text-xs font-medium text-green-900 dark:text-green-300 mb-1">Marca</label>
-                                                                    <p className="text-sm text-green-800 dark:text-green-400">{vehicle.brand}</p>
-                                                                </div>
-                                                                <div>
-                                                                    <label className="block text-xs font-medium text-green-900 dark:text-green-300 mb-1">Modelo</label>
-                                                                    <p className="text-sm text-green-800 dark:text-green-400">{vehicle.model}</p>
-                                                                </div>
-                                                                <div>
-                                                                    <label className="block text-xs font-medium text-green-900 dark:text-green-300 mb-1">Ano</label>
-                                                                    <p className="text-sm text-green-800 dark:text-green-400">{vehicle.year}</p>
-                                                                </div>
-                                                                <div className="col-span-2">
-                                                                    <label className="block text-xs font-medium text-green-900 dark:text-green-300 mb-1">Cor</label>
+                                                                {/* Editable color field */}
+                                                                <div className="mt-4 pt-3 border-t border-emerald-200/50 dark:border-emerald-700/50">
+                                                                    <label className="block text-xs font-medium text-emerald-700 dark:text-emerald-400 mb-1.5">Cor do Veículo</label>
                                                                     <input
                                                                         type="text"
                                                                         value={vehicle.color}
                                                                         onChange={(e) => updateVehicle(vehicle.id, 'color', e.target.value)}
-                                                                        placeholder="Ex: Vermelha"
-                                                                        className="w-full px-3 py-2 text-sm rounded-lg bg-white dark:bg-neutral-800 border border-green-300 dark:border-green-700 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                                        placeholder="Ex: Vermelha, Prata, Preto..."
+                                                                        className="w-full px-3 py-2 text-sm rounded-lg bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-emerald-300/50 dark:border-emerald-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all outline-none"
                                                                     />
                                                                 </div>
                                                             </div>

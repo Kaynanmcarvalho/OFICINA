@@ -148,6 +148,8 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showNovoClienteModal, setShowNovoClienteModal] = useState(false);
   const [novoClienteNome, setNovoClienteNome] = useState('');
+  const [selectedVehicleIndex, setSelectedVehicleIndex] = useState(0);
+  const [isNewVehicle, setIsNewVehicle] = useState(false);
 
   useEffect(() => {
     if (!isOpen) {
@@ -158,6 +160,8 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
         servicoSolicitado: '', prioridade: 'normal', responsavel: '', fotos: []
       });
       setErrors({});
+      setSelectedVehicleIndex(0);
+      setIsNewVehicle(false);
     }
   }, [isOpen]);
 
@@ -180,6 +184,38 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
       cor: primeiroVeiculo?.color || ''
     }));
     setErrors(prev => ({ ...prev, cliente: null }));
+    setSelectedVehicleIndex(0);
+    setIsNewVehicle(false);
+  };
+
+  const handleVehicleSelect = (index) => {
+    const vehicles = formData.cliente?.vehicles || [];
+    if (index === -1) {
+      // Novo veículo
+      setIsNewVehicle(true);
+      setSelectedVehicleIndex(-1);
+      setFormData(prev => ({
+        ...prev,
+        placa: '',
+        modelo: '',
+        marca: '',
+        ano: '',
+        cor: ''
+      }));
+    } else if (vehicles[index]) {
+      setIsNewVehicle(false);
+      setSelectedVehicleIndex(index);
+      const veiculo = vehicles[index];
+      setFormData(prev => ({
+        ...prev,
+        placa: veiculo.plate || '',
+        modelo: veiculo.model || '',
+        marca: veiculo.brand || '',
+        ano: veiculo.year || '',
+        cor: veiculo.color || ''
+      }));
+    }
+    setErrors(prev => ({ ...prev, placa: null, modelo: null }));
   };
 
   const handleNovoClienteSuccess = (newClient) => {
@@ -193,6 +229,8 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
     }));
     setErrors(prev => ({ ...prev, cliente: null }));
     setShowNovoClienteModal(false);
+    setSelectedVehicleIndex(0);
+    setIsNewVehicle(false);
     toast.success('Cliente cadastrado! Continue o check-in.');
   };
 
@@ -523,6 +561,104 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                     exit={{ opacity: 0, x: -20 }}
                     className="space-y-7"
                   >
+                    {/* Seleção de Veículos do Cliente */}
+                    {formData.cliente?.vehicles?.length > 0 && (
+                      <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+                        <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 dark:text-white mb-4">
+                          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+                            <Car className="w-4 h-4" stroke="white" strokeWidth={2.5} />
+                          </div>
+                          <span className="tracking-tight">Veículos do Cliente</span>
+                          <span className="ml-auto text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
+                            {formData.cliente.vehicles.length} cadastrado{formData.cliente.vehicles.length > 1 ? 's' : ''}
+                          </span>
+                        </label>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
+                          {formData.cliente.vehicles.map((veiculo, index) => (
+                            <motion.button
+                              key={veiculo.plate || index}
+                              type="button"
+                              onClick={() => handleVehicleSelect(index)}
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              className={`relative p-4 rounded-xl border-2 transition-all text-left ${
+                                selectedVehicleIndex === index && !isNewVehicle
+                                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30 shadow-lg shadow-blue-500/20'
+                                  : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-gray-300 dark:hover:border-gray-600'
+                              }`}
+                            >
+                              {selectedVehicleIndex === index && !isNewVehicle && (
+                                <div className="absolute top-2 right-2 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                                </div>
+                              )}
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
+                                  <Car className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="font-bold text-sm text-gray-900 dark:text-white tracking-wider">
+                                    {veiculo.plate || 'Sem placa'}
+                                  </div>
+                                  <div className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                                    {veiculo.brand && `${veiculo.brand} `}{veiculo.model || 'Modelo não informado'}
+                                  </div>
+                                  {veiculo.year && (
+                                    <div className="text-xs text-gray-500 dark:text-gray-500">
+                                      {veiculo.year}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </motion.button>
+                          ))}
+                          
+                          {/* Botão Adicionar Novo Veículo */}
+                          <motion.button
+                            type="button"
+                            onClick={() => handleVehicleSelect(-1)}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className={`relative p-4 rounded-xl border-2 border-dashed transition-all text-left ${
+                              isNewVehicle
+                                ? 'border-green-500 bg-green-50 dark:bg-green-950/30 shadow-lg shadow-green-500/20'
+                                : 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50 hover:border-green-400 dark:hover:border-green-600 hover:bg-green-50/50 dark:hover:bg-green-950/20'
+                            }`}
+                          >
+                            {isNewVehicle && (
+                              <div className="absolute top-2 right-2 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                              </div>
+                            )}
+                            <div className="flex items-center gap-3">
+                              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                                isNewVehicle 
+                                  ? 'bg-gradient-to-br from-green-500 to-emerald-600' 
+                                  : 'bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700'
+                              }`}>
+                                <svg className={`w-5 h-5 ${isNewVehicle ? 'text-white' : 'text-gray-600 dark:text-gray-400'}`} viewBox="0 0 24 24" fill="none">
+                                  <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+                                </svg>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className={`font-bold text-sm ${isNewVehicle ? 'text-green-700 dark:text-green-400' : 'text-gray-700 dark:text-gray-300'}`}>
+                                  Novo Veículo
+                                </div>
+                                <div className="text-xs text-gray-500 dark:text-gray-500">
+                                  Cadastrar outro veículo
+                                </div>
+                              </div>
+                            </div>
+                          </motion.button>
+                        </div>
+                        
+                        <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                          Selecione um veículo cadastrado ou adicione um novo
+                        </p>
+                      </div>
+                    )}
+
                     {/* Preview Premium do Veículo */}
                     {formData.placa && formData.modelo && (
                       <motion.div

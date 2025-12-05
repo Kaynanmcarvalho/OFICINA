@@ -465,7 +465,7 @@ const InventoryPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-start justify-center pt-6 sm:pt-10 px-4 pb-4 bg-black/50 backdrop-blur-sm overflow-y-auto"
             onClick={() => setShowPartsSearch(false)}
           >
             <motion.div
@@ -473,24 +473,29 @@ const InventoryPage = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-5xl max-h-[90vh] overflow-auto bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-6"
+              className="w-full max-w-4xl max-h-[85vh] flex flex-col bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden"
             >
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Buscar Peças Compatíveis</h2>
+              {/* Header fixo */}
+              <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Buscar Peças Compatíveis</h2>
                 <button
                   onClick={() => setShowPartsSearch(false)}
                   className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                 >
-                  <span className="text-2xl text-gray-500">&times;</span>
+                  <span className="text-xl text-gray-500">&times;</span>
                 </button>
               </div>
-              <PartsSearchPanel 
-                empresaId={sessionStorage.getItem('empresaId') || ''}
-                onPartSelect={(partId) => {
-                  console.log('Peça selecionada:', partId);
-                  setShowPartsSearch(false);
-                }}
-              />
+              {/* Conteúdo com scroll */}
+              <div className="flex-1 overflow-y-auto p-4">
+                <PartsSearchPanel 
+                  empresaId={sessionStorage.getItem('empresaId') || ''}
+                  onPartSelect={(partId) => {
+                    console.log('Peça selecionada:', partId);
+                    setShowPartsSearch(false);
+                  }}
+                  className="!shadow-none !rounded-none"
+                />
+              </div>
             </motion.div>
           </motion.div>
         )}

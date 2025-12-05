@@ -1,35 +1,10 @@
 /**
  * Vehicle API Service
- * Integração com API de consulta de placas
+ * Integração com API de consulta de placas - Railway Backend
  */
 
-const API_BASE_URL = 'https://torq.up.railway.app';
-
-// Mock de dados para teste (remover quando API estiver funcionando)
-const MOCK_DATA = {
-  'ECO4087': {
-    marca: 'Honda',
-    modelo: 'CB 600F Hornet',
-    ano: '2023',
-    cor: 'Vermelha',
-    chassi: '9C2JC50001R000001',
-    renavam: '12345678901',
-    cilindrada: '600',
-    combustivel: 'Gasolina',
-    categoria: 'Motocicleta',
-  },
-  'ABC1234': {
-    marca: 'Yamaha',
-    modelo: 'MT-07',
-    ano: '2022',
-    cor: 'Azul',
-    chassi: '9C6KE1110NR000001',
-    renavam: '98765432109',
-    cilindrada: '689',
-    combustivel: 'Gasolina',
-    categoria: 'Motocicleta',
-  }
-};
+// URL da API do Railway (produção)
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://torq.up.railway.app/api';
 
 /**
  * Consulta dados do veículo pela placa
@@ -45,79 +20,74 @@ export const consultarPlaca = async (plate) => {
       throw new Error('Placa inválida');
     }
 
-    console.log('[VehicleAPI] Consultando placa:', cleanPlate);
+    // Montar URL - remover /api do final se já existir para evitar duplicação
+    const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
+    const apiUrl = `${baseUrl}/api/vehicles/plate/${cleanPlate}`;
+    
+    console.log('[VehicleAPI] 🔍 Consultando placa:', cleanPlate);
+    console.log('[VehicleAPI] 🌐 URL:', apiUrl);
 
-    // MODO MOCK: Verificar se existe nos dados de teste
-    if (MOCK_DATA[cleanPlate]) {
-      console.log('[VehicleAPI] 🎭 MODO MOCK - Usando dados de teste');
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simular delay da API
-      
-      const mockData = MOCK_DATA[cleanPlate];
-      console.log('[VehicleAPI] Dados mock:', mockData);
-      
-      return {
-        success: true,
-        data: {
-          plate: cleanPlate,
-          brand: mockData.marca || '',
-          model: mockData.modelo || '',
-          year: mockData.ano || '',
-          color: mockData.cor || '',
-          chassisNumber: mockData.chassi || '',
-          renavam: mockData.renavam || '',
-          engineSize: mockData.cilindrada || '',
-          fuel: mockData.combustivel || '',
-          category: mockData.categoria || '',
-        }
-      };
-    }
-
-    // Tentar API real
-    console.log('[VehicleAPI] Tentando API real...');
-    const response = await fetch(`${API_BASE_URL}/api/vehicle/${cleanPlate}`, {
+    const response = await fetch(apiUrl, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
     });
+
+    console.log('[VehicleAPI] 📡 Status HTTP:', response.status);
 
     if (!response.ok) {
       if (response.status === 404) {
         throw new Error('Veículo não encontrado na base de dados');
       }
+      if (response.status === 408 || response.status === 504) {
+        throw new Error('Tempo limite excedido. Tente novamente.');
+      }
       throw new Error(`Erro na consulta: ${response.status}`);
     }
 
-    const data = await response.json();
-    console.log('[VehicleAPI] Dados recebidos da API:', data);
+    const responseData = await response.json();
+    console.log('[VehicleAPI] ✅ Dados recebidos:', responseData);
 
-    return {
-      success: true,
-      data: {
-        plate: cleanPlate,
-        brand: data.marca || data.brand || '',
-        model: data.modelo || data.model || '',
-        year: data.ano || data.year || '',
-        color: data.cor || data.color || '',
-        chassisNumber: data.chassi || data.chassis || data.chassisNumber || '',
-        renavam: data.renavam || '',
-        engineSize: data.cilindrada || data.engineSize || '',
-        // Campos adicionais que a API pode retornar
-        fuel: data.combustivel || data.fuel || '',
-        category: data.categoria || data.category || '',
-        owner: data.proprietario || data.owner || '',
-        city: data.cidade || data.city || '',
-        state: data.estado || data.state || '',
-      }
-    };
+    // A API pode retornar {success, data} ou diretamente os dados
+    const vehicleData = responseData.data || responseData;
+    console.log('[VehicleAPI] 📦 Dados do veículo:', vehicleData);
+
+    return normalizeVehicleData(cleanPlate, vehicleData);
+
   } catch (error) {
-    console.error('[VehicleAPI] Erro na consulta:', error);
+    console.error('[VehicleAPI] ❌ Erro na consulta:', error);
     return {
       success: false,
       error: error.message || 'Erro ao consultar placa'
     };
   }
 };
+
+/**
+ * Normaliza os dados do veículo para formato padrão
+ */
+function normalizeVehicleData(plate, data) {
+  return {
+    success: true,
+    data: {
+      plate: plate,
+      brand: data.marca || data.brand || '',
+      model: data.modelo || data.model || '',
+      year: data.ano || data.year || '',
+      color: data.cor || data.color || '',
+      chassisNumber: data.chassi || data.chassis || data.chassisNumber || '',
+      renavam: data.renavam || '',
+      engineSize: data.cilindrada || data.engineSize || '',
+      fuel: data.combustivel || data.fuel || '',
+      category: data.categoria || data.category || '',
+      owner: data.proprietario || data.owner || '',
+      city: data.cidade || data.city || '',
+      state: data.estado || data.state || '',
+    }
+  };
+}
 
 /**
  * Formata placa para o padrão brasileiro
