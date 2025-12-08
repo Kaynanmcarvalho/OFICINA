@@ -5,6 +5,10 @@
  * - Dropdown de modelos com autocomplete
  * - Prioriza peças em estoque
  * - Mostra alternativas compatíveis
+ * - Suporte a veículos brasileiros clássicos
+ * - Compatibilidade por faixa de anos
+ * @version 2.1.0
+ * @updated 2025-12-08
  */
 
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
@@ -924,7 +928,7 @@ export const PartsSearchPanel: React.FC<PartsSearchPanelProps> = ({
                   </div>
                 </div>
                 <p className="mt-3 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                  Confirme a compatibilidade no catálogo oficial do fabricante antes de comprar.
+                  Sempre confirme a compatibilidade no catálogo oficial do fabricante antes de comprar. Os anos indicados representam o período de produção do veículo.
                 </p>
               </div>
             </div>
