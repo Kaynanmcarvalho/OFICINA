@@ -1,292 +1,213 @@
+/**
+ * ProductCard - Premium Apple-like + Linear Design
+ * Card de produto com cores suaves, ícones premium e microdetalhes
+ * @version 2.0.0
+ */
+
 import { motion } from 'framer-motion';
-import { Package, AlertTriangle, Edit, Eye, MoreVertical, TrendingUp, TrendingDown, Clock } from 'lucide-react';
 import { useThemeStore } from '../../../store/themeStore';
-import { useState } from 'react';
+
+// Cores Premium
+const COLORS = {
+  blue: { light: '#4D7CFE', dark: '#6B8FFF', bg: 'rgba(77, 124, 254, 0.08)' },
+  green: { light: '#3EBE64', dark: '#4FD97A', bg: 'rgba(62, 190, 100, 0.08)' },
+  amber: { light: '#F7B731', dark: '#FFCA4D', bg: 'rgba(247, 183, 49, 0.08)' },
+  red: { light: '#FF6B6B', dark: '#FF8585', bg: 'rgba(255, 107, 107, 0.08)' },
+  orange: { light: '#FF9F43', dark: '#FFB366', bg: 'rgba(255, 159, 67, 0.08)' },
+};
+
+// Ícones SVG Premium
+const CardIcon = ({ type, color, size = 20 }) => {
+  const icons = {
+    package: (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M16.5 9.4l-9-5.19M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
+      </svg>
+    ),
+    eye: (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+      </svg>
+    ),
+    edit: (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </svg>
+    ),
+    clock: (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+      </svg>
+    ),
+  };
+  return icons[type] || null;
+};
 
 const ProductCard = ({ product, onView, onEdit }) => {
   const { isDarkMode } = useThemeStore();
-  const [showActions, setShowActions] = useState(false);
 
   const availableStock = (product.stock_total || 0) - (product.stock_reserved || 0);
   const isLowStock = availableStock <= (product.stock_min || 0);
   const isOutOfStock = availableStock <= 0;
-  
-  // Check for expiring lots
+
   const hasExpiringSoon = product.lots?.some(lot => {
     if (!lot.validade) return false;
-    const expiryDate = new Date(lot.validade);
-    const daysUntilExpiry = (expiryDate - new Date()) / (1000 * 60 * 60 * 24);
-    return daysUntilExpiry <= 30 && daysUntilExpiry > 0;
+    const days = (new Date(lot.validade) - new Date()) / (1000 * 60 * 60 * 24);
+    return days <= 30 && days > 0;
   });
 
-  const getStockStatus = () => {
-    if (isOutOfStock) return { label: 'Sem Estoque', color: 'red' };
-    if (isLowStock) return { label: 'Estoque Baixo', color: 'yellow' };
-    return { label: 'Em Estoque', color: 'green' };
+  const getStatus = () => {
+    if (isOutOfStock) return { label: 'Esgotado', color: COLORS.red };
+    if (isLowStock) return { label: 'Baixo Estoque', color: COLORS.amber };
+    return { label: 'Em Estoque', color: COLORS.green };
   };
 
-  const stockStatus = getStockStatus();
+  const status = getStatus();
+  const iconColor = isDarkMode ? COLORS.blue.dark : COLORS.blue.light;
 
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      whileHover={{ y: -6 }}
-      className={`
-        group relative p-6 rounded-2xl backdrop-blur-xl
-        transition-all duration-500
-        ${isDarkMode
-          ? 'bg-gray-900/80 border-[3px] border-gray-700/80 hover:border-gray-600 shadow-[0_8px_30px_rgba(0,0,0,0.4)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.6)]'
-          : 'bg-white border-[3px] border-gray-500/80 hover:border-gray-600 shadow-[0_8px_30px_rgba(0,0,0,0.25)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.30)]'
-        }
-      `}
-      style={{ minWidth: '320px' }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      whileHover={{ 
+        scale: 1.008, 
+        y: -3,
+        boxShadow: isDarkMode ? '0 20px 50px rgba(0,0,0,0.4)' : '0 20px 50px rgba(0,0,0,0.08)',
+        borderColor: isDarkMode ? '#3F3F46' : '#E5E7EB'
+      }}
+      whileTap={{ scale: 0.995 }}
+      className={`group relative p-5 rounded-2xl transition-all duration-200 cursor-pointer overflow-hidden ${
+        isDarkMode 
+          ? 'bg-zinc-900 border border-zinc-800' 
+          : 'bg-white border border-gray-100'
+      }`}
+      style={{ 
+        boxShadow: isDarkMode ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 20px rgba(0,0,0,0.04)',
+        background: isDarkMode 
+          ? 'linear-gradient(180deg, #18181B 0%, #18181B 100%)' 
+          : 'linear-gradient(180deg, #FFFFFF 0%, #FAFBFC 100%)'
+      }}
+      onClick={() => onView(product)}
     >
-      {/* Product Image or Icon */}
-      <div className="flex items-start gap-4 mb-4">
-        <div className={`
-          w-16 h-16 rounded-2xl flex items-center justify-center
-          flex-shrink-0 overflow-hidden border-[2px]
-          ${isDarkMode
-            ? 'bg-gradient-to-br from-gray-700 to-gray-800 border-gray-600/70'
-            : 'bg-gradient-to-br from-blue-100 to-blue-50 border-gray-300/70'
-          }
-        `}>
-          {product.images && product.images.length > 0 ? (
-            <img
-              src={product.images[0]}
-              alt={product.name}
-              className="w-full h-full object-cover"
-            />
+      {/* Gradiente sutil no topo */}
+      <div className="absolute top-0 left-0 right-0 h-24 opacity-30 pointer-events-none" style={{ background: `linear-gradient(180deg, ${status.color.bg} 0%, transparent 100%)` }} />
+
+      {/* Header com Imagem/Ícone */}
+      <div className="relative flex items-start gap-4 mb-4">
+        <div className={`w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden border ${
+          isDarkMode ? 'bg-zinc-800 border-zinc-700' : 'bg-gray-50 border-gray-100'
+        }`}>
+          {product.images?.length > 0 ? (
+            <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
           ) : (
-            <Package className={`w-8 h-8 ${
-              isDarkMode ? 'text-gray-400' : 'text-blue-600'
-            }`} />
+            <CardIcon type="package" color={iconColor} size={24} />
           )}
         </div>
 
         <div className="flex-1 min-w-0">
-          <h3 className={`text-lg font-bold truncate mb-1 ${
-            isDarkMode ? 'text-white' : 'text-gray-900'
-          }`}>
+          <h3 className={`text-base font-semibold truncate mb-0.5 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             {product.name}
           </h3>
-          
           {product.sku && (
-            <p className={`text-sm ${
-              isDarkMode ? 'text-gray-400' : 'text-gray-600'
-            }`}>
+            <p className={`text-xs font-medium ${isDarkMode ? 'text-zinc-500' : 'text-[#6B6B6B]'}`}>
               SKU: {product.sku}
             </p>
           )}
         </div>
       </div>
 
-      {/* Status Badges */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        <div className={`
-          inline-flex px-2.5 py-1 rounded-full text-xs font-semibold
-          border-[1.5px]
-          ${stockStatus.color === 'green'
-            ? isDarkMode
-              ? 'bg-green-500/20 border-green-500/40 text-green-400'
-              : 'bg-green-100 border-green-300/70 text-green-700'
-            : stockStatus.color === 'yellow'
-              ? isDarkMode
-                ? 'bg-yellow-500/20 border-yellow-500/40 text-yellow-400'
-                : 'bg-yellow-100 border-yellow-300/70 text-yellow-700'
-              : isDarkMode
-                ? 'bg-red-500/20 border-red-500/40 text-red-400'
-                : 'bg-red-100 border-red-300/70 text-red-700'
-          }
-        `}>
-          {stockStatus.label}
-        </div>
-
+      {/* Status Tags Premium */}
+      <div className="flex flex-wrap gap-1.5 mb-4">
+        <span 
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium"
+          style={{ backgroundColor: status.color.bg, color: isDarkMode ? status.color.dark : status.color.light }}
+        >
+          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: isDarkMode ? status.color.dark : status.color.light }} />
+          {status.label}
+        </span>
         {hasExpiringSoon && (
-          <div className={`
-            inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold
-            border-[1.5px]
-            ${isDarkMode
-              ? 'bg-orange-500/20 border-orange-500/40 text-orange-400'
-              : 'bg-orange-100 border-orange-300/70 text-orange-700'
-            }
-          `}>
-            <Clock className="w-3 h-3" />
+          <span 
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium"
+            style={{ backgroundColor: COLORS.orange.bg, color: isDarkMode ? COLORS.orange.dark : COLORS.orange.light }}
+          >
+            <CardIcon type="clock" color={isDarkMode ? COLORS.orange.dark : COLORS.orange.light} size={12} />
             Vencendo
-          </div>
-        )}
-
-        {product.stock_reserved > 0 && (
-          <div className={`
-            inline-flex px-2.5 py-1 rounded-full text-xs font-semibold
-            border-[1.5px]
-            ${isDarkMode
-              ? 'bg-purple-500/20 border-purple-500/40 text-purple-400'
-              : 'bg-purple-100 border-purple-300/70 text-purple-700'
-            }
-          `}>
-            {product.stock_reserved} Reservado(s)
-          </div>
+          </span>
         )}
       </div>
 
-      {/* Product Info */}
-      <div className="space-y-2 mb-4">
+      {/* Métricas de Estoque */}
+      <div className={`grid grid-cols-3 gap-3 py-3.5 mb-4 border-y ${isDarkMode ? 'border-zinc-800' : 'border-gray-100'}`}>
+        {[
+          { label: 'Disponível', value: availableStock, color: isOutOfStock ? COLORS.red : isLowStock ? COLORS.amber : COLORS.green },
+          { label: 'Total', value: product.stock_total || 0, color: null },
+          { label: 'Mínimo', value: product.stock_min || 0, color: null },
+        ].map((m, i) => (
+          <div key={i} className="text-center">
+            <p className={`text-lg font-semibold`} style={{ color: m.color ? (isDarkMode ? m.color.dark : m.color.light) : (isDarkMode ? '#FFFFFF' : '#1F2937') }}>
+              {m.value}
+            </p>
+            <p className={`text-xs font-medium ${isDarkMode ? 'text-zinc-500' : 'text-[#6B6B6B]'}`}>{m.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Info */}
+      <div className="space-y-1.5 mb-4">
         {product.brand && (
           <div className="flex items-center justify-between">
-            <span className={`text-sm ${
-              isDarkMode ? 'text-gray-400' : 'text-gray-600'
-            }`}>
-              Marca:
-            </span>
-            <span className={`text-sm font-medium ${
-              isDarkMode ? 'text-gray-300' : 'text-gray-900'
-            }`}>
-              {product.brand}
-            </span>
+            <span className={`text-xs font-medium ${isDarkMode ? 'text-zinc-500' : 'text-[#6B6B6B]'}`}>Marca</span>
+            <span className={`text-xs font-semibold ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>{product.brand}</span>
           </div>
         )}
-
         {product.category && (
           <div className="flex items-center justify-between">
-            <span className={`text-sm ${
-              isDarkMode ? 'text-gray-400' : 'text-gray-600'
-            }`}>
-              Categoria:
-            </span>
-            <span className={`text-sm font-medium ${
-              isDarkMode ? 'text-gray-300' : 'text-gray-900'
-            }`}>
-              {product.category}
-            </span>
+            <span className={`text-xs font-medium ${isDarkMode ? 'text-zinc-500' : 'text-[#6B6B6B]'}`}>Categoria</span>
+            <span className={`text-xs font-semibold ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>{product.category}</span>
           </div>
         )}
       </div>
 
-      {/* Stock Info */}
-      <div className={`
-        grid grid-cols-3 gap-3 py-3 border-t-[3px] border-b-[3px] mb-4
-        ${isDarkMode 
-          ? 'border-gray-500/80 shadow-[0_-2px_8px_rgba(0,0,0,0.2),0_2px_8px_rgba(0,0,0,0.2)]' 
-          : 'border-gray-400/80 shadow-[0_-2px_8px_rgba(0,0,0,0.1),0_2px_8px_rgba(0,0,0,0.1)]'
-        }
-      `}>
-        <div className="text-center">
-          <div className={`text-xs mb-1 ${
-            isDarkMode ? 'text-gray-500' : 'text-gray-600'
-          }`}>
-            Disponível
-          </div>
-          <div className={`text-lg font-bold ${
-            isOutOfStock
-              ? isDarkMode ? 'text-red-400' : 'text-red-600'
-              : isLowStock
-                ? isDarkMode ? 'text-yellow-400' : 'text-yellow-600'
-                : isDarkMode ? 'text-green-400' : 'text-green-600'
-          }`}>
-            {availableStock}
-          </div>
-        </div>
-
-        <div className="text-center">
-          <div className={`text-xs mb-1 ${
-            isDarkMode ? 'text-gray-500' : 'text-gray-600'
-          }`}>
-            Total
-          </div>
-          <div className={`text-lg font-bold ${
-            isDarkMode ? 'text-white' : 'text-gray-900'
-          }`}>
-            {product.stock_total || 0}
-          </div>
-        </div>
-
-        <div className="text-center">
-          <div className={`text-xs mb-1 ${
-            isDarkMode ? 'text-gray-500' : 'text-gray-600'
-          }`}>
-            Mínimo
-          </div>
-          <div className={`text-lg font-bold ${
-            isDarkMode ? 'text-white' : 'text-gray-900'
-          }`}>
-            {product.stock_min || 0}
-          </div>
-        </div>
-      </div>
-
-      {/* Price Info */}
-      <div className="flex items-center justify-between mb-4">
+      {/* Preço Premium */}
+      <div className="flex items-end justify-between mb-4">
         <div>
-          <div className={`text-xs ${
-            isDarkMode ? 'text-gray-500' : 'text-gray-600'
-          }`}>
-            Preço de Venda
-          </div>
-          <div className={`text-xl font-bold ${
-            isDarkMode ? 'text-green-400' : 'text-green-600'
-          }`}>
+          <p className={`text-xs font-medium ${isDarkMode ? 'text-zinc-500' : 'text-[#6B6B6B]'}`}>Preço de Venda</p>
+          <p className="text-xl font-semibold" style={{ color: isDarkMode ? COLORS.blue.dark : COLORS.blue.light }}>
             R$ {(product.sale_price || 0).toFixed(2)}
-          </div>
+          </p>
         </div>
-
         {product.cost_price && (
           <div className="text-right">
-            <div className={`text-xs ${
-              isDarkMode ? 'text-gray-500' : 'text-gray-600'
-            }`}>
-              Custo
-            </div>
-            <div className={`text-sm font-medium ${
-              isDarkMode ? 'text-gray-400' : 'text-gray-700'
-            }`}>
+            <p className={`text-xs font-medium ${isDarkMode ? 'text-zinc-500' : 'text-[#6B6B6B]'}`}>Custo</p>
+            <p className={`text-sm font-medium ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>
               R$ {product.cost_price.toFixed(2)}
-            </div>
+            </p>
           </div>
         )}
       </div>
 
-      {/* Actions */}
+      {/* Ações Premium */}
       <div className="flex items-center gap-2">
         <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onView(product);
-          }}
-          className={`
-            flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg
-            font-medium text-sm transition-all border-[2px]
-            ${isDarkMode
-              ? 'bg-blue-600 border-blue-500/50 hover:bg-blue-500 hover:border-blue-400/50 text-white'
-              : 'bg-blue-600 border-blue-500/50 hover:bg-blue-700 hover:border-blue-600/50 text-white'
-            }
-          `}
+          whileHover={{ scale: 1.02, boxShadow: '0 8px 25px rgba(77, 124, 254, 0.25)' }}
+          whileTap={{ scale: 0.98 }}
+          onClick={(e) => { e.stopPropagation(); onView(product); }}
+          className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white transition-all"
+          style={{ background: 'linear-gradient(135deg, #4D7CFE 0%, #5B8AFF 100%)', boxShadow: '0 4px 15px rgba(77, 124, 254, 0.3)' }}
         >
-          <Eye className="w-4 h-4" />
-          Ver Detalhes
+          <CardIcon type="eye" color="#FFFFFF" size={16} />
+          Ver detalhes
         </motion.button>
-
         <motion.button
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.05, backgroundColor: isDarkMode ? '#3F3F46' : '#F3F4F6' }}
           whileTap={{ scale: 0.95 }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit(product);
-          }}
-          className={`
-            p-2.5 rounded-lg transition-all border-[2px]
-            ${isDarkMode
-              ? 'bg-gray-800 border-gray-600/60 hover:bg-gray-700 hover:border-gray-500/60 text-gray-300'
-              : 'bg-gray-200 border-gray-300/70 hover:bg-gray-300 hover:border-gray-400/70 text-gray-800'
-            }
-          `}
+          onClick={(e) => { e.stopPropagation(); onEdit(product); }}
+          className={`p-2.5 rounded-xl transition-all ${isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-300' : 'bg-gray-100 text-gray-500 hover:text-gray-700'}`}
         >
-          <Edit className="w-4 h-4" />
+          <CardIcon type="edit" color="currentColor" size={16} />
         </motion.button>
       </div>
     </motion.div>

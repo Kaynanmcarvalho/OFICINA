@@ -1,0 +1,206 @@
+/**
+ * Inventory Premium Apple-like + Linear + Stripe Styles
+ * Design elegante com cores suaves e microdetalhes
+ * @version 2.0.0
+ */
+
+/* Variáveis de Cores Premium */
+:root {
+  --inv-blue: #4D7CFE;
+  --inv-blue-light: #6B8FFF;
+  --inv-blue-bg: rgba(77, 124, 254, 0.08);
+  --inv-green: #3EBE64;
+  --inv-green-light: #4FD97A;
+  --inv-green-bg: rgba(62, 190, 100, 0.08);
+  --inv-amber: #F7B731;
+  --inv-amber-light: #FFCA4D;
+  --inv-amber-bg: rgba(247, 183, 49, 0.08);
+  --inv-red: #FF6B6B;
+  --inv-red-light: #FF8585;
+  --inv-red-bg: rgba(255, 107, 107, 0.08);
+  --inv-orange: #FF9F43;
+  --inv-orange-light: #FFB366;
+  --inv-orange-bg: rgba(255, 159, 67, 0.08);
+  --inv-purple: #A36BFF;
+  --inv-purple-light: #B585FF;
+  --inv-purple-bg: rgba(163, 107, 255, 0.08);
+  --inv-gray: #6B6B6B;
+  --inv-gray-dark: #444444;
+}
+
+/* Transições suaves globais */
+[data-page="inventory"] * {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Cards com hover elegante estilo iOS */
+[data-page="inventory"] .product-card {
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+[data-page="inventory"] .product-card:hover {
+  transform: translateY(-3px) scale(1.005);
+}
+
+/* Ícones com fade-in suave */
+[data-page="inventory"] svg {
+  transition: opacity 80ms ease, color 150ms ease, transform 150ms ease;
+}
+
+[data-page="inventory"] button:hover svg {
+  transform: scale(1.05);
+}
+
+/* Scrollbar minimalista premium */
+[data-page="inventory"] ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+[data-page="inventory"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-page="inventory"] ::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.25);
+  border-radius: 3px;
+}
+
+[data-page="inventory"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.4);
+}
+
+/* Focus states acessíveis */
+[data-page="inventory"] button:focus-visible,
+[data-page="inventory"] input:focus-visible {
+  outline: 2px solid var(--inv-blue);
+  outline-offset: 2px;
+}
+
+/* Tipografia refinada */
+[data-page="inventory"] h1,
+[data-page="inventory"] h2,
+[data-page="inventory"] h3 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Botão primário premium */
+[data-page="inventory"] .btn-primary {
+  background: linear-gradient(135deg, var(--inv-blue) 0%, var(--inv-blue-light) 100%);
+  box-shadow: 0 4px 15px rgba(77, 124, 254, 0.3);
+  transition: all 200ms ease;
+}
+
+[data-page="inventory"] .btn-primary:hover {
+  box-shadow: 0 8px 25px rgba(77, 124, 254, 0.35);
+  filter: brightness(1.05);
+}
+
+/* Microinteração tap estilo iOS */
+[data-page="inventory"] button:active {
+  transform: scale(0.98);
+}
+
+/* Animação de pulse suave para alertas */
+@keyframes inv-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+[data-page="inventory"] .alert-pulse {
+  animation: inv-pulse 2s ease-in-out infinite;
+}
+
+/* Gradiente sutil para cards */
+[data-page="inventory"] .card-gradient {
+  background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(250,251,252,1) 100%);
+}
+
+.dark [data-page="inventory"] .card-gradient {
+  background: linear-gradient(180deg, rgba(24,24,27,0) 0%, rgba(24,24,27,1) 100%);
+}
+
+/* Linha colorida inferior para métricas */
+[data-page="inventory"] .metric-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 0 0 16px 16px;
+}
+
+/* Hover glow suave para inputs */
+[data-page="inventory"] input:focus {
+  box-shadow: 0 0 0 3px var(--inv-blue-bg);
+}
+
+/* Status pills premium */
+[data-page="inventory"] .status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+[data-page="inventory"] .status-pill::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Tabela com linhas alternadas */
+[data-page="inventory"] tbody tr:nth-child(even) {
+  background-color: rgba(250, 250, 250, 0.5);
+}
+
+.dark [data-page="inventory"] tbody tr:nth-child(even) {
+  background-color: rgba(39, 39, 42, 0.3);
+}
+
+/* Acessibilidade - contraste mínimo WCAG AA */
+[data-page="inventory"] .text-muted {
+  color: var(--inv-gray);
+}
+
+/* Responsividade refinada */
+@media (max-width: 640px) {
+  [data-page="inventory"] .metric-card {
+    padding: 16px;
+  }
+  
+  [data-page="inventory"] .metric-value {
+    font-size: 20px;
+  }
+}
+
+/* Animação de entrada suave */
+@keyframes inv-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+[data-page="inventory"] .animate-fade-in {
+  animation: inv-fade-in 300ms ease-out forwards;
+}
+
+/* Sombra iOS style */
+[data-page="inventory"] .shadow-ios {
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.04),
+    0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.dark [data-page="inventory"] .shadow-ios {
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.2),
+    0 8px 24px rgba(0, 0, 0, 0.2);
+}
