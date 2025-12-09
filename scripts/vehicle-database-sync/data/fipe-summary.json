@@ -1,0 +1,871 @@
+{
+  "timestamp": "2025-12-09T20:26:29.748Z",
+  "brands": {
+    "CARS": [
+      {
+        "Label": "Acura",
+        "Value": "1"
+      },
+      {
+        "Label": "Agrale",
+        "Value": "2"
+      },
+      {
+        "Label": "Alfa Romeo",
+        "Value": "3"
+      },
+      {
+        "Label": "AM Gen",
+        "Value": "4"
+      },
+      {
+        "Label": "Asia Motors",
+        "Value": "5"
+      },
+      {
+        "Label": "ASTON MARTIN",
+        "Value": "189"
+      },
+      {
+        "Label": "Audi",
+        "Value": "6"
+      },
+      {
+        "Label": "Baby",
+        "Value": "207"
+      },
+      {
+        "Label": "BMW",
+        "Value": "7"
+      },
+      {
+        "Label": "BRM",
+        "Value": "8"
+      },
+      {
+        "Label": "Bugre",
+        "Value": "123"
+      },
+      {
+        "Label": "BYD",
+        "Value": "238"
+      },
+      {
+        "Label": "CAB Motors",
+        "Value": "236"
+      },
+      {
+        "Label": "Cadillac",
+        "Value": "10"
+      },
+      {
+        "Label": "Caoa Chery",
+        "Value": "245"
+      },
+      {
+        "Label": "Caoa Chery/Chery",
+        "Value": "161"
+      },
+      {
+        "Label": "CBT Jipe",
+        "Value": "11"
+      },
+      {
+        "Label": "CHANA",
+        "Value": "136"
+      },
+      {
+        "Label": "CHANGAN",
+        "Value": "182"
+      },
+      {
+        "Label": "Chrysler",
+        "Value": "12"
+      },
+      {
+        "Label": "Citroën",
+        "Value": "13"
+      },
+      {
+        "Label": "Cross Lander",
+        "Value": "14"
+      },
+      {
+        "Label": "D2D Motors",
+        "Value": "241"
+      },
+      {
+        "Label": "Daewoo",
+        "Value": "15"
+      },
+      {
+        "Label": "Daihatsu",
+        "Value": "16"
+      },
+      {
+        "Label": "Dodge",
+        "Value": "17"
+      },
+      {
+        "Label": "EFFA",
+        "Value": "147"
+      },
+      {
+        "Label": "Engesa",
+        "Value": "18"
+      },
+      {
+        "Label": "Envemo",
+        "Value": "19"
+      },
+      {
+        "Label": "Ferrari",
+        "Value": "20"
+      },
+      {
+        "Label": "Fiat",
+        "Value": "21"
+      },
+      {
+        "Label": "Fibravan",
+        "Value": "149"
+      },
+      {
+        "Label": "Ford",
+        "Value": "22"
+      },
+      {
+        "Label": "FOTON",
+        "Value": "190"
+      },
+      {
+        "Label": "Fyber",
+        "Value": "170"
+      },
+      {
+        "Label": "GEELY",
+        "Value": "199"
+      },
+      {
+        "Label": "GM - Chevrolet",
+        "Value": "23"
+      },
+      {
+        "Label": "GREAT WALL",
+        "Value": "153"
+      },
+      {
+        "Label": "Gurgel",
+        "Value": "24"
+      },
+      {
+        "Label": "GWM",
+        "Value": "240"
+      },
+      {
+        "Label": "HAFEI",
+        "Value": "152"
+      },
+      {
+        "Label": "HITECH ELECTRIC",
+        "Value": "214"
+      },
+      {
+        "Label": "Honda",
+        "Value": "25"
+      },
+      {
+        "Label": "Hyundai",
+        "Value": "26"
+      },
+      {
+        "Label": "Isuzu",
+        "Value": "27"
+      },
+      {
+        "Label": "IVECO",
+        "Value": "208"
+      },
+      {
+        "Label": "JAC",
+        "Value": "177"
+      },
+      {
+        "Label": "Jaguar",
+        "Value": "28"
+      },
+      {
+        "Label": "Jeep",
+        "Value": "29"
+      },
+      {
+        "Label": "JINBEI",
+        "Value": "154"
+      },
+      {
+        "Label": "JPX",
+        "Value": "30"
+      },
+      {
+        "Label": "Kia Motors",
+        "Value": "31"
+      },
+      {
+        "Label": "Lada",
+        "Value": "32"
+      },
+      {
+        "Label": "LAMBORGHINI",
+        "Value": "171"
+      },
+      {
+        "Label": "Land Rover",
+        "Value": "33"
+      },
+      {
+        "Label": "Lexus",
+        "Value": "34"
+      },
+      {
+        "Label": "LIFAN",
+        "Value": "168"
+      },
+      {
+        "Label": "LOBINI",
+        "Value": "127"
+      },
+      {
+        "Label": "Lotus",
+        "Value": "35"
+      },
+      {
+        "Label": "Mahindra",
+        "Value": "140"
+      },
+      {
+        "Label": "Maserati",
+        "Value": "36"
+      },
+      {
+        "Label": "Matra",
+        "Value": "37"
+      },
+      {
+        "Label": "Mazda",
+        "Value": "38"
+      },
+      {
+        "Label": "Mclaren",
+        "Value": "211"
+      },
+      {
+        "Label": "Mercedes-Benz",
+        "Value": "39"
+      },
+      {
+        "Label": "Mercury",
+        "Value": "40"
+      },
+      {
+        "Label": "MG",
+        "Value": "167"
+      },
+      {
+        "Label": "MINI",
+        "Value": "156"
+      },
+      {
+        "Label": "Mitsubishi",
+        "Value": "41"
+      },
+      {
+        "Label": "Miura",
+        "Value": "42"
+      },
+      {
+        "Label": "Nissan",
+        "Value": "43"
+      },
+      {
+        "Label": "Peugeot",
+        "Value": "44"
+      },
+      {
+        "Label": "Plymouth",
+        "Value": "45"
+      },
+      {
+        "Label": "Pontiac",
+        "Value": "46"
+      },
+      {
+        "Label": "Porsche",
+        "Value": "47"
+      },
+      {
+        "Label": "RAM",
+        "Value": "185"
+      },
+      {
+        "Label": "RELY",
+        "Value": "186"
+      },
+      {
+        "Label": "Renault",
+        "Value": "48"
+      },
+      {
+        "Label": "Rolls-Royce",
+        "Value": "195"
+      },
+      {
+        "Label": "Rover",
+        "Value": "49"
+      },
+      {
+        "Label": "Saab",
+        "Value": "50"
+      },
+      {
+        "Label": "Saturn",
+        "Value": "51"
+      },
+      {
+        "Label": "Seat",
+        "Value": "52"
+      },
+      {
+        "Label": "SHINERAY",
+        "Value": "183"
+      },
+      {
+        "Label": "smart",
+        "Value": "157"
+      },
+      {
+        "Label": "SSANGYONG",
+        "Value": "125"
+      },
+      {
+        "Label": "Subaru",
+        "Value": "54"
+      },
+      {
+        "Label": "Suzuki",
+        "Value": "55"
+      },
+      {
+        "Label": "TAC",
+        "Value": "165"
+      },
+      {
+        "Label": "Toyota",
+        "Value": "56"
+      },
+      {
+        "Label": "Troller",
+        "Value": "57"
+      },
+      {
+        "Label": "Volvo",
+        "Value": "58"
+      },
+      {
+        "Label": "VW - VolksWagen",
+        "Value": "59"
+      },
+      {
+        "Label": "Wake",
+        "Value": "163"
+      },
+      {
+        "Label": "Walk",
+        "Value": "120"
+      }
+    ],
+    "MOTOS": [
+      {
+        "Label": "ADLY",
+        "Value": "60"
+      },
+      {
+        "Label": "AGRALE",
+        "Value": "61"
+      },
+      {
+        "Label": "AMAZONAS",
+        "Value": "131"
+      },
+      {
+        "Label": "APRILIA",
+        "Value": "62"
+      },
+      {
+        "Label": "ATALA",
+        "Value": "63"
+      },
+      {
+        "Label": "AVELLOZ",
+        "Value": "216"
+      },
+      {
+        "Label": "BAJAJ",
+        "Value": "64"
+      },
+      {
+        "Label": "BEE",
+        "Value": "205"
+      },
+      {
+        "Label": "Benelli",
+        "Value": "162"
+      },
+      {
+        "Label": "BETA",
+        "Value": "65"
+      },
+      {
+        "Label": "BIMOTA",
+        "Value": "66"
+      },
+      {
+        "Label": "BMW",
+        "Value": "67"
+      },
+      {
+        "Label": "BRANDY",
+        "Value": "68"
+      },
+      {
+        "Label": "BRAVA",
+        "Value": "130"
+      },
+      {
+        "Label": "BRP",
+        "Value": "150"
+      },
+      {
+        "Label": "BUELL",
+        "Value": "117"
+      },
+      {
+        "Label": "BUENO",
+        "Value": "155"
+      },
+      {
+        "Label": "BULL",
+        "Value": "212"
+      },
+      {
+        "Label": "byCristo",
+        "Value": "69"
+      },
+      {
+        "Label": "CAGIVA",
+        "Value": "70"
+      },
+      {
+        "Label": "CALOI",
+        "Value": "71"
+      },
+      {
+        "Label": "DAELIM",
+        "Value": "72"
+      },
+      {
+        "Label": "DAFRA",
+        "Value": "145"
+      },
+      {
+        "Label": "DAYANG",
+        "Value": "137"
+      },
+      {
+        "Label": "DAYUN",
+        "Value": "142"
+      },
+      {
+        "Label": "DERBI",
+        "Value": "73"
+      },
+      {
+        "Label": "DUCATI",
+        "Value": "74"
+      },
+      {
+        "Label": "EMME",
+        "Value": "75"
+      },
+      {
+        "Label": "FOX",
+        "Value": "132"
+      },
+      {
+        "Label": "FUSCO MOTOSEGURA",
+        "Value": "209"
+      },
+      {
+        "Label": "FYM",
+        "Value": "128"
+      },
+      {
+        "Label": "GARINNI",
+        "Value": "143"
+      },
+      {
+        "Label": "GAS GAS",
+        "Value": "76"
+      },
+      {
+        "Label": "GREEN",
+        "Value": "133"
+      },
+      {
+        "Label": "HAOBAO",
+        "Value": "138"
+      },
+      {
+        "Label": "HAOJUE",
+        "Value": "203"
+      },
+      {
+        "Label": "HARLEY-DAVIDSON",
+        "Value": "77"
+      },
+      {
+        "Label": "HARTFORD",
+        "Value": "78"
+      },
+      {
+        "Label": "HERO",
+        "Value": "79"
+      },
+      {
+        "Label": "HONDA",
+        "Value": "80"
+      },
+      {
+        "Label": "HUSABERG",
+        "Value": "81"
+      },
+      {
+        "Label": "HUSQVARNA",
+        "Value": "82"
+      },
+      {
+        "Label": "INDIAN",
+        "Value": "202"
+      },
+      {
+        "Label": "IROS",
+        "Value": "158"
+      },
+      {
+        "Label": "JIAPENG VOLCANO",
+        "Value": "141"
+      },
+      {
+        "Label": "JOHNNYPAG",
+        "Value": "174"
+      },
+      {
+        "Label": "JONNY",
+        "Value": "151"
+      },
+      {
+        "Label": "KAHENA",
+        "Value": "129"
+      },
+      {
+        "Label": "KASINSKI",
+        "Value": "118"
+      },
+      {
+        "Label": "KAWASAKI",
+        "Value": "85"
+      },
+      {
+        "Label": "KTM",
+        "Value": "87"
+      },
+      {
+        "Label": "KYMCO",
+        "Value": "204"
+      },
+      {
+        "Label": "LANDUM",
+        "Value": "159"
+      },
+      {
+        "Label": "L'AQUILA",
+        "Value": "88"
+      },
+      {
+        "Label": "LAVRALE",
+        "Value": "89"
+      },
+      {
+        "Label": "LERIVO",
+        "Value": "139"
+      },
+      {
+        "Label": "LIFAN",
+        "Value": "178"
+      },
+      {
+        "Label": "Lon-V",
+        "Value": "148"
+      },
+      {
+        "Label": "MAGRÃO TRICICLOS",
+        "Value": "175"
+      },
+      {
+        "Label": "Malaguti",
+        "Value": "146"
+      },
+      {
+        "Label": "MIZA",
+        "Value": "126"
+      },
+      {
+        "Label": "MOTO GUZZI",
+        "Value": "90"
+      },
+      {
+        "Label": "MOTOCAR",
+        "Value": "201"
+      },
+      {
+        "Label": "MOTORINO",
+        "Value": "200"
+      },
+      {
+        "Label": "MRX",
+        "Value": "160"
+      },
+      {
+        "Label": "MV AGUSTA",
+        "Value": "91"
+      },
+      {
+        "Label": "MVK",
+        "Value": "92"
+      },
+      {
+        "Label": "NIU",
+        "Value": "239"
+      },
+      {
+        "Label": "ORCA",
+        "Value": "93"
+      },
+      {
+        "Label": "PEGASSI",
+        "Value": "164"
+      },
+      {
+        "Label": "PEUGEOT",
+        "Value": "94"
+      },
+      {
+        "Label": "PIAGGIO",
+        "Value": "95"
+      },
+      {
+        "Label": "POLARIS",
+        "Value": "210"
+      },
+      {
+        "Label": "REGAL RAPTOR",
+        "Value": "173"
+      },
+      {
+        "Label": "RIGUETE",
+        "Value": "198"
+      },
+      {
+        "Label": "Royal Enfield",
+        "Value": "192"
+      },
+      {
+        "Label": "SANYANG",
+        "Value": "96"
+      },
+      {
+        "Label": "SHINERAY",
+        "Value": "134"
+      },
+      {
+        "Label": "SIAMOTO",
+        "Value": "97"
+      },
+      {
+        "Label": "SUNDOWN",
+        "Value": "98"
+      },
+      {
+        "Label": "SUPER SOCO",
+        "Value": "237"
+      },
+      {
+        "Label": "SUZUKI",
+        "Value": "99"
+      },
+      {
+        "Label": "TARGOS",
+        "Value": "176"
+      },
+      {
+        "Label": "TIGER",
+        "Value": "187"
+      },
+      {
+        "Label": "TRAXX",
+        "Value": "119"
+      },
+      {
+        "Label": "TRIUMPH",
+        "Value": "100"
+      },
+      {
+        "Label": "VENTO",
+        "Value": "180"
+      },
+      {
+        "Label": "VOLTZ",
+        "Value": "215"
+      },
+      {
+        "Label": "WATTS",
+        "Value": "243"
+      },
+      {
+        "Label": "WUYANG",
+        "Value": "135"
+      },
+      {
+        "Label": "YAMAHA",
+        "Value": "101"
+      },
+      {
+        "Label": "ZONTES",
+        "Value": "242"
+      }
+    ],
+    "TRUCKS": [
+      {
+        "Label": "AGRALE",
+        "Value": "102"
+      },
+      {
+        "Label": "BEPOBUS",
+        "Value": "206"
+      },
+      {
+        "Label": "CHEVROLET",
+        "Value": "103"
+      },
+      {
+        "Label": "CICCOBUS",
+        "Value": "121"
+      },
+      {
+        "Label": "DAF",
+        "Value": "197"
+      },
+      {
+        "Label": "EFFA-JMC",
+        "Value": "179"
+      },
+      {
+        "Label": "FIAT",
+        "Value": "104"
+      },
+      {
+        "Label": "FORD",
+        "Value": "105"
+      },
+      {
+        "Label": "FOTON",
+        "Value": "191"
+      },
+      {
+        "Label": "GMC",
+        "Value": "106"
+      },
+      {
+        "Label": "HYUNDAI",
+        "Value": "181"
+      },
+      {
+        "Label": "IVECO",
+        "Value": "122"
+      },
+      {
+        "Label": "JAC",
+        "Value": "188"
+      },
+      {
+        "Label": "MAN",
+        "Value": "184"
+      },
+      {
+        "Label": "MARCOPOLO",
+        "Value": "108"
+      },
+      {
+        "Label": "MASCARELLO",
+        "Value": "196"
+      },
+      {
+        "Label": "MAXIBUS",
+        "Value": "194"
+      },
+      {
+        "Label": "MERCEDES-BENZ",
+        "Value": "109"
+      },
+      {
+        "Label": "NAVISTAR",
+        "Value": "110"
+      },
+      {
+        "Label": "NEOBUS",
+        "Value": "111"
+      },
+      {
+        "Label": "PUMA-ALFA",
+        "Value": "112"
+      },
+      {
+        "Label": "SAAB-SCANIA",
+        "Value": "113"
+      },
+      {
+        "Label": "SCANIA",
+        "Value": "114"
+      },
+      {
+        "Label": "SHACMAN",
+        "Value": "193"
+      },
+      {
+        "Label": "SINOTRUK",
+        "Value": "166"
+      },
+      {
+        "Label": "VOLKSWAGEN",
+        "Value": "115"
+      },
+      {
+        "Label": "VOLVO",
+        "Value": "116"
+      },
+      {
+        "Label": "WALKBUS",
+        "Value": "144"
+      }
+    ]
+  }
+}

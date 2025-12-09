@@ -204,3 +204,205 @@
     0 4px 12px rgba(0, 0, 0, 0.2),
     0 8px 24px rgba(0, 0, 0, 0.2);
 }
+
+
+/* ============================================
+   MELHORIAS PREMIUM v3.0
+   ============================================ */
+
+/* Shimmer loading effect */
+@keyframes inv-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+[data-page="inventory"] .skeleton {
+  background: linear-gradient(90deg, 
+    rgba(200, 200, 200, 0.1) 25%, 
+    rgba(200, 200, 200, 0.2) 50%, 
+    rgba(200, 200, 200, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: inv-shimmer 1.5s infinite;
+}
+
+.dark [data-page="inventory"] .skeleton {
+  background: linear-gradient(90deg, 
+    rgba(60, 60, 60, 0.3) 25%, 
+    rgba(80, 80, 80, 0.4) 50%, 
+    rgba(60, 60, 60, 0.3) 75%
+  );
+  background-size: 200% 100%;
+}
+
+/* Hover glow para cards */
+[data-page="inventory"] .card-glow:hover {
+  box-shadow: 
+    0 0 0 1px rgba(77, 124, 254, 0.1),
+    0 8px 30px rgba(77, 124, 254, 0.08);
+}
+
+.dark [data-page="inventory"] .card-glow:hover {
+  box-shadow: 
+    0 0 0 1px rgba(107, 143, 255, 0.15),
+    0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Tooltip premium */
+[data-page="inventory"] .tooltip-premium {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Badge com brilho */
+[data-page="inventory"] .badge-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+[data-page="inventory"] .badge-glow::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: badge-shine 3s infinite;
+}
+
+@keyframes badge-shine {
+  0% { left: -100%; }
+  50%, 100% { left: 100%; }
+}
+
+/* Botão com ripple effect */
+[data-page="inventory"] .btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+[data-page="inventory"] .btn-ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+[data-page="inventory"] .btn-ripple:active::after {
+  width: 200px;
+  height: 200px;
+}
+
+/* Transição de página suave */
+[data-page="inventory"] .page-transition {
+  animation: page-enter 0.4s ease-out;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hover scale suave para ícones */
+[data-page="inventory"] .icon-hover:hover svg {
+  transform: scale(1.15);
+  transition: transform 0.2s ease;
+}
+
+/* Borda animada para inputs focados */
+[data-page="inventory"] .input-animated:focus {
+  border-image: linear-gradient(90deg, var(--inv-blue), var(--inv-purple)) 1;
+}
+
+/* Gradiente de texto premium */
+[data-page="inventory"] .text-gradient {
+  background: linear-gradient(135deg, var(--inv-blue) 0%, var(--inv-purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card com borda gradiente */
+[data-page="inventory"] .border-gradient {
+  position: relative;
+  background: linear-gradient(var(--bg-color), var(--bg-color)) padding-box,
+              linear-gradient(135deg, var(--inv-blue), var(--inv-purple)) border-box;
+  border: 2px solid transparent;
+}
+
+/* Animação de contagem */
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+[data-page="inventory"] .count-animate {
+  animation: count-up 0.5s ease-out;
+}
+
+/* Efeito de vidro (glassmorphism) */
+[data-page="inventory"] .glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark [data-page="inventory"] .glass {
+  background: rgba(24, 24, 27, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Hover com elevação */
+[data-page="inventory"] .elevate-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-page="inventory"] .elevate-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.dark [data-page="inventory"] .elevate-hover:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Indicador de ordenação na tabela */
+[data-page="inventory"] th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+[data-page="inventory"] th.sortable:hover {
+  color: var(--inv-blue);
+}
+
+[data-page="inventory"] th.sorted {
+  color: var(--inv-blue);
+}
+
+/* Linha da tabela com hover premium */
+[data-page="inventory"] tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+[data-page="inventory"] tbody tr:hover {
+  background-color: rgba(77, 124, 254, 0.04) !important;
+}
+
+.dark [data-page="inventory"] tbody tr:hover {
+  background-color: rgba(107, 143, 255, 0.06) !important;
+}

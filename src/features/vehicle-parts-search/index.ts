@@ -1,23 +1,23 @@
 /**
  * Vehicle Parts Search Feature
  * Sistema completo de busca de peças por veículo
- * @version 1.0.0
+ * Design sóbrio Apple-like, granularidade por ano/motor/trim
+ * @version 2.0.0
  */
 
 // Components
 export { VehiclePartsSearchModal } from './components/VehiclePartsSearchModal';
 
-// Hooks
-export { useVehiclePartsSearch } from './hooks/useVehiclePartsSearch';
-
 // Services
 export { 
   searchVehicles, 
-  getVehicleById, 
+  getVehicleById,
+  getRelatedVariants,
   getAvailableBrands, 
   getModelsByBrand,
   findVehicle,
-  groupSuggestionsByBrand 
+  groupSuggestionsByBrand,
+  getDatabaseStats,
 } from './services/vehicleSearchService';
 
 export { 
@@ -25,24 +25,35 @@ export {
   saveManualCompatibility,
   removeManualCompatibility,
   getAvailableCategories,
-  getAvailablePartBrands
+  getAvailablePartBrands,
 } from './services/compatibilityService';
 
 // Data
-export { BRAZILIAN_VEHICLES_DATABASE, VEHICLES_BY_BRAND } from './data/brazilianVehicles';
+export { 
+  BRAZILIAN_VEHICLES_DATABASE, 
+  VEHICLES_BY_BRAND,
+  AVAILABLE_BRANDS,
+  TOTAL_VARIANTS,
+  BRAND_LOGOS,
+} from './data/brazilianVehicles';
 
 // Types
 export type {
   VehicleType,
   FuelType,
+  TransmissionType,
+  BodyType,
+  DataSource,
   MatchType,
-  NormalizedVehicle,
+  VehicleVariant,
   VehicleSuggestion,
-  PartCompatibility,
+  MatchTrace,
   CompatiblePart,
   PartSearchFilters,
-  CompatibilitySearchResult,
   VehiclePartsSearchState,
   PartCategory,
-  CompatibilityStats
+  CompatibilityStats,
+  AutocompleteResponse,
+  CompatibilityResponse,
+  ManualConfirmRequest,
 } from './types';

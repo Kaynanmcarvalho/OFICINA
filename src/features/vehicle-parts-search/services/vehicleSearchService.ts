@@ -1,144 +1,282 @@
 /**
- * Vehicle Search Service
- * Serviço de busca de veículos com autocomplete
- * @version 1.0.0
+ * Vehicle Search Service - Autocomplete rápido
+ * Busca de veículos com granularidade por ano/motor/trim
+ * @version 2.0.0
  */
 
-import { BRAZILIAN_VEHICLES_DATABASE, VEHICLES_BY_BRAND } from '../data/brazilianVehicles';
-import type { NormalizedVehicle, VehicleSuggestion, VehicleType } from '../types';
+import { BRAZILIAN_VEHICLES_DATABASE, VEHICLES_BY_BRAND, BRAND_LOGOS } from '../data/brazilianVehicles';
+import type { VehicleVariant, VehicleSuggestion, VehicleType } from '../types';
+
+// Log para verificar se a base foi carregada
+console.log(`[VehicleSearchService] Database loaded: ${BRAZILIAN_VEHICLES_DATABASE?.length || 0} vehicles`);
 
 // Normaliza texto para busca
 const normalize = (text: string): string =>
-  text.toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9\s]/g, '')
-    .trim();
+  text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 
-// Calcula score de relevância
-const calculateRelevance = (vehicle: NormalizedVehicle, query: string, tokens: string[]): number => {
+// Tokeniza query em palavras
+const tokenize = (query: string): string[] =>
+  normalize(query).split(/\s+/).filter(t => t.length > 0);
+
+// Calcula score de relevância - BUSCA ESTRITA
+// Só retorna resultados que realmente contenham o termo buscado
+const calculateScore = (variant: VehicleVariant, tokens: string[]): number => {
   let score = 0;
-  const normalizedQuery = normalize(query);
+  let hasAnyMatch = false;
   
-  // Match exato na marca
-  if (vehicle.brandNormalized === normalizedQuery) score += 100;
-  else if (vehicle.brandNormalized.startsWith(normalizedQuery)) score += 50;
-  else if (vehicle.brandNormalized.includes(normalizedQuery)) score += 25;
+  const brandNorm = normalize(variant.brand);
+  const modelNorm = normalize(variant.model);
+  const trimNorm = normalize(variant.trim || '');
+  const engineNorm = normalize(variant.engineName || '');
+  const engineCodeNorm = normalize(variant.engineCode || '');
+  const yearStr = variant.year.toString();
   
-  // Match exato no modelo
-  if (vehicle.modelNormalized === normalizedQuery) score += 100;
-  else if (vehicle.modelNormalized.startsWith(normalizedQuery)) score += 50;
-  else if (vehicle.modelNormalized.includes(normalizedQuery)) score += 25;
+  for (const token of tokens) {
+    let tokenMatched = false;
+    
+    // Match na marca
+    if (brandNorm === token) {
+      score += 100;
+      tokenMatched = true;
+    } else if (brandNorm.startsWith(token) && token.length >= 2) {
+      score += 60;
+      tokenMatched = true;
+    } else if (brandNorm.includes(token) && token.length >= 3) {
+      score += 30;
+      tokenMatched = true;
+    }
+    
+    // Match no modelo - PRIORIDADE MÁXIMA
+    if (modelNorm === token) {
+      score += 200;
+      tokenMatched = true;
+    } else if (modelNorm.startsWith(token) && token.length >= 2) {
+      score += 120;
+      tokenMatched = true;
+    } else if (modelNorm.includes(token) && token.length >= 3) {
+      score += 60;
+      tokenMatched = true;
+    }
+
+    // Match no ano - só se for número completo ou parcial válido
+    if (yearStr === token) {
+      score += 100;
+      tokenMatched = true;
+    } else if (token.length === 4 && yearStr.startsWith(token)) {
+      score += 80;
+      tokenMatched = true;
+    } else if (token.length >= 2 && yearStr.includes(token)) {
+      score += 40;
+      tokenMatched = true;
+    }
+    
+    // Match no trim
+    if (trimNorm && trimNorm.includes(token) && token.length >= 2) {
+      score += 35;
+      tokenMatched = true;
+    }
+    
+    // Match no motor
+    if (engineNorm && engineNorm.includes(token) && token.length >= 2) {
+      score += 45;
+      tokenMatched = true;
+    }
+    
+    // Match no engineCode
+    if (engineCodeNorm && engineCodeNorm.includes(token) && token.length >= 2) {
+      score += 60;
+      tokenMatched = true;
+    }
+    
+    if (tokenMatched) hasAnyMatch = true;
+  }
   
-  // Match em marca + modelo
-  const fullName = `${vehicle.brandNormalized} ${vehicle.modelNormalized}`;
-  if (fullName.startsWith(normalizedQuery)) score += 75;
-  else if (fullName.includes(normalizedQuery)) score += 35;
-  
-  // Match em tokens individuais
-  tokens.forEach(token => {
-    if (vehicle.searchTokens.includes(token)) score += 15;
-    if (vehicle.brandNormalized.includes(token)) score += 10;
-    if (vehicle.modelNormalized.includes(token)) score += 10;
-  });
+  // Se nenhum token deu match, retorna 0 (não aparece nos resultados)
+  if (!hasAnyMatch) return 0;
   
   // Bonus para veículos mais recentes
   const currentYear = new Date().getFullYear();
-  if (vehicle.yearTo >= currentYear) score += 10;
-  if (vehicle.yearTo >= currentYear - 5) score += 5;
+  if (variant.year >= currentYear - 2) score += 10;
   
   return score;
 };
 
-// Busca veículos por query
+interface SearchOptions {
+  limit?: number;
+  vehicleTypes?: VehicleType[];
+  brands?: string[];
+  yearMin?: number;
+  yearMax?: number;
+}
+
+/**
+ * Busca veículos por query (autocomplete)
+ * Retorna variantes individuais (não ranges)
+ */
 export const searchVehicles = (
   query: string,
-  options: {
-    limit?: number;
-    bodyTypes?: VehicleType[];
-    yearFrom?: number;
-    yearTo?: number;
-  } = {}
+  options: SearchOptions = {}
 ): VehicleSuggestion[] => {
-  const { limit = 15, bodyTypes, yearFrom, yearTo } = options;
+  const { limit = 20, vehicleTypes, brands, yearMin, yearMax } = options;
   
-  if (!query || query.length < 2) return [];
+  console.log(`[VehicleSearch] searchVehicles called with query: "${query}"`);
+  console.log(`[VehicleSearch] Database has ${BRAZILIAN_VEHICLES_DATABASE?.length || 0} vehicles`);
   
-  const normalizedQuery = normalize(query);
-  const tokens = normalizedQuery.split(/\s+/).filter(t => t.length >= 2);
+  if (!query || query.length < 2) {
+    console.log('[VehicleSearch] Query too short, returning empty');
+    return [];
+  }
   
-  // Filtra e pontua veículos
-  const results = BRAZILIAN_VEHICLES_DATABASE
-    .filter(vehicle => {
-      // Filtro por tipo de carroceria
-      if (bodyTypes?.length && !bodyTypes.includes(vehicle.bodyType)) return false;
-      
-      // Filtro por ano
-      if (yearFrom && vehicle.yearTo < yearFrom) return false;
-      if (yearTo && vehicle.yearFrom > yearTo) return false;
-      
-      // Verifica se algum token corresponde
-      const fullText = `${vehicle.brandNormalized} ${vehicle.modelNormalized}`;
-      return tokens.some(token => fullText.includes(token)) || 
-             fullText.includes(normalizedQuery);
-    })
-    .map(vehicle => ({
-      vehicle,
-      score: calculateRelevance(vehicle, query, tokens),
-    }))
-    .filter(item => item.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, limit);
+  const tokens = tokenize(query);
+  console.log('[VehicleSearch] Tokens:', tokens);
   
-  // Converte para sugestões
-  return results.map(({ vehicle }) => ({
-    id: vehicle.id,
-    brand: vehicle.brand,
-    model: vehicle.model,
-    yearRange: vehicle.yearFrom === vehicle.yearTo 
-      ? String(vehicle.yearFrom) 
-      : `${vehicle.yearFrom}–${vehicle.yearTo}`,
-    bodyType: vehicle.bodyType,
-    displayText: `${vehicle.brand} ${vehicle.model} — ${vehicle.yearFrom === vehicle.yearTo ? vehicle.yearFrom : `${vehicle.yearFrom}–${vehicle.yearTo}`}`,
-    highlight: query,
-  }));
+  if (tokens.length === 0) {
+    console.log('[VehicleSearch] No tokens, returning empty');
+    return [];
+  }
+  
+  const startTime = performance.now();
+  
+  // Filtra e pontua
+  const scored: Array<{ variant: VehicleVariant; score: number }> = [];
+  
+  for (const variant of BRAZILIAN_VEHICLES_DATABASE) {
+    // Aplica filtros
+    if (vehicleTypes?.length && !vehicleTypes.includes(variant.vehicleType)) continue;
+    if (brands?.length && !brands.includes(variant.brand)) continue;
+    if (yearMin && variant.year < yearMin) continue;
+    if (yearMax && variant.year > yearMax) continue;
+    
+    const score = calculateScore(variant, tokens);
+    if (score > 0) {
+      scored.push({ variant, score });
+    }
+  }
+  
+  // Ordena por score e limita
+  scored.sort((a, b) => b.score - a.score);
+  const topResults = scored.slice(0, limit);
+  
+  // Converte para suggestions
+  const suggestions: VehicleSuggestion[] = topResults.map(({ variant, score }) => {
+    const maxScore = tokens.length * 200; // Score máximo teórico
+    const normalizedScore = Math.min(score / maxScore, 1);
+    
+    // Formata texto de exibição
+    const parts = [variant.brand, variant.model, variant.year.toString()];
+    if (variant.trim) parts.push(variant.trim);
+    if (variant.engineName) parts.push(`| ${variant.engineName}`);
+    if (variant.engineCode) parts.push(`(${variant.engineCode})`);
+    
+    return {
+      id: variant.id,
+      variant: {
+        ...variant,
+        brandLogo: BRAND_LOGOS[variant.brand],
+      },
+      displayText: parts.join(' '),
+      searchScore: normalizedScore,
+      highlights: {
+        brand: tokens.some(t => normalize(variant.brand).includes(t)),
+        model: tokens.some(t => normalize(variant.model).includes(t)),
+        year: tokens.some(t => variant.year.toString().includes(t)),
+        engine: tokens.some(t => 
+          normalize(variant.engineName || '').includes(t) ||
+          normalize(variant.engineCode || '').includes(t)
+        ),
+      },
+    };
+  });
+  
+  const elapsed = performance.now() - startTime;
+  console.log(`[VehicleSearch] Found ${suggestions.length} results for "${query}" in ${elapsed.toFixed(1)}ms`);
+  
+  return suggestions;
 };
 
-// Busca veículo por ID
-export const getVehicleById = (id: string): NormalizedVehicle | null => {
-  return BRAZILIAN_VEHICLES_DATABASE.find(v => v.id === id) || null;
+/**
+ * Busca variante por ID
+ */
+export const getVehicleById = (id: string): VehicleVariant | null => {
+  const variant = BRAZILIAN_VEHICLES_DATABASE.find(v => v.id === id);
+  if (variant) {
+    return { ...variant, brandLogo: BRAND_LOGOS[variant.brand] };
+  }
+  return null;
 };
 
-// Lista marcas disponíveis
+/**
+ * Obtém outras variantes do mesmo modelo (diferentes trims/motores)
+ */
+export const getRelatedVariants = (variant: VehicleVariant): VehicleVariant[] => {
+  return BRAZILIAN_VEHICLES_DATABASE.filter(v =>
+    v.brand === variant.brand &&
+    v.model === variant.model &&
+    v.year === variant.year &&
+    v.id !== variant.id
+  ).map(v => ({ ...v, brandLogo: BRAND_LOGOS[v.brand] }));
+};
+
+/**
+ * Agrupa sugestões por marca
+ */
+export const groupSuggestionsByBrand = (
+  suggestions: VehicleSuggestion[]
+): Record<string, VehicleSuggestion[]> => {
+  const grouped: Record<string, VehicleSuggestion[]> = {};
+  
+  for (const suggestion of suggestions) {
+    const brand = suggestion.variant.brand;
+    if (!grouped[brand]) grouped[brand] = [];
+    grouped[brand].push(suggestion);
+  }
+  
+  return grouped;
+};
+
+/**
+ * Obtém marcas disponíveis
+ */
 export const getAvailableBrands = (): string[] => {
   return Object.keys(VEHICLES_BY_BRAND).sort();
 };
 
-// Lista modelos por marca
+/**
+ * Obtém modelos por marca
+ */
 export const getModelsByBrand = (brand: string): string[] => {
-  const normalizedBrand = normalize(brand);
-  const vehicles = VEHICLES_BY_BRAND[normalizedBrand] || [];
-  return [...new Set(vehicles.map(v => v.model))].sort();
+  const variants = VEHICLES_BY_BRAND[brand] || [];
+  const models = new Set(variants.map(v => v.model));
+  return Array.from(models).sort();
 };
 
-// Busca veículos por marca e modelo
-export const findVehicle = (brand: string, model: string, year?: number): NormalizedVehicle | null => {
-  const normalizedBrand = normalize(brand);
-  const normalizedModel = normalize(model);
-  
-  return BRAZILIAN_VEHICLES_DATABASE.find(v => {
-    if (v.brandNormalized !== normalizedBrand) return false;
-    if (v.modelNormalized !== normalizedModel) return false;
-    if (year && (year < v.yearFrom || year > v.yearTo)) return false;
-    return true;
-  }) || null;
+/**
+ * Busca veículo por marca, modelo e ano
+ */
+export const findVehicle = (
+  brand: string,
+  model: string,
+  year: number
+): VehicleVariant[] => {
+  return BRAZILIAN_VEHICLES_DATABASE.filter(v =>
+    normalize(v.brand) === normalize(brand) &&
+    normalize(v.model) === normalize(model) &&
+    v.year === year
+  ).map(v => ({ ...v, brandLogo: BRAND_LOGOS[v.brand] }));
 };
 
-// Agrupa sugestões por marca
-export const groupSuggestionsByBrand = (suggestions: VehicleSuggestion[]): Record<string, VehicleSuggestion[]> => {
-  return suggestions.reduce((acc, suggestion) => {
-    if (!acc[suggestion.brand]) acc[suggestion.brand] = [];
-    acc[suggestion.brand].push(suggestion);
-    return acc;
-  }, {} as Record<string, VehicleSuggestion[]>);
-};
+/**
+ * Estatísticas da base
+ */
+export const getDatabaseStats = () => ({
+  totalVariants: BRAZILIAN_VEHICLES_DATABASE.length,
+  totalBrands: Object.keys(VEHICLES_BY_BRAND).length,
+  byType: {
+    car: BRAZILIAN_VEHICLES_DATABASE.filter(v => v.vehicleType === 'car').length,
+    motorcycle: BRAZILIAN_VEHICLES_DATABASE.filter(v => v.vehicleType === 'motorcycle').length,
+    truck: BRAZILIAN_VEHICLES_DATABASE.filter(v => v.vehicleType === 'truck').length,
+    suv: BRAZILIAN_VEHICLES_DATABASE.filter(v => v.vehicleType === 'suv').length,
+    pickup: BRAZILIAN_VEHICLES_DATABASE.filter(v => v.vehicleType === 'pickup').length,
+    van: BRAZILIAN_VEHICLES_DATABASE.filter(v => v.vehicleType === 'van').length,
+  },
+});

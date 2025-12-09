@@ -1,19 +1,21 @@
 /**
  * useVehiclePartsSearch Hook
  * Hook para gerenciar estado e lógica da busca de peças por veículo
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { searchVehicles, getVehicleById, groupSuggestionsByBrand } from '../services/vehicleSearchService';
+import { searchVehicles, getVehicleById, getRelatedVariants, groupSuggestionsByBrand } from '../services/vehicleSearchService';
 import { findCompatibleParts, getAvailableCategories, getAvailablePartBrands, saveManualCompatibility } from '../services/compatibilityService';
 import type { 
-  NormalizedVehicle, 
+  VehicleVariant, 
   VehicleSuggestion, 
   CompatiblePart, 
   PartSearchFilters,
   VehiclePartsSearchState,
-  PartCategory
+  PartCategory,
+  CompatibilityStats,
+  MatchType,
 } from '../types';
 
 interface UseVehiclePartsSearchOptions {
@@ -25,7 +27,7 @@ interface UseVehiclePartsSearchOptions {
 interface UseVehiclePartsSearchReturn extends VehiclePartsSearchState {
   // Actions
   setSearchQuery: (query: string) => void;
-  selectVehicle: (vehicleId: string) => Promise<void>;
+  selectVehicle: (variantId: string) => Promise<void>;
   clearVehicle: () => void;
   setFilters: (filters: Partial<PartSearchFilters>) => void;
   resetFilters: () => void;
@@ -36,13 +38,7 @@ interface UseVehiclePartsSearchReturn extends VehiclePartsSearchState {
   groupedSuggestions: Record<string, VehicleSuggestion[]>;
   categories: PartCategory[];
   partBrands: string[];
-  filteredParts: CompatiblePart[];
-  stats: {
-    total: number;
-    inStock: number;
-    verified: number;
-    avgConfidence: number;
-  };
+  stats: CompatibilityStats;
 }
 
 const DEFAULT_FILTERS: PartSearchFilters = {
@@ -56,34 +52,39 @@ const DEFAULT_FILTERS: PartSearchFilters = {
 };
 
 export const useVehiclePartsSearch = (options: UseVehiclePartsSearchOptions): UseVehiclePartsSearchReturn => {
-  const { empresaId, debounceMs = 300, minQueryLength = 2 } = options;
+  const { empresaId, debounceMs = 150, minQueryLength = 2 } = options;
   
   // State
   const [searchQuery, setSearchQueryState] = useState('');
   const [suggestions, setSuggestions] = useState<VehicleSuggestion[]>([]);
-  const [selectedVehicle, setSelectedVehicle] = useState<NormalizedVehicle | null>(null);
+  const [selectedVariant, setSelectedVariant] = useState<VehicleVariant | null>(null);
+  const [availableTrims, setAvailableTrims] = useState<VehicleVariant[]>([]);
   const [compatibleParts, setCompatibleParts] = useState<CompatiblePart[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [isLoadingParts, setIsLoadingParts] = useState(false);
   const [filters, setFiltersState] = useState<PartSearchFilters>(DEFAULT_FILTERS);
   const [viewMode, setViewModeState] = useState<'grid' | 'list'>('grid');
   const [error, setError] = useState<string | null>(null);
+  const [showExportModal, setShowExportModal] = useState(false);
   const [categories, setCategories] = useState<string[]>([]);
   const [partBrands, setPartBrands] = useState<string[]>([]);
   
   // Refs
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
-  const abortControllerRef = useRef<AbortController | null>(null);
   
   // Load categories and brands on mount
   useEffect(() => {
     const loadFiltersData = async () => {
-      if (!empresaId) return;
+      // Calcula effectiveEmpresaId dentro do effect
+      const isSuperAdminCheck = !empresaId && !!sessionStorage.getItem('userId');
+      const effectiveId = empresaId || (isSuperAdminCheck ? '__super_admin__' : '');
+      
+      if (!effectiveId) return;
       
       try {
         const [cats, brands] = await Promise.all([
-          getAvailableCategories(empresaId),
-          getAvailablePartBrands(empresaId),
+          getAvailableCategories(effectiveId),
+          getAvailablePartBrands(effectiveId),
         ]);
         setCategories(cats);
         setPartBrands(brands);
@@ -94,18 +95,15 @@ export const useVehiclePartsSearch = (options: UseVehiclePartsSearchOptions): Us
     
     loadFiltersData();
   }, [empresaId]);
-  
+
+
   // Debounced search
   const setSearchQuery = useCallback((query: string) => {
     setSearchQueryState(query);
     setError(null);
     
-    // Clear previous debounce
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
     
-    // Clear suggestions if query is too short
     if (query.length < minQueryLength) {
       setSuggestions([]);
       setIsLoadingSuggestions(false);
@@ -114,10 +112,9 @@ export const useVehiclePartsSearch = (options: UseVehiclePartsSearchOptions): Us
     
     setIsLoadingSuggestions(true);
     
-    // Debounce search
     debounceRef.current = setTimeout(() => {
       try {
-        const results = searchVehicles(query, { limit: 20 });
+        const results = searchVehicles(query, { limit: 25 });
         setSuggestions(results);
       } catch (err) {
         console.error('[useVehiclePartsSearch] Search error:', err);
@@ -127,14 +124,23 @@ export const useVehiclePartsSearch = (options: UseVehiclePartsSearchOptions): Us
       }
     }, debounceMs);
   }, [debounceMs, minQueryLength]);
+
+  // Verifica se é Super Admin (não tem empresaId mas tem userId)
+  const isSuperAdmin = !empresaId && !!sessionStorage.getItem('userId');
   
+  // empresaId efetivo (Super Admin usa marcador especial)
+  const effectiveEmpresaId = empresaId || (isSuperAdmin ? '__super_admin__' : '');
+
   // Select vehicle and load parts
-  const selectVehicle = useCallback(async (vehicleId: string) => {
-    // Cancel previous request
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
+  const selectVehicle = useCallback(async (variantId: string) => {
+    // Validate - Super Admin pode acessar sem empresaId
+    if (!effectiveEmpresaId) {
+      console.warn('[useVehiclePartsSearch] No empresaId and not super admin');
+      setError('Sessão expirada. Faça login novamente.');
+      return;
     }
-    abortControllerRef.current = new AbortController();
+    
+    console.log(`[useVehiclePartsSearch] Selecting vehicle, empresaId: ${effectiveEmpresaId}, isSuperAdmin: ${isSuperAdmin}`);
     
     setError(null);
     setIsLoadingParts(true);
@@ -142,64 +148,68 @@ export const useVehiclePartsSearch = (options: UseVehiclePartsSearchOptions): Us
     setSearchQueryState('');
     
     try {
-      const vehicle = getVehicleById(vehicleId);
-      
-      if (!vehicle) {
+      const variant = getVehicleById(variantId);
+      if (!variant) {
         throw new Error('Veículo não encontrado');
       }
       
-      setSelectedVehicle(vehicle);
+      setSelectedVariant(variant);
+      
+      // Get related variants (same model/year, different trims)
+      const related = getRelatedVariants(variant);
+      setAvailableTrims(related);
       
       // Load compatible parts
-      const parts = await findCompatibleParts(vehicle, empresaId, filters);
+      const parts = await findCompatibleParts(variant, effectiveEmpresaId, filters);
       setCompatibleParts(parts);
+      
+      console.log(`[useVehiclePartsSearch] Selected ${variant.brand} ${variant.model} ${variant.year}, found ${parts.length} parts`);
     } catch (err: any) {
-      if (err.name !== 'AbortError') {
-        console.error('[useVehiclePartsSearch] Error selecting vehicle:', err);
-        setError(err.message || 'Erro ao carregar peças compatíveis');
-      }
+      console.error('[useVehiclePartsSearch] Error selecting vehicle:', err);
+      setError(err.message || 'Erro ao carregar peças compatíveis');
     } finally {
       setIsLoadingParts(false);
     }
-  }, [empresaId, filters]);
-  
+  }, [effectiveEmpresaId, filters, isSuperAdmin]);
+
   // Clear vehicle selection
   const clearVehicle = useCallback(() => {
-    setSelectedVehicle(null);
+    setSelectedVariant(null);
+    setAvailableTrims([]);
     setCompatibleParts([]);
     setSearchQueryState('');
     setSuggestions([]);
     setError(null);
   }, []);
-  
+
   // Update filters
   const setFilters = useCallback((newFilters: Partial<PartSearchFilters>) => {
     setFiltersState(prev => ({ ...prev, ...newFilters }));
   }, []);
-  
+
   // Reset filters
   const resetFilters = useCallback(() => {
     setFiltersState(DEFAULT_FILTERS);
   }, []);
-  
+
   // Set view mode
   const setViewMode = useCallback((mode: 'grid' | 'list') => {
     setViewModeState(mode);
   }, []);
-  
+
   // Confirm manual compatibility
   const confirmCompatibility = useCallback(async (productId: string) => {
-    if (!selectedVehicle || !empresaId) return;
+    if (!selectedVariant || !effectiveEmpresaId) return;
     
     try {
       const userId = sessionStorage.getItem('userId') || 'unknown';
-      await saveManualCompatibility(empresaId, productId, selectedVehicle.id, userId);
+      await saveManualCompatibility(effectiveEmpresaId, productId, selectedVariant.id, userId);
       
       // Update local state
       setCompatibleParts(prev => 
         prev.map(part => 
           part.productId === productId 
-            ? { ...part, manuallyVerified: true, confidence: 1.0, matchType: 'manual' }
+            ? { ...part, manuallyVerified: true, confidence: 1.0, matchType: 'manual' as MatchType }
             : part
         )
       );
@@ -207,17 +217,18 @@ export const useVehiclePartsSearch = (options: UseVehiclePartsSearchOptions): Us
       console.error('[useVehiclePartsSearch] Error confirming compatibility:', err);
       setError('Erro ao confirmar compatibilidade');
     }
-  }, [selectedVehicle, empresaId]);
-  
+  }, [selectedVariant, effectiveEmpresaId]);
+
   // Refresh parts with current filters
   const refreshParts = useCallback(async () => {
-    if (!selectedVehicle || !empresaId) return;
+    if (!selectedVariant) return;
+    if (!effectiveEmpresaId) return;
     
     setIsLoadingParts(true);
     setError(null);
     
     try {
-      const parts = await findCompatibleParts(selectedVehicle, empresaId, filters);
+      const parts = await findCompatibleParts(selectedVariant, effectiveEmpresaId, filters);
       setCompatibleParts(parts);
     } catch (err: any) {
       console.error('[useVehiclePartsSearch] Error refreshing parts:', err);
@@ -225,18 +236,18 @@ export const useVehiclePartsSearch = (options: UseVehiclePartsSearchOptions): Us
     } finally {
       setIsLoadingParts(false);
     }
-  }, [selectedVehicle, empresaId, filters]);
-  
+  }, [selectedVariant, effectiveEmpresaId, filters]);
+
   // Refresh when filters change
   useEffect(() => {
-    if (selectedVehicle) {
+    if (selectedVariant) {
       refreshParts();
     }
   }, [filters]); // eslint-disable-line react-hooks/exhaustive-deps
-  
+
   // Computed: grouped suggestions
   const groupedSuggestions = groupSuggestionsByBrand(suggestions);
-  
+
   // Computed: categories with counts
   const categoriesWithCounts: PartCategory[] = categories.map(cat => ({
     id: cat,
@@ -244,42 +255,41 @@ export const useVehiclePartsSearch = (options: UseVehiclePartsSearchOptions): Us
     icon: 'package',
     count: compatibleParts.filter(p => p.category === cat).length,
   }));
-  
-  // Computed: filtered parts (client-side additional filtering)
-  const filteredParts = compatibleParts.filter(part => {
-    if (filters.inStockOnly && part.stockQuantity <= 0) return false;
-    return true;
-  });
-  
+
   // Computed: stats
-  const stats = {
-    total: filteredParts.length,
-    inStock: filteredParts.filter(p => p.stockQuantity > 0).length,
-    verified: filteredParts.filter(p => p.manuallyVerified).length,
-    avgConfidence: filteredParts.length > 0 
-      ? filteredParts.reduce((sum, p) => sum + p.confidence, 0) / filteredParts.length 
+  const stats: CompatibilityStats = {
+    total: compatibleParts.length,
+    inStock: compatibleParts.filter(p => p.stockQuantity > 0).length,
+    verified: compatibleParts.filter(p => p.manuallyVerified).length,
+    avgConfidence: compatibleParts.length > 0 
+      ? compatibleParts.reduce((sum, p) => sum + p.confidence, 0) / compatibleParts.length 
       : 0,
+    byMatchType: compatibleParts.reduce((acc, p) => {
+      acc[p.matchType] = (acc[p.matchType] || 0) + 1;
+      return acc;
+    }, {} as Record<MatchType, number>),
   };
-  
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
-      if (abortControllerRef.current) abortControllerRef.current.abort();
     };
   }, []);
-  
+
   return {
     // State
     searchQuery,
     suggestions,
-    selectedVehicle,
-    compatibleParts: filteredParts,
+    selectedVariant,
+    availableTrims,
+    compatibleParts,
     isLoadingSuggestions,
     isLoadingParts,
     filters,
     viewMode,
     error,
+    showExportModal,
     // Actions
     setSearchQuery,
     selectVehicle,
@@ -293,7 +303,6 @@ export const useVehiclePartsSearch = (options: UseVehiclePartsSearchOptions): Us
     groupedSuggestions,
     categories: categoriesWithCounts,
     partBrands,
-    filteredParts,
     stats,
   };
 };

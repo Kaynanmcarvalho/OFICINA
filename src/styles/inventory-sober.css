@@ -1,0 +1,473 @@
+/**
+ * Inventory Sober Premium Design System
+ * Design escuro, elegante, com profundidade e imersividade
+ * Inspirado em Apple, Linear, Stripe - com personalidade própria
+ * @version 1.0.0
+ */
+
+/* ============================================
+   DESIGN TOKENS - TEMA SÓBRIO (DEFAULT)
+   ============================================ */
+:root {
+  /* Backgrounds */
+  --inv-bg-100: #0f1216;
+  --inv-bg-90: #111316;
+  --inv-panel: #121416;
+  --inv-surface: #16191d;
+  --inv-glass: rgba(255, 255, 255, 0.03);
+  
+  /* Textos */
+  --inv-text: #e6eef6;
+  --inv-text-secondary: #9aa0a6;
+  --inv-muted: #6b7280;
+  
+  /* Acentos (apenas 2 cores principais) */
+  --inv-primary: #3c82ff;
+  --inv-primary-muted: rgba(60, 130, 255, 0.12);
+  --inv-accent: #7bc47f;
+  --inv-accent-muted: rgba(123, 196, 127, 0.12);
+  
+  /* Estados */
+  --inv-warning: #f6a34c;
+  --inv-warning-muted: rgba(246, 163, 76, 0.12);
+  --inv-danger: #ff6b6b;
+  --inv-danger-muted: rgba(255, 107, 107, 0.12);
+  
+  /* Bordas */
+  --inv-border: rgba(255, 255, 255, 0.04);
+  --inv-border-hover: rgba(255, 255, 255, 0.08);
+  
+  /* Sombras (amplas e sutis para dark theme) */
+  --inv-shadow-1: 0 2px 10px rgba(3, 7, 12, 0.6);
+  --inv-shadow-2: 0 6px 30px rgba(3, 7, 12, 0.7);
+  --inv-shadow-3: 0 18px 60px rgba(3, 7, 12, 0.75);
+  --inv-shadow-glow: 0 6px 20px rgba(60, 130, 255, 0.12);
+  
+  /* Espaçamento */
+  --inv-radius: 12px;
+  --inv-radius-lg: 16px;
+  --inv-gap-xs: 4px;
+  --inv-gap-sm: 8px;
+  --inv-gap: 16px;
+  --inv-gap-lg: 24px;
+  --inv-gap-xl: 32px;
+  
+  /* Transições */
+  --inv-fast: 150ms cubic-bezier(0.2, 0.9, 0.2, 1);
+  --inv-smooth: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   TEMA CLARO (OPCIONAL)
+   ============================================ */
+[data-theme="light"] {
+  --inv-bg-100: #f6f8fb;
+  --inv-bg-90: #f0f2f5;
+  --inv-panel: #ffffff;
+  --inv-surface: #ffffff;
+  --inv-glass: rgba(16, 24, 40, 0.04);
+  
+  --inv-text: #111827;
+  --inv-text-secondary: #4b5563;
+  --inv-muted: #6b7280;
+  
+  --inv-primary: #2563eb;
+  --inv-primary-muted: rgba(37, 99, 235, 0.08);
+  --inv-accent: #059669;
+  --inv-accent-muted: rgba(5, 150, 105, 0.08);
+  
+  --inv-warning: #d97706;
+  --inv-warning-muted: rgba(217, 119, 6, 0.08);
+  --inv-danger: #dc2626;
+  --inv-danger-muted: rgba(220, 38, 38, 0.08);
+  
+  --inv-border: rgba(16, 24, 40, 0.06);
+  --inv-border-hover: rgba(16, 24, 40, 0.12);
+  
+  --inv-shadow-1: 0 1px 3px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16, 24, 40, 0.04);
+  --inv-shadow-2: 0 4px 16px rgba(16, 24, 40, 0.08);
+  --inv-shadow-3: 0 12px 40px rgba(16, 24, 40, 0.12);
+  --inv-shadow-glow: 0 4px 14px rgba(37, 99, 235, 0.15);
+}
+
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+/* Container principal */
+.inv-page {
+  min-height: 100vh;
+  background: var(--inv-bg-100);
+  color: var(--inv-text);
+  transition: background var(--inv-smooth), color var(--inv-smooth);
+}
+
+/* Card base */
+.inv-card {
+  background: var(--inv-panel);
+  border-radius: var(--inv-radius);
+  border: 1px solid var(--inv-border);
+  box-shadow: var(--inv-shadow-1);
+  transition: transform var(--inv-fast), box-shadow var(--inv-fast), border-color var(--inv-fast);
+}
+
+.inv-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--inv-shadow-2);
+  border-color: var(--inv-border-hover);
+}
+
+.inv-card:active {
+  transform: scale(0.997);
+}
+
+/* Header / Toolbar com glass effect */
+.inv-toolbar {
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.03));
+  border-bottom: 1px solid var(--inv-border);
+}
+
+/* ============================================
+   TIPOGRAFIA
+   ============================================ */
+.inv-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--inv-text);
+  letter-spacing: -0.02em;
+}
+
+.inv-subtitle {
+  font-size: 13px;
+  color: var(--inv-text-secondary);
+}
+
+.inv-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--inv-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.inv-value {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--inv-text);
+}
+
+/* ============================================
+   BOTÕES
+   ============================================ */
+
+/* Botão primário */
+.inv-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--inv-gap-sm);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  background: linear-gradient(90deg, var(--inv-primary), color-mix(in srgb, var(--inv-primary) 85%, black 15%));
+  box-shadow: var(--inv-shadow-glow);
+  border: none;
+  cursor: pointer;
+  transition: all var(--inv-fast);
+}
+
+.inv-btn-primary:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 8px 25px rgba(60, 130, 255, 0.2);
+}
+
+.inv-btn-primary:active {
+  transform: scale(0.98);
+}
+
+/* Botão secundário (outline) */
+.inv-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--inv-gap-sm);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--inv-text-secondary);
+  background: transparent;
+  border: 1px solid var(--inv-border);
+  cursor: pointer;
+  transition: all var(--inv-fast);
+}
+
+.inv-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--inv-text);
+  border-color: var(--inv-border-hover);
+}
+
+/* Botão icon */
+.inv-btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid var(--inv-border);
+  color: var(--inv-text-secondary);
+  cursor: pointer;
+  transition: all var(--inv-fast);
+}
+
+.inv-btn-icon:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--inv-text);
+  border-color: var(--inv-border-hover);
+}
+
+/* ============================================
+   MÉTRICAS
+   ============================================ */
+.inv-metric {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 200px;
+  padding: 18px;
+  background: var(--inv-panel);
+  border-radius: var(--inv-radius);
+  border: 1px solid var(--inv-border);
+  box-shadow: var(--inv-shadow-1);
+  overflow: hidden;
+  transition: all var(--inv-fast);
+}
+
+.inv-metric:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--inv-shadow-2);
+}
+
+.inv-metric-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), var(--inv-glass));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+}
+
+.inv-metric-content {
+  flex: 1;
+}
+
+.inv-metric-value {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--inv-text);
+}
+
+.inv-metric-label {
+  font-size: 12px;
+  color: var(--inv-text-secondary);
+  margin-top: 2px;
+}
+
+/* Linha de acento no rodapé do card */
+.inv-metric-accent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 0 0 var(--inv-radius) var(--inv-radius);
+}
+
+.inv-metric-accent.primary { background: var(--inv-primary); }
+.inv-metric-accent.accent { background: var(--inv-accent); }
+.inv-metric-accent.warning { background: var(--inv-warning); }
+.inv-metric-accent.danger { background: var(--inv-danger); }
+
+/* ============================================
+   BARRA DE BUSCA
+   ============================================ */
+.inv-search {
+  width: 100%;
+  background: var(--inv-surface);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--inv-border);
+}
+
+.inv-search-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: var(--inv-text);
+}
+
+.inv-search-input::placeholder {
+  color: var(--inv-muted);
+}
+
+/* ============================================
+   STATUS PILLS
+   ============================================ */
+.inv-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.inv-pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.inv-pill.success {
+  background: var(--inv-accent-muted);
+  color: var(--inv-accent);
+}
+.inv-pill.success .inv-pill-dot { background: var(--inv-accent); }
+
+.inv-pill.warning {
+  background: var(--inv-warning-muted);
+  color: var(--inv-warning);
+}
+.inv-pill.warning .inv-pill-dot { background: var(--inv-warning); }
+
+.inv-pill.danger {
+  background: var(--inv-danger-muted);
+  color: var(--inv-danger);
+}
+.inv-pill.danger .inv-pill-dot { background: var(--inv-danger); }
+
+.inv-pill.primary {
+  background: var(--inv-primary-muted);
+  color: var(--inv-primary);
+}
+.inv-pill.primary .inv-pill-dot { background: var(--inv-primary); }
+
+/* ============================================
+   TABELA
+   ============================================ */
+.inv-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.inv-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--inv-muted);
+  border-bottom: 1px solid var(--inv-border);
+}
+
+.inv-table td {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: var(--inv-text);
+  border-bottom: 1px solid var(--inv-border);
+}
+
+.inv-table tr:hover td {
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.inv-table tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.005);
+}
+
+/* ============================================
+   ANIMAÇÕES
+   ============================================ */
+@keyframes inv-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.inv-animate-in {
+  animation: inv-fade-in 0.3s ease-out forwards;
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   ACESSIBILIDADE
+   ============================================ */
+.inv-btn-primary:focus-visible,
+.inv-btn-secondary:focus-visible,
+.inv-btn-icon:focus-visible,
+.inv-search-input:focus-visible {
+  outline: 2px solid var(--inv-primary);
+  outline-offset: 2px;
+}
+
+/* Screen reader only */
+.inv-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================
+   SCROLLBAR MINIMALISTA
+   ============================================ */
+.inv-page ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.inv-page ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.inv-page ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.inv-page ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="light"] .inv-page ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .inv-page ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}

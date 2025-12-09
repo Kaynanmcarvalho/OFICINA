@@ -1,0 +1,864 @@
+/**
+ * VehiclePartsSearchModal - Premium Sober Design CSS
+ * Design Apple-like: escuro profundo / claro premium
+ * SEM ROXO - apenas acentos sóbrios
+ * @version 2.0.0
+ */
+
+/* ============================================================================
+   DESIGN TOKENS - TEMA ESCURO (DEFAULT)
+   ============================================================================ */
+.vps-dark {
+  --vps-bg: #0F1113;
+  --vps-surface: #131517;
+  --vps-surface-hover: #1a1c1f;
+  --vps-card: #161819;
+  --vps-border: rgba(255, 255, 255, 0.06);
+  --vps-border-hover: rgba(255, 255, 255, 0.12);
+  
+  --vps-text: #E6EEF6;
+  --vps-text-secondary: #9AA0A6;
+  --vps-text-muted: #6B7280;
+  
+  --vps-primary: #3C82FF;
+  --vps-primary-muted: rgba(60, 130, 255, 0.12);
+  --vps-success: #7BC47F;
+  --vps-success-muted: rgba(123, 196, 127, 0.12);
+  --vps-warning: #F6A34C;
+  --vps-warning-muted: rgba(246, 163, 76, 0.12);
+  --vps-danger: #FF6B6B;
+  --vps-danger-muted: rgba(255, 107, 107, 0.12);
+  
+  --vps-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --vps-shadow-md: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --vps-shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.5);
+}
+
+/* ============================================================================
+   DESIGN TOKENS - TEMA CLARO
+   ============================================================================ */
+.vps-light {
+  --vps-bg: #F7F8FA;
+  --vps-surface: #FFFFFF;
+  --vps-surface-hover: #F3F4F6;
+  --vps-card: #FFFFFF;
+  --vps-border: rgba(0, 0, 0, 0.08);
+  --vps-border-hover: rgba(0, 0, 0, 0.15);
+  
+  --vps-text: #111827;
+  --vps-text-secondary: #4B5563;
+  --vps-text-muted: #9CA3AF;
+
+  --vps-primary: #2563EB;
+  --vps-primary-muted: rgba(37, 99, 235, 0.08);
+  --vps-success: #059669;
+  --vps-success-muted: rgba(5, 150, 105, 0.08);
+  --vps-warning: #D97706;
+  --vps-warning-muted: rgba(217, 119, 6, 0.08);
+  --vps-danger: #DC2626;
+  --vps-danger-muted: rgba(220, 38, 38, 0.08);
+  
+  --vps-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --vps-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --vps-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================================================
+   OVERLAY & MODAL
+   ============================================================================ */
+.vps-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 20px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  overflow-y: auto;
+}
+
+.vps-modal {
+  width: 100%;
+  max-width: 900px;
+  max-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  background: var(--vps-bg);
+  border-radius: 16px;
+  border: 1px solid var(--vps-border);
+  box-shadow: var(--vps-shadow-lg);
+  overflow: hidden;
+}
+
+/* ============================================================================
+   HEADER
+   ============================================================================ */
+.vps-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--vps-border);
+  background: var(--vps-surface);
+}
+
+.vps-header-content {
+  flex: 1;
+}
+
+.vps-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--vps-text);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.vps-subtitle {
+  font-size: 13px;
+  color: var(--vps-text-muted);
+  margin: 4px 0 0;
+}
+
+.vps-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--vps-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vps-close-btn:hover {
+  background: var(--vps-surface-hover);
+  color: var(--vps-text);
+}
+
+/* ============================================================================
+   SEARCH BAR
+   ============================================================================ */
+.vps-search-container {
+  padding: 16px 24px;
+  background: var(--vps-surface);
+  border-bottom: 1px solid var(--vps-border);
+}
+
+.vps-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.vps-search-icon {
+  position: absolute;
+  left: 16px;
+  color: var(--vps-text-muted);
+  pointer-events: none;
+}
+
+.vps-search-input {
+  width: 100%;
+  padding: 14px 16px 14px 48px;
+  font-size: 15px;
+  color: var(--vps-text);
+  background: var(--vps-bg);
+  border: 1px solid var(--vps-border);
+  border-radius: 12px;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.vps-search-input::placeholder {
+  color: var(--vps-text-muted);
+}
+
+.vps-search-input:focus {
+  border-color: var(--vps-primary);
+  box-shadow: 0 0 0 3px var(--vps-primary-muted);
+}
+
+.vps-search-spinner {
+  position: absolute;
+  right: 16px;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--vps-border);
+  border-top-color: var(--vps-primary);
+  border-radius: 50%;
+  animation: vps-spin 0.8s linear infinite;
+}
+
+@keyframes vps-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================================
+   ERROR MESSAGE
+   ============================================================================ */
+.vps-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: var(--vps-danger-muted);
+  color: var(--vps-danger);
+  font-size: 13px;
+}
+
+.vps-error button {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.vps-error button:hover {
+  opacity: 1;
+}
+
+
+/* ============================================================================
+   CONTENT AREA
+   ============================================================================ */
+.vps-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+/* ============================================================================
+   SUGGESTIONS DROPDOWN
+   ============================================================================ */
+.vps-suggestions {
+  padding: 8px;
+}
+
+.vps-suggestion-group {
+  margin-bottom: 8px;
+}
+
+.vps-suggestion-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--vps-text-muted);
+}
+
+.vps-brand-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.vps-suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  margin: 2px 0;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.vps-suggestion-item:hover {
+  background: var(--vps-surface-hover);
+}
+
+.vps-suggestion-item:active {
+  transform: scale(0.99);
+}
+
+.vps-suggestion-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--vps-primary-muted);
+  color: var(--vps-primary);
+  flex-shrink: 0;
+}
+
+.vps-suggestion-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.vps-suggestion-model {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--vps-text);
+}
+
+.vps-suggestion-year {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vps-primary);
+}
+
+.vps-suggestion-details {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--vps-text-secondary);
+  margin-top: 2px;
+}
+
+.vps-engine-code {
+  font-family: 'SF Mono', 'Monaco', monospace;
+  font-size: 11px;
+  color: var(--vps-text-muted);
+}
+
+.vps-suggestion-arrow {
+  color: var(--vps-text-muted);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.vps-suggestion-item:hover .vps-suggestion-arrow {
+  opacity: 1;
+}
+
+/* ============================================================================
+   SELECTED VEHICLE PANEL
+   ============================================================================ */
+.vps-selected-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.vps-vehicle-card {
+  background: var(--vps-surface);
+  border-radius: 12px;
+  border: 1px solid var(--vps-border);
+  padding: 16px;
+}
+
+.vps-vehicle-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.vps-vehicle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--vps-primary-muted);
+  color: var(--vps-primary);
+}
+
+.vps-vehicle-info {
+  flex: 1;
+}
+
+.vps-vehicle-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--vps-text);
+  margin: 0;
+}
+
+.vps-vehicle-year {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--vps-primary);
+  margin: 2px 0 0;
+}
+
+.vps-change-btn {
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--vps-text-secondary);
+  background: transparent;
+  border: 1px solid var(--vps-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vps-change-btn:hover {
+  background: var(--vps-surface-hover);
+  color: var(--vps-text);
+}
+
+.vps-vehicle-specs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--vps-border);
+}
+
+.vps-spec {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vps-spec-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--vps-text-muted);
+}
+
+.vps-spec-value {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--vps-text);
+}
+
+.vps-mono {
+  font-family: 'SF Mono', 'Monaco', monospace;
+}
+
+.vps-variants-selector {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--vps-border);
+}
+
+.vps-variants-label {
+  display: block;
+  font-size: 12px;
+  color: var(--vps-text-muted);
+  margin-bottom: 8px;
+}
+
+.vps-variants-select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--vps-text);
+  background: var(--vps-bg);
+  border: 1px solid var(--vps-border);
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+}
+
+.vps-variants-select:focus {
+  border-color: var(--vps-primary);
+}
+
+
+/* ============================================================================
+   PARTS SECTION
+   ============================================================================ */
+.vps-parts-section {
+  background: var(--vps-surface);
+  border-radius: 12px;
+  border: 1px solid var(--vps-border);
+  overflow: hidden;
+}
+
+.vps-parts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid var(--vps-border);
+}
+
+.vps-parts-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--vps-text);
+  margin: 0;
+}
+
+.vps-parts-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--vps-primary);
+  background: var(--vps-primary-muted);
+  border-radius: 12px;
+}
+
+.vps-parts-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vps-filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--vps-text-secondary);
+  cursor: pointer;
+}
+
+.vps-filter-checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--vps-primary);
+}
+
+.vps-export-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--vps-text-secondary);
+  background: transparent;
+  border: 1px solid var(--vps-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vps-export-btn:hover {
+  background: var(--vps-surface-hover);
+  color: var(--vps-text);
+}
+
+/* Loading State */
+.vps-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 24px;
+  color: var(--vps-text-secondary);
+  font-size: 14px;
+}
+
+.vps-loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--vps-border);
+  border-top-color: var(--vps-primary);
+  border-radius: 50%;
+  animation: vps-spin 0.8s linear infinite;
+}
+
+/* Empty State */
+.vps-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.vps-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: var(--vps-surface-hover);
+  color: var(--vps-text-muted);
+  margin-bottom: 8px;
+}
+
+.vps-empty p {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--vps-text);
+  margin: 0;
+}
+
+.vps-empty-hint {
+  font-size: 13px;
+  color: var(--vps-text-muted);
+}
+
+/* Parts Grid */
+.vps-parts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  padding: 16px;
+}
+
+.vps-part-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--vps-card);
+  border: 1px solid var(--vps-border);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vps-part-card:hover {
+  border-color: var(--vps-border-hover);
+  box-shadow: var(--vps-shadow-sm);
+  transform: translateY(-2px);
+}
+
+.vps-part-header {
+  position: relative;
+  height: 100px;
+  background: var(--vps-surface-hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vps-part-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vps-part-placeholder {
+  color: var(--vps-text-muted);
+  opacity: 0.5;
+}
+
+.vps-confidence-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  border-radius: 6px;
+}
+
+.vps-part-info {
+  padding: 12px;
+  flex: 1;
+}
+
+.vps-part-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vps-text);
+  margin: 0 0 4px;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.vps-part-sku {
+  font-size: 11px;
+  font-family: 'SF Mono', 'Monaco', monospace;
+  color: var(--vps-text-muted);
+  margin: 0;
+}
+
+.vps-part-brand {
+  font-size: 12px;
+  color: var(--vps-text-secondary);
+  margin: 4px 0 0;
+}
+
+.vps-part-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-top: 1px solid var(--vps-border);
+}
+
+.vps-in-stock {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--vps-success);
+}
+
+.vps-out-stock {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--vps-danger);
+}
+
+.vps-part-price {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--vps-primary);
+}
+
+.vps-part-match {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--vps-surface-hover);
+  font-size: 11px;
+}
+
+.vps-match-type {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--vps-text-muted);
+}
+
+.vps-verified {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--vps-success);
+  font-weight: 500;
+}
+
+/* ============================================================================
+   INITIAL STATE
+   ============================================================================ */
+.vps-initial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.vps-initial-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  background: var(--vps-primary-muted);
+  color: var(--vps-primary);
+  margin-bottom: 8px;
+}
+
+.vps-initial h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--vps-text);
+  margin: 0;
+}
+
+.vps-initial p {
+  font-size: 14px;
+  color: var(--vps-text-secondary);
+  margin: 0;
+  max-width: 320px;
+}
+
+.vps-examples {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.vps-examples span {
+  font-size: 12px;
+  color: var(--vps-text-muted);
+}
+
+.vps-examples button {
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--vps-primary);
+  background: var(--vps-primary-muted);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vps-examples button:hover {
+  background: var(--vps-primary);
+  color: white;
+}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+@media (max-width: 640px) {
+  .vps-overlay {
+    padding: 0;
+  }
+  
+  .vps-modal {
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  .vps-parts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .vps-vehicle-specs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ============================================================================
+   SCROLLBAR
+   ============================================================================ */
+.vps-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.vps-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.vps-content::-webkit-scrollbar-thumb {
+  background: var(--vps-border);
+  border-radius: 3px;
+}
+
+.vps-content::-webkit-scrollbar-thumb:hover {
+  background: var(--vps-border-hover);
+}

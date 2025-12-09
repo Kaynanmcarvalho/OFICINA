@@ -1,6 +1,7 @@
 /**
- * InventoryGridView - Apple-like Premium Grid
+ * InventoryGridView - Sober Premium Grid
  * Grid responsivo com auto-fit para cards de produto
+ * @version 4.0.0
  */
 
 import { motion } from 'framer-motion';
