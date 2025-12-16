@@ -5,6 +5,7 @@ import { Search, Moon, Sun, User, LogOut, Settings, UserCircle, ChevronDown } fr
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../hooks/useTheme';
 import { useAuthStore } from '../../store/index.jsx';
+import GlobalSearch from './GlobalSearch';
 
 /**
  * Navbar Premium - Estilo Apple
@@ -400,29 +401,8 @@ const Navbar = ({ onMenuClick, onLogout }) => {
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-300/50 dark:via-white/[0.08] to-transparent" />
       </div>
 
-      {/* Search Modal (opcional - expandir se necessário) */}
-      <AnimatePresence>
-        {isSearchOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 right-0 mt-2 px-6 lg:px-8"
-          >
-            <div className="max-w-2xl mx-auto">
-              <div className="bg-white/90 dark:bg-[#181A20]/95 backdrop-blur-2xl rounded-2xl shadow-2xl border border-gray-200/50 dark:border-white/[0.08] p-4">
-                <input
-                  type="text"
-                  placeholder="Pesquisar..."
-                  className="w-full px-4 py-3 bg-gray-100/50 dark:bg-[#14161D]/50 rounded-xl border-none focus:outline-none focus:ring-2 focus:ring-orange-500/50 dark:focus:ring-[#0A84FF]/50 text-gray-900 dark:text-[#E8E8EA] placeholder-gray-500 dark:placeholder-[#6E6F76]"
-                  autoFocus
-                />
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Global Search Modal */}
+      <GlobalSearch isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </motion.nav>
   );
 };
