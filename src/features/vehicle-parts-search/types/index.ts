@@ -182,3 +182,21 @@ export interface ManualConfirmRequest {
   userId: string;
   notes?: string;
 }
+
+// ============================================================================
+// PARTS DATABASE TYPES
+// ============================================================================
+
+/**
+ * Part Number Data - Estrutura de dados de peças na base
+ */
+export interface PartNumberData {
+  partNumber: string;
+  brand: string;
+  category: string;
+  categoryKey: string;
+  name: string;
+  specs: Record<string, any> | null;
+  equivalents: string[];
+  applications: string[];
+}

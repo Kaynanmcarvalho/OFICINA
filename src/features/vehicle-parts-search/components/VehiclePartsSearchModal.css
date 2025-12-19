@@ -698,10 +698,47 @@
   margin: 0;
 }
 
+.vps-part-number {
+  font-size: 12px;
+  color: var(--vps-primary);
+  background: var(--vps-primary-muted);
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+.vps-part-number strong {
+  font-weight: 600;
+  color: var(--vps-text-secondary);
+}
+
 .vps-part-brand {
   font-size: 12px;
   color: var(--vps-text-secondary);
   margin: 4px 0 0;
+}
+
+.vps-part-equivalents {
+  font-size: 10px;
+  color: var(--vps-text-muted);
+  margin: 4px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vps-equiv-label {
+  font-weight: 500;
+  color: var(--vps-text-secondary);
+}
+
+.vps-equiv-more {
+  font-size: 9px;
+  background: var(--vps-surface-hover);
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-left: 4px;
 }
 
 .vps-part-footer {
@@ -861,4 +898,70 @@
 
 .vps-content::-webkit-scrollbar-thumb:hover {
   background: var(--vps-border-hover);
+}
+
+
+/* ============================================================================
+   ALTERNATIVAS MAIS BARATAS E CROSS-COMPATIBILITY
+   ============================================================================ */
+.vps-part-alternatives {
+  margin-top: 8px;
+  padding: 8px;
+  background: var(--vps-success-muted);
+  border-radius: 8px;
+  border: 1px solid rgba(123, 196, 127, 0.2);
+}
+
+.vps-alternatives-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--vps-success);
+  margin-bottom: 4px;
+}
+
+.vps-alternatives-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vps-alternative-item {
+  font-size: 11px;
+  color: var(--vps-text-secondary);
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+.vps-part-cross {
+  margin-top: 6px;
+  padding: 6px 8px;
+  background: var(--vps-primary-muted);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vps-cross-label {
+  font-size: 11px;
+  color: var(--vps-primary);
+  font-weight: 500;
+}
+
+.vps-cross-count {
+  font-size: 11px;
+  color: var(--vps-text-secondary);
+}
+
+/* Badge de economia */
+.vps-savings-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  background: var(--vps-success);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 4px;
 }

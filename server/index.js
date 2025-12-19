@@ -39,6 +39,18 @@ const whatsappService = require('./services/whatsappMultiSessionService');
 const whatsappRoutes = require('./routes/whatsapp.routes');
 app.use('/api/whatsapp', whatsappRoutes);
 
+// Parts Compatibility Routes
+const partsCompatibilityRoutes = require('./routes/parts-compatibility.routes');
+app.use('/api/parts', partsCompatibilityRoutes);
+
+// Parts Compatibility V2 Routes (com PartNumbers expandidos)
+const partsCompatibilityV2Routes = require('./routes/parts-compatibility-v2.routes');
+app.use('/api/v2/parts', partsCompatibilityV2Routes);
+
+// Parts Compatibility Full Routes (base completa com cross-compatibility)
+const partsCompatibilityFullRoutes = require('./routes/parts-compatibility-full.routes');
+app.use('/api/parts-full', partsCompatibilityFullRoutes);
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

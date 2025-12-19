@@ -142,12 +142,10 @@ export const VehiclePartsSearchModal: React.FC<VehiclePartsSearchModalProps> = (
     }
   }, [isOpen]);
   
-  // Load categories
+  // Load categories - sempre carrega, mesmo sem empresaId
   useEffect(() => {
-    const effectiveId = empresaId || (isSuperAdmin ? '__super_admin__' : '');
-    if (effectiveId) {
-      getAvailableCategories(effectiveId).then(setCategories).catch(console.error);
-    }
+    const effectiveId = empresaId || (isSuperAdmin ? '__super_admin__' : '__local_search__');
+    getAvailableCategories(effectiveId).then(setCategories).catch(console.error);
   }, [empresaId, isSuperAdmin]);
 
 
@@ -208,13 +206,11 @@ export const VehiclePartsSearchModal: React.FC<VehiclePartsSearchModalProps> = (
     const related = getRelatedVariants(variant);
     setRelatedVariants(related);
     
-    // Super Admin pode acessar sem empresaId
-    const effectiveEmpresaId = empresaId || (isSuperAdmin ? '__super_admin__' : '');
+    // Permite busca local mesmo sem empresaId - o engine funciona localmente
+    const effectiveEmpresaId = empresaId || (isSuperAdmin ? '__super_admin__' : '__local_search__');
     
-    if (!effectiveEmpresaId) {
-      setError('Sessão expirada. Faça login novamente.');
-      return;
-    }
+    // REMOVIDO: Validação de empresaId - busca local sempre funciona
+    console.log(`[Modal] Buscando peças, empresaId: ${effectiveEmpresaId}`);
     
     // Busca peças compatíveis
     setIsLoadingParts(true);
@@ -239,7 +235,7 @@ export const VehiclePartsSearchModal: React.FC<VehiclePartsSearchModalProps> = (
     setIsLoadingParts(true);
     setError(null);
     
-    const effectiveId = empresaId || (isSuperAdmin ? '__super_admin__' : '');
+    const effectiveId = empresaId || (isSuperAdmin ? '__super_admin__' : '__local_search__');
     
     try {
       const parts = await findCompatibleParts(variant, effectiveId, filters);
@@ -536,8 +532,7 @@ export const VehiclePartsSearchModal: React.FC<VehiclePartsSearchModalProps> = (
                         <div
                           key={part.id}
                           className="vps-part-card"
-                          onClick={() => onPartSelect?.(part)}
-                          role="button"
+                          role="article"
                           tabIndex={0}
                         >
                           <div className="vps-part-header">
@@ -557,8 +552,16 @@ export const VehiclePartsSearchModal: React.FC<VehiclePartsSearchModalProps> = (
                           
                           <div className="vps-part-info">
                             <h5 className="vps-part-name">{part.name}</h5>
-                            <p className="vps-part-sku">SKU: {part.sku}</p>
+                            <p className="vps-part-sku vps-part-number">
+                              <strong>P/N:</strong> {part.sku}
+                            </p>
                             {part.brand && <p className="vps-part-brand">{part.brand}</p>}
+                            {part.partNumbers && part.partNumbers.length > 1 && (
+                              <p className="vps-part-equivalents" title={`Equivalentes: ${part.partNumbers.slice(1).join(', ')}`}>
+                                <span className="vps-equiv-label">Equiv:</span> {part.partNumbers.slice(1, 3).join(', ')}
+                                {part.partNumbers.length > 3 && <span className="vps-equiv-more">+{part.partNumbers.length - 3}</span>}
+                              </p>
+                            )}
                           </div>
                           
                           <div className="vps-part-footer">
@@ -578,6 +581,30 @@ export const VehiclePartsSearchModal: React.FC<VehiclePartsSearchModalProps> = (
                               <span className="vps-verified">{Icons.check} Verificado</span>
                             )}
                           </div>
+                          
+                          {/* Alternativas mais baratas */}
+                          {(part as any).cheaperAlternatives?.length > 0 && (
+                            <div className="vps-part-alternatives">
+                              <span className="vps-alternatives-label">💰 Alternativas mais baratas:</span>
+                              <div className="vps-alternatives-list">
+                                {(part as any).cheaperAlternatives.slice(0, 2).map((alt: any, i: number) => (
+                                  <span key={i} className="vps-alternative-item">
+                                    {alt.partNumber} - R$ {alt.avgPrice?.toFixed(2)} ({alt.savingsPercent})
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Cross-compatibility */}
+                          {(part as any).crossCompatible?.length > 0 && (
+                            <div className="vps-part-cross">
+                              <span className="vps-cross-label">🔄 Também serve em:</span>
+                              <span className="vps-cross-count">
+                                {(part as any).crossCompatible.length} outros veículos
+                              </span>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>

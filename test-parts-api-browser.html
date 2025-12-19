@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teste API Peças - TORQ AI</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 20px; background: #1a1a1a; color: #fff; }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { color: #3C82FF; }
+    button { background: #3C82FF; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; margin: 5px; }
+    button:hover { background: #2563EB; }
+    .result { background: #2a2a2a; padding: 15px; border-radius: 8px; margin-top: 15px; white-space: pre-wrap; font-family: monospace; font-size: 12px; max-height: 400px; overflow-y: auto; }
+    .success { border-left: 4px solid #7BC47F; }
+    .error { border-left: 4px solid #FF6B6B; }
+    input { padding: 10px; border-radius: 6px; border: 1px solid #444; background: #333; color: #fff; width: 200px; margin-right: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔧 Teste API de Compatibilidade de Peças</h1>
+    <p>API Base: <code>http://localhost:3001</code></p>
+    
+    <h3>1. Teste de Saúde</h3>
+    <button onclick="testHealth()">Testar /health</button>
+    
+    <h3>2. Estatísticas</h3>
+    <button onclick="testStats()">Testar /api/parts-full/stats</button>
+    
+    <h3>3. Buscar Veículo</h3>
+    <input type="text" id="vehicleId" placeholder="Ex: vw_gol_2020" value="vw_gol_2020">
+    <button onclick="testVehicle()">Buscar Peças</button>
+    
+    <h3>4. Pesquisar por Modelo</h3>
+    <input type="text" id="modelSearch" placeholder="Ex: corolla" value="gol">
+    <button onclick="testSearch()">Pesquisar</button>
+    
+    <div id="result" class="result">Clique em um botão para testar...</div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:3001';
+    const resultDiv = document.getElementById('result');
+    
+    function showResult(data, isError = false) {
+      resultDiv.className = 'result ' + (isError ? 'error' : 'success');
+      resultDiv.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+    }
+    
+    async function testHealth() {
+      try {
+        const res = await fetch(`${API_BASE}/health`);
+        const data = await res.json();
+        showResult(data);
+      } catch (err) {
+        showResult(`Erro: ${err.message}`, true);
+      }
+    }
+    
+    async function testStats() {
+      try {
+        const res = await fetch(`${API_BASE}/api/parts-full/stats`);
+        const data = await res.json();
+        showResult(data);
+      } catch (err) {
+        showResult(`Erro: ${err.message}`, true);
+      }
+    }
+    
+    async function testVehicle() {
+      const vehicleId = document.getElementById('vehicleId').value;
+      try {
+        const res = await fetch(`${API_BASE}/api/parts-full/vehicle/${encodeURIComponent(vehicleId)}`);
+        const data = await res.json();
+        
+        if (data.success && data.data) {
+          const summary = {
+            vehicleId: data.data.vehicleId,
+            vehicleName: data.data.vehicleName,
+            platform: data.data.platform,
+            totalParts: data.data.totalParts,
+            categories: Object.keys(data.data.partsByCategory || {}),
+            parts: data.data.compatibleParts?.map(p => ({
+              partNumber: p.partNumber,
+              name: p.name,
+              brand: p.brand,
+              category: p.category,
+              price: p.avgPrice
+            }))
+          };
+          showResult(summary);
+        } else {
+          showResult(data, true);
+        }
+      } catch (err) {
+        showResult(`Erro: ${err.message}`, true);
+      }
+    }
+    
+    async function testSearch() {
+      const model = document.getElementById('modelSearch').value;
+      try {
+        const res = await fetch(`${API_BASE}/api/parts-full/search?model=${encodeURIComponent(model)}&limit=10`);
+        const data = await res.json();
+        showResult(data);
+      } catch (err) {
+        showResult(`Erro: ${err.message}`, true);
+      }
+    }
+  </script>
+</body>
+</html>

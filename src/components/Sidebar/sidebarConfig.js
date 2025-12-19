@@ -11,7 +11,7 @@ import {
   BarChart3,
   Settings,
   Building2,
-  Shield
+  Shield,
 } from 'lucide-react';
 
 /**

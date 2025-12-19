@@ -1,76 +1,86 @@
 @echo off
 echo.
 echo ========================================
-echo   Vehicle Database Sync - TORQ AI
+echo   TORQ AI - Vehicle Database Sync
 echo ========================================
 echo.
 
 cd /d "%~dp0"
 
-if not exist "node_modules" (
-    echo Instalando dependencias...
-    call npm install
-    echo.
-)
-
+:menu
 echo Escolha uma opcao:
 echo.
-echo   1. Sincronizacao Completa (recomendado)
-echo   2. Sincronizar apenas Carros
-echo   3. Sincronizar apenas Motos
-echo   4. Sincronizar apenas Caminhoes
-echo   5. Ver Estatisticas da Base
-echo   6. Sincronizar marca especifica
-echo   7. Dry Run (apenas mostra o que seria feito)
-echo   0. Sair
+echo   1. Baixar dados de marcas (rapido)
+echo   2. Sincronizar CARROS (demora)
+echo   3. Sincronizar MOTOS (demora)
+echo   4. Sincronizar marca especifica
+echo   5. Aplicar resultados ao arquivo
+echo   6. Ver estatisticas da base
+echo   7. Sair
 echo.
+set /p choice="Opcao: "
 
-set /p opcao="Digite a opcao: "
+if "%choice%"=="1" goto download
+if "%choice%"=="2" goto sync_cars
+if "%choice%"=="3" goto sync_motos
+if "%choice%"=="4" goto sync_brand
+if "%choice%"=="5" goto apply
+if "%choice%"=="6" goto stats
+if "%choice%"=="7" goto end
 
-if "%opcao%"=="1" (
-    echo.
-    echo Iniciando sincronizacao completa...
-    call npm run full-sync
-)
+echo Opcao invalida!
+goto menu
 
-if "%opcao%"=="2" (
-    echo.
-    echo Sincronizando carros...
-    node src/fullSync.js --type=cars
-)
-
-if "%opcao%"=="3" (
-    echo.
-    echo Sincronizando motos...
-    node src/fullSync.js --type=motos
-)
-
-if "%opcao%"=="4" (
-    echo.
-    echo Sincronizando caminhoes...
-    node src/fullSync.js --type=trucks
-)
-
-if "%opcao%"=="5" (
-    echo.
-    call npm run stats
-)
-
-if "%opcao%"=="6" (
-    echo.
-    set /p marca="Digite o nome da marca (ex: Honda, Yamaha, BMW): "
-    node src/fullSync.js --brand="%marca%"
-)
-
-if "%opcao%"=="7" (
-    echo.
-    echo Executando dry run...
-    node src/fullSync.js --dry-run
-)
-
-if "%opcao%"=="0" (
-    exit /b 0
-)
-
+:download
+echo.
+echo Baixando dados de marcas...
+node src/downloadFipeData.js
 echo.
 pause
+goto menu
+
+:sync_cars
+echo.
+echo Sincronizando carros (isso pode demorar horas)...
+echo Pressione Ctrl+C para cancelar.
+echo.
+node src/syncFromLocal.js --type=cars
+echo.
+pause
+goto menu
+
+:sync_motos
+echo.
+echo Sincronizando motos...
+node src/syncFromLocal.js --type=motos
+echo.
+pause
+goto menu
+
+:sync_brand
+echo.
+set /p brand="Digite o nome da marca: "
+echo Sincronizando %brand%...
+node src/syncFromLocal.js --brand=%brand%
+echo.
+pause
+goto menu
+
+:apply
+echo.
+echo Aplicando resultados...
+node src/applySync.js
+echo.
+pause
+goto menu
+
+:stats
+echo.
+node src/stats.js
+echo.
+pause
+goto menu
+
+:end
+echo.
+echo Ate mais!

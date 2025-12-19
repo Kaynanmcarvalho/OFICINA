@@ -25,3 +25,7 @@ dist-ssr
 
 # WhatsApp Web auth session (ephemeral)
 /.wwebjs_auth/
+
+# Large JSON files (parts compatibility database)
+scripts/parts-compatibility-engine/output/*.json
+scripts/parts-compatibility-engine/output/

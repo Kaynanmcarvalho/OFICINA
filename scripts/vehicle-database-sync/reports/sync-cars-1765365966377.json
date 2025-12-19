@@ -1,0 +1,1870 @@
+{
+  "timestamp": "2025-12-10T11:26:06.377Z",
+  "type": "CARS",
+  "totalCollected": 266,
+  "missing": 0,
+  "vehicles": [
+    {
+      "brand": "Honda",
+      "model": "Accord Coupe EX",
+      "year": 1998,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Coupe EX",
+      "year": 1997,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Coupe EX",
+      "year": 1996,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Coupe EX",
+      "year": 1995,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Coupe EX",
+      "year": 1994,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Coupe EX",
+      "year": 1993,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Coupe EX",
+      "year": 1992,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Coupe EX",
+      "year": 1991,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan 2.0 TB 16V Aut. (Híbrido)",
+      "year": 2021,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.0 16V 156cv Aut.",
+      "year": 2012,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.0 16V 156cv Aut.",
+      "year": 2011,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.0 16V 156cv Aut.",
+      "year": 2010,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.4/2.3/ 2.2 16V",
+      "year": 2014,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.4/2.3/ 2.2 16V",
+      "year": 2013,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.4/2.3/ 2.2 16V",
+      "year": 2005,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.4/2.3/ 2.2 16V",
+      "year": 2004,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.4/2.3/ 2.2 16V",
+      "year": 2003,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.4/2.3/ 2.2 16V",
+      "year": 2002,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.4/2.3/ 2.2 16V",
+      "year": 2001,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.4/2.3/ 2.2 16V",
+      "year": 2000,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.4/2.3/ 2.2 16V",
+      "year": 1999,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.4/2.3/ 2.2 16V",
+      "year": 1998,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.4/2.3/ 2.2 16V",
+      "year": 1997,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.4/2.3/ 2.2 16V",
+      "year": 1996,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.4/2.3/ 2.2 16V",
+      "year": 1995,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.4/2.3/ 2.2 16V",
+      "year": 1994,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.4/2.3/ 2.2 16V",
+      "year": 1993,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.4/2.3/ 2.2 16V",
+      "year": 1992,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.4/2.3/ 2.2 16V",
+      "year": 1991,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.7/3.0 24V",
+      "year": 2007,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.7/3.0 24V",
+      "year": 2006,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.7/3.0 24V",
+      "year": 2005,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.7/3.0 24V",
+      "year": 2004,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.7/3.0 24V",
+      "year": 1996,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 2.7/3.0 24V",
+      "year": 1995,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 3.5 V6 24V",
+      "year": 2017,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 3.5 V6 24V",
+      "year": 2016,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 3.5 V6 24V",
+      "year": 2015,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 3.5 V6 24V",
+      "year": 2014,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 3.5 V6 24V",
+      "year": 2013,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 3.5 V6 24V",
+      "year": 2012,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 3.5 V6 24V",
+      "year": 2011,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 3.5 V6 24V",
+      "year": 2010,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 3.5 V6 24V",
+      "year": 2009,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EX 3.5 V6 24V",
+      "year": 2008,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EXR",
+      "year": 2001,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EXR",
+      "year": 2000,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EXR",
+      "year": 1999,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EXR",
+      "year": 1998,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EXR",
+      "year": 1997,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EXR",
+      "year": 1996,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan EXR",
+      "year": 1995,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan LX  2.2/2.4 16V",
+      "year": 2005,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan LX  2.2/2.4 16V",
+      "year": 1996,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan LX  2.2/2.4 16V",
+      "year": 1995,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan LX  2.2/2.4 16V",
+      "year": 1994,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan LX  2.2/2.4 16V",
+      "year": 1993,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan LX  2.2/2.4 16V",
+      "year": 1992,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan LX 2.0 16V 150/156cv Aut.",
+      "year": 2009,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan LX 2.0 16V 150/156cv Aut.",
+      "year": 2008,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan LX 2.0 16V 150/156cv Aut.",
+      "year": 2007,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan LX 2.0 16V 150/156cv Aut.",
+      "year": 2006,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan Touring 2.0 TB 16V Aut.",
+      "year": 2020,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan Touring 2.0 TB 16V Aut.",
+      "year": 2019,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord Sedan Touring 2.0 TB 16V Aut.",
+      "year": 2018,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord SW EX",
+      "year": 1995,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord SW EX",
+      "year": 1994,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord SW EX",
+      "year": 1993,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord SW EX",
+      "year": 1992,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord SW EX",
+      "year": 1991,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord SW LX",
+      "year": 1995,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord SW LX",
+      "year": 1994,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Accord SW LX",
+      "year": 1993,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Hatchback EXL 1.5 Flex 16V Aut.",
+      "year": 32000,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Hatchback EXL 1.5 Flex 16V Aut.",
+      "year": 2024,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Hatchback EXL 1.5 Flex 16V Aut.",
+      "year": 2023,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Hatchback EXL 1.5 Flex 16V Aut.",
+      "year": 2022,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Hatchback Touring 1.5 Flex 16V Aut",
+      "year": 32000,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Hatchback Touring 1.5 Flex 16V Aut",
+      "year": 2024,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Hatchback Touring 1.5 Flex 16V Aut",
+      "year": 2023,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Hatchback Touring 1.5 Flex 16V Aut",
+      "year": 2022,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan DX 1.5 Flex 16V Aut.",
+      "year": 2017,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan DX 1.5 Flex 16V Aut.",
+      "year": 2016,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan DX 1.5 Flex 16V Aut.",
+      "year": 2012,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan DX 1.5 Flex 16V Aut.",
+      "year": 2011,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan DX 1.5 Flex 16V Mec.",
+      "year": 2021,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan DX 1.5 Flex 16V Mec.",
+      "year": 2020,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan DX 1.5 Flex 16V Mec.",
+      "year": 2019,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan DX 1.5 Flex 16V Mec.",
+      "year": 2018,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan DX 1.5 Flex 16V Mec.",
+      "year": 2017,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan DX 1.5 Flex 16V Mec.",
+      "year": 2016,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan DX 1.5 Flex 16V Mec.",
+      "year": 2015,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan DX 1.5 Flex 16V Mec.",
+      "year": 2014,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan DX 1.5 Flex 16V Mec.",
+      "year": 2013,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan DX 1.5 Flex 16V Mec.",
+      "year": 2012,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan DX 1.5 Flex 16V Mec.",
+      "year": 2011,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Aut.",
+      "year": 32000,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Aut.",
+      "year": 2024,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Aut.",
+      "year": 2023,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Aut.",
+      "year": 2022,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Aut.",
+      "year": 2021,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Aut.",
+      "year": 2020,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Aut.",
+      "year": 2019,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Aut.",
+      "year": 2018,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Aut.",
+      "year": 2017,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Aut.",
+      "year": 2016,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Aut.",
+      "year": 2015,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Aut.",
+      "year": 2014,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Aut.",
+      "year": 2013,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Aut.",
+      "year": 2012,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Aut.",
+      "year": 2011,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Aut.",
+      "year": 2010,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Mec.",
+      "year": 2013,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Mec.",
+      "year": 2012,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Mec.",
+      "year": 2011,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EX 1.5 Flex 16V 4p Mec.",
+      "year": 2010,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EXL 1.5 Flex  16V 4p Aut.",
+      "year": 32000,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EXL 1.5 Flex  16V 4p Aut.",
+      "year": 2024,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EXL 1.5 Flex  16V 4p Aut.",
+      "year": 2023,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EXL 1.5 Flex  16V 4p Aut.",
+      "year": 2022,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EXL 1.5 Flex  16V 4p Aut.",
+      "year": 2021,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EXL 1.5 Flex  16V 4p Aut.",
+      "year": 2020,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EXL 1.5 Flex  16V 4p Aut.",
+      "year": 2019,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EXL 1.5 Flex  16V 4p Aut.",
+      "year": 2018,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EXL 1.5 Flex  16V 4p Aut.",
+      "year": 2017,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EXL 1.5 Flex  16V 4p Aut.",
+      "year": 2016,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EXL 1.5 Flex  16V 4p Aut.",
+      "year": 2015,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EXL 1.5 Flex  16V 4p Aut.",
+      "year": 2012,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EXL 1.5 Flex  16V 4p Aut.",
+      "year": 2011,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EXL 1.5 Flex  16V 4p Aut.",
+      "year": 2010,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EXL 1.5 Flex 16V 4p Mec.",
+      "year": 2011,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan EXL 1.5 Flex 16V 4p Mec.",
+      "year": 2010,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan LX 1.5 Flex 16V 4p Aut.",
+      "year": 2021,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan LX 1.5 Flex 16V 4p Aut.",
+      "year": 2020,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan LX 1.5 Flex 16V 4p Aut.",
+      "year": 2019,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan LX 1.5 Flex 16V 4p Aut.",
+      "year": 2018,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan LX 1.5 Flex 16V 4p Aut.",
+      "year": 2017,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan LX 1.5 Flex 16V 4p Aut.",
+      "year": 2016,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan LX 1.5 Flex 16V 4p Aut.",
+      "year": 2015,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan LX 1.5 Flex 16V 4p Aut.",
+      "year": 2014,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan LX 1.5 Flex 16V 4p Aut.",
+      "year": 2013,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan LX 1.5 Flex 16V 4p Aut.",
+      "year": 2012,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan LX 1.5 Flex 16V 4p Aut.",
+      "year": 2011,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan LX 1.5 Flex 16V 4p Aut.",
+      "year": 2010,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan LX 1.5 Flex 16V 4p Mec.",
+      "year": 2013,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan LX 1.5 Flex 16V 4p Mec.",
+      "year": 2012,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan LX 1.5 Flex 16V 4p Mec.",
+      "year": 2011,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan LX 1.5 Flex 16V 4p Mec.",
+      "year": 2010,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan Personal 1.5 Flex 16V Aut.",
+      "year": 2021,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan Personal 1.5 Flex 16V Aut.",
+      "year": 2020,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan Personal 1.5 Flex 16V Aut.",
+      "year": 2019,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan Personal 1.5 Flex 16V Aut.",
+      "year": 2018,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan SPORT 1.5 FLEX 16V 4p Mec.",
+      "year": 2014,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan Touring 1.5 Flex 16V 4p Aut.",
+      "year": 32000,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan Touring 1.5 Flex 16V 4p Aut.",
+      "year": 2024,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan Touring 1.5 Flex 16V 4p Aut.",
+      "year": 2023,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "CITY Sedan Touring 1.5 Flex 16V 4p Aut.",
+      "year": 2022,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Coupe EX/ EXS 1.6 16V 2p",
+      "year": 1998,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Coupe EX/ EXS 1.6 16V 2p",
+      "year": 1997,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Coupe EX/ EXS 1.6 16V 2p",
+      "year": 1996,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Coupe EX/ EXS 1.6 16V 2p",
+      "year": 1995,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Coupe EX/ EXS 1.6 16V 2p",
+      "year": 1994,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Coupe EX/ EXS 1.6 16V 2p",
+      "year": 1993,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Coupe EX/ EXS 1.6 16V 2p",
+      "year": 1992,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Coupe EX/ EXS 1.6 16V 2p",
+      "year": 1991,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Coupe Si 1.5 TB 16V 208cv Mec. 2p",
+      "year": 2020,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Coupe Si 1.5 TB 16V 208cv Mec. 2p",
+      "year": 2019,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Coupe Si 1.5 TB 16V 208cv Mec. 2p",
+      "year": 2018,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Coupe Si 2.4 16V 206cv Mec. 2p",
+      "year": 2015,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Coupe Si 2.4 16V 206cv Mec. 2p",
+      "year": 2014,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic CRX/ Targa VTi",
+      "year": 1995,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic CRX/ Targa VTi",
+      "year": 1994,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic CRX/ Targa VTi",
+      "year": 1993,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch DX",
+      "year": 1995,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch DX",
+      "year": 1994,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch DX",
+      "year": 1993,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch DX",
+      "year": 1992,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch LSi",
+      "year": 1995,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch LSi",
+      "year": 1994,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch LSi",
+      "year": 1993,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch LSi",
+      "year": 1992,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch LSi",
+      "year": 1991,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch LX Aut.",
+      "year": 1996,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch LX Aut.",
+      "year": 1995,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch LX Aut.",
+      "year": 1994,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch LX Aut.",
+      "year": 1993,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch LX Aut.",
+      "year": 1992,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch Si",
+      "year": 1995,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch Si",
+      "year": 1994,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch Si",
+      "year": 1993,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch VTi",
+      "year": 1998,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch VTi",
+      "year": 1997,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch VTi",
+      "year": 1996,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch VTi",
+      "year": 1995,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch VTi",
+      "year": 1994,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch VTi",
+      "year": 1993,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Hatch VTi",
+      "year": 1992,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sed LX 1.8 Aut 4p",
+      "year": 2007,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sed. LXL/ LXL SE 1.8 Flex 16V Aut.",
+      "year": 2013,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sed. LXL/ LXL SE 1.8 Flex 16V Aut.",
+      "year": 2012,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sed. LXL/ LXL SE 1.8 Flex 16V Aut.",
+      "year": 2011,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sed. LXL/ LXL SE 1.8 Flex 16V Aut.",
+      "year": 2010,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sed. LXL/LXL SE 1.8 Flex 16V Mec.",
+      "year": 2013,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sed. LXL/LXL SE 1.8 Flex 16V Mec.",
+      "year": 2012,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sed. LXL/LXL SE 1.8 Flex 16V Mec.",
+      "year": 2011,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sed. LXL/LXL SE 1.8 Flex 16V Mec.",
+      "year": 2010,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sed.Touring 2.0 16V Aut. (Híbrido)",
+      "year": 32000,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sed.Touring 2.0 16V Aut. (Híbrido)",
+      "year": 2023,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 1.6 16V Aut. 4p (nacion.)",
+      "year": 2000,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 1.6 16V Aut. 4p (nacion.)",
+      "year": 1999,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 1.6 16V Aut. 4p (nacion.)",
+      "year": 1998,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 1.6 16V Aut. 4p (nacion.)",
+      "year": 1997,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 1.6 16V Mec. 4p (nacion.)",
+      "year": 2000,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 1.6 16V Mec. 4p (nacion.)",
+      "year": 1999,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 1.6 16V Mec. 4p (nacion.)",
+      "year": 1998,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 1.6 16V Mec. 4p (nacion.)",
+      "year": 1997,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 1.7 16V 130cv Aut. 4p",
+      "year": 2006,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 1.7 16V 130cv Aut. 4p",
+      "year": 2005,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 1.7 16V 130cv Aut. 4p",
+      "year": 2004,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 1.7 16V 130cv Aut. 4p",
+      "year": 2003,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 1.7 16V 130cv Aut. 4p",
+      "year": 2002,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 1.7 16V 130cv Aut. 4p",
+      "year": 2001,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 1.7 16v 130cv Mec. 4p",
+      "year": 2003,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 1.7 16v 130cv Mec. 4p",
+      "year": 2002,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 1.7 16v 130cv Mec. 4p",
+      "year": 2001,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 2.0 Flex 16V Aut.4p",
+      "year": 2021,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 2.0 Flex 16V Aut.4p",
+      "year": 2020,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 2.0 Flex 16V Aut.4p",
+      "year": 2019,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 2.0 Flex 16V Aut.4p",
+      "year": 2018,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX 2.0 Flex 16V Aut.4p",
+      "year": 2017,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX/ EXS 1.6 Mec. 4p",
+      "year": 1997,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX/ EXS 1.6 Mec. 4p",
+      "year": 1996,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX/ EXS 1.6 Mec. 4p",
+      "year": 1995,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX/ EXS 1.6 Mec. 4p",
+      "year": 1994,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX/ EXS 1.6 Mec. 4p",
+      "year": 1993,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX/ EXS 1.6 Mec. 4p",
+      "year": 1992,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX/ EXS Aut. 4p/ Del-Sol 2p",
+      "year": 1997,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX/ EXS Aut. 4p/ Del-Sol 2p",
+      "year": 1996,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX/ EXS Aut. 4p/ Del-Sol 2p",
+      "year": 1995,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX/ EXS Aut. 4p/ Del-Sol 2p",
+      "year": 1994,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX/ EXS Aut. 4p/ Del-Sol 2p",
+      "year": 1993,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EX/ EXS Aut. 4p/ Del-Sol 2p",
+      "year": 1992,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EXL 2.0 Flex 16V Aut.4p",
+      "year": 2021,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EXL 2.0 Flex 16V Aut.4p",
+      "year": 2020,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EXL 2.0 Flex 16V Aut.4p",
+      "year": 2019,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EXL 2.0 Flex 16V Aut.4p",
+      "year": 2018,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EXL 2.0 Flex 16V Aut.4p",
+      "year": 2017,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EXR 2.0 Flexone 16V Aut. 4p",
+      "year": 2016,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EXR 2.0 Flexone 16V Aut. 4p",
+      "year": 2014,
+      "fuel": "flex",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EXS 1.8/1.8 Flex 16V Aut. 4p",
+      "year": 2013,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EXS 1.8/1.8 Flex 16V Aut. 4p",
+      "year": 2012,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EXS 1.8/1.8 Flex 16V Aut. 4p",
+      "year": 2011,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EXS 1.8/1.8 Flex 16V Aut. 4p",
+      "year": 2010,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EXS 1.8/1.8 Flex 16V Aut. 4p",
+      "year": 2009,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EXS 1.8/1.8 Flex 16V Aut. 4p",
+      "year": 2008,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan EXS 1.8/1.8 Flex 16V Aut. 4p",
+      "year": 2007,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan LX 1.5/1.6",
+      "year": 1997,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan LX 1.5/1.6",
+      "year": 1996,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan LX 1.5/1.6",
+      "year": 1995,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan LX 1.5/1.6",
+      "year": 1994,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan LX 1.5/1.6",
+      "year": 1993,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan LX 1.5/1.6",
+      "year": 1992,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan LX 1.6 16V Aut. 4p",
+      "year": 2000,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan LX 1.6 16V Aut. 4p",
+      "year": 1999,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan LX 1.6 16V Aut. 4p",
+      "year": 1998,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    },
+    {
+      "brand": "Honda",
+      "model": "Civic Sedan LX 1.6 16V Aut. 4p",
+      "year": 1997,
+      "fuel": "gasoline",
+      "vehicleType": "car"
+    }
+  ]
+}

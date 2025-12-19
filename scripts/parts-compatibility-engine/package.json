@@ -1,0 +1,45 @@
+{
+  "name": "parts-compatibility-engine",
+  "version": "3.0.0",
+  "description": "Motor de compatibilidade de peças automotivas V3 - Base completa com 500+ part numbers e cross-references",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "help": "node src/index.js help",
+    "generate": "node src/index.js generate",
+    "generate:cars": "node src/index.js generate --type=car",
+    "generate:motos": "node src/index.js generate --type=motorcycle",
+    "generate:trucks": "node src/index.js generate --type=truck",
+    "generate:suv": "node src/index.js generate --type=suv",
+    "generate:pickup": "node src/index.js generate --type=pickup",
+    "validate": "node src/index.js validate",
+    "validate:strict": "node src/index.js validate --strict",
+    "export": "node src/index.js export",
+    "export:dry": "node src/index.js export --dry-run",
+    "export-parts": "node src/index.js export-parts",
+    "export-parts:dry": "node src/index.js export-parts --dry-run",
+    "stats": "node src/index.js stats",
+    "parts-stats": "node src/index.js parts-stats",
+    "full": "node src/index.js full",
+    "generate-full": "node --no-warnings src/fullCompatibilityGenerator.cjs",
+    "test": "node test-v2.js",
+    "test:api": "node test-api.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "chalk": "^5.3.0",
+    "firebase-admin": "^11.11.0",
+    "p-limit": "^5.0.0",
+    "uuid": "^9.0.0"
+  },
+  "keywords": [
+    "automotive",
+    "parts",
+    "compatibility",
+    "vehicles",
+    "brazil",
+    "torq"
+  ],
+  "author": "TORQ AI",
+  "license": "PROPRIETARY"
+}

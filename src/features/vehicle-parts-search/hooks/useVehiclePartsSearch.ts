@@ -128,17 +128,15 @@ export const useVehiclePartsSearch = (options: UseVehiclePartsSearchOptions): Us
   // Verifica se é Super Admin (não tem empresaId mas tem userId)
   const isSuperAdmin = !empresaId && !!sessionStorage.getItem('userId');
   
-  // empresaId efetivo (Super Admin usa marcador especial)
-  const effectiveEmpresaId = empresaId || (isSuperAdmin ? '__super_admin__' : '');
+  // empresaId efetivo - SEMPRE permite busca local de peças mesmo sem empresaId
+  // O engine local de peças não precisa de empresaId, apenas a busca no inventário
+  const effectiveEmpresaId = empresaId || (isSuperAdmin ? '__super_admin__' : '__local_search__');
 
   // Select vehicle and load parts
   const selectVehicle = useCallback(async (variantId: string) => {
-    // Validate - Super Admin pode acessar sem empresaId
-    if (!effectiveEmpresaId) {
-      console.warn('[useVehiclePartsSearch] No empresaId and not super admin');
-      setError('Sessão expirada. Faça login novamente.');
-      return;
-    }
+    // REMOVIDO: Validação de empresaId - agora permite busca local sempre
+    // O engine de peças funciona localmente sem precisar de Firebase/empresaId
+    console.log(`[useVehiclePartsSearch] Selecting vehicle, empresaId: ${effectiveEmpresaId}, isSuperAdmin: ${isSuperAdmin}`);
     
     console.log(`[useVehiclePartsSearch] Selecting vehicle, empresaId: ${effectiveEmpresaId}, isSuperAdmin: ${isSuperAdmin}`);
     

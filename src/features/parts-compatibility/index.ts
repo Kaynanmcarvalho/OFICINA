@@ -91,11 +91,30 @@ export { PartCard } from './components/PartCard';
 export { CategoryFilter } from './components/CategoryFilter';
 export { VehiclePartsProfile } from './components/VehiclePartsProfile';
 
+// Novos componentes V2 - Compatibilidade Completa
+export { PartsCompatibilityPanel } from './components/PartsCompatibilityPanel';
+export { VehicleSearchPanel } from './components/VehicleSearchPanel';
+
 // ============================================================================
-// HOOKS (se existirem)
+// HOOKS
 // ============================================================================
 
-// export { usePartsCompatibility } from './hooks/usePartsCompatibility';
+export { usePartsCompatibility } from './hooks/usePartsCompatibility';
+export { usePartsFullCompatibility } from './hooks/usePartsFullCompatibility';
+
+// ============================================================================
+// SERVIÇOS V2 - Compatibilidade Completa
+// ============================================================================
+
+export { default as partsFullService } from './services/partsFullService';
+export type {
+  PartData,
+  CrossCompatibleVehicle,
+  CheaperAlternative,
+  VehicleCompatibility,
+  CompatibilityStats,
+  VehicleSearchResult as VehicleSearchResultFull,
+} from './services/partsFullService';
 
 // ============================================================================
 // DEFAULT EXPORT
