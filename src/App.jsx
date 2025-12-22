@@ -20,7 +20,7 @@ const CheckinPage = React.lazy(() => import('./pages/CheckInPage'));
 const CheckInDetailsPage = React.lazy(() => import('./pages/CheckInDetailsPage'));
 const ClientsPage = React.lazy(() => import('./pages/ClientsPage'));
 const InventoryPage = React.lazy(() => import('./pages/InventoryPage'));
-const VehiclesPage = React.lazy(() => import('./pages/VehiclesPage'));
+
 const ToolsPage = React.lazy(() => import('./pages/ToolsPage'));
 const TeamPage = React.lazy(() => import('./pages/TeamPage'));
 const SchedulePage = React.lazy(() => import('./pages/SchedulePage'));
@@ -114,7 +114,7 @@ function App() {
                 <Route path="orcamentos" element={<BudgetsPage />} />
                 <Route path="clients" element={<ClientsPage />} />
                 <Route path="inventory" element={<InventoryPage />} />
-                <Route path="vehicles" element={<VehiclesPage />} />
+
                 <Route path="tools" element={<ToolsPage />} />
                 <Route path="team" element={<TeamPage />} />
                 <Route path="schedule" element={<SchedulePage />} />

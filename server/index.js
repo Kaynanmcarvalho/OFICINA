@@ -51,6 +51,10 @@ app.use('/api/v2/parts', partsCompatibilityV2Routes);
 const partsCompatibilityFullRoutes = require('./routes/parts-compatibility-full.routes');
 app.use('/api/parts-full', partsCompatibilityFullRoutes);
 
+// Parts Validation Routes (validação via Google Scraper)
+const partsValidationRoutes = require('./routes/partsValidation');
+app.use('/api/parts', partsValidationRoutes);
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

@@ -141,6 +141,150 @@
   color: var(--vps-text);
 }
 
+/* Header Actions */
+.vps-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Backend Toggle Button */
+.vps-backend-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--vps-text-muted);
+  background: var(--vps-bg);
+  border: 1px solid var(--vps-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vps-backend-toggle:hover {
+  background: var(--vps-surface-hover);
+  border-color: var(--vps-border-hover);
+  color: var(--vps-text-secondary);
+}
+
+.vps-backend-toggle.active {
+  background: var(--vps-primary-muted);
+  border-color: var(--vps-primary);
+  color: var(--vps-primary);
+}
+
+.vps-backend-toggle.active svg {
+  color: var(--vps-primary);
+}
+
+/* Seed Button */
+.vps-seed-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--vps-warning);
+  background: var(--vps-warning-muted);
+  border: 1px solid var(--vps-warning);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vps-seed-btn:hover:not(:disabled) {
+  background: var(--vps-warning);
+  color: #000;
+}
+
+.vps-seed-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Seeded Badge */
+.vps-seeded-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--vps-success);
+  background: var(--vps-success-muted);
+  border-radius: 6px;
+}
+
+/* Seed Progress */
+.vps-seed-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: var(--vps-warning-muted);
+  border-radius: 6px;
+  min-width: 200px;
+}
+
+.vps-seed-progress-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--vps-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.vps-seed-progress-fill {
+  height: 100%;
+  background: var(--vps-warning);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.vps-seed-progress-text {
+  font-size: 9px;
+  color: var(--vps-warning);
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+/* Checklist Progress Indicator */
+.vps-checklist-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--vps-surface);
+  border-radius: 8px;
+  border: 1px solid var(--vps-border);
+  margin-bottom: 12px;
+}
+
+.vps-checklist-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--vps-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.vps-checklist-fill {
+  height: 100%;
+  background: var(--vps-success);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.vps-checklist-text {
+  font-size: 11px;
+  color: var(--vps-text-muted);
+  white-space: nowrap;
+}
+
 /* ============================================================================
    SEARCH BAR
    ============================================================================ */
@@ -964,4 +1108,677 @@
   font-size: 10px;
   font-weight: 600;
   border-radius: 4px;
+}
+
+/* ============================================================================
+   CATEGORY COLOR TOKENS
+   ============================================================================ */
+.vps-dark {
+  --vps-cat-filter: rgba(59, 130, 246, 0.15);
+  --vps-cat-filter-text: #60a5fa;
+  --vps-cat-brake: rgba(239, 68, 68, 0.15);
+  --vps-cat-brake-text: #f87171;
+  --vps-cat-suspension: rgba(168, 85, 247, 0.15);
+  --vps-cat-suspension-text: #c084fc;
+  --vps-cat-electrical: rgba(250, 204, 21, 0.15);
+  --vps-cat-electrical-text: #fbbf24;
+  --vps-cat-cooling: rgba(34, 211, 238, 0.15);
+  --vps-cat-cooling-text: #22d3ee;
+  --vps-cat-engine: rgba(249, 115, 22, 0.15);
+  --vps-cat-engine-text: #fb923c;
+}
+
+.vps-light {
+  --vps-cat-filter: rgba(59, 130, 246, 0.12);
+  --vps-cat-filter-text: #2563eb;
+  --vps-cat-brake: rgba(239, 68, 68, 0.12);
+  --vps-cat-brake-text: #dc2626;
+  --vps-cat-suspension: rgba(168, 85, 247, 0.12);
+  --vps-cat-suspension-text: #9333ea;
+  --vps-cat-electrical: rgba(234, 179, 8, 0.12);
+  --vps-cat-electrical-text: #ca8a04;
+  --vps-cat-cooling: rgba(6, 182, 212, 0.12);
+  --vps-cat-cooling-text: #0891b2;
+  --vps-cat-engine: rgba(249, 115, 22, 0.12);
+  --vps-cat-engine-text: #ea580c;
+}
+
+/* ============================================================================
+   PREMIUM PARTS GRID - APPLE DESIGN
+   ============================================================================ */
+.vps-parts-grid-premium {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  padding: 20px;
+}
+
+.vps-part-card-premium {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--vps-card);
+  border: 1px solid var(--vps-border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.vps-part-card-premium:hover {
+  border-color: var(--vps-border-hover);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+}
+
+.vps-part-card-premium:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--vps-primary-muted);
+}
+
+/* Category Badge */
+.vps-part-category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  margin: 12px 12px 0;
+  border-radius: 20px;
+  width: fit-content;
+}
+
+.vps-part-category-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vps-part-category-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.vps-part-category-name {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Part Visual */
+.vps-part-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  margin: 12px 12px 0;
+  border-radius: 12px;
+  background: var(--vps-surface-hover);
+  overflow: hidden;
+}
+
+.vps-part-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vps-part-icon-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+}
+
+.vps-part-icon-placeholder svg {
+  width: 32px;
+  height: 32px;
+}
+
+/* Part Info */
+.vps-part-card-premium .vps-part-info {
+  padding: 16px;
+  flex: 1;
+}
+
+.vps-part-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--vps-text);
+  margin: 0 0 10px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Part Number Badge */
+.vps-part-number-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--vps-primary-muted);
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.vps-pn-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--vps-text-muted);
+  text-transform: uppercase;
+}
+
+.vps-pn-value {
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'SF Mono', 'Monaco', monospace;
+  color: var(--vps-primary);
+}
+
+/* Brand Name */
+.vps-part-brand-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--vps-text-secondary);
+  margin: 0 0 6px;
+}
+
+.vps-brand-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* Equivalents Row */
+.vps-equivalents-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 6px 8px;
+  background: var(--vps-surface-hover);
+  border-radius: 6px;
+}
+
+.vps-equiv-icon {
+  font-size: 12px;
+  color: var(--vps-text-muted);
+}
+
+.vps-equiv-text {
+  font-size: 11px;
+  font-family: 'SF Mono', 'Monaco', monospace;
+  color: var(--vps-text-secondary);
+}
+
+.vps-equiv-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  margin-left: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--vps-text-muted);
+  background: var(--vps-border);
+  border-radius: 9px;
+}
+
+/* Footer Premium */
+.vps-part-footer-premium {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid var(--vps-border);
+  background: var(--vps-surface);
+}
+
+.vps-stock-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vps-stock-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.vps-stock-dot.in-stock {
+  background: var(--vps-success);
+  box-shadow: 0 0 8px var(--vps-success);
+}
+
+.vps-stock-dot.out-stock {
+  background: var(--vps-danger);
+}
+
+.vps-price-tag {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--vps-primary);
+  letter-spacing: -0.02em;
+}
+
+/* Part Meta */
+.vps-part-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: var(--vps-surface-hover);
+}
+
+.vps-match-badge {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--vps-text-muted);
+  padding: 3px 8px;
+  background: var(--vps-border);
+  border-radius: 4px;
+}
+
+.vps-verified-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--vps-success);
+}
+
+.vps-verified-badge svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Cross Section */
+.vps-cross-section {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 12px 12px;
+  padding: 8px 10px;
+  background: var(--vps-primary-muted);
+  border-radius: 8px;
+}
+
+.vps-cross-icon {
+  font-size: 14px;
+}
+
+.vps-cross-text {
+  font-size: 11px;
+  color: var(--vps-primary);
+  font-weight: 500;
+}
+
+/* ============================================================================
+   PARTS GRID - INFORMATIVE CARDS
+   ============================================================================ */
+.vps-parts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+
+.vps-part-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--vps-card);
+  border: 1px solid var(--vps-border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.vps-part-card:hover {
+  border-color: var(--vps-border-hover);
+  box-shadow: var(--vps-shadow-sm);
+}
+
+/* Card Category Header */
+.vps-card-category {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+}
+
+.vps-card-category-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vps-card-category-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.vps-card-category-name {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Card Content */
+.vps-card-content {
+  padding: 14px;
+  flex: 1;
+}
+
+.vps-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--vps-text);
+  margin: 0 0 12px;
+  line-height: 1.4;
+}
+
+/* OEM Part Number with Tooltip */
+.vps-pn-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  background: var(--vps-surface);
+  border-radius: 12px;
+  border: 1px solid var(--vps-border);
+}
+
+.vps-pn-label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--vps-primary);
+  padding: 5px 10px;
+  background: var(--vps-primary-muted);
+  border-radius: 6px;
+  cursor: help;
+  transition: all 0.2s ease;
+}
+
+.vps-pn-label:hover {
+  background: var(--vps-primary);
+  color: white;
+}
+
+/* Premium Tooltip for OEM - Apple Style */
+.vps-tooltip {
+  position: relative;
+}
+
+.vps-tooltip::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 0;
+  min-width: 240px;
+  max-width: 300px;
+  padding: 12px 16px;
+  background: var(--vps-card);
+  color: var(--vps-text);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  white-space: normal;
+  text-align: left;
+  border-radius: 12px;
+  border: 1px solid var(--vps-border);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 10px 20px -5px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.vps-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 16px;
+  width: 12px;
+  height: 12px;
+  background: var(--vps-card);
+  border-right: 1px solid var(--vps-border);
+  border-bottom: 1px solid var(--vps-border);
+  transform: rotate(45deg);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: 999;
+}
+
+.vps-tooltip:hover::before,
+.vps-tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Dark mode tooltip adjustments */
+.vps-dark .vps-tooltip::before {
+  background: #1a1c1f;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.3),
+    0 10px 20px -5px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.vps-dark .vps-tooltip::after {
+  background: #1a1c1f;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Light mode tooltip adjustments */
+.vps-light .vps-tooltip::before {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.08),
+    0 10px 20px -5px rgba(0, 0, 0, 0.12);
+}
+
+.vps-light .vps-tooltip::after {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.vps-pn-code {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  color: var(--vps-primary);
+  letter-spacing: 0.02em;
+}
+
+/* ============================================================================
+   EQUIVALENTS CAROUSEL - APPLE STYLE
+   ============================================================================ */
+.vps-equiv-carousel {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--vps-surface-hover);
+  border-radius: 12px;
+  border: 1px solid var(--vps-border);
+}
+
+.vps-equiv-header {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--vps-text-muted);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.vps-equiv-slider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vps-equiv-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--vps-surface);
+  color: var(--vps-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.vps-equiv-arrow:hover:not(:disabled) {
+  background: var(--vps-primary);
+  color: white;
+  transform: scale(1.05);
+}
+
+.vps-equiv-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.vps-equiv-arrow svg {
+  width: 14px;
+  height: 14px;
+}
+
+.vps-equiv-slide {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 16px;
+  background: var(--vps-card);
+  border-radius: 10px;
+  border: 1px solid var(--vps-border);
+  min-height: 56px;
+}
+
+.vps-equiv-brand {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--vps-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.vps-equiv-pn {
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'SF Mono', 'Monaco', monospace;
+  color: var(--vps-text);
+}
+
+/* Dots Indicator */
+.vps-equiv-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.vps-equiv-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: none;
+  background: var(--vps-border);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.vps-equiv-dot:hover {
+  background: var(--vps-text-muted);
+}
+
+.vps-equiv-dot.active {
+  background: var(--vps-primary);
+  width: 18px;
+  border-radius: 3px;
+}
+
+/* Verified Badge Inline */
+.vps-card-verified-inline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  background: var(--vps-success-muted);
+  color: var(--vps-success);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.vps-card-verified-inline svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+@media (max-width: 768px) {
+  .vps-parts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .vps-equiv-chip {
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 640px) {
+  .vps-parts-grid {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .vps-card-content {
+    padding: 12px;
+  }
+  
+  .vps-equiv-chip {
+    min-width: 90px;
+    padding: 6px 10px;
+  }
 }

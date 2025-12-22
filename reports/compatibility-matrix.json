@@ -1,0 +1,316 @@
+{
+  "timestamp": "2025-12-21T15:21:06.931Z",
+  "platforms": {
+    "HYUNDAI_GAMMA": {
+      "parts": "HY_GAMMA",
+      "vehicles": [
+        {
+          "brand": "Hyundai",
+          "models": [
+            "Creta",
+            "HB20",
+            "HB20S",
+            "HB20X"
+          ],
+          "years": [
+            2012,
+            2024
+          ]
+        },
+        {
+          "brand": "Kia",
+          "models": [
+            "Cerato",
+            "Soul"
+          ],
+          "years": [
+            2013,
+            2024
+          ]
+        }
+      ]
+    },
+    "FIAT_FIREFLY": {
+      "parts": "FIAT_FIREFLY",
+      "vehicles": [
+        {
+          "brand": "Fiat",
+          "models": [
+            "Argo",
+            "Cronos",
+            "Mobi",
+            "Strada",
+            "Pulse",
+            "Fastback"
+          ],
+          "years": [
+            2017,
+            2024
+          ]
+        },
+        {
+          "brand": "Jeep",
+          "models": [
+            "Renegade"
+          ],
+          "years": [
+            2019,
+            2024
+          ],
+          "notes": "Motor 1.0 Firefly"
+        }
+      ]
+    },
+    "VW_EA211": {
+      "parts": "VW_EA211",
+      "vehicles": [
+        {
+          "brand": "Volkswagen",
+          "models": [
+            "Polo",
+            "Virtus",
+            "T-Cross",
+            "Nivus",
+            "Taos"
+          ],
+          "years": [
+            2018,
+            2024
+          ]
+        },
+        {
+          "brand": "Audi",
+          "models": [
+            "A3"
+          ],
+          "years": [
+            2020,
+            2024
+          ],
+          "notes": "Motor 1.0/1.4 TSI"
+        }
+      ]
+    },
+    "GM_TURBO": {
+      "parts": "GM_TURBO",
+      "vehicles": [
+        {
+          "brand": "Chevrolet",
+          "models": [
+            "Onix",
+            "Onix Plus",
+            "Tracker",
+            "Montana"
+          ],
+          "years": [
+            2020,
+            2024
+          ]
+        }
+      ]
+    },
+    "TOYOTA_2ZR": {
+      "parts": "TOYOTA_2ZR",
+      "vehicles": [
+        {
+          "brand": "Toyota",
+          "models": [
+            "Corolla",
+            "Corolla Cross"
+          ],
+          "years": [
+            2020,
+            2024
+          ]
+        }
+      ]
+    },
+    "TOYOTA_1NR": {
+      "parts": "TOYOTA_1NR",
+      "vehicles": [
+        {
+          "brand": "Toyota",
+          "models": [
+            "Yaris",
+            "Yaris Sedan",
+            "Etios"
+          ],
+          "years": [
+            2018,
+            2024
+          ]
+        }
+      ]
+    },
+    "HONDA_L15": {
+      "parts": "HONDA_L15",
+      "vehicles": [
+        {
+          "brand": "Honda",
+          "models": [
+            "Civic",
+            "HR-V",
+            "City",
+            "City Hatch"
+          ],
+          "years": [
+            2017,
+            2024
+          ]
+        }
+      ]
+    },
+    "RENAULT_SCE": {
+      "parts": "RENAULT_SCE",
+      "vehicles": [
+        {
+          "brand": "Renault",
+          "models": [
+            "Kwid",
+            "Sandero",
+            "Logan",
+            "Stepway",
+            "Duster"
+          ],
+          "years": [
+            2017,
+            2024
+          ]
+        },
+        {
+          "brand": "Nissan",
+          "models": [
+            "Kicks",
+            "Versa"
+          ],
+          "years": [
+            2020,
+            2024
+          ],
+          "notes": "Plataforma compartilhada"
+        }
+      ]
+    },
+    "PSA_FIREFLY": {
+      "parts": "FIAT_FIREFLY",
+      "vehicles": [
+        {
+          "brand": "Peugeot",
+          "models": [
+            "208",
+            "2008"
+          ],
+          "years": [
+            2020,
+            2024
+          ],
+          "notes": "Motor 1.0 Firefly"
+        },
+        {
+          "brand": "Citroën",
+          "models": [
+            "C3",
+            "C4 Cactus"
+          ],
+          "years": [
+            2020,
+            2024
+          ],
+          "notes": "Motor 1.0 Firefly"
+        }
+      ]
+    },
+    "HONDA_MOTO_300": {
+      "parts": "HONDA_MOTO",
+      "vehicles": [
+        {
+          "brand": "Honda",
+          "models": [
+            "CB 300R",
+            "CB 300F Twister",
+            "XRE 300"
+          ],
+          "years": [
+            2009,
+            2024
+          ]
+        }
+      ]
+    },
+    "HONDA_MOTO_160": {
+      "parts": "HONDA_MOTO",
+      "vehicles": [
+        {
+          "brand": "Honda",
+          "models": [
+            "CG 160",
+            "CG 160 Titan",
+            "CG 160 Fan",
+            "CG 160 Start",
+            "Bros 160"
+          ],
+          "years": [
+            2016,
+            2024
+          ]
+        }
+      ]
+    },
+    "YAMAHA_MOTO_300": {
+      "parts": "YAMAHA_MOTO",
+      "vehicles": [
+        {
+          "brand": "Yamaha",
+          "models": [
+            "MT-03",
+            "YZF-R3",
+            "XJ6"
+          ],
+          "years": [
+            2015,
+            2024
+          ]
+        }
+      ]
+    },
+    "YAMAHA_MOTO_250": {
+      "parts": "YAMAHA_MOTO",
+      "vehicles": [
+        {
+          "brand": "Yamaha",
+          "models": [
+            "Fazer 250",
+            "Lander 250",
+            "Tenere 250"
+          ],
+          "years": [
+            2006,
+            2024
+          ]
+        }
+      ]
+    }
+  },
+  "statistics": {
+    "totalPlatforms": 13,
+    "totalVehicles": 503,
+    "totalParts": 263,
+    "totalCombinations": 14418,
+    "brands": [
+      "Hyundai",
+      "Kia",
+      "Fiat",
+      "Jeep",
+      "Volkswagen",
+      "Audi",
+      "Chevrolet",
+      "Toyota",
+      "Honda",
+      "Renault",
+      "Nissan",
+      "Peugeot",
+      "Citroën",
+      "Yamaha"
+    ]
+  }
+}

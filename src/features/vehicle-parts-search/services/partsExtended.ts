@@ -1,207 +1,76 @@
 /**
- * Extended Parts Database - Categorias Adicionais
- * Alternadores, Motores de Arranque, Embreagem, Rolamentos, etc.
+ * Parts Extended - VERSÃO COM CÓDIGOS OEM REAIS
  * 
- * @version 1.0.0
+ * IMPORTANTE: Este arquivo foi DEPRECADO.
+ * Todos os dados de peças agora vêm do realPartsDatabase.ts
+ * 
+ * Este arquivo existe apenas para compatibilidade com imports antigos.
+ * 
+ * @version 3.0.0 - Redirecionado para realPartsDatabase
+ * @deprecated Use realPartsDatabase.ts diretamente
  */
 
-import type { PartNumberData } from '../types';
+import { 
+  ALL_REAL_PARTS,
+  findPartsForVehicle,
+  findPartByOemCode as findByOem,
+  findPartsByEquivalentCode,
+  getDatabaseStats,
+} from '../../../services/automotive-backend/data/realPartsDatabase';
 
-// ============================================================================
-// ALTERNADORES
-// ============================================================================
-export const ALTERNATORS: Record<string, PartNumberData> = {
-  'ALT-VW001': { partNumber: 'ALT-VW001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 90A', specs: { amperage: 90, voltage: 14 }, equivalents: ['VALEO ALT-VW001', 'DENSO ALT-VW001'], applications: ['VW Gol', 'VW Voyage', 'VW Fox', 'VW Saveiro', 'VW Up', 'VW EA111', 'VW EA211'] },
-  'ALT-VW002': { partNumber: 'ALT-VW002', brand: 'BOSCH', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 110A', specs: { amperage: 110, voltage: 14 }, equivalents: ['VALEO ALT-VW002', 'DENSO ALT-VW002'], applications: ['VW Polo', 'VW Virtus', 'VW T-Cross', 'VW Nivus', 'VW Taos'] },
-  'ALT-VW003': { partNumber: 'ALT-VW003', brand: 'BOSCH', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 140A', specs: { amperage: 140, voltage: 14 }, equivalents: ['VALEO ALT-VW003', 'DENSO ALT-VW003'], applications: ['VW Amarok', 'VW Tiguan', 'VW Jetta', 'VW Passat'] },
-  'ALT-FI001': { partNumber: 'ALT-FI001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 85A', specs: { amperage: 85, voltage: 14 }, equivalents: ['VALEO ALT-FI001', 'DENSO ALT-FI001'], applications: ['Fiat Uno', 'Fiat Palio', 'Fiat Siena', 'Fiat Strada', 'Fiat Mobi', 'Fiat Argo', 'Fiat Fire'] },
-  'ALT-FI002': { partNumber: 'ALT-FI002', brand: 'BOSCH', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 110A', specs: { amperage: 110, voltage: 14 }, equivalents: ['VALEO ALT-FI002', 'DENSO ALT-FI002'], applications: ['Fiat Cronos', 'Fiat Toro', 'Fiat Pulse', 'Fiat Fastback', 'Fiat E.torQ'] },
-  'ALT-GM001': { partNumber: 'ALT-GM001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 100A', specs: { amperage: 100, voltage: 14 }, equivalents: ['VALEO ALT-GM001', 'DELCO ALT-GM001'], applications: ['Chevrolet Onix', 'Chevrolet Prisma', 'Chevrolet Cobalt', 'Chevrolet Spin'] },
-  'ALT-GM002': { partNumber: 'ALT-GM002', brand: 'BOSCH', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 130A', specs: { amperage: 130, voltage: 14 }, equivalents: ['VALEO ALT-GM002', 'DELCO ALT-GM002'], applications: ['Chevrolet Cruze', 'Chevrolet Tracker', 'Chevrolet Equinox'] },
-  'ALT-HO001': { partNumber: 'ALT-HO001', brand: 'DENSO', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 100A', specs: { amperage: 100, voltage: 14 }, equivalents: ['BOSCH ALT-HO001', 'VALEO ALT-HO001'], applications: ['Honda Civic', 'Honda Fit', 'Honda City', 'Honda HR-V', 'Honda WR-V'] },
-  'ALT-TO001': { partNumber: 'ALT-TO001', brand: 'DENSO', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 100A', specs: { amperage: 100, voltage: 14 }, equivalents: ['BOSCH ALT-TO001', 'VALEO ALT-TO001'], applications: ['Toyota Corolla', 'Toyota Yaris', 'Toyota Etios'] },
-  'ALT-TO002': { partNumber: 'ALT-TO002', brand: 'DENSO', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 130A', specs: { amperage: 130, voltage: 14 }, equivalents: ['BOSCH ALT-TO002', 'VALEO ALT-TO002'], applications: ['Toyota Hilux', 'Toyota SW4', 'Toyota RAV4'] },
-  'ALT-HK001': { partNumber: 'ALT-HK001', brand: 'VALEO', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 90A', specs: { amperage: 90, voltage: 14 }, equivalents: ['BOSCH ALT-HK001', 'DENSO ALT-HK001'], applications: ['Hyundai HB20', 'Hyundai Creta', 'Kia Rio', 'Kia Cerato'] },
-  'ALT-RE001': { partNumber: 'ALT-RE001', brand: 'VALEO', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 85A', specs: { amperage: 85, voltage: 14 }, equivalents: ['BOSCH ALT-RE001', 'DENSO ALT-RE001'], applications: ['Renault Sandero', 'Renault Logan', 'Renault Kwid'] },
-  'ALT-FO001': { partNumber: 'ALT-FO001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 90A', specs: { amperage: 90, voltage: 14 }, equivalents: ['VALEO ALT-FO001', 'DENSO ALT-FO001'], applications: ['Ford Ka', 'Ford Fiesta', 'Ford EcoSport'] },
-  'ALT-JE001': { partNumber: 'ALT-JE001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 120A', specs: { amperage: 120, voltage: 14 }, equivalents: ['VALEO ALT-JE001', 'DENSO ALT-JE001'], applications: ['Jeep Renegade', 'Jeep Compass', 'Jeep Commander'] },
-  // VOLVO
-  'ALT-VO001': { partNumber: 'ALT-VO001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 150A', specs: { amperage: 150, voltage: 14 }, equivalents: ['VALEO ALT-VO001', 'DENSO ALT-VO001'], applications: ['Volvo XC40', 'Volvo XC60', 'Volvo XC90', 'Volvo S60', 'Volvo V60', 'Volvo S90', 'Volvo V90', 'Volvo XC', 'Volvo T5', 'Volvo T6', 'Volvo T8'] },
-  'ALT-VO002': { partNumber: 'ALT-VO002', brand: 'BOSCH', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 180A', specs: { amperage: 180, voltage: 14 }, equivalents: ['VALEO ALT-VO002', 'DENSO ALT-VO002'], applications: ['Volvo XC90', 'Volvo S90', 'Volvo V90', 'Volvo XC60 T8', 'Volvo XC90 T8'] },
-  // BMW
-  'ALT-BM001': { partNumber: 'ALT-BM001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 170A', specs: { amperage: 170, voltage: 14 }, equivalents: ['VALEO ALT-BM001', 'DENSO ALT-BM001'], applications: ['BMW 320i', 'BMW 328i', 'BMW 330i', 'BMW X1', 'BMW X3', 'BMW X5', 'BMW Serie 3', 'BMW Serie 5'] },
-  // MERCEDES
-  'ALT-MB001': { partNumber: 'ALT-MB001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 180A', specs: { amperage: 180, voltage: 14 }, equivalents: ['VALEO ALT-MB001', 'DENSO ALT-MB001'], applications: ['Mercedes C180', 'Mercedes C200', 'Mercedes C250', 'Mercedes GLA', 'Mercedes GLC', 'Mercedes Classe C', 'Mercedes Classe E'] },
-  // AUDI
-  'ALT-AU001': { partNumber: 'ALT-AU001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 140A', specs: { amperage: 140, voltage: 14 }, equivalents: ['VALEO ALT-AU001', 'DENSO ALT-AU001'], applications: ['Audi A3', 'Audi A4', 'Audi A5', 'Audi Q3', 'Audi Q5', 'Audi Q7', 'Audi TT'] },
-  // LAND ROVER
-  'ALT-LR001': { partNumber: 'ALT-LR001', brand: 'DENSO', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 180A', specs: { amperage: 180, voltage: 14 }, equivalents: ['BOSCH ALT-LR001', 'VALEO ALT-LR001'], applications: ['Land Rover Discovery', 'Land Rover Evoque', 'Land Rover Velar', 'Land Rover Sport', 'Range Rover'] },
-  // PORSCHE
-  'ALT-PO001': { partNumber: 'ALT-PO001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 190A', specs: { amperage: 190, voltage: 14 }, equivalents: ['VALEO ALT-PO001'], applications: ['Porsche Cayenne', 'Porsche Macan', 'Porsche Panamera', 'Porsche 911', 'Porsche Boxster', 'Porsche Cayman'] },
-  // MINI
-  'ALT-MI001': { partNumber: 'ALT-MI001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 120A', specs: { amperage: 120, voltage: 14 }, equivalents: ['VALEO ALT-MI001', 'DENSO ALT-MI001'], applications: ['Mini Cooper', 'Mini Countryman', 'Mini Clubman', 'Mini One'] },
-  // JAGUAR
-  'ALT-JA001': { partNumber: 'ALT-JA001', brand: 'DENSO', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 180A', specs: { amperage: 180, voltage: 14 }, equivalents: ['BOSCH ALT-JA001', 'VALEO ALT-JA001'], applications: ['Jaguar XE', 'Jaguar XF', 'Jaguar F-Pace', 'Jaguar E-Pace', 'Jaguar F-Type'] },
-  // SUBARU
-  'ALT-SU001': { partNumber: 'ALT-SU001', brand: 'DENSO', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 130A', specs: { amperage: 130, voltage: 14 }, equivalents: ['BOSCH ALT-SU001', 'VALEO ALT-SU001'], applications: ['Subaru Impreza', 'Subaru WRX', 'Subaru Forester', 'Subaru XV', 'Subaru Outback', 'Subaru Legacy'] },
-  // LEXUS
-  'ALT-LE001': { partNumber: 'ALT-LE001', brand: 'DENSO', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 150A', specs: { amperage: 150, voltage: 14 }, equivalents: ['BOSCH ALT-LE001'], applications: ['Lexus ES', 'Lexus NX', 'Lexus RX', 'Lexus UX', 'Lexus IS', 'Lexus GS'] },
-  // INFINITI
-  'ALT-IN001': { partNumber: 'ALT-IN001', brand: 'DENSO', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 140A', specs: { amperage: 140, voltage: 14 }, equivalents: ['BOSCH ALT-IN001'], applications: ['Infiniti Q50', 'Infiniti QX50', 'Infiniti QX60', 'Infiniti Q30'] },
-  // ALFA ROMEO
-  'ALT-AR001': { partNumber: 'ALT-AR001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'alternator', name: 'Alternador 140A', specs: { amperage: 140, voltage: 14 }, equivalents: ['VALEO ALT-AR001', 'DENSO ALT-AR001'], applications: ['Alfa Romeo Giulia', 'Alfa Romeo Stelvio', 'Alfa Romeo Giulietta', 'Alfa Romeo 159'] },
+// Re-export everything from realPartsDatabase
+export {
+  ALL_REAL_PARTS,
+  findPartsForVehicle,
+  findByOem as findPartByOemCode,
+  findPartsByEquivalentCode,
+  getDatabaseStats,
 };
 
-// ============================================================================
-// MOTORES DE ARRANQUE / PARTIDA
-// ============================================================================
-export const STARTER_MOTORS: Record<string, PartNumberData> = {
-  'SM-VW001': { partNumber: 'SM-VW001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.1kW', specs: { power: 1.1, teeth: 9 }, equivalents: ['VALEO SM-VW001', 'DENSO SM-VW001'], applications: ['VW Gol', 'VW Voyage', 'VW Fox', 'VW Saveiro', 'VW Up', 'VW EA111', 'VW EA211'] },
-  'SM-VW002': { partNumber: 'SM-VW002', brand: 'BOSCH', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.4kW', specs: { power: 1.4, teeth: 10 }, equivalents: ['VALEO SM-VW002', 'DENSO SM-VW002'], applications: ['VW Polo', 'VW Virtus', 'VW T-Cross', 'VW Nivus', 'VW Taos'] },
-  'SM-FI001': { partNumber: 'SM-FI001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.0kW', specs: { power: 1.0, teeth: 9 }, equivalents: ['VALEO SM-FI001', 'DENSO SM-FI001'], applications: ['Fiat Uno', 'Fiat Palio', 'Fiat Siena', 'Fiat Strada', 'Fiat Mobi', 'Fiat Argo', 'Fiat Fire'] },
-  'SM-FI002': { partNumber: 'SM-FI002', brand: 'BOSCH', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.4kW', specs: { power: 1.4, teeth: 10 }, equivalents: ['VALEO SM-FI002', 'DENSO SM-FI002'], applications: ['Fiat Cronos', 'Fiat Toro', 'Fiat Pulse', 'Fiat Fastback', 'Fiat E.torQ'] },
-  'SM-GM001': { partNumber: 'SM-GM001', brand: 'DELCO', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.2kW', specs: { power: 1.2, teeth: 9 }, equivalents: ['BOSCH SM-GM001', 'VALEO SM-GM001'], applications: ['Chevrolet Onix', 'Chevrolet Prisma', 'Chevrolet Cobalt', 'Chevrolet Spin'] },
-  'SM-GM002': { partNumber: 'SM-GM002', brand: 'DELCO', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.5kW', specs: { power: 1.5, teeth: 10 }, equivalents: ['BOSCH SM-GM002', 'VALEO SM-GM002'], applications: ['Chevrolet Cruze', 'Chevrolet Tracker', 'Chevrolet Equinox'] },
-  'SM-HO001': { partNumber: 'SM-HO001', brand: 'DENSO', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.2kW', specs: { power: 1.2, teeth: 9 }, equivalents: ['BOSCH SM-HO001', 'VALEO SM-HO001'], applications: ['Honda Civic', 'Honda Fit', 'Honda City', 'Honda HR-V', 'Honda WR-V'] },
-  'SM-TO001': { partNumber: 'SM-TO001', brand: 'DENSO', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.2kW', specs: { power: 1.2, teeth: 9 }, equivalents: ['BOSCH SM-TO001', 'VALEO SM-TO001'], applications: ['Toyota Corolla', 'Toyota Yaris', 'Toyota Etios'] },
-  'SM-HK001': { partNumber: 'SM-HK001', brand: 'VALEO', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.1kW', specs: { power: 1.1, teeth: 9 }, equivalents: ['BOSCH SM-HK001', 'DENSO SM-HK001'], applications: ['Hyundai HB20', 'Hyundai Creta', 'Kia Rio', 'Kia Cerato'] },
-  'SM-RE001': { partNumber: 'SM-RE001', brand: 'VALEO', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.0kW', specs: { power: 1.0, teeth: 9 }, equivalents: ['BOSCH SM-RE001', 'DENSO SM-RE001'], applications: ['Renault Sandero', 'Renault Logan', 'Renault Kwid'] },
-  'SM-FO001': { partNumber: 'SM-FO001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.1kW', specs: { power: 1.1, teeth: 9 }, equivalents: ['VALEO SM-FO001', 'DENSO SM-FO001'], applications: ['Ford Ka', 'Ford Fiesta', 'Ford EcoSport'] },
-  'SM-JE001': { partNumber: 'SM-JE001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.4kW', specs: { power: 1.4, teeth: 10 }, equivalents: ['VALEO SM-JE001', 'DENSO SM-JE001'], applications: ['Jeep Renegade', 'Jeep Compass', 'Jeep Commander'] },
-  // VOLVO
-  'SM-VO001': { partNumber: 'SM-VO001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.8kW', specs: { power: 1.8, teeth: 11 }, equivalents: ['VALEO SM-VO001', 'DENSO SM-VO001'], applications: ['Volvo XC40', 'Volvo XC60', 'Volvo XC90', 'Volvo S60', 'Volvo V60', 'Volvo S90', 'Volvo V90', 'Volvo XC', 'Volvo T5', 'Volvo T6'] },
-  // BMW
-  'SM-BM001': { partNumber: 'SM-BM001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.7kW', specs: { power: 1.7, teeth: 11 }, equivalents: ['VALEO SM-BM001', 'DENSO SM-BM001'], applications: ['BMW 320i', 'BMW 328i', 'BMW 330i', 'BMW X1', 'BMW X3', 'BMW X5', 'BMW Serie 3', 'BMW Serie 5'] },
-  // MERCEDES
-  'SM-MB001': { partNumber: 'SM-MB001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.7kW', specs: { power: 1.7, teeth: 11 }, equivalents: ['VALEO SM-MB001', 'DENSO SM-MB001'], applications: ['Mercedes C180', 'Mercedes C200', 'Mercedes C250', 'Mercedes GLA', 'Mercedes GLC', 'Mercedes Classe C', 'Mercedes Classe E'] },
-  // AUDI
-  'SM-AU001': { partNumber: 'SM-AU001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.6kW', specs: { power: 1.6, teeth: 10 }, equivalents: ['VALEO SM-AU001', 'DENSO SM-AU001'], applications: ['Audi A3', 'Audi A4', 'Audi A5', 'Audi Q3', 'Audi Q5', 'Audi TT'] },
-  // LAND ROVER
-  'SM-LR001': { partNumber: 'SM-LR001', brand: 'DENSO', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 2.0kW', specs: { power: 2.0, teeth: 12 }, equivalents: ['BOSCH SM-LR001', 'VALEO SM-LR001'], applications: ['Land Rover Discovery', 'Land Rover Evoque', 'Land Rover Velar', 'Land Rover Sport', 'Range Rover'] },
-  // PORSCHE
-  'SM-PO001': { partNumber: 'SM-PO001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 2.2kW', specs: { power: 2.2, teeth: 12 }, equivalents: ['VALEO SM-PO001'], applications: ['Porsche Cayenne', 'Porsche Macan', 'Porsche Panamera', 'Porsche 911', 'Porsche Boxster', 'Porsche Cayman'] },
-  // MINI
-  'SM-MN001': { partNumber: 'SM-MN001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.4kW', specs: { power: 1.4, teeth: 10 }, equivalents: ['VALEO SM-MN001', 'DENSO SM-MN001'], applications: ['Mini Cooper', 'Mini Countryman', 'Mini Clubman', 'Mini One'] },
-  // JAGUAR
-  'SM-JA001': { partNumber: 'SM-JA001', brand: 'DENSO', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.8kW', specs: { power: 1.8, teeth: 11 }, equivalents: ['BOSCH SM-JA001', 'VALEO SM-JA001'], applications: ['Jaguar XE', 'Jaguar XF', 'Jaguar F-Pace', 'Jaguar E-Pace', 'Jaguar F-Type'] },
-  // SUBARU
-  'SM-SU001': { partNumber: 'SM-SU001', brand: 'DENSO', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.4kW', specs: { power: 1.4, teeth: 10 }, equivalents: ['BOSCH SM-SU001', 'VALEO SM-SU001'], applications: ['Subaru Impreza', 'Subaru WRX', 'Subaru Forester', 'Subaru XV', 'Subaru Outback', 'Subaru Legacy'] },
-  // LEXUS
-  'SM-LE001': { partNumber: 'SM-LE001', brand: 'DENSO', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.6kW', specs: { power: 1.6, teeth: 10 }, equivalents: ['BOSCH SM-LE001'], applications: ['Lexus ES', 'Lexus NX', 'Lexus RX', 'Lexus UX', 'Lexus IS', 'Lexus GS'] },
-  // ALFA ROMEO
-  'SM-AR001': { partNumber: 'SM-AR001', brand: 'BOSCH', category: 'elétrica', categoryKey: 'starter_motor', name: 'Motor de Partida 1.6kW', specs: { power: 1.6, teeth: 10 }, equivalents: ['VALEO SM-AR001', 'DENSO SM-AR001'], applications: ['Alfa Romeo Giulia', 'Alfa Romeo Stelvio', 'Alfa Romeo Giulietta', 'Alfa Romeo 159'] },
-};
+// Legacy exports for backward compatibility
+export const THERMOSTATS_DATABASE: Record<string, any> = {};
+export const WATER_PUMPS_DATABASE: Record<string, any> = {};
+export const EXTENDED_PARTS_DATABASE: Record<string, any> = {};
 
-// ============================================================================
-// KITS DE EMBREAGEM
-// ============================================================================
-export const CLUTCH_KITS: Record<string, PartNumberData> = {
-  'CK-VW001': { partNumber: 'CK-VW001', brand: 'LUK', category: 'transmissão', categoryKey: 'clutch_kit', name: 'Kit Embreagem 200mm', specs: { diameter: 200, type: 'organic' }, equivalents: ['SACHS CK-VW001', 'VALEO CK-VW001'], applications: ['VW Gol 1.0', 'VW Gol 1.6', 'VW Voyage', 'VW Fox', 'VW Saveiro', 'VW Up'] },
-  'CK-VW002': { partNumber: 'CK-VW002', brand: 'LUK', category: 'transmissão', categoryKey: 'clutch_kit', name: 'Kit Embreagem 228mm', specs: { diameter: 228, type: 'organic' }, equivalents: ['SACHS CK-VW002', 'VALEO CK-VW002'], applications: ['VW Polo', 'VW Virtus', 'VW T-Cross', 'VW Nivus'] },
-  'CK-FI001': { partNumber: 'CK-FI001', brand: 'LUK', category: 'transmissão', categoryKey: 'clutch_kit', name: 'Kit Embreagem 190mm', specs: { diameter: 190, type: 'organic' }, equivalents: ['SACHS CK-FI001', 'VALEO CK-FI001'], applications: ['Fiat Uno', 'Fiat Palio', 'Fiat Siena', 'Fiat Strada', 'Fiat Mobi', 'Fiat Argo'] },
-  'CK-FI002': { partNumber: 'CK-FI002', brand: 'LUK', category: 'transmissão', categoryKey: 'clutch_kit', name: 'Kit Embreagem 228mm', specs: { diameter: 228, type: 'organic' }, equivalents: ['SACHS CK-FI002', 'VALEO CK-FI002'], applications: ['Fiat Cronos', 'Fiat Toro', 'Fiat Pulse', 'Fiat Fastback'] },
-  'CK-GM001': { partNumber: 'CK-GM001', brand: 'LUK', category: 'transmissão', categoryKey: 'clutch_kit', name: 'Kit Embreagem 215mm', specs: { diameter: 215, type: 'organic' }, equivalents: ['SACHS CK-GM001', 'VALEO CK-GM001'], applications: ['Chevrolet Onix', 'Chevrolet Prisma', 'Chevrolet Cobalt', 'Chevrolet Spin'] },
-  'CK-GM002': { partNumber: 'CK-GM002', brand: 'LUK', category: 'transmissão', categoryKey: 'clutch_kit', name: 'Kit Embreagem 228mm', specs: { diameter: 228, type: 'organic' }, equivalents: ['SACHS CK-GM002', 'VALEO CK-GM002'], applications: ['Chevrolet Cruze', 'Chevrolet Tracker'] },
-  'CK-HO001': { partNumber: 'CK-HO001', brand: 'EXEDY', category: 'transmissão', categoryKey: 'clutch_kit', name: 'Kit Embreagem 212mm', specs: { diameter: 212, type: 'organic' }, equivalents: ['LUK CK-HO001', 'VALEO CK-HO001'], applications: ['Honda Civic', 'Honda Fit', 'Honda City', 'Honda HR-V', 'Honda WR-V'] },
-  'CK-TO001': { partNumber: 'CK-TO001', brand: 'AISIN', category: 'transmissão', categoryKey: 'clutch_kit', name: 'Kit Embreagem 215mm', specs: { diameter: 215, type: 'organic' }, equivalents: ['LUK CK-TO001', 'VALEO CK-TO001'], applications: ['Toyota Corolla', 'Toyota Yaris', 'Toyota Etios'] },
-  'CK-HK001': { partNumber: 'CK-HK001', brand: 'VALEO', category: 'transmissão', categoryKey: 'clutch_kit', name: 'Kit Embreagem 215mm', specs: { diameter: 215, type: 'organic' }, equivalents: ['LUK CK-HK001', 'SACHS CK-HK001'], applications: ['Hyundai HB20', 'Hyundai Creta', 'Kia Rio', 'Kia Cerato'] },
-  'CK-RE001': { partNumber: 'CK-RE001', brand: 'VALEO', category: 'transmissão', categoryKey: 'clutch_kit', name: 'Kit Embreagem 200mm', specs: { diameter: 200, type: 'organic' }, equivalents: ['LUK CK-RE001', 'SACHS CK-RE001'], applications: ['Renault Sandero', 'Renault Logan', 'Renault Kwid'] },
-  'CK-FO001': { partNumber: 'CK-FO001', brand: 'LUK', category: 'transmissão', categoryKey: 'clutch_kit', name: 'Kit Embreagem 200mm', specs: { diameter: 200, type: 'organic' }, equivalents: ['SACHS CK-FO001', 'VALEO CK-FO001'], applications: ['Ford Ka', 'Ford Fiesta', 'Ford EcoSport'] },
-  'CK-JE001': { partNumber: 'CK-JE001', brand: 'LUK', category: 'transmissão', categoryKey: 'clutch_kit', name: 'Kit Embreagem 228mm', specs: { diameter: 228, type: 'organic' }, equivalents: ['SACHS CK-JE001', 'VALEO CK-JE001'], applications: ['Jeep Renegade', 'Jeep Compass'] },
-  // VOLVO
-  'CK-VO001': { partNumber: 'CK-VO001', brand: 'LUK', category: 'transmissão', categoryKey: 'clutch_kit', name: 'Kit Embreagem 240mm', specs: { diameter: 240, type: 'organic' }, equivalents: ['SACHS CK-VO001', 'VALEO CK-VO001'], applications: ['Volvo XC40', 'Volvo XC60', 'Volvo S60', 'Volvo V60', 'Volvo XC'] },
-  // BMW
-  'CK-BM001': { partNumber: 'CK-BM001', brand: 'LUK', category: 'transmissão', categoryKey: 'clutch_kit', name: 'Kit Embreagem 240mm', specs: { diameter: 240, type: 'organic' }, equivalents: ['SACHS CK-BM001', 'VALEO CK-BM001'], applications: ['BMW 320i', 'BMW 328i', 'BMW X1', 'BMW Serie 3'] },
-  // MERCEDES
-  'CK-MB001': { partNumber: 'CK-MB001', brand: 'LUK', category: 'transmissão', categoryKey: 'clutch_kit', name: 'Kit Embreagem 240mm', specs: { diameter: 240, type: 'organic' }, equivalents: ['SACHS CK-MB001', 'VALEO CK-MB001'], applications: ['Mercedes C180', 'Mercedes C200', 'Mercedes GLA', 'Mercedes Classe C'] },
-  // AUDI
-  'CK-AU001': { partNumber: 'CK-AU001', brand: 'LUK', category: 'transmissão', categoryKey: 'clutch_kit', name: 'Kit Embreagem 240mm', specs: { diameter: 240, type: 'organic' }, equivalents: ['SACHS CK-AU001', 'VALEO CK-AU001'], applications: ['Audi A3', 'Audi A4', 'Audi Q3', 'Audi TT'] },
-  // MINI
-  'CK-MN001': { partNumber: 'CK-MN001', brand: 'LUK', category: 'transmissão', categoryKey: 'clutch_kit', name: 'Kit Embreagem 215mm', specs: { diameter: 215, type: 'organic' }, equivalents: ['SACHS CK-MN001', 'VALEO CK-MN001'], applications: ['Mini Cooper', 'Mini Countryman', 'Mini Clubman', 'Mini One'] },
-  // SUBARU
-  'CK-SU001': { partNumber: 'CK-SU001', brand: 'EXEDY', category: 'transmissão', categoryKey: 'clutch_kit', name: 'Kit Embreagem 230mm', specs: { diameter: 230, type: 'organic' }, equivalents: ['LUK CK-SU001', 'VALEO CK-SU001'], applications: ['Subaru Impreza', 'Subaru WRX', 'Subaru Forester', 'Subaru XV', 'Subaru Outback', 'Subaru Legacy'] },
-  // ALFA ROMEO
-  'CK-AR001': { partNumber: 'CK-AR001', brand: 'LUK', category: 'transmissão', categoryKey: 'clutch_kit', name: 'Kit Embreagem 240mm', specs: { diameter: 240, type: 'organic' }, equivalents: ['SACHS CK-AR001', 'VALEO CK-AR001'], applications: ['Alfa Romeo Giulia', 'Alfa Romeo Stelvio', 'Alfa Romeo Giulietta', 'Alfa Romeo 159'] },
-};
+// Populate legacy databases from real data
+for (const part of ALL_REAL_PARTS) {
+  const key = part.oemCode.replace(/[\s-]/g, '_').toUpperCase();
+  
+  const legacyPart = {
+    partNumber: part.oemCode,
+    brand: part.manufacturer,
+    category: part.category,
+    categoryKey: part.category,
+    name: part.name,
+    specs: part.specs || {},
+    equivalents: part.equivalents.map(eq => `${eq.brand} ${eq.code}`),
+    applications: part.compatibility.map(c => `${c.brand} ${c.model} ${c.yearStart}-${c.yearEnd}`),
+  };
+  
+  EXTENDED_PARTS_DATABASE[key] = legacyPart;
+  
+  if (part.name.toLowerCase().includes('termostát') || part.name.toLowerCase().includes('thermostat')) {
+    THERMOSTATS_DATABASE[key] = legacyPart;
+  }
+  
+  if (part.name.toLowerCase().includes('bomba') && part.name.toLowerCase().includes('água')) {
+    WATER_PUMPS_DATABASE[key] = legacyPart;
+  }
+}
 
-// ============================================================================
-// ROLAMENTOS DE RODA
-// ============================================================================
-export const WHEEL_BEARINGS: Record<string, PartNumberData> = {
-  'WB-VW001': { partNumber: 'WB-VW001', brand: 'SKF', category: 'suspensão', categoryKey: 'wheel_bearing', name: 'Rolamento Roda Dianteiro', specs: { type: 'hub_unit', abs: true }, equivalents: ['FAG WB-VW001', 'NSK WB-VW001', 'TIMKEN WB-VW001'], applications: ['VW Gol', 'VW Voyage', 'VW Fox', 'VW Saveiro'] },
-  'WB-VW002': { partNumber: 'WB-VW002', brand: 'SKF', category: 'suspensão', categoryKey: 'wheel_bearing', name: 'Rolamento Roda Traseiro', specs: { type: 'tapered', abs: false }, equivalents: ['FAG WB-VW002', 'NSK WB-VW002', 'TIMKEN WB-VW002'], applications: ['VW Gol', 'VW Voyage', 'VW Fox', 'VW Saveiro'] },
-  'WB-VW003': { partNumber: 'WB-VW003', brand: 'SKF', category: 'suspensão', categoryKey: 'wheel_bearing', name: 'Rolamento Roda Dianteiro', specs: { type: 'hub_unit', abs: true }, equivalents: ['FAG WB-VW003', 'NSK WB-VW003', 'TIMKEN WB-VW003'], applications: ['VW Polo', 'VW Virtus', 'VW T-Cross', 'VW Nivus'] },
-  'WB-FI001': { partNumber: 'WB-FI001', brand: 'SKF', category: 'suspensão', categoryKey: 'wheel_bearing', name: 'Rolamento Roda Dianteiro', specs: { type: 'hub_unit', abs: true }, equivalents: ['FAG WB-FI001', 'NSK WB-FI001', 'TIMKEN WB-FI001'], applications: ['Fiat Uno', 'Fiat Palio', 'Fiat Siena', 'Fiat Strada', 'Fiat Mobi', 'Fiat Argo'] },
-  'WB-GM001': { partNumber: 'WB-GM001', brand: 'SKF', category: 'suspensão', categoryKey: 'wheel_bearing', name: 'Rolamento Roda Dianteiro', specs: { type: 'hub_unit', abs: true }, equivalents: ['FAG WB-GM001', 'NSK WB-GM001', 'TIMKEN WB-GM001'], applications: ['Chevrolet Onix', 'Chevrolet Prisma', 'Chevrolet Cobalt', 'Chevrolet Spin'] },
-  'WB-HO001': { partNumber: 'WB-HO001', brand: 'NSK', category: 'suspensão', categoryKey: 'wheel_bearing', name: 'Rolamento Roda Dianteiro', specs: { type: 'hub_unit', abs: true }, equivalents: ['SKF WB-HO001', 'FAG WB-HO001', 'TIMKEN WB-HO001'], applications: ['Honda Civic', 'Honda Fit', 'Honda City', 'Honda HR-V', 'Honda WR-V'] },
-  'WB-TO001': { partNumber: 'WB-TO001', brand: 'NSK', category: 'suspensão', categoryKey: 'wheel_bearing', name: 'Rolamento Roda Dianteiro', specs: { type: 'hub_unit', abs: true }, equivalents: ['SKF WB-TO001', 'FAG WB-TO001', 'TIMKEN WB-TO001'], applications: ['Toyota Corolla', 'Toyota Yaris', 'Toyota Etios'] },
-  'WB-HK001': { partNumber: 'WB-HK001', brand: 'ILJIN', category: 'suspensão', categoryKey: 'wheel_bearing', name: 'Rolamento Roda Dianteiro', specs: { type: 'hub_unit', abs: true }, equivalents: ['SKF WB-HK001', 'FAG WB-HK001', 'NSK WB-HK001'], applications: ['Hyundai HB20', 'Hyundai Creta', 'Kia Rio', 'Kia Cerato'] },
-  'WB-RE001': { partNumber: 'WB-RE001', brand: 'SNR', category: 'suspensão', categoryKey: 'wheel_bearing', name: 'Rolamento Roda Dianteiro', specs: { type: 'hub_unit', abs: true }, equivalents: ['SKF WB-RE001', 'FAG WB-RE001', 'NSK WB-RE001'], applications: ['Renault Sandero', 'Renault Logan', 'Renault Duster', 'Renault Captur', 'Renault Kwid'] },
-  'WB-FO001': { partNumber: 'WB-FO001', brand: 'SKF', category: 'suspensão', categoryKey: 'wheel_bearing', name: 'Rolamento Roda Dianteiro', specs: { type: 'hub_unit', abs: true }, equivalents: ['FAG WB-FO001', 'NSK WB-FO001', 'TIMKEN WB-FO001'], applications: ['Ford Ka', 'Ford Fiesta', 'Ford EcoSport', 'Ford Focus'] },
-  'WB-JE001': { partNumber: 'WB-JE001', brand: 'SKF', category: 'suspensão', categoryKey: 'wheel_bearing', name: 'Rolamento Roda Dianteiro', specs: { type: 'hub_unit', abs: true }, equivalents: ['FAG WB-JE001', 'NSK WB-JE001', 'TIMKEN WB-JE001'], applications: ['Jeep Renegade', 'Jeep Compass', 'Fiat Toro'] },
-};
+console.log('[PartsExtended] ✅ Dados migrados do realPartsDatabase:', {
+  total: Object.keys(EXTENDED_PARTS_DATABASE).length,
+  thermostats: Object.keys(THERMOSTATS_DATABASE).length,
+  waterPumps: Object.keys(WATER_PUMPS_DATABASE).length,
+});
 
-// ============================================================================
-// JUNTAS HOMOCINÉTICAS
-// ============================================================================
-export const CV_JOINTS: Record<string, PartNumberData> = {
-  'CV-VW001': { partNumber: 'CV-VW001', brand: 'GKN', category: 'transmissão', categoryKey: 'cv_joint', name: 'Junta Homocinética Externa', specs: { splines: 25, abs: true }, equivalents: ['SKF CV-VW001', 'NAKATA CV-VW001'], applications: ['VW Gol', 'VW Voyage', 'VW Fox', 'VW Saveiro'] },
-  'CV-VW002': { partNumber: 'CV-VW002', brand: 'GKN', category: 'transmissão', categoryKey: 'cv_joint', name: 'Junta Homocinética Interna', specs: { splines: 25, type: 'tripod' }, equivalents: ['SKF CV-VW002', 'NAKATA CV-VW002'], applications: ['VW Gol', 'VW Voyage', 'VW Fox', 'VW Saveiro'] },
-  'CV-FI001': { partNumber: 'CV-FI001', brand: 'GKN', category: 'transmissão', categoryKey: 'cv_joint', name: 'Junta Homocinética Externa', specs: { splines: 22, abs: true }, equivalents: ['SKF CV-FI001', 'NAKATA CV-FI001'], applications: ['Fiat Uno', 'Fiat Palio', 'Fiat Siena', 'Fiat Strada', 'Fiat Mobi', 'Fiat Argo'] },
-  'CV-GM001': { partNumber: 'CV-GM001', brand: 'GKN', category: 'transmissão', categoryKey: 'cv_joint', name: 'Junta Homocinética Externa', specs: { splines: 25, abs: true }, equivalents: ['SKF CV-GM001', 'NAKATA CV-GM001'], applications: ['Chevrolet Onix', 'Chevrolet Prisma', 'Chevrolet Cobalt', 'Chevrolet Spin'] },
-  'CV-HO001': { partNumber: 'CV-HO001', brand: 'NTN', category: 'transmissão', categoryKey: 'cv_joint', name: 'Junta Homocinética Externa', specs: { splines: 26, abs: true }, equivalents: ['GKN CV-HO001', 'SKF CV-HO001'], applications: ['Honda Civic', 'Honda Fit', 'Honda City', 'Honda HR-V', 'Honda WR-V'] },
-  'CV-TO001': { partNumber: 'CV-TO001', brand: 'NTN', category: 'transmissão', categoryKey: 'cv_joint', name: 'Junta Homocinética Externa', specs: { splines: 25, abs: true }, equivalents: ['GKN CV-TO001', 'SKF CV-TO001'], applications: ['Toyota Corolla', 'Toyota Yaris', 'Toyota Etios'] },
-  'CV-HK001': { partNumber: 'CV-HK001', brand: 'GKN', category: 'transmissão', categoryKey: 'cv_joint', name: 'Junta Homocinética Externa', specs: { splines: 25, abs: true }, equivalents: ['SKF CV-HK001', 'NAKATA CV-HK001'], applications: ['Hyundai HB20', 'Hyundai Creta', 'Kia Rio', 'Kia Cerato'] },
-  'CV-RE001': { partNumber: 'CV-RE001', brand: 'GKN', category: 'transmissão', categoryKey: 'cv_joint', name: 'Junta Homocinética Externa', specs: { splines: 21, abs: true }, equivalents: ['SKF CV-RE001', 'NAKATA CV-RE001'], applications: ['Renault Sandero', 'Renault Logan', 'Renault Duster', 'Renault Captur', 'Renault Kwid'] },
-  'CV-FO001': { partNumber: 'CV-FO001', brand: 'GKN', category: 'transmissão', categoryKey: 'cv_joint', name: 'Junta Homocinética Externa', specs: { splines: 25, abs: true }, equivalents: ['SKF CV-FO001', 'NAKATA CV-FO001'], applications: ['Ford Ka', 'Ford Fiesta', 'Ford EcoSport', 'Ford Focus'] },
-  'CV-JE001': { partNumber: 'CV-JE001', brand: 'GKN', category: 'transmissão', categoryKey: 'cv_joint', name: 'Junta Homocinética Externa', specs: { splines: 27, abs: true }, equivalents: ['SKF CV-JE001', 'NAKATA CV-JE001'], applications: ['Jeep Renegade', 'Jeep Compass', 'Fiat Toro'] },
-};
-
-// ============================================================================
-// VÁLVULAS TERMOSTÁTICAS
-// ============================================================================
-export const THERMOSTATS: Record<string, PartNumberData> = {
-  'TH-VW001': { partNumber: 'TH-VW001', brand: 'WAHLER', category: 'arrefecimento', categoryKey: 'thermostat', name: 'Válvula Termostática', specs: { openTemp: 87, fullOpen: 102 }, equivalents: ['MTE-THOMSON 289.87', 'VALCLEI VT001'], applications: ['VW Gol', 'VW Voyage', 'VW Fox', 'VW Saveiro', 'VW Up', 'VW EA111'] },
-  'TH-VW002': { partNumber: 'TH-VW002', brand: 'WAHLER', category: 'arrefecimento', categoryKey: 'thermostat', name: 'Válvula Termostática', specs: { openTemp: 87, fullOpen: 102 }, equivalents: ['MTE-THOMSON 289.87', 'VALCLEI VT002'], applications: ['VW Polo', 'VW Virtus', 'VW T-Cross', 'VW Nivus', 'VW EA211'] },
-  'TH-FI001': { partNumber: 'TH-FI001', brand: 'WAHLER', category: 'arrefecimento', categoryKey: 'thermostat', name: 'Válvula Termostática', specs: { openTemp: 88, fullOpen: 103 }, equivalents: ['MTE-THOMSON 288.88', 'VALCLEI VT010'], applications: ['Fiat Uno', 'Fiat Palio', 'Fiat Siena', 'Fiat Strada', 'Fiat Mobi', 'Fiat Argo', 'Fiat Fire'] },
-  'TH-GM001': { partNumber: 'TH-GM001', brand: 'WAHLER', category: 'arrefecimento', categoryKey: 'thermostat', name: 'Válvula Termostática', specs: { openTemp: 82, fullOpen: 97 }, equivalents: ['MTE-THOMSON 282.82', 'VALCLEI VT020'], applications: ['Chevrolet Onix', 'Chevrolet Prisma', 'Chevrolet Cobalt', 'Chevrolet Spin', 'GM SPE/4'] },
-  'TH-HO001': { partNumber: 'TH-HO001', brand: 'WAHLER', category: 'arrefecimento', categoryKey: 'thermostat', name: 'Válvula Termostática', specs: { openTemp: 80, fullOpen: 95 }, equivalents: ['MTE-THOMSON 280.80', 'VALCLEI VT030'], applications: ['Honda Civic', 'Honda Fit', 'Honda City', 'Honda HR-V', 'Honda WR-V'] },
-  'TH-TO001': { partNumber: 'TH-TO001', brand: 'WAHLER', category: 'arrefecimento', categoryKey: 'thermostat', name: 'Válvula Termostática', specs: { openTemp: 82, fullOpen: 97 }, equivalents: ['MTE-THOMSON 282.82', 'VALCLEI VT040'], applications: ['Toyota Corolla', 'Toyota Yaris', 'Toyota Etios', 'Toyota RAV4'] },
-  'TH-HK001': { partNumber: 'TH-HK001', brand: 'WAHLER', category: 'arrefecimento', categoryKey: 'thermostat', name: 'Válvula Termostática', specs: { openTemp: 82, fullOpen: 97 }, equivalents: ['MTE-THOMSON 282.82', 'VALCLEI VT050'], applications: ['Hyundai HB20', 'Hyundai Creta', 'Kia Rio', 'Kia Cerato'] },
-  'TH-RE001': { partNumber: 'TH-RE001', brand: 'WAHLER', category: 'arrefecimento', categoryKey: 'thermostat', name: 'Válvula Termostática', specs: { openTemp: 89, fullOpen: 104 }, equivalents: ['MTE-THOMSON 289.89', 'VALCLEI VT060'], applications: ['Renault Sandero', 'Renault Logan', 'Renault Duster', 'Renault Captur', 'Renault Kwid'] },
-};
-
-// ============================================================================
-// FLUIDOS E LUBRIFICANTES
-// ============================================================================
-export const FLUIDS: Record<string, PartNumberData> = {
-  'DOT4': { partNumber: 'DOT4', brand: 'BOSCH', category: 'lubrificantes', categoryKey: 'brake_fluid', name: 'Fluido de Freio DOT 4', specs: { type: 'DOT 4', boilingPoint: 230 }, equivalents: ['CASTROL DOT4', 'MOBIL DOT4', 'WAGNER DOT4'], applications: ['VW', 'Fiat', 'GM', 'Honda', 'Toyota', 'Hyundai', 'Kia', 'Renault', 'Ford', 'Jeep', 'Nissan', 'Mitsubishi', 'Peugeot', 'Citroën'] },
-  'DOT5.1': { partNumber: 'DOT5.1', brand: 'BOSCH', category: 'lubrificantes', categoryKey: 'brake_fluid', name: 'Fluido de Freio DOT 5.1', specs: { type: 'DOT 5.1', boilingPoint: 260 }, equivalents: ['CASTROL DOT5.1', 'MOBIL DOT5.1'], applications: ['BMW', 'Mercedes', 'Audi', 'Porsche', 'Volvo', 'Land Rover', 'Jaguar'] },
-  'ATF-DEXRON': { partNumber: 'ATF-DEXRON', brand: 'MOBIL', category: 'lubrificantes', categoryKey: 'transmission_fluid', name: 'Fluido ATF Dexron III', specs: { type: 'ATF Dexron III' }, equivalents: ['CASTROL ATF', 'SHELL ATF', 'PETRONAS ATF'], applications: ['GM', 'Ford', 'Chrysler', 'Jeep', 'Dodge'] },
-  'CHF11S': { partNumber: 'CHF11S', brand: 'PENTOSIN', category: 'lubrificantes', categoryKey: 'power_steering_fluid', name: 'Fluido Direção Hidráulica', specs: { type: 'Synthetic' }, equivalents: ['FEBI CHF11S', 'SWAG CHF11S'], applications: ['VW', 'Audi', 'BMW', 'Mercedes', 'Porsche', 'Volvo'] },
-  'COOLANT-G12': { partNumber: 'COOLANT-G12', brand: 'VW', category: 'lubrificantes', categoryKey: 'coolant', name: 'Líquido Arrefecimento G12', specs: { type: 'G12/G12+', color: 'pink' }, equivalents: ['BASF G12', 'ZEREX G12'], applications: ['VW', 'Audi', 'Seat', 'Skoda'] },
-  'COOLANT-OAT': { partNumber: 'COOLANT-OAT', brand: 'PRESTONE', category: 'lubrificantes', categoryKey: 'coolant', name: 'Líquido Arrefecimento OAT', specs: { type: 'OAT', color: 'orange' }, equivalents: ['DEXCOOL', 'ZEREX OAT'], applications: ['GM', 'Ford', 'Chrysler', 'Honda', 'Toyota', 'Hyundai', 'Kia'] },
-  'MTF-75W90': { partNumber: 'MTF-75W90', brand: 'MOBIL', category: 'lubrificantes', categoryKey: 'gear_oil', name: 'Óleo Câmbio Manual 75W-90', specs: { viscosity: '75W-90', type: 'GL-4' }, equivalents: ['CASTROL 75W90', 'SHELL 75W90', 'PETRONAS 75W90'], applications: ['VW', 'Fiat', 'GM', 'Honda', 'Toyota', 'Hyundai', 'Kia', 'Renault', 'Ford'] },
-  'ATF-WS': { partNumber: 'ATF-WS', brand: 'TOYOTA', category: 'lubrificantes', categoryKey: 'transmission_fluid', name: 'Fluido ATF WS', specs: { type: 'WS' }, equivalents: ['AISIN ATF-WS', 'IDEMITSU ATF-WS'], applications: ['Toyota', 'Lexus'] },
-  'ATF-DW1': { partNumber: 'ATF-DW1', brand: 'HONDA', category: 'lubrificantes', categoryKey: 'transmission_fluid', name: 'Fluido ATF DW-1', specs: { type: 'DW-1' }, equivalents: ['AISIN ATF-DW1', 'IDEMITSU ATF-DW1'], applications: ['Honda', 'Acura'] },
-};
-
-// ============================================================================
-// PEÇAS DE MOTOS ADICIONAIS
-// ============================================================================
-export const MOTORCYCLE_PARTS: Record<string, PartNumberData> = {
-  'TIRE-F-110/70-17': { partNumber: 'TIRE-F-110/70-17', brand: 'PIRELLI', category: 'pneus', categoryKey: 'tire', name: 'Pneu Dianteiro 110/70-17', specs: { width: 110, profile: 70, rim: 17, type: 'sport' }, equivalents: ['MICHELIN 110/70-17', 'METZELER 110/70-17', 'BRIDGESTONE 110/70-17'], applications: ['Honda CB300', 'Honda CB500', 'Yamaha MT-03', 'Yamaha YZF-R3', 'Kawasaki Ninja 300', 'Kawasaki Z300', 'Kawasaki Ninja 400', 'Kawasaki Z400'] },
-  'TIRE-F-120/70-17': { partNumber: 'TIRE-F-120/70-17', brand: 'PIRELLI', category: 'pneus', categoryKey: 'tire', name: 'Pneu Dianteiro 120/70-17', specs: { width: 120, profile: 70, rim: 17, type: 'supersport' }, equivalents: ['MICHELIN 120/70-17', 'METZELER 120/70-17', 'BRIDGESTONE 120/70-17'], applications: ['Honda CBR600', 'Honda CBR1000', 'Yamaha YZF-R1', 'Yamaha YZF-R6', 'Kawasaki ZX-6R', 'Kawasaki ZX-10R', 'Suzuki GSX-R600', 'Suzuki GSX-R1000', 'BMW S1000RR', 'Ducati Panigale'] },
-  'TIRE-R-140/70-17': { partNumber: 'TIRE-R-140/70-17', brand: 'PIRELLI', category: 'pneus', categoryKey: 'tire', name: 'Pneu Traseiro 140/70-17', specs: { width: 140, profile: 70, rim: 17, type: 'sport' }, equivalents: ['MICHELIN 140/70-17', 'METZELER 140/70-17', 'BRIDGESTONE 140/70-17'], applications: ['Honda CB300', 'Honda CB500', 'Yamaha MT-03', 'Yamaha YZF-R3', 'Kawasaki Ninja 300', 'Kawasaki Z300'] },
-  'TIRE-R-180/55-17': { partNumber: 'TIRE-R-180/55-17', brand: 'PIRELLI', category: 'pneus', categoryKey: 'tire', name: 'Pneu Traseiro 180/55-17', specs: { width: 180, profile: 55, rim: 17, type: 'supersport' }, equivalents: ['MICHELIN 180/55-17', 'METZELER 180/55-17', 'BRIDGESTONE 180/55-17'], applications: ['Honda CBR600', 'Yamaha YZF-R6', 'Kawasaki ZX-6R', 'Suzuki GSX-R600', 'Yamaha MT-09'] },
-  'TIRE-F-2.75-18': { partNumber: 'TIRE-F-2.75-18', brand: 'PIRELLI', category: 'pneus', categoryKey: 'tire', name: 'Pneu Dianteiro 2.75-18', specs: { width: 2.75, rim: 18, type: 'street' }, equivalents: ['MICHELIN 2.75-18', 'RINALDI 2.75-18', 'LEVORIN 2.75-18'], applications: ['Honda CG125', 'Honda CG150', 'Honda CG160', 'Honda Biz', 'Yamaha Factor', 'Yamaha YBR'] },
-  'TIRE-R-90/90-18': { partNumber: 'TIRE-R-90/90-18', brand: 'PIRELLI', category: 'pneus', categoryKey: 'tire', name: 'Pneu Traseiro 90/90-18', specs: { width: 90, profile: 90, rim: 18, type: 'street' }, equivalents: ['MICHELIN 90/90-18', 'RINALDI 90/90-18', 'LEVORIN 90/90-18'], applications: ['Honda CG125', 'Honda CG150', 'Honda CG160', 'Honda Biz', 'Yamaha Factor', 'Yamaha YBR'] },
-  'CABLE-ACC-CG160': { partNumber: 'CABLE-ACC-CG160', brand: 'CONTROL FLEX', category: 'cabos', categoryKey: 'cable', name: 'Cabo Acelerador', specs: { length: 950, type: 'push-pull' }, equivalents: ['COFAP CABLE', 'VEDAMOTORS CABLE'], applications: ['Honda CG160', 'Honda CG150', 'Honda Bros', 'Honda XRE190'] },
-  'CABLE-CLU-CG160': { partNumber: 'CABLE-CLU-CG160', brand: 'CONTROL FLEX', category: 'cabos', categoryKey: 'cable', name: 'Cabo Embreagem', specs: { length: 1100, type: 'standard' }, equivalents: ['COFAP CABLE', 'VEDAMOTORS CABLE'], applications: ['Honda CG160', 'Honda CG150', 'Honda Bros', 'Honda XRE190'] },
-  'SEAL-FORK-41': { partNumber: 'SEAL-FORK-41', brand: 'ATHENA', category: 'suspensão', categoryKey: 'seal', name: 'Retentor Bengala 41mm', specs: { diameter: 41, height: 54 }, equivalents: ['SKF SEAL', 'ALL BALLS SEAL', 'VEDAMOTORS SEAL'], applications: ['Honda CB300', 'Honda CB500', 'Yamaha MT-03', 'Yamaha YZF-R3', 'Kawasaki Ninja 300', 'Kawasaki Z300'] },
-  'SEAL-FORK-37': { partNumber: 'SEAL-FORK-37', brand: 'ATHENA', category: 'suspensão', categoryKey: 'seal', name: 'Retentor Bengala 37mm', specs: { diameter: 37, height: 50 }, equivalents: ['SKF SEAL', 'ALL BALLS SEAL', 'VEDAMOTORS SEAL'], applications: ['Honda CG160', 'Honda Bros', 'Honda XRE190', 'Yamaha Fazer 250', 'Yamaha Lander 250'] },
-  'BEARING-WHEEL-6301': { partNumber: 'BEARING-WHEEL-6301', brand: 'SKF', category: 'rolamentos', categoryKey: 'bearing', name: 'Rolamento Roda 6301', specs: { id: 12, od: 37, width: 12 }, equivalents: ['NSK 6301', 'KOYO 6301', 'FAG 6301'], applications: ['Honda CG125', 'Honda CG150', 'Honda CG160', 'Honda Bros', 'Honda Biz', 'Yamaha Factor', 'Yamaha YBR'] },
-  'BEARING-WHEEL-6302': { partNumber: 'BEARING-WHEEL-6302', brand: 'SKF', category: 'rolamentos', categoryKey: 'bearing', name: 'Rolamento Roda 6302', specs: { id: 15, od: 42, width: 13 }, equivalents: ['NSK 6302', 'KOYO 6302', 'FAG 6302'], applications: ['Honda CB300', 'Honda XRE300', 'Yamaha Fazer 250', 'Yamaha Lander 250', 'Yamaha Crosser'] },
-  'GASKET-CG160': { partNumber: 'GASKET-CG160', brand: 'VEDAMOTORS', category: 'motor', categoryKey: 'gasket', name: 'Kit Juntas Motor', specs: { kit: 'complete', material: 'composite' }, equivalents: ['ATHENA GASKET', 'COMETIC GASKET'], applications: ['Honda CG160', 'Honda CG150', 'Honda Bros', 'Honda XRE190'] },
-  'GASKET-CB300': { partNumber: 'GASKET-CB300', brand: 'VEDAMOTORS', category: 'motor', categoryKey: 'gasket', name: 'Kit Juntas Motor', specs: { kit: 'complete', material: 'composite' }, equivalents: ['ATHENA GASKET', 'COMETIC GASKET'], applications: ['Honda CB300', 'Honda XRE300'] },
+export default {
+  THERMOSTATS_DATABASE,
+  WATER_PUMPS_DATABASE,
+  EXTENDED_PARTS_DATABASE,
+  ALL_REAL_PARTS,
+  findPartsForVehicle,
+  findPartByOemCode: findByOem,
+  findPartsByEquivalentCode,
+  getDatabaseStats,
 };

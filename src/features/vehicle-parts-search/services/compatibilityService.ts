@@ -392,6 +392,13 @@ export async function findCompatibleParts(
  */
 async function fetchPartsFromFullAPI(variant: VehicleVariant): Promise<any[]> {
   try {
+    // PRIMEIRO: Tenta buscar da base de catálogos verificados (local)
+    const catalogParts = await fetchPartsFromCatalog(variant);
+    if (catalogParts.length > 0) {
+      console.log(`[compatibilityService] ✅ Catálogo local: ${catalogParts.length} peças verificadas`);
+      return catalogParts;
+    }
+    
     const API_BASE = 'http://localhost:3001';
     
     // V4 usa o ID original do veículo (marca_modelo_ano_motor_versao)
@@ -776,4 +783,105 @@ export async function removeManualCompatibility(
     console.error('[compatibilityService] Erro ao remover compatibilidade:', error);
     throw error;
   }
+}
+
+/**
+ * Busca peças da base de catálogos verificados (códigos OEM reais)
+ * Fonte: FIAT ePER, VW ETKA, GM ACDelco, Hyundai Parts, Toyota EPC, Honda Parts
+ * 
+ * ESTRATÉGIA: Usa matriz de compatibilidade por motor
+ * Veículos com o mesmo motor compartilham as mesmas peças
+ */
+async function fetchPartsFromCatalog(variant: VehicleVariant): Promise<any[]> {
+  try {
+    // PRIMEIRO: Tenta a matriz de peças por motor (cobre 20.000+ veículos)
+    const { getPartsForVehicle: getPartsByEngine, getEngineCode } = await import('../../../services/automotive-backend/data/enginePartsMatrix');
+    
+    const engineCode = getEngineCode(variant.brand, variant.model);
+    if (engineCode) {
+      const engineParts = getPartsByEngine(variant.brand, variant.model);
+      if (engineParts.length > 0) {
+        console.log(`[compatibilityService] ✅ Motor ${engineCode}: ${engineParts.length} peças para ${variant.brand} ${variant.model}`);
+        
+        return engineParts.map(part => ({
+          name: part.name,
+          partNumber: part.oemCode,
+          brand: variant.brand.toUpperCase(),
+          category: getCategoryFromPartName(part.name),
+          equivalents: part.equivalents.map(eq => eq.code),
+          matchType: 'exact',
+          confidence: 0.95,
+          source: part.source,
+          equivalentsDetailed: part.equivalents,
+        }));
+      }
+    }
+    
+    // FALLBACK: Tenta o catálogo específico por veículo
+    const { getPartsForVehicle, CATALOG_VEHICLES } = await import('../../../services/automotive-backend/data/catalogPartsDatabase');
+    
+    // Busca exata por marca/modelo/ano
+    let parts = getPartsForVehicle(variant.brand, variant.model, variant.year);
+    
+    // Se não encontrou, tenta buscar por modelo similar
+    if (parts.length === 0) {
+      const similarVehicle = CATALOG_VEHICLES.find(v => 
+        v.brand.toLowerCase() === variant.brand.toLowerCase() &&
+        v.model.toLowerCase().includes(variant.model.toLowerCase().split(' ')[0])
+      );
+      
+      if (similarVehicle) {
+        parts = similarVehicle.parts;
+        console.log(`[compatibilityService] Usando veículo similar: ${similarVehicle.brand} ${similarVehicle.model} ${similarVehicle.year}`);
+      }
+    }
+    
+    // Converte para o formato esperado
+    return parts.map(part => ({
+      name: part.name,
+      partNumber: part.oemCode,
+      brand: part.manufacturer,
+      category: part.category,
+      equivalents: part.equivalents.map(eq => eq.code),
+      matchType: 'exact',
+      confidence: part.confidenceScore / 100,
+      source: part.source,
+      equivalentsDetailed: part.equivalents,
+    }));
+  } catch (error) {
+    console.error('[compatibilityService] Erro ao buscar catálogo:', error);
+    return [];
+  }
+}
+
+/**
+ * Mapeia nome da peça para categoria
+ */
+function getCategoryFromPartName(name: string): string {
+  const categoryMap: Record<string, string> = {
+    'filtro': 'Filtros',
+    'vela': 'Ignição',
+    'bobina': 'Ignição',
+    'cabo': 'Ignição',
+    'correia': 'Motor',
+    'tensor': 'Motor',
+    'corrente': 'Motor',
+    'bomba': 'Arrefecimento',
+    'válvula termostática': 'Arrefecimento',
+    'pastilha': 'Freios',
+    'disco': 'Freios',
+    'tambor': 'Freios',
+    'amortecedor': 'Suspensão',
+    'embreagem': 'Transmissão',
+    'bateria': 'Elétrica',
+    'sonda': 'Elétrica',
+    'sensor': 'Elétrica',
+    'óleo': 'Lubrificantes',
+  };
+  
+  const nameLower = name.toLowerCase();
+  for (const [key, category] of Object.entries(categoryMap)) {
+    if (nameLower.includes(key)) return category;
+  }
+  return 'Outros';
 }

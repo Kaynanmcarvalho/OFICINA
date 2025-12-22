@@ -1,0 +1,10 @@
+{
+  "processed": [],
+  "errors": [
+    {
+      "vehicle": "Fiat_Strada_2024",
+      "error": "Rate limit persistente - tente novamente mais tarde",
+      "date": "2025-12-21T15:37:18.828Z"
+    }
+  ]
+}

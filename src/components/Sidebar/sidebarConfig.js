@@ -4,7 +4,6 @@ import {
   ClipboardCheck,
   FileText,
   Users,
-  Car,
   Package,
   Wrench,
   Calendar,
@@ -48,12 +47,6 @@ export const menuItems = [
     label: 'Clientes',
     path: '/clients',
     icon: Users,
-  },
-  {
-    id: 'vehicles',
-    label: 'Veículos',
-    path: '/vehicles',
-    icon: Car,
   },
   {
     id: 'inventory',
