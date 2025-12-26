@@ -9,6 +9,7 @@ import Layout from './components/layout/LayoutPremium';
 import { VoiceAssistantButton } from './features/voice-assistant';
 import './i18n/index.jsx';
 import './styles/design-tokens.css';
+// pdv-premium.css is imported directly in CaixaPremium.jsx
 
 // Lazy load pages for better performance
 const LoginPage = React.lazy(() => import('./pages/auth/LoginPage'));
@@ -26,7 +27,7 @@ const TeamPage = React.lazy(() => import('./pages/TeamPage'));
 const SchedulePage = React.lazy(() => import('./pages/SchedulePage'));
 const SettingsPage = React.lazy(() => import('./pages/SettingsPage'));
 const IntegrationsPage = React.lazy(() => import('./pages/IntegrationsPage'));
-const CaixaPage = React.lazy(() => import('./pages/Caixa'));
+const CaixaPage = React.lazy(() => import('./pages/CaixaPremium'));
 const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
 const ReportsPage = React.lazy(() => import('./pages/ReportsPage'));
 const DevPage = React.lazy(() => import('./pages/DevPage'));

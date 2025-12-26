@@ -4,7 +4,7 @@ import LoaderAnimado from './LoaderAnimado';
 
 /**
  * Veículos Ativos
- * Exibe veículos atualmente em serviço
+ * Exibe veículos cadastrados no sistema
  */
 
 const VeiculosAtivos = ({ veiculos, isLoading = false }) => {
@@ -15,7 +15,8 @@ const VeiculosAtivos = ({ veiculos, isLoading = false }) => {
       'Aguardando Peças': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
       'Teste': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
       'em_servico': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
-      'in_service': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
+      'in_service': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
+      'Cadastrado': 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
     };
     return cores[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
   };
@@ -71,10 +72,10 @@ const VeiculosAtivos = ({ veiculos, isLoading = false }) => {
         </div>
         <div>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Veículos em Serviço
+            Veículos Cadastrados
           </h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            {veiculos?.length || 0} {veiculos?.length === 1 ? 'veículo' : 'veículos'} ativos
+            {veiculos?.length || 0} {veiculos?.length === 1 ? 'veículo' : 'veículos'} no sistema
           </p>
         </div>
       </div>
@@ -197,10 +198,10 @@ const VeiculosAtivos = ({ veiculos, isLoading = false }) => {
             <Car className="w-8 h-8 text-gray-400 dark:text-gray-500" />
           </div>
           <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-1">
-            Nenhum veículo em serviço
+            Nenhum veículo cadastrado
           </h4>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            Os veículos em manutenção aparecerão aqui
+            Os veículos dos clientes aparecerão aqui
           </p>
         </div>
       )}

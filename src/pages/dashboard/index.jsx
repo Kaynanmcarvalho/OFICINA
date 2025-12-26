@@ -189,7 +189,7 @@ const DashboardPage = memo(() => {
           
           <Suspense fallback={<SkeletonCard />}>
             <CartaoIndicador
-              titulo="Veículos Ativos"
+              titulo="Veículos Cadastrados"
               valor={estatisticas?.veiculosAtivos || 0}
               icone={Car}
               cor="purple"

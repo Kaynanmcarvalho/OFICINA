@@ -1,4 +1,4 @@
-/**
+﻿/**
  * TORQ - Matriz de Peças por Motor
  * 
  * Gerado automaticamente em: 2025-12-21T16:43:40.525Z
@@ -168,7 +168,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "04C 121 600 N",
         "source": "VW ETKA",
         "equivalents": [
@@ -449,7 +449,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "04C 121 600 N",
         "source": "VW ETKA",
         "equivalents": [
@@ -674,7 +674,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "06L 121 111 H",
         "source": "VW ETKA",
         "equivalents": [
@@ -819,7 +819,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "026 121 005 H",
         "source": "VW ETKA",
         "equivalents": [
@@ -934,7 +934,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "030 121 008 D",
         "source": "VW ETKA",
         "equivalents": [
@@ -1201,7 +1201,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "55268916",
         "source": "FIAT ePER",
         "equivalents": [
@@ -1418,7 +1418,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "46515970",
         "source": "FIAT ePER",
         "equivalents": [
@@ -1533,7 +1533,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "55221397",
         "source": "FIAT ePER",
         "equivalents": [
@@ -1678,7 +1678,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "24405895",
         "source": "GM ACDelco",
         "equivalents": [
@@ -1834,7 +1834,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "55268916",
         "source": "GM ACDelco",
         "equivalents": [
@@ -2039,7 +2039,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "25100-2B700",
         "source": "Hyundai Parts",
         "equivalents": [
@@ -2202,7 +2202,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "25100-2B000",
         "source": "Hyundai Parts",
         "equivalents": [
@@ -2346,7 +2346,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "16100-29415",
         "source": "Toyota EPC",
         "equivalents": [
@@ -2482,7 +2482,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "16100-39545",
         "source": "Toyota EPC",
         "equivalents": [
@@ -2622,7 +2622,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "19200-5R0-003",
         "source": "Honda Parts",
         "equivalents": [
@@ -2754,7 +2754,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "210108030R",
         "source": "Renault Parts",
         "equivalents": [
@@ -2882,7 +2882,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "21010-3TA0A",
         "source": "Nissan Parts",
         "equivalents": [
@@ -2977,7 +2977,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "1S7Z-8501-AA",
         "source": "Ford Parts",
         "equivalents": [
@@ -3087,7 +3087,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "CM5Z-8501-A",
         "source": "Ford Parts",
         "equivalents": [
@@ -3266,7 +3266,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "55268916",
         "source": "FIAT ePER",
         "equivalents": [
@@ -3467,7 +3467,7 @@ export const ENGINE_PARTS_MATRIX: Record<string, EngineData> = {
         ]
       },
       {
-        "name": "Bomba d'Água",
+        "name": "Bomba de Agua",
         "oemCode": "03L 121 011 PX",
         "source": "VW ETKA",
         "equivalents": [

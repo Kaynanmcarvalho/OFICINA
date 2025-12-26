@@ -10,18 +10,22 @@ import { getAllDocuments, subscribeToCollection } from '../../../services/storeH
  */
 export const buscarEstatisticasGerais = async () => {
   try {
-    const [clientesData, veiculosData, ferramentasData, estoqueData, orcamentosData, checkinsData] = await Promise.all([
+    const [clientesData, ferramentasData, estoqueData, orcamentosData, checkinsData] = await Promise.all([
       getAllDocuments('clients'),
-      getAllDocuments('vehicles'),
       getAllDocuments('tools'),
       getAllDocuments('inventory'),
       getAllDocuments('budgets'),
       getAllDocuments('checkins')
     ]);
 
-    // Calcular veículos ativos (apenas em atendimento)
-    const statusAtivos = ['Em Montagem', 'Aguardando Peças', 'Teste', 'em_servico', 'in_service', 'aguardando_pecas', 'waiting_parts', 'teste', 'testing'];
-    const veiculosAtivos = checkinsData.filter(checkin => 
+    // Calcular total de veículos cadastrados (veículos estão dentro dos clientes)
+    const totalVeiculosCadastrados = clientesData.reduce((total, cliente) => {
+      return total + (cliente.vehicles?.length || 0);
+    }, 0);
+
+    // Calcular veículos em atendimento (checkins ativos)
+    const statusAtivos = ['Em Montagem', 'Aguardando Peças', 'Teste', 'em_servico', 'in_service', 'aguardando_pecas', 'waiting_parts', 'teste', 'testing', 'Em Serviço', 'em_atendimento'];
+    const veiculosEmAtendimento = checkinsData.filter(checkin => 
       checkin.status && statusAtivos.includes(checkin.status)
     ).length;
 
@@ -62,8 +66,9 @@ export const buscarEstatisticasGerais = async () => {
 
     return {
       totalClientes: clientesData.length,
-      totalVeiculos: veiculosData.length,
-      veiculosAtivos,
+      totalVeiculos: totalVeiculosCadastrados,
+      veiculosAtivos: totalVeiculosCadastrados, // Total de veículos cadastrados
+      veiculosEmAtendimento, // Veículos em serviço ativo
       totalFerramentas: ferramentasData.length,
       ferramentasEmUso,
       ferramentasDisponiveis: ferramentasData.length - ferramentasEmUso - ferramentasManutencao,
@@ -74,7 +79,6 @@ export const buscarEstatisticasGerais = async () => {
       receitaMensal,
       servicosHoje,
       clientes: clientesData,
-      veiculos: veiculosData,
       ferramentas: ferramentasData,
       estoque: estoqueData,
       orcamentos: orcamentosData,
@@ -225,26 +229,29 @@ export const buscarFerramentasEmUso = async () => {
 };
 
 /**
- * Busca veículos ativos (em serviço)
+ * Busca veículos ativos (cadastrados nos clientes)
  */
 export const buscarVeiculosAtivos = async () => {
   try {
-    const veiculosData = await getAllDocuments('vehicles');
+    const clientesData = await getAllDocuments('clients');
     const veiculosAtivos = [];
 
-    veiculosData.forEach(veiculo => {
-      const statusAtivos = ['Em Montagem', 'Aguardando Peças', 'Teste', 'em_servico', 'in_service'];
-      
-      if (statusAtivos.includes(veiculo.status)) {
-        veiculosAtivos.push({
-          id: veiculo.id,
-          placa: veiculo.plate || veiculo.licensePlate || 'Sem placa',
-          marca: veiculo.brand || veiculo.make || '',
-          modelo: veiculo.model || '',
-          ano: veiculo.year || '',
-          status: veiculo.status || 'Em Serviço',
-          cliente: veiculo.clientName || 'Cliente não informado',
-          dataEntrada: veiculo.createdAt ? new Date(veiculo.createdAt) : new Date()
+    // Veículos estão dentro dos clientes
+    clientesData.forEach(cliente => {
+      if (cliente.vehicles && cliente.vehicles.length > 0) {
+        cliente.vehicles.forEach(veiculo => {
+          veiculosAtivos.push({
+            id: veiculo.id || `${cliente.id}-${veiculo.plate || veiculo.placa}`,
+            placa: veiculo.plate || veiculo.placa || veiculo.licensePlate || 'Sem placa',
+            marca: veiculo.brand || veiculo.marca || veiculo.make || '',
+            modelo: veiculo.model || veiculo.modelo || '',
+            ano: veiculo.year || veiculo.ano || '',
+            cor: veiculo.color || veiculo.cor || '',
+            status: 'Cadastrado',
+            cliente: cliente.name || 'Cliente não informado',
+            clienteId: cliente.id,
+            dataEntrada: veiculo.createdAt ? new Date(veiculo.createdAt) : (cliente.createdAt ? new Date(cliente.createdAt) : new Date())
+          });
         });
       }
     });
@@ -330,11 +337,22 @@ export const gerarDadosGrafico = async () => {
       });
     }
 
-    // Buscar clientes e veículos
-    const [clientesData, veiculosData] = await Promise.all([
-      getAllDocuments('clients'),
-      getAllDocuments('vehicles')
-    ]);
+    // Buscar clientes (veículos estão dentro dos clientes)
+    const clientesData = await getAllDocuments('clients');
+
+    // Extrair todos os veículos dos clientes
+    const todosVeiculos = [];
+    clientesData.forEach(cliente => {
+      if (cliente.vehicles && cliente.vehicles.length > 0) {
+        cliente.vehicles.forEach(veiculo => {
+          todosVeiculos.push({
+            ...veiculo,
+            clienteId: cliente.id,
+            createdAt: veiculo.createdAt || cliente.createdAt
+          });
+        });
+      }
+    });
 
     const dadosGrafico = diasSemana.map(dia => {
       const clientesDia = clientesData.filter(data => {
@@ -343,7 +361,7 @@ export const gerarDadosGrafico = async () => {
         return dataCriacao.toDateString() === dia.dataCompleta.toDateString();
       }).length;
 
-      const veiculosDia = veiculosData.filter(data => {
+      const veiculosDia = todosVeiculos.filter(data => {
         if (!data.createdAt) return false;
         const dataCriacao = new Date(data.createdAt);
         return dataCriacao.toDateString() === dia.dataCompleta.toDateString();
@@ -379,11 +397,22 @@ export const calcularTendencias = async () => {
     const quatorzeDiasAtras = new Date(hoje);
     quatorzeDiasAtras.setDate(quatorzeDiasAtras.getDate() - 14);
 
-    // Buscar todas as coleções
-    const [clientesData, veiculosData] = await Promise.all([
-      getAllDocuments('clients'),
-      getAllDocuments('vehicles')
-    ]);
+    // Buscar clientes (veículos estão dentro dos clientes)
+    const clientesData = await getAllDocuments('clients');
+
+    // Extrair todos os veículos dos clientes
+    const todosVeiculos = [];
+    clientesData.forEach(cliente => {
+      if (cliente.vehicles && cliente.vehicles.length > 0) {
+        cliente.vehicles.forEach(veiculo => {
+          todosVeiculos.push({
+            ...veiculo,
+            clienteId: cliente.id,
+            createdAt: veiculo.createdAt || cliente.createdAt
+          });
+        });
+      }
+    });
 
     // Contar registros do período atual (últimos 7 dias)
     const clientesAtual = clientesData.filter(data => {
@@ -392,7 +421,7 @@ export const calcularTendencias = async () => {
       return dataCriacao >= seteDiasAtras;
     }).length;
 
-    const veiculosAtual = veiculosData.filter(data => {
+    const veiculosAtual = todosVeiculos.filter(data => {
       if (!data.createdAt) return false;
       const dataCriacao = new Date(data.createdAt);
       return dataCriacao >= seteDiasAtras;
@@ -405,7 +434,7 @@ export const calcularTendencias = async () => {
       return dataCriacao >= quatorzeDiasAtras && dataCriacao < seteDiasAtras;
     }).length;
 
-    const veiculosAnterior = veiculosData.filter(data => {
+    const veiculosAnterior = todosVeiculos.filter(data => {
       if (!data.createdAt) return false;
       const dataCriacao = new Date(data.createdAt);
       return dataCriacao >= quatorzeDiasAtras && dataCriacao < seteDiasAtras;
@@ -465,9 +494,9 @@ export const subscribeToAllCollections = (callback) => {
   const unsubscribers = [];
 
   // Listeners isolados por empresa
+  // Nota: veículos estão dentro de clients, não em coleção separada
   unsubscribers.push(
     subscribeToCollection('clients', () => callback('clients')),
-    subscribeToCollection('vehicles', () => callback('vehicles')),
     subscribeToCollection('tools', () => callback('tools')),
     subscribeToCollection('inventory', () => callback('inventory')),
     subscribeToCollection('budgets', () => callback('budgets')),

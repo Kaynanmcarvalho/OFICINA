@@ -1,4 +1,4 @@
-/**
+﻿/**
  * TORQ Automotive - Base de Dados de Peças VERIFICADAS
  * 
  * Gerado automaticamente em: 2025-12-21T15:57:41.222Z
@@ -186,7 +186,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Fiat_Strada_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba d\'Agua',
         category: PartCategory.COOLING,
         oemCode: '55268916',
         source: 'FIAT ePER',
@@ -481,7 +481,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Volkswagen_Polo_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '04C 121 600 N',
         source: 'VW ETKA',
@@ -745,7 +745,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Chevrolet_Onix_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '55268916',
         source: 'GM ACDelco',
@@ -995,7 +995,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Hyundai_HB20_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '25100-2B700',
         source: 'Hyundai Parts',
@@ -1246,7 +1246,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Toyota_Corolla_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '16100-29415',
         source: 'Toyota EPC',
@@ -1482,7 +1482,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Honda_HRV_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '19200-5R0-003',
         source: 'Honda Parts',
@@ -1711,7 +1711,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Jeep_Renegade_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '55268916',
         source: 'Mopar',
@@ -1915,7 +1915,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Jeep_Compass_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '55268916',
         source: 'Mopar',
@@ -2121,7 +2121,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Nissan_Kicks_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '21010-3TA0A',
         source: 'Nissan Parts',
@@ -2314,7 +2314,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Renault_Kwid_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '210108030R',
         source: 'Renault Parts',
@@ -2506,7 +2506,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Fiat_Argo_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '55268916',
         source: 'FIAT ePER',
@@ -2710,7 +2710,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Fiat_Cronos_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '55268916',
         source: 'FIAT ePER',
@@ -2915,7 +2915,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Volkswagen_TCross_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '04C 121 600 N',
         source: 'VW ETKA',
@@ -3119,7 +3119,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Volkswagen_Virtus_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '04C 121 600 N',
         source: 'VW ETKA',
@@ -3325,7 +3325,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Chevrolet_Tracker_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '55268916',
         source: 'GM ACDelco',
@@ -3529,7 +3529,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Hyundai_Creta_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '25100-2B700',
         source: 'Hyundai Parts',
@@ -3708,7 +3708,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Toyota_Hilux_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '16100-39545',
         source: 'Toyota EPC',
@@ -3901,7 +3901,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Honda_City_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '19200-5R0-003',
         source: 'Honda Parts',
@@ -4092,7 +4092,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Renault_Duster_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '210108030R',
         source: 'Renault Parts',
@@ -4283,7 +4283,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Peugeot_208_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '55268916',
         source: 'Stellantis',
@@ -4474,7 +4474,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Citroen_C3_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '55268916',
         source: 'Stellantis',
@@ -4665,7 +4665,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Fiat_Mobi_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '55268916',
         source: 'FIAT ePER',
@@ -4856,7 +4856,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Volkswagen_Nivus_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '04C 121 600 N',
         source: 'VW ETKA',
@@ -5062,7 +5062,7 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
       },
       {
         id: 'Chevrolet_Spin_2024_BOMBA_D__GUA',
-        name: 'Bomba d'Água',
+        name: 'Bomba de Agua',
         category: PartCategory.COOLING,
         oemCode: '24405895',
         source: 'GM ACDelco',
