@@ -6,7 +6,7 @@ import ThemeToggle from './ThemeToggle';
 import NavbarProfile from './NavbarProfile';
 import GlobalSearch from '../../Navbar/GlobalSearch';
 
-const NavbarActions = () => {
+const NavbarActions = ({ showSearchOnly = false, showActionsOnly = false }) => {
   const { isDarkMode } = useThemeStore();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
@@ -23,6 +23,62 @@ const NavbarActions = () => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
+  // Se showActionsOnly, mostra apenas Theme Toggle e Profile
+  if (showActionsOnly) {
+    return (
+      <div className="flex items-center gap-3">
+        <ThemeToggle />
+        <NavbarProfile />
+      </div>
+    );
+  }
+
+  // Se showSearchOnly, mostra apenas o botão de busca (centralizado)
+  if (showSearchOnly) {
+    return (
+      <>
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setIsSearchOpen(true)}
+          className={`
+            flex items-center gap-3 px-5 py-2.5 rounded-xl
+            transition-all duration-200 cursor-pointer
+            min-w-[320px] max-w-[480px] w-full
+            ${isDarkMode 
+              ? 'bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-gray-300' 
+              : 'bg-black/[0.04] hover:bg-black/[0.08] border border-black/[0.06] text-gray-600'
+            }
+          `}
+          aria-label="Busca global (Ctrl+K)"
+          title="Busca global (Ctrl+K)"
+        >
+          <Search size={18} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
+          <span className={`text-sm flex-1 text-left ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            Buscar clientes, veículos, peças...
+          </span>
+          <div className={`
+            flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium
+            ${isDarkMode 
+              ? 'bg-white/[0.08] text-gray-400' 
+              : 'bg-black/[0.06] text-gray-500'
+            }
+          `}>
+            <Command size={11} />
+            <span>K</span>
+          </div>
+        </motion.button>
+
+        {/* Global Search Modal */}
+        <GlobalSearch 
+          isOpen={isSearchOpen} 
+          onClose={() => setIsSearchOpen(false)} 
+        />
+      </>
+    );
+  }
+
+  // Comportamento padrão (tudo junto)
   return (
     <div className="relative flex items-center gap-3">
       {/* Search Button - Premium Style */}

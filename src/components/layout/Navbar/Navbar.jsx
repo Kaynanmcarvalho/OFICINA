@@ -16,25 +16,20 @@ const Navbar = ({ onSearch }) => {
       className={navbarClasses}
     >
       <div className="w-full px-6 h-full">
-        <div className="flex items-center justify-between h-full gap-4 max-w-full">
+        <div className="flex items-center h-full gap-4 max-w-full">
           {/* Left: Logo */}
           <div className="flex items-center flex-shrink-0">
             <Logo />
           </div>
 
-          {/* Center: Search (optional) */}
-          {onSearch && (
-            <div className="hidden md:block flex-1 max-w-2xl mx-auto">
-              <NavbarSearch onSearch={onSearch} />
-            </div>
-          )}
+          {/* Center: Search Button (centralizado) */}
+          <div className="flex-1 flex justify-center">
+            <NavbarActions showSearchOnly />
+          </div>
 
-          {/* Spacer para empurrar actions para direita quando não há search */}
-          {!onSearch && <div className="flex-1" />}
-
-          {/* Right: Actions */}
-          <div className="flex items-center justify-end flex-shrink-0 ml-auto">
-            <NavbarActions />
+          {/* Right: Theme Toggle + Profile */}
+          <div className="flex items-center justify-end flex-shrink-0">
+            <NavbarActions showActionsOnly />
           </div>
         </div>
       </div>
