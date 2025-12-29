@@ -29,11 +29,18 @@ const SettingsPage = React.lazy(() => import('./pages/SettingsPage'));
 const IntegrationsPage = React.lazy(() => import('./pages/IntegrationsPage'));
 const CaixaPage = React.lazy(() => import('./pages/CaixaPremium'));
 const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
-const ReportsPage = React.lazy(() => import('./pages/ReportsPage'));
+const ReportsPage = React.lazy(() => import('./pages/reports/index'));
+const FinancialReport = React.lazy(() => import('./pages/reports/FinancialReport'));
+const ClientsReport = React.lazy(() => import('./pages/reports/ClientsReport'));
+const CheckinsReport = React.lazy(() => import('./pages/reports/CheckinsReport'));
 const DevPage = React.lazy(() => import('./pages/DevPage'));
 const BudgetsPage = React.lazy(() => import('./pages/BudgetsPage'));
 const BudgetApprovalPage = React.lazy(() => import('./pages/BudgetApprovalPage'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
+
+// Admin pages (Super Admin only)
+const SaaSDashboard = React.lazy(() => import('./pages/admin/SaaSDashboard'));
+const OnboardingEmpresa = React.lazy(() => import('./pages/admin/OnboardingEmpresa'));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -120,12 +127,20 @@ function App() {
                 <Route path="team" element={<TeamPage />} />
                 <Route path="schedule" element={<SchedulePage />} />
                 <Route path="caixa" element={<CaixaPage />} />
-                <Route path="reports" element={<ReportsPage />} />
+                <Route path="reports" element={<ReportsPage />}>
+                  <Route path="financial" element={<FinancialReport />} />
+                  <Route path="clients" element={<ClientsReport />} />
+                  <Route path="checkins" element={<CheckinsReport />} />
+                </Route>
                 <Route path="dev" element={<DevPage />} />
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="integrations" element={<IntegrationsPage />} />
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="employees" element={<EmployeeManagementPage />} />
+                
+                {/* Admin routes (Super Admin only) */}
+                <Route path="admin/dashboard" element={<SaaSDashboard />} />
+                <Route path="admin/onboarding" element={<OnboardingEmpresa />} />
               </Route>
 
               {/* Catch all route */}

@@ -1,14 +1,21 @@
 import React from 'react';
-import { MdClose } from 'react-icons/md';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X } from 'lucide-react';
+import { useThemeStore } from '../../store/index.jsx';
 
-const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
+const Modal = ({ isOpen, onClose, title, children, size = 'md', subtitle = null }) => {
+  const { isDarkMode } = useThemeStore();
+
   if (!isOpen) return null;
 
   const sizeClasses = {
     sm: 'max-w-md',
     md: 'max-w-lg',
     lg: 'max-w-2xl',
-    xl: 'max-w-4xl'
+    xl: 'max-w-4xl',
+    '2xl': 'max-w-5xl',
+    '3xl': 'max-w-6xl',
+    full: 'max-w-[95vw]'
   };
 
   const handleBackdropClick = (e) => {
@@ -18,30 +25,66 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
   };
 
   return (
-    <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm overflow-y-auto"
-      onClick={handleBackdropClick}
-    >
-      <div className={`w-full ${sizeClasses[size]} bg-white dark:bg-gray-800 rounded-lg shadow-xl transform transition-all duration-300 scale-100 my-8 max-h-[90vh] flex flex-col`}>
-        {/* Header - Fixo */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            {title}
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <MdClose size={20} />
-          </button>
-        </div>
-        
-        {/* Content - Com scroll */}
-        <div className="p-6 overflow-y-auto flex-1">
-          {children}
-        </div>
-      </div>
-    </div>
+    <AnimatePresence>
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className={`fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto ${isDarkMode ? 'bg-black/70' : 'bg-black/50'} backdrop-blur-sm`}
+        onClick={handleBackdropClick}
+      >
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          className={`
+            w-full ${sizeClasses[size]} my-8 max-h-[90vh] flex flex-col
+            rounded-2xl shadow-2xl transform transition-all
+            ${isDarkMode 
+              ? 'bg-[#1C1E26] border border-white/[0.08]' 
+              : 'bg-white border border-gray-200/80'
+            }
+          `}
+        >
+          {/* Header */}
+          <div className={`
+            flex items-center justify-between px-6 py-4 border-b flex-shrink-0
+            ${isDarkMode ? 'border-white/[0.08]' : 'border-gray-200'}
+          `}>
+            <div>
+              <h2 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                {title}
+              </h2>
+              {subtitle && (
+                <p className={`text-sm mt-0.5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {subtitle}
+                </p>
+              )}
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={onClose}
+              className={`
+                p-2 rounded-xl transition-colors
+                ${isDarkMode 
+                  ? 'text-gray-400 hover:text-white hover:bg-white/[0.1]' 
+                  : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                }
+              `}
+            >
+              <X className="w-5 h-5" />
+            </motion.button>
+          </div>
+          
+          {/* Content */}
+          <div className="px-6 py-5 overflow-y-auto flex-1">
+            {children}
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

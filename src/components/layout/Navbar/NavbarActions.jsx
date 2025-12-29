@@ -1,93 +1,73 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
+import { Search, Command } from 'lucide-react';
 import { useThemeStore } from '../../../store/index.jsx';
 import ThemeToggle from './ThemeToggle';
 import NavbarProfile from './NavbarProfile';
+import GlobalSearch from '../../Navbar/GlobalSearch';
 
 const NavbarActions = () => {
   const { isDarkMode } = useThemeStore();
-  const [showSearch, setShowSearch] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    console.log('Buscar:', searchQuery);
-    // TODO: Implementar busca
-  };
+  // Keyboard shortcut: Ctrl+K or Cmd+K to open search
+  const handleKeyDown = useCallback((e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      setIsSearchOpen(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
 
   return (
     <div className="relative flex items-center gap-3">
-      {/* Search */}
-      <div className="relative">
-        <AnimatePresence>
-          {showSearch ? (
-            <motion.form
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 250, opacity: 1 }}
-              exit={{ width: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              onSubmit={handleSearch}
-              className="overflow-hidden"
-            >
-              <div className="relative">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Buscar..."
-                  autoFocus
-                  className={`w-full pl-10 pr-10 py-2 rounded-lg text-sm transition-colors ${
-                    isDarkMode
-                      ? 'bg-gray-700 text-gray-200 placeholder-gray-400 border border-gray-600'
-                      : 'bg-gray-100 text-gray-800 placeholder-gray-500 border border-gray-300'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                />
-                <Search 
-                  size={18} 
-                  className={`absolute left-3 top-1/2 -translate-y-1/2 ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                  }`}
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowSearch(false);
-                    setSearchQuery('');
-                  }}
-                  className={`absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full ${
-                    isDarkMode ? 'hover:bg-gray-600' : 'hover:bg-gray-200'
-                  }`}
-                >
-                  <X size={16} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
-                </button>
-              </div>
-            </motion.form>
-          ) : (
-            <motion.button
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              onClick={() => setShowSearch(true)}
-              className={`p-2 rounded-full transition-colors duration-200 ${
-                isDarkMode 
-                  ? 'text-gray-300 hover:bg-gray-700' 
-                  : 'text-gray-600 hover:bg-gray-200'
-              }`}
-              aria-label="Buscar"
-              title="Buscar"
-            >
-              <Search size={22} />
-            </motion.button>
-          )}
-        </AnimatePresence>
-      </div>
+      {/* Search Button - Premium Style */}
+      <motion.button
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        onClick={() => setIsSearchOpen(true)}
+        className={`
+          flex items-center gap-2 px-3 py-2 rounded-xl
+          transition-all duration-200 cursor-pointer
+          ${isDarkMode 
+            ? 'bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-gray-300' 
+            : 'bg-black/[0.04] hover:bg-black/[0.08] border border-black/[0.06] text-gray-600'
+          }
+        `}
+        aria-label="Busca global (Ctrl+K)"
+        title="Busca global (Ctrl+K)"
+      >
+        <Search size={18} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
+        <span className={`text-sm hidden sm:inline ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+          Buscar...
+        </span>
+        <div className={`
+          hidden sm:flex items-center gap-1 ml-2 px-1.5 py-0.5 rounded-md text-[10px] font-medium
+          ${isDarkMode 
+            ? 'bg-white/[0.08] text-gray-400' 
+            : 'bg-black/[0.06] text-gray-500'
+          }
+        `}>
+          <Command size={10} />
+          <span>K</span>
+        </div>
+      </motion.button>
 
       {/* Theme Toggle */}
       <ThemeToggle />
 
       {/* Profile */}
       <NavbarProfile />
+
+      {/* Global Search Modal */}
+      <GlobalSearch 
+        isOpen={isSearchOpen} 
+        onClose={() => setIsSearchOpen(false)} 
+      />
     </div>
   );
 };
