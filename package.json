@@ -20,6 +20,7 @@
   "dependencies": {
     "@cardog-icons/react": "^1.0.1",
     "@hookform/resolvers": "^3.3.2",
+    "@phosphor-icons/react": "^2.1.10",
     "@tanstack/react-table": "^8.20.5",
     "axios": "^1.13.0",
     "browser-image-compression": "^2.0.2",
