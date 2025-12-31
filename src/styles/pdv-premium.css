@@ -17,31 +17,31 @@
    ============================================================================ */
 
 :root {
-  /* PDV Specific Tokens */
-  --pdv-header-h: 60px;
-  --pdv-cart-w: clamp(320px, 30vw, 420px);
-  --pdv-gap: clamp(12px, 1.5vw, 20px);
-  --pdv-radius: 16px;
-  --pdv-radius-sm: 10px;
-  --pdv-radius-xs: 8px;
-  --pdv-radius-lg: 20px;
+  /* PDV Specific Tokens - REDUCED 10% */
+  --pdv-header-h: 54px;
+  --pdv-cart-w: clamp(288px, 27vw, 378px);
+  --pdv-gap: clamp(11px, 1.35vw, 18px);
+  --pdv-radius: 14px;
+  --pdv-radius-sm: 9px;
+  --pdv-radius-xs: 7px;
+  --pdv-radius-lg: 18px;
   
-  /* Typography Scale */
-  --pdv-font-xs: clamp(0.6875rem, 0.65rem + 0.15vw, 0.75rem);
-  --pdv-font-sm: clamp(0.75rem, 0.7rem + 0.2vw, 0.8125rem);
-  --pdv-font-base: clamp(0.8125rem, 0.75rem + 0.25vw, 0.875rem);
-  --pdv-font-md: clamp(0.875rem, 0.8rem + 0.3vw, 0.9375rem);
-  --pdv-font-lg: clamp(1rem, 0.9rem + 0.4vw, 1.125rem);
-  --pdv-font-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
-  --pdv-font-2xl: clamp(1.5rem, 1.3rem + 0.8vw, 1.875rem);
+  /* Typography Scale - REDUCED 10% */
+  --pdv-font-xs: clamp(0.62rem, 0.585rem + 0.135vw, 0.675rem);
+  --pdv-font-sm: clamp(0.675rem, 0.63rem + 0.18vw, 0.73rem);
+  --pdv-font-base: clamp(0.73rem, 0.675rem + 0.225vw, 0.79rem);
+  --pdv-font-md: clamp(0.79rem, 0.72rem + 0.27vw, 0.84rem);
+  --pdv-font-lg: clamp(0.9rem, 0.81rem + 0.36vw, 1.01rem);
+  --pdv-font-xl: clamp(1.125rem, 0.99rem + 0.54vw, 1.35rem);
+  --pdv-font-2xl: clamp(1.35rem, 1.17rem + 0.72vw, 1.69rem);
   
-  /* Spacing */
-  --pdv-space-1: 4px;
-  --pdv-space-2: 8px;
-  --pdv-space-3: 12px;
-  --pdv-space-4: 16px;
-  --pdv-space-5: 20px;
-  --pdv-space-6: 24px;
+  /* Spacing - REDUCED 10% */
+  --pdv-space-1: 3.6px;
+  --pdv-space-2: 7.2px;
+  --pdv-space-3: 10.8px;
+  --pdv-space-4: 14.4px;
+  --pdv-space-5: 18px;
+  --pdv-space-6: 21.6px;
   
   /* Premium Gradients */
   --pdv-gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -77,13 +77,13 @@
   --pdv-text-tertiary: #86868b;
   --pdv-text-quaternary: #aeaeb2;
   
-  /* Accent - Apple's signature blue */
-  --pdv-accent: #007aff;
-  --pdv-accent-hover: #0066d6;
-  --pdv-accent-light: rgba(0, 122, 255, 0.1);
-  --pdv-accent-glow: rgba(0, 122, 255, 0.25);
-  --pdv-accent-gradient: linear-gradient(135deg, #007aff 0%, #00c7ff 100%);
-  --pdv-accent-gradient-hover: linear-gradient(135deg, #0066d6 0%, #00a8e8 100%);
+  /* Accent - Apple's signature blue - DARKER */
+  --pdv-accent: #0055CC;
+  --pdv-accent-hover: #004299;
+  --pdv-accent-light: rgba(0, 85, 204, 0.1);
+  --pdv-accent-glow: rgba(0, 85, 204, 0.25);
+  --pdv-accent-gradient: linear-gradient(135deg, #0055CC 0%, #0077DD 100%);
+  --pdv-accent-gradient-hover: linear-gradient(135deg, #004299 0%, #0066BB 100%);
   
   /* Status Colors - Apple style */
   --pdv-success: #34c759;
@@ -160,13 +160,13 @@
   --pdv-text-tertiary: #6e6e73;
   --pdv-text-quaternary: #48484a;
   
-  /* Accent - Apple's dark mode blue */
-  --pdv-accent: #0a84ff;
-  --pdv-accent-hover: #409cff;
-  --pdv-accent-light: rgba(10, 132, 255, 0.18);
-  --pdv-accent-glow: rgba(10, 132, 255, 0.35);
-  --pdv-accent-gradient: linear-gradient(135deg, #0a84ff 0%, #5ac8fa 100%);
-  --pdv-accent-gradient-hover: linear-gradient(135deg, #409cff 0%, #70d7ff 100%);
+  /* Accent - Apple's dark mode blue - DARKER */
+  --pdv-accent: #0066DD;
+  --pdv-accent-hover: #3388EE;
+  --pdv-accent-light: rgba(0, 102, 221, 0.18);
+  --pdv-accent-glow: rgba(0, 102, 221, 0.35);
+  --pdv-accent-gradient: linear-gradient(135deg, #0066DD 0%, #0088EE 100%);
+  --pdv-accent-gradient-hover: linear-gradient(135deg, #3388EE 0%, #55AAFF 100%);
   
   /* Status Colors - Apple dark mode */
   --pdv-success: #30d158;
@@ -345,11 +345,11 @@
 
 .pdv-search__icon {
   position: absolute;
-  left: 14px;
+  left: 13px;
   top: 50%;
   transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   color: var(--pdv-text-tertiary);
   pointer-events: none;
   transition: color 0.2s ease;
@@ -361,8 +361,8 @@
 
 .pdv-search__input {
   width: 100%;
-  height: 42px;
-  padding: 0 14px 0 44px;
+  height: 38px;
+  padding: 0 13px 0 40px;
   background: var(--pdv-bg-solid);
   border: 2px solid var(--pdv-border);
   border-radius: var(--pdv-radius);
@@ -420,12 +420,12 @@
 .pdv-client__btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
+  gap: 7px;
+  padding: 7px 13px;
   background: var(--pdv-surface);
   border: 1px solid var(--pdv-border);
-  border-radius: 10px;
-  font-size: 13px;
+  border-radius: 9px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--pdv-text-secondary);
   cursor: pointer;
@@ -439,23 +439,23 @@
 }
 
 .pdv-client__btn svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
 }
 
 /* Selected Client - Apple Card Style */
 .pdv-client__selected {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 10px 6px 6px;
+  gap: 9px;
+  padding: 5px 9px 5px 5px;
   background: var(--pdv-surface);
   border: 1px solid var(--pdv-border);
-  border-radius: 12px;
+  border-radius: 11px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease;
-  min-width: 180px;
-  max-width: 260px;
+  min-width: 162px;
+  max-width: 234px;
 }
 
 .pdv-client__selected:hover {
@@ -467,15 +467,15 @@
 }
 
 .pdv-client__avatar {
-  width: 34px;
-  height: 34px;
+  width: 31px;
+  height: 31px;
   border-radius: 50%;
   background: var(--pdv-accent);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   flex-shrink: 0;
   letter-spacing: -0.02em;
@@ -490,7 +490,7 @@
 }
 
 .pdv-client__name {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--pdv-text-primary);
   white-space: nowrap;
@@ -501,7 +501,7 @@
 }
 
 .pdv-client__phone {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--pdv-text-tertiary);
   font-weight: 400;
   white-space: nowrap;
@@ -511,8 +511,8 @@
 }
 
 .pdv-client__remove {
-  width: 26px;
-  height: 26px;
+  width: 23px;
+  height: 23px;
   border-radius: 50%;
   border: none;
   background: var(--pdv-bg-solid);
@@ -532,8 +532,8 @@
 }
 
 .pdv-client__remove svg {
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
 }
 
 /* ============================================================================
@@ -577,12 +577,12 @@
 .pdv-tabs__item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+  gap: 7px;
+  padding: 7px 14px;
   border: none;
   border-radius: var(--pdv-radius-sm);
   background: transparent;
-  font-size: var(--pdv-font-xs);
+  font-size: 11px;
   font-weight: 600;
   color: var(--pdv-text-secondary);
   cursor: pointer;
@@ -920,7 +920,7 @@
 }
 
 .pdv-product:hover .pdv-product__name {
-  color: var(--pdv-accent);
+  color: var(--pdv-text-primary);
 }
 
 .pdv-product__price {
@@ -1726,37 +1726,329 @@
    RESPONSIVE BREAKPOINTS - PREMIUM
    ============================================================================ */
 
-/* Small notebooks (≤1280px) */
+/* Extra small monitors (≤1280px) - Scale down 10% */
 @media (max-width: 1280px) {
-  :root {
-    --pdv-cart-w: 300px;
+  .pdv-container {
+    --pdv-cart-w: 280px;
+    --pdv-header-h: 54px;
+    --pdv-radius: 14px;
+    --pdv-radius-sm: 9px;
+    --pdv-radius-xs: 7px;
+    --pdv-radius-lg: 18px;
+    
+    /* Typography Scale - 10% smaller */
+    --pdv-font-xs: clamp(0.6rem, 0.58rem + 0.12vw, 0.675rem);
+    --pdv-font-sm: clamp(0.675rem, 0.63rem + 0.18vw, 0.73rem);
+    --pdv-font-base: clamp(0.73rem, 0.675rem + 0.22vw, 0.79rem);
+    --pdv-font-md: clamp(0.79rem, 0.72rem + 0.27vw, 0.84rem);
+    --pdv-font-lg: clamp(0.9rem, 0.81rem + 0.36vw, 1.01rem);
+    --pdv-font-xl: clamp(1.125rem, 0.99rem + 0.54vw, 1.35rem);
+    --pdv-font-2xl: clamp(1.35rem, 1.17rem + 0.72vw, 1.69rem);
+    
+    /* Spacing - 10% smaller */
+    --pdv-space-1: 3.6px;
+    --pdv-space-2: 7.2px;
+    --pdv-space-3: 10.8px;
+    --pdv-space-4: 14.4px;
+    --pdv-space-5: 18px;
+    --pdv-space-6: 21.6px;
   }
   
   .pdv-header__logo-text {
     display: none;
   }
   
+  .pdv-header__logo-icon {
+    width: 34px;
+    height: 34px;
+  }
+  
+  .pdv-header__logo-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+  
   .pdv-header__center {
-    max-width: 400px;
+    max-width: 360px;
+  }
+  
+  .pdv-search__input {
+    height: 38px;
+    font-size: 12px;
+  }
+  
+  .pdv-search__icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .pdv-client__btn {
+    padding: 7px 12px;
+    font-size: 12px;
+    gap: 6px;
+  }
+  
+  .pdv-client__btn svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .pdv-client__selected {
+    min-width: 160px;
+    max-width: 220px;
+    padding: 5px 9px 5px 5px;
+    gap: 8px;
+  }
+  
+  .pdv-client__avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+  
+  .pdv-client__name {
+    font-size: 12px;
+  }
+  
+  .pdv-client__phone {
+    font-size: 10px;
+  }
+  
+  .pdv-client__remove {
+    width: 23px;
+    height: 23px;
+  }
+  
+  .pdv-client__remove svg {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .pdv-tabs__item {
+    padding: 7px 14px;
+    font-size: 11px;
+    gap: 6px;
+  }
+  
+  .pdv-tabs__item svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .pdv-tabs__view-btn {
+    width: 27px;
+    height: 27px;
+  }
+  
+  .pdv-tabs__view-btn svg {
+    width: 13px;
+    height: 13px;
   }
   
   .pdv-products__grid {
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+  
+  .pdv-product__badge {
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+  
+  .pdv-product__add {
+    width: 32px;
+    height: 32px;
+    bottom: 10px;
+    right: 10px;
+  }
+  
+  .pdv-product__add svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .pdv-product__code {
+    font-size: 9px;
+  }
+  
+  .pdv-product__name {
+    font-size: 12px;
+    min-height: 2.6em;
+  }
+  
+  .pdv-product__price {
+    font-size: 14px;
+  }
+  
+  .pdv-product-row {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .pdv-product-row__image {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .pdv-product-row__image svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .pdv-product-row__name {
+    font-size: 12px;
+  }
+  
+  .pdv-product-row__code {
+    font-size: 9px;
+  }
+  
+  .pdv-product-row__price {
+    font-size: 13px;
+  }
+  
+  .pdv-product-row__stock {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+  
+  .pdv-product-row__add {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .pdv-product-row__add svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .pdv-cart__title svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .pdv-cart__title span {
+    font-size: 15px;
+  }
+  
+  .pdv-cart__badge {
+    font-size: 13px;
+  }
+  
+  .pdv-cart__clear {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+  
+  .pdv-cart-item {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+  
+  .pdv-cart-item__image {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .pdv-cart-item__image svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .pdv-cart-item__name {
+    font-size: 12px;
+  }
+  
+  .pdv-cart-item__qty-btn {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .pdv-cart-item__qty-btn svg {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .pdv-cart-item__qty-value {
+    font-size: 12px;
+    min-width: 24px;
+  }
+  
+  .pdv-cart-item__remove {
+    width: 26px;
+    height: 26px;
+  }
+  
+  .pdv-cart-item__remove svg {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .pdv-cart-item__subtotal {
+    font-size: 12px;
+  }
+  
+  .pdv-cart__label {
+    font-size: 12px;
+  }
+  
+  .pdv-cart__value {
+    font-size: 12px;
+  }
+  
+  .pdv-cart__row--total .pdv-cart__value {
+    font-size: 20px;
+  }
+  
+  .pdv-checkout {
+    padding: 12px 18px;
+    font-size: 13px;
+    gap: 9px;
+  }
+  
+  .pdv-checkout svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .pdv-empty svg {
+    width: 64px;
+    height: 64px;
+  }
+  
+  .pdv-empty__title {
+    font-size: 14px;
+  }
+  
+  .pdv-spinner {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .pdv-toast {
+    padding: 10px 20px;
+    font-size: 12px;
+    gap: 9px;
+  }
+  
+  .pdv-toast svg {
+    width: 16px;
+    height: 16px;
   }
 }
 
-/* Common resolution (1366px) */
-@media (min-width: 1281px) and (max-width: 1439px) {
-  :root {
-    --pdv-cart-w: 340px;
+/* Small notebooks (1281px - 1366px) */
+@media (min-width: 1281px) and (max-width: 1366px) {
+  .pdv-container {
+    --pdv-cart-w: 320px;
   }
   
   .pdv-header__center {
-    max-width: 500px;
+    max-width: 450px;
   }
   
   .pdv-products__grid {
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   }
 }
 

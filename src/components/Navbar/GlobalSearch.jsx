@@ -41,6 +41,30 @@ const GlobalSearch = ({ isOpen, onClose }) => {
   });
   const [recentSearches, setRecentSearches] = useState([]);
   const [activeCategory, setActiveCategory] = useState('all');
+  const [maxResultsHeight, setMaxResultsHeight] = useState(420);
+
+  // Calculate max height based on viewport - adapts to any screen size
+  useEffect(() => {
+    const calculateMaxHeight = () => {
+      const dropdownTop = 72; // Fixed top position of dropdown
+      const headerHeight = 52; // Search input height (~52px)
+      const tabsHeight = 44; // Category tabs height (~44px)
+      const footerPadding = 24; // Bottom padding/margin
+      const safeMargin = 20; // Extra safety margin from bottom of screen
+      
+      const viewportHeight = window.innerHeight;
+      const availableHeight = viewportHeight - dropdownTop - headerHeight - tabsHeight - footerPadding - safeMargin;
+      
+      // Minimum 200px, maximum 600px, otherwise use available space
+      const calculatedHeight = Math.max(200, Math.min(600, availableHeight));
+      setMaxResultsHeight(calculatedHeight);
+    };
+
+    calculateMaxHeight();
+    window.addEventListener('resize', calculateMaxHeight);
+    
+    return () => window.removeEventListener('resize', calculateMaxHeight);
+  }, [isOpen]);
 
   // Theme
   const { isDarkMode } = useThemeStore();
@@ -729,8 +753,11 @@ const GlobalSearch = ({ isOpen, onClose }) => {
           {/* Results */}
           <div 
             ref={resultsRef} 
-            className="max-h-[420px] overflow-y-auto"
-            style={{ backgroundColor: isDarkMode ? '#16181F' : '#FFFFFF' }}
+            className="overflow-y-auto"
+            style={{ 
+              maxHeight: `${maxResultsHeight}px`,
+              backgroundColor: isDarkMode ? '#16181F' : '#FFFFFF' 
+            }}
           >
             {/* Empty State - Premium Automotive Design */}
             {!searchTerm && recentSearches.length === 0 && (

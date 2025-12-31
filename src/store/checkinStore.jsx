@@ -180,6 +180,26 @@ export const useCheckinStore = create((set, get) => ({
     }
   },
 
+  // Delete check-in
+  deleteCheckin: async (checkinId) => {
+    set({ isLoading: true, error: null });
+    try {
+      await firestoreService.delete('checkins', checkinId);
+      
+      set((state) => ({
+        checkins: state.checkins.filter(c => c.firestoreId !== checkinId),
+        currentCheckin: state.currentCheckin?.firestoreId === checkinId ? null : state.currentCheckin,
+        isLoading: false,
+      }));
+      
+      return { success: true };
+    } catch (error) {
+      console.error('[CheckinStore] Error deleting checkin:', error);
+      set({ error: error.message, isLoading: false });
+      return { success: false, error: error.message };
+    }
+  },
+
   // Fetch all check-ins
   fetchCheckins: async () => {
     set({ isLoading: true, error: null });
