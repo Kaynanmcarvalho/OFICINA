@@ -396,10 +396,44 @@ export const hasBrandLogo = (brand, model = '') => {
   return normalizedBrand in BRAND_LOGO_MAP;
 };
 
+/**
+ * Format vehicle display text (Brand + Model) avoiding duplication
+ * @param {string} brand - The vehicle brand
+ * @param {string} model - The vehicle model
+ * @returns {string} - Formatted vehicle text
+ */
+export const formatVehicleDisplay = (brand, model) => {
+  const effectiveBrand = getEffectiveBrand(brand, model);
+  const modelText = (model || '').trim();
+  
+  if (!effectiveBrand) {
+    return modelText.toUpperCase() || 'VEÍCULO';
+  }
+  
+  const brandUpper = effectiveBrand.toUpperCase();
+  const modelUpper = modelText.toUpperCase();
+  
+  // Check if model already starts with the brand name
+  if (modelUpper.startsWith(brandUpper)) {
+    return modelUpper;
+  }
+  
+  // Check if model contains the brand name at the beginning (with variations)
+  const brandVariations = [brandUpper, brandUpper.replace('-', ' '), brandUpper.replace(' ', '-')];
+  for (const variation of brandVariations) {
+    if (modelUpper.startsWith(variation)) {
+      return modelUpper;
+    }
+  }
+  
+  return `${brandUpper} ${modelUpper}`.trim();
+};
+
 export default {
   getBrandLogoUrl,
   getBrandInitials,
   hasBrandLogo,
   inferBrandFromModel,
   getEffectiveBrand,
+  formatVehicleDisplay,
 };

@@ -9,7 +9,7 @@ import { useState, useEffect, lazy, Suspense, useMemo } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCheckinStore, useThemeStore } from '../store';
-import { getBrandLogoUrl, getEffectiveBrand } from '../utils/vehicleBrandLogos';
+import { getBrandLogoUrl, getEffectiveBrand, formatVehicleDisplay } from '../utils/vehicleBrandLogos';
 import '../styles/checkin-cinematic.css';
 
 // Lazy load modals
@@ -18,6 +18,11 @@ const ModalCheckout = lazy(() => import('./checkin/componentes/ModalCheckoutPrem
 const ModalEditarCheckin = lazy(() => import('./checkin/componentes/ModalEditarCheckin'));
 const BudgetModal = lazy(() => import('./budgets/components/BudgetModalPremium'));
 const CheckinDetailsModal = lazy(() => import('./checkin/components/details/CheckinDetailsModal'));
+
+// Dock feature modals
+const OBDScannerModal = lazy(() => import('../components/modals/OBDScannerModal'));
+const VehicleHealthModal = lazy(() => import('../components/modals/VehicleHealthModal'));
+const VehicleHistoryModal = lazy(() => import('../components/modals/VehicleHistoryModal'));
 
 // === ICON SYSTEM - Autoral, consistente ===
 const Icons = {
@@ -135,6 +140,11 @@ const CheckInPage = () => {
   const [selectedForCheckout, setSelectedForCheckout] = useState(null);
   const [checkinToEdit, setCheckinToEdit] = useState(null);
   const [checkinForBudget, setCheckinForBudget] = useState(null);
+  
+  // Dock feature modals
+  const [isOBDModalOpen, setIsOBDModalOpen] = useState(false);
+  const [isHealthModalOpen, setIsHealthModalOpen] = useState(false);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
 
   useEffect(() => {
     fetchCheckins();
@@ -290,15 +300,27 @@ const CheckInPage = () => {
 
       {/* === DOCK - Quick Actions === */}
       <nav className="ck-dock">
-        <button className="ck-dock__btn" title="Scanner OBD">
+        <button 
+          className="ck-dock__btn" 
+          title="Scanner OBD"
+          onClick={() => setIsOBDModalOpen(true)}
+        >
           <Icons.Scan />
           <span>Scanner</span>
         </button>
-        <button className="ck-dock__btn" title="Saúde do Veículo">
+        <button 
+          className="ck-dock__btn" 
+          title="Saúde do Veículo"
+          onClick={() => setIsHealthModalOpen(true)}
+        >
           <Icons.Pulse />
           <span>Saúde</span>
         </button>
-        <button className="ck-dock__btn" title="Histórico">
+        <button 
+          className="ck-dock__btn" 
+          title="Histórico"
+          onClick={() => setIsHistoryModalOpen(true)}
+        >
           <Icons.Clock />
           <span>Histórico</span>
         </button>
@@ -443,6 +465,47 @@ const CheckInPage = () => {
             onClose={() => { setShowDetailsModal(false); setDetailsCheckinId(null); }}
           />
         )}
+        
+        {/* Dock Feature Modals */}
+        {isOBDModalOpen && (
+          <OBDScannerModal
+            isOpen={isOBDModalOpen}
+            onClose={() => setIsOBDModalOpen(false)}
+            vehicleInfo={selectedForCheckout ? {
+              plate: selectedForCheckout.vehiclePlate,
+              make: selectedForCheckout.vehicleBrand,
+              model: selectedForCheckout.vehicleModel,
+              mileage: selectedForCheckout.mileage || 45000,
+            } : null}
+            checkinId={selectedForCheckout?.firestoreId}
+          />
+        )}
+        {isHealthModalOpen && (
+          <VehicleHealthModal
+            isOpen={isHealthModalOpen}
+            onClose={() => setIsHealthModalOpen(false)}
+            vehicleInfo={selectedForCheckout ? {
+              plate: selectedForCheckout.vehiclePlate,
+              make: selectedForCheckout.vehicleBrand,
+              model: selectedForCheckout.vehicleModel,
+              mileage: selectedForCheckout.mileage || 45000,
+            } : null}
+            checkinId={selectedForCheckout?.firestoreId}
+          />
+        )}
+        {isHistoryModalOpen && (
+          <VehicleHistoryModal
+            isOpen={isHistoryModalOpen}
+            onClose={() => setIsHistoryModalOpen(false)}
+            vehicleInfo={selectedForCheckout ? {
+              plate: selectedForCheckout.vehiclePlate,
+              make: selectedForCheckout.vehicleBrand,
+              model: selectedForCheckout.vehicleModel,
+              mileage: selectedForCheckout.mileage || 45000,
+            } : null}
+            checkinId={selectedForCheckout?.firestoreId}
+          />
+        )}
       </Suspense>
     </div>
   );
@@ -487,12 +550,14 @@ const RecordRow = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBud
       {/* Client */}
       <div className="ck-row__client">
         <span className="ck-row__name">{checkin.clientName || 'Cliente'}</span>
-        <span className="ck-row__time">{formatTimeAgo(checkin.createdAt || checkin.checkInDate)}</span>
+        <span className="ck-row__time">{formatTimeAgo(checkin.createdAt || checkin.checkinDate || checkin.checkInDate)}</span>
       </div>
 
-      {/* Vehicle Model */}
+      {/* Vehicle: Brand + Model */}
       <div className="ck-row__vehicle">
-        <span className="ck-row__model">{checkin.vehicleModel || 'Veículo'}</span>
+        <span className="ck-row__model">
+          {formatVehicleDisplay(checkin.vehicleBrand, checkin.vehicleModel)}
+        </span>
       </div>
 
       {/* Plate */}
@@ -502,7 +567,7 @@ const RecordRow = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBud
 
       {/* Date */}
       <div className="ck-row__date">
-        {formatDate(checkin.createdAt || checkin.checkInDate)}
+        {formatDate(checkin.createdAt || checkin.checkinDate || checkin.checkInDate)}
       </div>
 
       {/* Status */}
@@ -568,8 +633,10 @@ const RecordCard = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBu
         {/* Client Name - Primary */}
         <h3 className="ck-card__client">{checkin.clientName || 'Cliente'}</h3>
         
-        {/* Vehicle Model */}
-        <p className="ck-card__vehicle">{checkin.vehicleModel || 'Veículo'}</p>
+        {/* Vehicle: Brand + Model */}
+        <p className="ck-card__vehicle">
+          {formatVehicleDisplay(checkin.vehicleBrand, checkin.vehicleModel)}
+        </p>
 
         {/* Plate Badge */}
         <div className="ck-card__plate-badge">
@@ -584,7 +651,7 @@ const RecordCard = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBu
             <span className="ck-card__status-dot" />
             {status.label}
           </span>
-          <span className="ck-card__date">{formatDate(checkin.createdAt || checkin.checkInDate)}</span>
+          <span className="ck-card__date">{formatDate(checkin.createdAt || checkin.checkinDate || checkin.checkInDate)}</span>
         </div>
         
         <div className="ck-card__actions">
