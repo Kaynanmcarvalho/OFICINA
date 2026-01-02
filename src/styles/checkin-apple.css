@@ -89,38 +89,38 @@
 }
 
 /* ============================================================================
-   DARK MODE COLORS
+   DARK MODE COLORS - Sofisticado, não preto puro
    ============================================================================ */
 
 .dark .ck-page {
-  /* Backgrounds */
-  --ck-bg-primary: #000000;
-  --ck-bg-secondary: #1c1c1e;
-  --ck-bg-tertiary: #2c2c2e;
-  --ck-bg-elevated: #2c2c2e;
-  --ck-bg-hover: rgba(255, 255, 255, 0.05);
+  /* Backgrounds - Dark sofisticado */
+  --ck-bg-primary: #0E0F12;
+  --ck-bg-secondary: #161A22;
+  --ck-bg-tertiary: #1C2028;
+  --ck-bg-elevated: #1E2330;
+  --ck-bg-hover: rgba(255, 255, 255, 0.04);
   --ck-bg-active: rgba(255, 255, 255, 0.08);
   
-  /* Text */
-  --ck-text-primary: #f5f5f7;
-  --ck-text-secondary: #a1a1a6;
-  --ck-text-tertiary: #6e6e73;
-  --ck-text-quaternary: #48484a;
+  /* Text - Alta legibilidade */
+  --ck-text-primary: #F5F5F7;
+  --ck-text-secondary: #B8B8BD;
+  --ck-text-tertiary: #8E8E93;
+  --ck-text-quaternary: #636366;
   
   /* Borders */
-  --ck-border-light: rgba(255, 255, 255, 0.08);
-  --ck-border-medium: rgba(255, 255, 255, 0.12);
-  --ck-border-strong: rgba(255, 255, 255, 0.18);
+  --ck-border-light: rgba(255, 255, 255, 0.06);
+  --ck-border-medium: rgba(255, 255, 255, 0.10);
+  --ck-border-strong: rgba(255, 255, 255, 0.15);
   
-  /* Accent Colors (slightly brighter for dark mode) */
-  --ck-accent-blue: #0a84ff;
-  --ck-accent-blue-hover: #409cff;
-  --ck-accent-green: #30d158;
-  --ck-accent-orange: #ff9f0a;
-  --ck-accent-red: #ff453a;
-  --ck-accent-purple: #bf5af2;
+  /* Accent Colors - Refinados para dark mode */
+  --ck-accent-blue: #3B82F6;
+  --ck-accent-blue-hover: #60A5FA;
+  --ck-accent-green: #10B981;
+  --ck-accent-orange: #F59E0B;
+  --ck-accent-red: #EF4444;
+  --ck-accent-purple: #8B5CF6;
   
-  /* Shadows - Deeper for dark mode */
+  /* Shadows */
   --ck-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
   --ck-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
   --ck-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -666,27 +666,28 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
+/* Cores Premium Sóbrias */
 .ck-record__avatar--motorcycle,
 .ck-record-card__avatar--moto {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+  background: linear-gradient(135deg, #374151 0%, #1F2937 100%);
 }
 
 .ck-record__avatar--car,
 .ck-record-card__avatar--car {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #475569 0%, #334155 100%);
 }
 
 .ck-record__avatar--truck {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: linear-gradient(135deg, #52525B 0%, #3F3F46 100%);
 }
 
 .ck-record__avatar svg,
 .ck-record-card__avatar svg {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   color: white;
 }
 
@@ -731,9 +732,9 @@
 
 .dark .ck-record__plate,
 .dark .ck-record-card__plate {
-  background: #374151;
-  border-color: #4b5563;
-  color: #e5e7eb;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #F5F5F7;
 }
 
 /* Vehicle Info with Brand Logo */
@@ -746,14 +747,24 @@
 }
 
 .ck-record__brand-logo {
-  width: 30px;
-  height: 30px;
+  width: 72px;
+  height: 40px;
   object-fit: contain;
   flex-shrink: 0;
   filter: grayscale(15%);
   opacity: 0.92;
   transition: all 0.2s ease;
-  border-radius: 4px;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+/* Logo no tema escuro - fundo claro para melhor visibilidade */
+.dark .ck-record__brand-logo {
+  filter: none;
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 6px 8px;
+  border-radius: 8px;
 }
 
 .ck-record:hover .ck-record__brand-logo {
@@ -761,9 +772,15 @@
   opacity: 1;
 }
 
+.dark .ck-record:hover .ck-record__brand-logo {
+  filter: none;
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+}
+
 .ck-record__brand-fallback {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 8px;
   background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
   display: flex;
@@ -777,8 +794,8 @@
 }
 
 .dark .ck-record__brand-fallback {
-  background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
-  color: #9ca3af;
+  background: rgba(255, 255, 255, 0.12);
+  color: #F5F5F7;
 }
 
 .ck-record__vehicle,
@@ -793,9 +810,10 @@
   min-width: 0;
 }
 
+/* Texto do veículo no tema escuro - mais legível */
 .dark .ck-record__vehicle,
 .dark .ck-record-card__vehicle {
-  color: #9ca3af;
+  color: #F5F5F7;
 }
 
 /* Meta / Date */
@@ -816,11 +834,22 @@
   white-space: nowrap;
 }
 
+/* Data/hora no tema escuro - mais visível */
+.dark .ck-record__time,
+.dark .ck-record-card__date {
+  color: #B8B8BD;
+}
+
 .ck-record__time svg,
 .ck-record-card__date svg {
   width: 13px;
   height: 13px;
   opacity: 0.65;
+}
+
+.dark .ck-record__time svg,
+.dark .ck-record-card__date svg {
+  opacity: 0.85;
 }
 
 /* Status Badge */

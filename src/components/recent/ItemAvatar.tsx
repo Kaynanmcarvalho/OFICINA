@@ -27,38 +27,38 @@ const ItemAvatar: React.FC<ItemAvatarProps> = ({
     lg: 'lg' as const,
   };
 
-  // Type-specific gradient backgrounds
+  // Type-specific gradient backgrounds - Premium sober colors
   const getTypeStyles = () => {
     switch (type) {
       case 'car':
         return {
-          background: 'bg-gradient-to-br from-blue-500/10 to-blue-600/20',
-          iconColor: 'text-blue-600 dark:text-white',
+          background: 'bg-gradient-to-br from-slate-500/10 to-slate-600/15 dark:from-slate-400/15 dark:to-slate-500/20',
+          iconColor: 'text-slate-600 dark:text-slate-300',
         };
       case 'motorcycle':
         return {
-          background: 'bg-gradient-to-br from-red-500/15 to-orange-500/25 dark:from-red-400/20 dark:to-orange-400/30',
-          iconColor: 'text-red-600 dark:text-white',
+          background: 'bg-gradient-to-br from-gray-500/10 to-gray-600/15 dark:from-gray-400/15 dark:to-gray-500/20',
+          iconColor: 'text-gray-600 dark:text-gray-300',
         };
       case 'truck':
         return {
-          background: 'bg-gradient-to-br from-purple-500/10 to-purple-600/20',
-          iconColor: 'text-purple-600 dark:text-white',
+          background: 'bg-gradient-to-br from-zinc-500/10 to-zinc-600/15 dark:from-zinc-400/15 dark:to-zinc-500/20',
+          iconColor: 'text-zinc-600 dark:text-zinc-300',
         };
       case 'van':
         return {
-          background: 'bg-gradient-to-br from-emerald-500/10 to-emerald-600/20',
-          iconColor: 'text-emerald-600 dark:text-white',
+          background: 'bg-gradient-to-br from-stone-500/10 to-stone-600/15 dark:from-stone-400/15 dark:to-stone-500/20',
+          iconColor: 'text-stone-600 dark:text-stone-300',
         };
       case 'client':
         return {
-          background: 'bg-gradient-to-br from-neutral-500/10 to-neutral-600/20',
-          iconColor: 'text-neutral-600 dark:text-white',
+          background: 'bg-gradient-to-br from-neutral-500/10 to-neutral-600/15 dark:from-neutral-400/15 dark:to-neutral-500/20',
+          iconColor: 'text-neutral-600 dark:text-neutral-300',
         };
       default:
         return {
-          background: 'bg-gradient-to-br from-neutral-500/10 to-neutral-600/20',
-          iconColor: 'text-neutral-600 dark:text-white',
+          background: 'bg-gradient-to-br from-neutral-500/10 to-neutral-600/15 dark:from-neutral-400/15 dark:to-neutral-500/20',
+          iconColor: 'text-neutral-600 dark:text-neutral-300',
         };
     }
   };

@@ -2,33 +2,20 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { useThemeStore } from '../../../store/index.jsx';
-import { itemAnimations, textVariants, tooltipVariants } from '../../../utils/animations';
+import { itemAnimations, textVariants } from '../../../utils/animations';
 
 const SidebarItem = React.memo(({ item, isCollapsed, onClick }) => {
   // Garantir que item existe
   if (!item) {
-    console.error('❌ SidebarItem: item é undefined');
     return null;
   }
   const location = useLocation();
-  const { isDarkMode } = useThemeStore();
-  const [showTooltip, setShowTooltip] = React.useState(false);
   
   const isActive = location.pathname === item.path;
   const Icon = item.icon;
   
-  // Debug: verificar se o ícone existe
-  React.useEffect(() => {
-    if (!Icon) {
-      console.error(`❌ Ícone não encontrado para: ${item.label}`, item);
-    } else {
-      console.log(`✅ Ícone carregado para: ${item.label}`, Icon.name || Icon);
-    }
-  }, [Icon, item.label]);
-  
   // Verificar se o ícone existe
   if (!Icon) {
-    console.warn(`Ícone não encontrado para o item: ${item.label}`);
     return null;
   }
 
@@ -65,79 +52,49 @@ const SidebarItem = React.memo(({ item, isCollapsed, onClick }) => {
   `;
 
   return (
-    <div className="relative">
-      <motion.div
-        variants={itemAnimations}
-        whileHover="hover"
-        whileTap="tap"
-        onHoverStart={() => isCollapsed && setShowTooltip(true)}
-        onHoverEnd={() => setShowTooltip(false)}
+    <motion.div
+      variants={itemAnimations}
+      whileHover="hover"
+      whileTap="tap"
+    >
+      <Link
+        to={item.path}
+        className={itemClasses}
+        onClick={onClick}
+        aria-label={item.label}
+        aria-current={isActive ? 'page' : undefined}
       >
-        <Link
-          to={item.path}
-          className={itemClasses}
-          onClick={onClick}
-          aria-label={item.label}
-          aria-current={isActive ? 'page' : undefined}
-        >
-          {/* Icon */}
-          {Icon && <Icon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />}
+        {/* Icon */}
+        <Icon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
 
-          {/* Text label */}
-          <AnimatePresence>
-            {!isCollapsed && (
-              <motion.span
-                variants={textVariants}
-                initial="collapsed"
-                animate="expanded"
-                exit="collapsed"
-                className="whitespace-nowrap overflow-hidden"
-              >
-                {item.label}
-              </motion.span>
-            )}
-          </AnimatePresence>
-
-          {/* Badge */}
-          {!isCollapsed && item.badge && (
+        {/* Text label - only when expanded */}
+        <AnimatePresence>
+          {!isCollapsed && (
             <motion.span
-              className="ml-auto px-2 py-0.5 text-xs font-semibold rounded-full bg-primary-500 text-white"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+              variants={textVariants}
+              initial="collapsed"
+              animate="expanded"
+              exit="collapsed"
+              className="whitespace-nowrap overflow-hidden"
             >
-              {item.badge}
+              {item.label}
             </motion.span>
           )}
+        </AnimatePresence>
 
-
-        </Link>
-      </motion.div>
-
-      {/* Tooltip for collapsed state */}
-      <AnimatePresence>
-        {isCollapsed && showTooltip && (
-          <motion.div
-            className="absolute left-full ml-2 top-1/2 -translate-y-1/2 z-50"
-            variants={tooltipVariants}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
+        {/* Badge - only when expanded */}
+        {!isCollapsed && item.badge && (
+          <motion.span
+            className="ml-auto px-2 py-0.5 text-xs font-semibold rounded-full bg-primary-500 text-white"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
           >
-            <div className={`
-              px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap
-              ${isDarkMode 
-                ? 'bg-gray-800 text-white border border-gray-700' 
-                : 'bg-white text-gray-900 border border-gray-200'
-              }
-              shadow-lg backdrop-blur-md
-            `}>
-              {item.label}
-            </div>
-          </motion.div>
+            {item.badge}
+          </motion.span>
         )}
-      </AnimatePresence>
-    </div>
+      </Link>
+    </motion.div>
   );
 });
 

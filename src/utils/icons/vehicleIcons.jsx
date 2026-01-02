@@ -1,119 +1,42 @@
 /**
- * Vehicle Type Icons
- * Componentes de ícones para diferentes tipos de veículos
+ * Vehicle Type Icons - Usando bibliotecas profissionais
+ * react-icons: Font Awesome, Material Design, etc.
  */
 
-import { Car, Truck, TruckIcon } from 'lucide-react';
-
-/**
- * Custom Motorcycle Icon - Design Esportivo Realista v3
- * Ícone SVG profissional de motocicleta esportiva
- */
-const MotorcycleIcon = ({ className = 'w-6 h-6', size = 24 }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    className={className}
-    key="motorcycle-icon-v3"
-  >
-    {/* Motocicleta Esportiva Realista */}
-    
-    {/* Roda traseira com detalhes */}
-    <circle cx="5.5" cy="17" r="3" fill="currentColor" opacity="0.9"/>
-    <circle cx="5.5" cy="17" r="2" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.6"/>
-    <circle cx="5.5" cy="17" r="0.8" fill="currentColor"/>
-    
-    {/* Roda dianteira com detalhes */}
-    <circle cx="18.5" cy="17" r="3" fill="currentColor" opacity="0.9"/>
-    <circle cx="18.5" cy="17" r="2" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.6"/>
-    <circle cx="18.5" cy="17" r="0.8" fill="currentColor"/>
-    
-    {/* Chassi principal - formato de moto esportiva */}
-    <path d="M8.5 17L10 14L12 11L14 10L16 14L15.5 17" 
-          stroke="currentColor" 
-          strokeWidth="2.5" 
-          fill="none" 
-          strokeLinecap="round" 
-          strokeLinejoin="round"/>
-    
-    {/* Tanque de combustível esportivo */}
-    <ellipse cx="12" cy="10.5" rx="3" ry="1.8" fill="currentColor" opacity="0.8"/>
-    <ellipse cx="12" cy="10" rx="2.5" ry="1.2" fill="currentColor"/>
-    
-    {/* Guidão esportivo */}
-    <path d="M9.5 7.5L12 8.5L14.5 7.5" 
-          stroke="currentColor" 
-          strokeWidth="2.5" 
-          strokeLinecap="round"/>
-    <circle cx="9.5" cy="7.5" r="0.8" fill="currentColor"/>
-    <circle cx="14.5" cy="7.5" r="0.8" fill="currentColor"/>
-    
-    {/* Farol esportivo */}
-    <ellipse cx="12" cy="6.5" rx="1.5" ry="1" fill="currentColor"/>
-    <ellipse cx="12" cy="6.2" rx="1" ry="0.6" fill="currentColor" opacity="0.7"/>
-    
-    {/* Assento esportivo */}
-    <ellipse cx="10.5" cy="12" rx="2" ry="1" fill="currentColor" opacity="0.9"/>
-    
-    {/* Escapamento esportivo */}
-    <path d="M14.5 15L17 16.5" 
-          stroke="currentColor" 
-          strokeWidth="3" 
-          strokeLinecap="round"/>
-    <ellipse cx="17.2" cy="16.8" rx="0.8" ry="0.4" fill="currentColor"/>
-    
-    {/* Para-brisa esportivo */}
-    <path d="M11 8.5L12 6L13 8.5" 
-          stroke="currentColor" 
-          strokeWidth="1.5" 
-          fill="none" 
-          opacity="0.6"/>
-    
-    {/* Detalhes do motor */}
-    <rect x="11" y="13" width="2" height="2" rx="0.5" fill="currentColor" opacity="0.7"/>
-  </svg>
-);
+import { Truck, TruckIcon } from 'lucide-react';
+import { FaMotorcycle, FaCarSide } from 'react-icons/fa';
+import { IoCarSport } from 'react-icons/io5';
+import { RiMotorbikeFill } from 'react-icons/ri';
 
 /**
  * VehicleTypeIcon Component
  * Renderiza o ícone apropriado baseado no tipo de veículo
- * 
- * @param {Object} props
- * @param {'car' | 'motorcycle' | 'truck' | 'pickup'} props.type - Tipo do veículo
- * @param {string} props.className - Classes CSS customizadas
- * @param {number} props.size - Tamanho do ícone em pixels (padrão: 24)
- * @returns {JSX.Element}
+ * Usa ícones profissionais de react-icons
  */
 export const VehicleTypeIcon = ({ 
   type = 'car', 
   className = 'w-6 h-6', 
   size = 24 
 }) => {
-  const iconProps = {
-    className,
-    size,
-    strokeWidth: 2,
-  };
-
   switch (type?.toLowerCase()) {
     case 'motorcycle':
     case 'moto':
-      return <MotorcycleIcon className={className} size={size} />;
+      // Ícone de moto esportiva do Remix Icons
+      return <RiMotorbikeFill size={size} className={className} />;
     
     case 'truck':
     case 'caminhao':
     case 'caminhão':
-      return <Truck {...iconProps} />;
+      return <Truck size={size} className={className} strokeWidth={2} />;
     
     case 'pickup':
-      return <TruckIcon {...iconProps} />;
+      return <TruckIcon size={size} className={className} strokeWidth={2} />;
     
     case 'car':
     case 'carro':
     default:
-      return <Car {...iconProps} />;
+      // Ícone de carro esportivo do Ionicons
+      return <IoCarSport size={size} className={className} />;
   }
 };
 
@@ -170,7 +93,7 @@ export const detectVehicleType = (vehicleModel, vehicleBrand = '') => {
   ];
   
   // Marcas que fazem CARROS E MOTOS (precisam análise do modelo)
-  const mixedBrands = ['HONDA', 'SUZUKI', 'BMW'];
+  const MIXED_BRANDS = ['HONDA', 'SUZUKI', 'BMW'];
   
   // PRIORIDADE MÁXIMA: Marca exclusiva de carro
   if (carOnlyBrands.some(brand => fullText.startsWith(brand) || brandUpper === brand)) {
@@ -201,13 +124,15 @@ export const detectVehicleType = (vehicleModel, vehicleBrand = '') => {
     'SPORTAGE', 'CERATO', 'OPTIMA', 'SORENTO', 'SOUL', 'STONIC',
     'KICKS', 'VERSA', 'SENTRA', 'MARCH', 'LEAF',
     'COMPASS', 'RENEGADE', 'COMMANDER',
-    'SANTANA', 'PASSAT', 'JETTA', 'GOLF', 'FUSCA', 'BRASILIA',
-    'CORSA', 'CELTA', 'CLASSIC', 'ASTRA', 'VECTRA', 'OMEGA', 'MONZA',
-    'ESCORT', 'DEL REY', 'BELINA', 'PAMPA', 'VERSAILLES',
+    'SANTANA', 'SANTANA CG', 'PASSAT', 'JETTA', 'GOLF', 'FUSCA', 'BRASILIA', 'QUANTUM',
+    'CORSA', 'CELTA', 'CLASSIC', 'ASTRA', 'VECTRA', 'OMEGA', 'MONZA', 'KADETT', 'OPALA',
+    'ESCORT', 'DEL REY', 'BELINA', 'PAMPA', 'VERSAILLES', 'ROYALE',
     'ETIOS', 'YARIS', 'PRIUS', 'CAMRY', 'RAV4',
-    'OUTLANDER', 'LANCER', 'ASX', 'ECLIPSE',
+    'OUTLANDER', 'LANCER', 'ASX', 'ECLIPSE', 'PAJERO',
     '208', '2008', '308', '3008', '408', '508', '5008',
-    'C3', 'C4', 'C5', 'AIRCROSS', 'PICASSO'
+    'C3', 'C4', 'C5', 'AIRCROSS', 'PICASSO',
+    'PUNTO', 'LINEA', 'BRAVO', 'STILO', 'MAREA', 'TEMPRA', 'TIPO',
+    'VOYAGE', 'FOX', 'SPACEFOX', 'CROSSFOX', 'SAVEIRO', 'GOL'
   ];
   
   // Modelos de pickup
@@ -254,9 +179,14 @@ export const detectVehicleType = (vehicleModel, vehicleBrand = '') => {
     'MONSTER', 'PANIGALE', 'MULTISTRADA', 'SCRAMBLER', 'DIAVEL'
   ];
   
-  // Verifica modelos de carros
+  // Verifica modelos de carros PRIMEIRO (prioridade)
   if (carModels.some(model => modelUpper.includes(model))) {
     scores.car += 90;
+  }
+  
+  // Se "SANTANA" está no modelo, é definitivamente um carro (VW Santana)
+  if (modelUpper.includes('SANTANA')) {
+    scores.car += 150; // Peso alto para garantir que é carro
   }
   
   // Verifica modelos de pickup
@@ -265,13 +195,16 @@ export const detectVehicleType = (vehicleModel, vehicleBrand = '') => {
   }
   
   // Verifica modelos de motos
-  // IMPORTANTE: Ignora "CG" sozinho se a marca for de carro (ex: SANTANA CG)
-  const hasCGPattern = /\bCG\b/.test(modelUpper);
-  const isCarBrand = scores.car >= 200;
+  // IMPORTANTE: Só conta como moto se NÃO for um modelo de carro conhecido
+  const isLikelyCar = scores.car >= 90;
   
-  if (motorcycleModels.some(model => {
-    // Se for apenas "CG" e a marca é de carro, ignora
-    if (model.includes('CG') && isCarBrand && !modelUpper.includes('HONDA')) {
+  if (!isLikelyCar && motorcycleModels.some(model => {
+    // Se o modelo contém "CG" mas também contém "SANTANA", ignora
+    if (model.includes('CG') && modelUpper.includes('SANTANA')) {
+      return false;
+    }
+    // Se for apenas "CG" sem número, ignora (pode ser SANTANA CG)
+    if (model === 'CG' && !modelUpper.match(/CG\s*\d/)) {
       return false;
     }
     return modelUpper.includes(model);

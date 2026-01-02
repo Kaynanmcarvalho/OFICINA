@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, User, Phone, Car, FileText, UserCircle, Upload, 
   Gauge, Fuel, Wrench, AlertTriangle, CheckCircle2,
-  ChevronRight, ChevronLeft
+  ChevronRight, ChevronLeft, Loader2, Search
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import CampoBuscaCliente from './CampoBuscaCliente';
@@ -14,6 +14,7 @@ import VehicleThumbnail from '../../../components/VehicleThumbnail';
 import { useCheckinStore } from '../../../store';
 import { formatPhone } from '../../../utils/formatters';
 import { scrollToFirstErrorField } from '../../../hooks/useScrollToError';
+import { consultarPlaca } from '../../../services/vehicleApiService';
 
 const STEPS = [
   { id: 1, title: 'Cliente', icon: User, description: 'Dados do cliente' },
@@ -150,6 +151,39 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
   const [novoClienteNome, setNovoClienteNome] = useState('');
   const [selectedVehicleIndex, setSelectedVehicleIndex] = useState(0);
   const [isNewVehicle, setIsNewVehicle] = useState(false);
+  const [isSearchingPlate, setIsSearchingPlate] = useState(false);
+
+  // Função para consultar placa automaticamente
+  const handlePlateSearch = useCallback(async (placa) => {
+    // Valida formato da placa (antigo ou Mercosul)
+    const placaLimpa = placa.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+    const isValidPlate = /^[A-Z]{3}[0-9]{4}$/.test(placaLimpa) || /^[A-Z]{3}[0-9][A-Z][0-9]{2}$/.test(placaLimpa);
+    
+    if (!isValidPlate || placaLimpa.length < 7) return;
+    
+    setIsSearchingPlate(true);
+    try {
+      const result = await consultarPlaca(placaLimpa);
+      if (result.success && result.data) {
+        setFormData(prev => ({
+          ...prev,
+          marca: result.data.brand || prev.marca,
+          modelo: result.data.model || prev.modelo,
+          ano: result.data.year || prev.ano,
+          cor: result.data.color || prev.cor
+        }));
+        toast.success('Dados do veículo encontrados!');
+      } else if (result.error) {
+        console.log('Consulta de placa:', result.error);
+        // Não mostra erro, apenas deixa o usuário preencher manualmente
+      }
+    } catch (error) {
+      console.log('Consulta de placa falhou:', error.message);
+      // Não mostra erro, apenas deixa o usuário preencher manualmente
+    } finally {
+      setIsSearchingPlate(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (!isOpen) {
@@ -732,22 +766,42 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
                           <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-2">
                             Placa <span className="text-red-500">*</span>
                           </label>
-                          <input
-                            type="text"
-                            name="placa"
-                            value={formData.placa}
-                            onChange={(e) => {
-                              setFormData({ ...formData, placa: e.target.value.toUpperCase() });
-                              setErrors({ ...errors, placa: null });
-                            }}
-                            placeholder="ABC-1234"
-                            maxLength={8}
-                            className={`w-full px-4 py-3.5 rounded-xl bg-white dark:bg-gray-900 border ${
-                              errors.placa
-                                ? 'border-red-500 focus:ring-red-500/50'
-                                : 'border-gray-300/50 dark:border-gray-600/50 focus:ring-blue-500/50'
-                            } text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 uppercase font-bold text-lg tracking-widest text-center focus:ring-2 focus:border-blue-500 transition-all outline-none`}
-                          />
+                          <div className="relative">
+                            <input
+                              type="text"
+                              name="placa"
+                              value={formData.placa}
+                              onChange={(e) => {
+                                const newPlaca = e.target.value.toUpperCase();
+                                setFormData({ ...formData, placa: newPlaca });
+                                setErrors({ ...errors, placa: null });
+                                
+                                // Auto-busca quando placa completa (7 caracteres)
+                                if (isNewVehicle && newPlaca.replace(/[^A-Z0-9]/gi, '').length === 7) {
+                                  handlePlateSearch(newPlaca);
+                                }
+                              }}
+                              placeholder="ABC-1234"
+                              maxLength={8}
+                              disabled={isSearchingPlate}
+                              className={`w-full px-4 py-3.5 rounded-xl bg-white dark:bg-gray-900 border ${
+                                errors.placa
+                                  ? 'border-red-500 focus:ring-red-500/50'
+                                  : 'border-gray-300/50 dark:border-gray-600/50 focus:ring-blue-500/50'
+                              } text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 uppercase font-bold text-lg tracking-widest text-center focus:ring-2 focus:border-blue-500 transition-all outline-none ${isSearchingPlate ? 'opacity-70' : ''}`}
+                            />
+                            {isSearchingPlate && (
+                              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
+                              </div>
+                            )}
+                          </div>
+                          {isSearchingPlate && (
+                            <p className="mt-2 text-xs text-blue-500 font-medium flex items-center gap-1.5">
+                              <Search className="w-3.5 h-3.5" />
+                              Buscando dados do veículo...
+                            </p>
+                          )}
                           {errors.placa && (
                             <motion.p
                               initial={{ opacity: 0, y: -5 }}

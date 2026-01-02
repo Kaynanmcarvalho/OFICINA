@@ -180,11 +180,12 @@ const CartItem = React.forwardRef(({ item, onUpdateQuantity, onRemove }, ref) =>
 const Toast = ({ message, type = 'success' }) => (
   <motion.div
     className={`pdv-toast pdv-toast--${type}`}
-    initial={{ opacity: 0, y: -20 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: -20 }}
+    initial={{ opacity: 0, scale: 0.95 }}
+    animate={{ opacity: 1, scale: 1 }}
+    exit={{ opacity: 0, scale: 0.95 }}
+    transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
   >
-    {type === 'success' ? <Check size={18} strokeWidth={2.5} /> : <AlertCircle size={18} />}
+    {type === 'success' ? <Check size={16} strokeWidth={2.5} /> : <AlertCircle size={16} />}
     <span>{message}</span>
   </motion.div>
 );
@@ -703,11 +704,18 @@ const CaixaPremium = () => {
   
   useEffect(() => {
     let f = products;
+    
+    // Se tem busca, ignora o filtro de categoria e busca em todos
     if (searchTerm) {
-      const t = searchTerm.toLowerCase();
-      f = f.filter(p => p.nome?.toLowerCase().includes(t) || p.codigo?.includes(searchTerm));
-    }
-    if (selectedCategory !== 'all') {
+      const t = searchTerm.toLowerCase().trim();
+      f = f.filter(p => {
+        const nome = (p.nome || '').toLowerCase();
+        const codigo = (p.codigo || '').toLowerCase();
+        const categoria = (p.categoria || '').toLowerCase();
+        return nome.includes(t) || codigo.includes(t) || categoria.includes(t);
+      });
+    } else if (selectedCategory !== 'all') {
+      // Só aplica filtro de categoria se NÃO tiver busca
       f = f.filter(p => {
         const prodCat = (p.categoria || '').toLowerCase().trim();
         const selCat = selectedCategory.toLowerCase();
@@ -729,6 +737,7 @@ const CaixaPremium = () => {
         return mappedCategories.some(cat => prodCat.includes(cat) || cat.includes(prodCat));
       });
     }
+    
     setFilteredProducts(f);
   }, [products, searchTerm, selectedCategory]);
   
@@ -750,7 +759,9 @@ const CaixaPremium = () => {
 
   const showNotification = useCallback((msg, type = 'success') => {
     setNotification({ message: msg, type });
-    setTimeout(() => setNotification(null), 2500);
+    // Error messages stay longer (5s) than success messages (3s)
+    const duration = type === 'error' ? 5000 : 3000;
+    setTimeout(() => setNotification(null), duration);
   }, []);
   
   const addToCart = useCallback((product) => {
@@ -933,7 +944,12 @@ const CaixaPremium = () => {
               ref={searchInputRef}
               type="text"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                if (e.target.value.trim()) {
+                  setSelectedCategory('all');
+                }
+              }}
               placeholder="Buscar produto ou serviço..."
               className="pdv-search__input"
             />
@@ -1076,7 +1092,7 @@ const CaixaPremium = () => {
             <div className="pdv-empty">
               <Package size={64} className="opacity-30" />
               <span className="pdv-empty__title">
-                {searchTerm ? `Sem resultados para "${searchTerm}"` : 'Nenhum produto cadastrado'}
+                {searchTerm ? `Sem resultados para "${searchTerm}"` : 'Nenhum produto encontrado'}
               </span>
               {searchTerm && (
                 <button className="pdv-empty__action" onClick={() => setSearchTerm('')}>

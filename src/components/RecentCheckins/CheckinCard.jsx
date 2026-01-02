@@ -111,19 +111,33 @@ const CheckinCard = memo(({ checkin, isSelected, onSelect, onViewDetails }) => {
   
   const statusConfig = getStatusConfig();
   
-  // Icon container configuration
+  // Icon container configuration - Premium sober colors
   const getIconConfig = () => {
+    // Detecta tipo de veículo
+    const isMoto = vehicleType === 'motorcycle' || vehicleType === 'moto';
+    
     if (isCompleted || isSelected) {
       return {
-        bgGradient: 'linear-gradient(135deg, rgba(16,185,129,0.15), rgba(5,150,105,0.25))',
-        shadow: '0 4px 16px rgba(16,185,129,0.25)',
+        bgGradient: 'linear-gradient(135deg, rgba(16,185,129,0.12), rgba(5,150,105,0.18))',
+        shadow: '0 4px 12px rgba(16,185,129,0.15)',
         iconColor: '#10B981'
       };
     }
+    
+    // Cores sóbrias e premium por tipo de veículo
+    if (isMoto) {
+      return {
+        bgGradient: 'linear-gradient(135deg, rgba(107,114,128,0.12), rgba(75,85,99,0.18))',
+        shadow: '0 4px 12px rgba(107,114,128,0.15)',
+        iconColor: '#6B7280' // Cinza neutro elegante
+      };
+    }
+    
+    // Carro - azul slate sóbrio
     return {
-      bgGradient: 'linear-gradient(135deg, rgba(59,130,246,0.15), rgba(99,102,241,0.25))',
-      shadow: '0 4px 16px rgba(59,130,246,0.25)',
-      iconColor: '#60A5FA'
+      bgGradient: 'linear-gradient(135deg, rgba(100,116,139,0.12), rgba(71,85,105,0.18))',
+      shadow: '0 4px 12px rgba(100,116,139,0.15)',
+      iconColor: '#64748B' // Slate elegante
     };
   };
   
@@ -306,12 +320,12 @@ const CheckinCard = memo(({ checkin, isSelected, onSelect, onViewDetails }) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 background: isSelected 
-                  ? 'rgba(16,185,129,0.15)' 
-                  : 'rgba(59,130,246,0.1)',
+                  ? 'rgba(16,185,129,0.12)' 
+                  : 'rgba(100,116,139,0.08)',
                 border: isSelected 
-                  ? '1px solid rgba(16,185,129,0.3)' 
-                  : '1px solid rgba(59,130,246,0.2)',
-                color: isSelected ? '#10B981' : '#60A5FA'
+                  ? '1px solid rgba(16,185,129,0.25)' 
+                  : '1px solid rgba(100,116,139,0.15)',
+                color: isSelected ? '#10B981' : '#64748B'
               }}
             >
               <ExternalLink size={16} />

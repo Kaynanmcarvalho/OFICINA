@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background circle with border -->
+  <circle cx="50" cy="50" r="48" fill="none" stroke="#1a1a1a" stroke-width="3"/>
+  <!-- Main black circle -->
+  <circle cx="50" cy="50" r="44" fill="#1a1a1a"/>
+  
+  <g fill="#fff">
+    <!-- Center vertical tuning fork (top) -->
+    <path d="M50 8 L52 12 L52 16 L54 16 L54 20 L52 22 L52 42 L55 42 L55 46 L50 52 L45 46 L45 42 L48 42 L48 22 L46 20 L46 16 L48 16 L48 12 Z"/>
+    
+    <!-- Top left diagonal fork -->
+    <path d="M30 22 L34 20 L38 22 L36 26 L24 38 L22 36 L20 38 L18 36 L28 26 L26 24 Z"/>
+    
+    <!-- Top right diagonal fork -->  
+    <path d="M70 22 L66 20 L62 22 L64 26 L76 38 L78 36 L80 38 L82 36 L72 26 L74 24 Z"/>
+    
+    <!-- Bottom left diagonal fork -->
+    <path d="M22 64 L20 62 L18 64 L24 62 L36 74 L38 78 L34 80 L30 78 L26 76 L28 74 Z"/>
+    
+    <!-- Bottom right diagonal fork -->
+    <path d="M78 64 L80 62 L82 64 L76 62 L64 74 L62 78 L66 80 L70 78 L74 76 L72 74 Z"/>
+    
+    <!-- Center bottom fork -->
+    <path d="M50 92 L48 88 L48 84 L46 84 L46 80 L48 78 L48 58 L45 58 L45 54 L50 48 L55 54 L55 58 L52 58 L52 78 L54 80 L54 84 L52 84 L52 88 Z"/>
+    
+    <!-- Center hexagon/circle -->
+    <circle cx="50" cy="50" r="5"/>
+  </g>
+</svg>

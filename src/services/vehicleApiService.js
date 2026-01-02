@@ -1,10 +1,10 @@
 /**
  * Vehicle API Service
- * Integração com API de consulta de placas - Railway Backend
+ * Integração com API de consulta de placas - Backend Local (Puppeteer/Scraper)
  */
 
-// URL da API do Railway (produção)
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://torq.up.railway.app/api';
+// URL da API Local de Placas (Puppeteer Scraper)
+const PLATE_API_URL = import.meta.env.VITE_PLATE_API_URL || 'http://localhost:3001';
 
 /**
  * Consulta dados do veículo pela placa
@@ -20,9 +20,7 @@ export const consultarPlaca = async (plate) => {
       throw new Error('Placa inválida');
     }
 
-    // Montar URL - remover /api do final se já existir para evitar duplicação
-    const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
-    const apiUrl = `${baseUrl}/api/vehicles/plate/${cleanPlate}`;
+    const apiUrl = `${PLATE_API_URL}/api/vehicles/plate/${cleanPlate}`;
     
     console.log('[VehicleAPI] 🔍 Consultando placa:', cleanPlate);
     console.log('[VehicleAPI] 🌐 URL:', apiUrl);

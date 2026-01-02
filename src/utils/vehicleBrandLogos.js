@@ -246,6 +246,19 @@ const BRAND_LOGO_MAP = {
 // GitHub CDN base URL for car logos
 const LOGO_CDN_BASE = 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized';
 
+// Local logos for brands not available in CDN (stored in /public/logos/)
+const LOCAL_BRAND_LOGOS = {
+  'yamaha': 'https://cdn.worldvectorlogo.com/logos/yamaha-12.svg',
+  'kawasaki': '/logos/kawasaki.png',
+  'ducati': '/logos/ducati.png',
+  'harley-davidson': '/logos/harley-davidson.png',
+};
+
+// Logos específicas para dark mode (já são brancas/claras)
+const DARK_MODE_LOGOS = {
+  'fiat': 'https://www.svgrepo.com/show/306040/fiat.svg',
+};
+
 /**
  * Infer brand from vehicle model name
  * @param {string} model - The vehicle model name
@@ -303,9 +316,10 @@ export const getEffectiveBrand = (brand, model) => {
  * Get the logo URL for a vehicle brand
  * @param {string} brand - The vehicle brand name
  * @param {string} model - Optional model name for inference
+ * @param {boolean} isDarkMode - Optional flag for dark mode logo variant
  * @returns {string|null} - The logo URL or null if not found
  */
-export const getBrandLogoUrl = (brand, model = '') => {
+export const getBrandLogoUrl = (brand, model = '', isDarkMode = false) => {
   // Get effective brand (provided or inferred)
   const effectiveBrand = getEffectiveBrand(brand, model);
   
@@ -315,11 +329,31 @@ export const getBrandLogoUrl = (brand, model = '') => {
   const logoName = BRAND_LOGO_MAP[normalizedBrand];
   
   if (logoName) {
+    // Check for dark mode specific logo first
+    if (isDarkMode && DARK_MODE_LOGOS[logoName]) {
+      return DARK_MODE_LOGOS[logoName];
+    }
+    
+    // Check if it's a brand with local logo
+    if (LOCAL_BRAND_LOGOS[logoName]) {
+      return LOCAL_BRAND_LOGOS[logoName];
+    }
     return `${LOGO_CDN_BASE}/${logoName}.png`;
   }
   
   // Try direct match with brand name
   const directMatch = normalizedBrand.replace(/\s+/g, '-');
+  
+  // Check for dark mode specific logo
+  if (isDarkMode && DARK_MODE_LOGOS[directMatch]) {
+    return DARK_MODE_LOGOS[directMatch];
+  }
+  
+  // Check if it's a brand with local logo
+  if (LOCAL_BRAND_LOGOS[directMatch]) {
+    return LOCAL_BRAND_LOGOS[directMatch];
+  }
+  
   return `${LOGO_CDN_BASE}/${directMatch}.png`;
 };
 

@@ -5,8 +5,9 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Car, Bike, Truck, Image as ImageIcon, Loader2, AlertCircle } from 'lucide-react';
+import { Image as ImageIcon, Loader2, AlertCircle } from 'lucide-react';
 import { searchVehicleImageCached, buildVehicleName } from '../services/vehicleImageService';
+import { VehicleTypeIcon } from '../utils/icons/vehicleIcons';
 
 const VehicleThumbnail = ({ 
   vehicle, 
@@ -29,18 +30,18 @@ const VehicleThumbnail = ({
     xl: 'w-20 h-20'
   };
 
-  // Ícones por tipo de veículo
-  const getVehicleIcon = (type) => {
+  // Ícones por tipo de veículo - usando VehicleTypeIcon
+  const getVehicleType = (type) => {
     switch (type?.toLowerCase()) {
       case 'moto':
       case 'motocicleta':
-        return Bike;
+        return 'motorcycle';
       case 'caminhao':
       case 'caminhão':
       case 'truck':
-        return Truck;
+        return 'truck';
       default:
-        return Car;
+        return 'car';
     }
   };
 
@@ -82,10 +83,11 @@ const VehicleThumbnail = ({
 
   // Renderizar ícone de fallback
   const renderFallbackIcon = () => {
-    const IconComponent = getVehicleIcon(vehicle?.type);
+    const vehicleType = getVehicleType(vehicle?.type);
+    const iconSize = size === 'sm' ? 16 : size === 'md' ? 24 : size === 'lg' ? 32 : 40;
     return (
       <div className={`${sizes[size]} bg-neutral-100 dark:bg-neutral-800 rounded-lg flex items-center justify-center border border-neutral-200 dark:border-neutral-700`}>
-        <IconComponent className="w-1/2 h-1/2 text-neutral-500 dark:text-white" />
+        <VehicleTypeIcon type={vehicleType} size={iconSize} className="text-neutral-500 dark:text-white" />
       </div>
     );
   };
