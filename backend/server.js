@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const vehiclesRouter = require('./routes/vehicles');
+const obdRouter = require('./routes/obd');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -30,6 +31,7 @@ app.get('/health', (req, res) => {
 
 // Routes
 app.use('/api/vehicles', vehiclesRouter);
+app.use('/api/obd', obdRouter);
 
 // 404 handler
 app.use((req, res) => {
@@ -56,6 +58,7 @@ app.listen(PORT, () => {
     console.log(`📡 Server running on: http://localhost:${PORT}`);
     console.log(`🏥 Health check: http://localhost:${PORT}/health`);
     console.log(`🚗 Vehicle API: http://localhost:${PORT}/api/vehicles`);
+    console.log(`🔧 OBD-II API: http://localhost:${PORT}/api/obd`);
     console.log('='.repeat(50));
 });
 

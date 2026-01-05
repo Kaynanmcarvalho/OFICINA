@@ -10,6 +10,15 @@
  */
 
 /* ============================================================================
+   GLOBAL: Desabilitar transições em imagens durante mudança de tema
+   ============================================================================ */
+img,
+[class*="brand-img"],
+[class*="brand-logo"] {
+  transition: none !important;
+}
+
+/* ============================================================================
    CSS CUSTOM PROPERTIES - Design Tokens
    ============================================================================ */
 
@@ -753,7 +762,7 @@
   flex-shrink: 0;
   filter: grayscale(15%);
   opacity: 0.92;
-  transition: all 0.2s ease;
+  transition: none !important;
   border-radius: 6px;
   padding: 4px;
 }
@@ -765,6 +774,13 @@
   background: rgba(255, 255, 255, 0.95);
   padding: 6px 8px;
   border-radius: 8px;
+}
+
+/* Logos otimizadas para dark mode (Ford, etc) - sem fundo branco */
+.dark .ck-record__brand-logo.dark-optimized {
+  background: transparent;
+  padding: 4px;
+  filter: none;
 }
 
 .ck-record:hover .ck-record__brand-logo {

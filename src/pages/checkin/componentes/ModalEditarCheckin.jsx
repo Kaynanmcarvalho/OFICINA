@@ -1,601 +1,982 @@
-import { useState, useEffect } from 'react';
+/**
+ * TORQ Modal Editar Check-in - Premium Brand Identity
+ * Design sincronizado com CheckinDetailsModal
+ * Cores da marca do veículo refletidas no modal
+ * Janeiro 2026
+ */
+
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { createPortal } from 'react-dom';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, User, Car, Phone, Mail, Wrench, 
-  CheckCircle2, Clock
-} from 'lucide-react';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../../config/firebase';
+import { getBrandLogoUrl, getEffectiveBrand, formatVehicleDisplay } from '../../../utils/vehicleBrandLogos';
+import { getBrandModalStyles } from '../../../utils/brandModalTheme';
+import { useClientStore } from '../../../store/clientStore';
+import '../../../styles/brand-modal.css';
+import toast from 'react-hot-toast';
 
-// SVG Icons Components
-const StatusIcons = {
-  pending: () => (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 4"/>
-      <path d="M12 7V12L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+// ============================================================================
+// PREMIUM ICON SYSTEM
+// ============================================================================
+const Icons = {
+  Close: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" />
     </svg>
   ),
-  in_progress: () => (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" stroke="currentColor" strokeWidth="2"/>
-      <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <circle cx="12" cy="12" r="2" fill="currentColor"/>
+  Check: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <path d="M5 12l5 5L20 7" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
-  completed: () => (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2"/>
-      <path d="M8 12L11 15L16 9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+  Client: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20c0-4 4-6 8-6s8 2 8 6" strokeLinecap="round" />
     </svg>
   ),
-  cancelled: () => (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2"/>
-      <path d="M15 9L9 15M9 9L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+  Vehicle: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M3 14h18v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3z" strokeLinejoin="round" />
+      <path d="M3 14l2-5c.5-1.2 1.5-2 3-2h8c1.5 0 2.5.8 3 2l2 5" strokeLinejoin="round" />
+      <path d="M6 9l1-2h10l1 2" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="6.5" cy="17" r="2" />
+      <circle cx="17.5" cy="17" r="2" />
+      <path d="M8.5 17h7" strokeLinecap="round" />
+      <path d="M7 12h2M15 12h2" strokeLinecap="round" />
     </svg>
-  )
+  ),
+  Services: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" strokeLinejoin="round" />
+    </svg>
+  ),
+  Status: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 6v6l4 2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  Phone: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+    </svg>
+  ),
+  Mail: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <rect x="2" y="4" width="20" height="16" rx="2" />
+      <path d="M22 6l-10 7L2 6" strokeLinecap="round" />
+    </svg>
+  ),
+  Loader: ({ className = '' }) => (
+    <svg className={`${className} animate-spin`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10" opacity="0.2" />
+      <path d="M12 2a10 10 0 019.17 6" strokeLinecap="round" />
+    </svg>
+  ),
+  Save: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" strokeLinejoin="round" />
+      <path d="M17 21v-8H7v8M7 3v5h8" strokeLinecap="round" />
+    </svg>
+  ),
+  Odometer: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M12 2a10 10 0 00-7.07 17.07" strokeLinecap="round" />
+      <path d="M12 2a10 10 0 017.07 17.07" strokeLinecap="round" />
+      <path d="M12 12l3-5" strokeLinecap="round" strokeWidth="2" />
+      <circle cx="12" cy="12" r="2" fill="currentColor" />
+    </svg>
+  ),
+  Notes: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" strokeLinejoin="round" />
+      <path d="M14 2v6h6M8 13h8M8 17h5" strokeLinecap="round" />
+    </svg>
+  ),
+  Calendar: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <path d="M16 2v4M8 2v4M3 10h18" strokeLinecap="round" />
+    </svg>
+  ),
+  Flag: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+      <path d="M4 22v-7" strokeLinecap="round" />
+    </svg>
+  ),
+  Clipboard: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <rect x="8" y="2" width="8" height="4" rx="1" />
+      <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" />
+      <path d="M9 12h6M9 16h4" strokeLinecap="round" />
+    </svg>
+  ),
+  AlertCircle: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 8v4M12 16h.01" strokeLinecap="round" />
+    </svg>
+  ),
+  Trash: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M10 11v6M14 11v6" strokeLinecap="round" />
+    </svg>
+  ),
+  Warning: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M12 9v4M12 17h.01" strokeLinecap="round" />
+      <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" strokeLinejoin="round" />
+    </svg>
+  ),
+  Document: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M9 12h6M9 16h6M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" strokeLinejoin="round" />
+    </svg>
+  ),
+  MapPin: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  ),
+  Building: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4M9 9v.01M9 12v.01M9 15v.01M9 18v.01" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  Cake: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M20 21v-8a2 2 0 00-2-2H6a2 2 0 00-2 2v8M4 16h16M12 11V3M8 7h8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  Lock: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <rect x="3" y="11" width="18" height="11" rx="2" />
+      <path d="M7 11V7a5 5 0 0110 0v4" strokeLinecap="round" />
+    </svg>
+  ),
+  Palette: ({ className = '' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="8" r="1.5" fill="currentColor" />
+      <circle cx="8" cy="12" r="1.5" fill="currentColor" />
+      <circle cx="16" cy="12" r="1.5" fill="currentColor" />
+      <circle cx="12" cy="16" r="1.5" fill="currentColor" />
+    </svg>
+  ),
 };
 
-const PriorityIcons = {
-  low: () => (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 19V5M12 19L5 12M12 19L19 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <circle cx="12" cy="19" r="2" fill="currentColor"/>
-    </svg>
-  ),
-  normal: () => (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M5 12L9 8M5 12L9 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M19 12L15 8M19 12L15 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  ),
-  high: () => (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 5V19M12 5L5 12M12 5L19 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <circle cx="12" cy="5" r="2" fill="currentColor"/>
-    </svg>
-  ),
-  urgent: () => (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2L2 22H22L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
-      <path d="M12 9V13" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-      <circle cx="12" cy="17" r="1" fill="currentColor"/>
-    </svg>
-  )
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
+const SECTIONS = [
+  { id: 'client', label: 'Cliente', icon: Icons.Client, description: 'Dados de contato' },
+  { id: 'vehicle', label: 'Veículo', icon: Icons.Vehicle, description: 'Informações do veículo' },
+  { id: 'service', label: 'Serviços', icon: Icons.Services, description: 'Serviços solicitados' },
+  { id: 'status', label: 'Status', icon: Icons.Status, description: 'Situação atual' },
+];
+
+const STATUS_OPTIONS = [
+  { value: 'pending', label: 'Aguardando', description: 'Aguardando início', color: 'amber' },
+  { value: 'diagnosis', label: 'Diagnóstico', description: 'Em análise técnica', color: 'blue' },
+  { value: 'waiting-budget', label: 'Orçamento', description: 'Aguardando aprovação', color: 'purple' },
+  { value: 'in-progress', label: 'Em Execução', description: 'Trabalho em andamento', color: 'cyan' },
+  { value: 'ready', label: 'Pronto', description: 'Aguardando retirada', color: 'emerald' },
+  { value: 'completed', label: 'Concluído', description: 'Entregue ao cliente', color: 'green' },
+];
+
+const PRIORITY_OPTIONS = [
+  { value: 'low', label: 'Baixa', color: 'slate' },
+  { value: 'normal', label: 'Normal', color: 'blue' },
+  { value: 'high', label: 'Alta', color: 'orange' },
+  { value: 'urgent', label: 'Urgente', color: 'red' },
+];
+
+const COMMON_SERVICES = [
+  { name: 'Troca de Óleo', category: 'Manutenção' },
+  { name: 'Alinhamento', category: 'Suspensão' },
+  { name: 'Balanceamento', category: 'Suspensão' },
+  { name: 'Freios', category: 'Segurança' },
+  { name: 'Suspensão', category: 'Suspensão' },
+  { name: 'Motor', category: 'Mecânica' },
+  { name: 'Elétrica', category: 'Elétrica' },
+  { name: 'Ar Condicionado', category: 'Conforto' },
+  { name: 'Revisão Completa', category: 'Manutenção' },
+  { name: 'Diagnóstico', category: 'Análise' },
+  { name: 'Embreagem', category: 'Transmissão' },
+  { name: 'Câmbio', category: 'Transmissão' },
+];
+
+const CANCEL_REASONS = [
+  { value: 'cliente_desistiu', label: 'Cliente desistiu do serviço' },
+  { value: 'orcamento_recusado', label: 'Orçamento não aprovado pelo cliente' },
+  { value: 'veiculo_retirado', label: 'Veículo retirado sem conclusão' },
+  { value: 'falta_pecas', label: 'Falta de peças disponíveis' },
+  { value: 'problema_pagamento', label: 'Problema com pagamento' },
+  { value: 'erro_cadastro', label: 'Check-in cadastrado por engano' },
+  { value: 'duplicado', label: 'Check-in duplicado' },
+  { value: 'outro', label: 'Outro motivo' },
+];
+
+// Logos que mantêm cor original (não ficam brancas)
+const COLORED_LOGO_BRANDS = ['bmw', 'fiat', 'ferrari', 'lamborghini', 'land rover', 'land-rover', 'chevrolet', 'ford', 'renault', 'mini', 'dodge', 'ram', 'volvo', 'porsche', 'chery', 'jac', 'jac motors'];
+// Logos menores
+const SMALL_LOGO_BRANDS = ['byd', 'yamaha'];
+// Logos maiores (15% maior)
+const LARGE_LOGO_BRANDS = ['dodge', 'jac', 'jac motors'];
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+const formatCPFDisplay = (cpf) => {
+  if (!cpf) return '';
+  const clean = cpf.replace(/\D/g, '');
+  if (clean.length !== 11) return cpf;
+  return clean.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
 };
 
-// Ícone principal do modal - Clipboard com check elegante (sempre branco)
-const ClipboardCheckIcon = () => (
-  <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="4" y="4" width="16" height="18" rx="2" stroke="white" strokeWidth="2" fill="none"/>
-    <path d="M8 2H16V4H8V2Z" fill="white"/>
-    <rect x="7" y="1" width="10" height="4" rx="1" stroke="white" strokeWidth="2" fill="none"/>
-    <path d="M8 12L11 15L16 9" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
+const formatCNPJDisplay = (cnpj) => {
+  if (!cnpj) return '';
+  const clean = cnpj.replace(/\D/g, '');
+  if (clean.length !== 14) return cnpj;
+  return clean.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+};
 
-const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave }) => {
-  const [formData, setFormData] = useState({
-    // Cliente
-    clientName: '',
-    clientPhone: '',
-    clientEmail: '',
-    
-    // Veículo
-    vehicleBrand: '',
-    vehicleModel: '',
-    vehiclePlate: '',
-    vehicleYear: '',
-    vehicleColor: '',
-    vehicleType: 'car',
-    
-    // Condições
-    mileage: '',
-    fuelLevel: '',
-    vehicleConditions: [],
-    
-    // Serviços
-    services: '',
-    priority: 'normal',
-    responsible: '',
-    observations: '',
-    status: 'in_progress'
+const formatBirthDateDisplay = (date) => {
+  if (!date) return '';
+  if (date.includes('/')) return date;
+  if (date.includes('-')) {
+    const [year, month, day] = date.split('-');
+    return `${day}/${month}/${year}`;
+  }
+  return date;
+};
+
+const formatAddressDisplay = (client) => {
+  if (!client) return '';
+  const parts = [];
+  if (client.address) parts.push(client.address);
+  if (client.number) parts.push(client.number);
+  if (client.complement) parts.push(client.complement);
+  if (client.neighborhood) parts.push(client.neighborhood);
+  if (client.city && client.state) parts.push(`${client.city}/${client.state}`);
+  else if (client.city) parts.push(client.city);
+  if (client.zipCode) {
+    const cleanZip = client.zipCode.replace(/\D/g, '');
+    const formattedZip = cleanZip.length === 8 
+      ? `${cleanZip.slice(0, 5)}-${cleanZip.slice(5)}` 
+      : client.zipCode;
+    parts.push(`CEP: ${formattedZip}`);
+  }
+  return parts.join(', ');
+};
+
+// ============================================================================
+// CUSTOM DATE PICKER COMPONENT - Brand Themed
+// ============================================================================
+const MONTH_NAMES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+const WEEKDAY_NAMES = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+const DatePickerBrand = ({ value, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [viewDate, setViewDate] = useState(() => {
+    if (value) return new Date(value + 'T00:00:00');
+    return new Date();
   });
+  
+  const selectedDate = value ? new Date(value + 'T00:00:00') : null;
+  
+  const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
+  const getFirstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
+  
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
+  const daysInMonth = getDaysInMonth(year, month);
+  const firstDay = getFirstDayOfMonth(year, month);
+  
+  const days = [];
+  for (let i = 0; i < firstDay; i++) days.push(null);
+  for (let i = 1; i <= daysInMonth; i++) days.push(i);
+  
+  const handlePrevMonth = () => setViewDate(new Date(year, month - 1, 1));
+  const handleNextMonth = () => setViewDate(new Date(year, month + 1, 1));
+  
+  const handleSelectDay = (day) => {
+    if (!day) return;
+    const newDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    onChange(newDate);
+    setIsOpen(false);
+  };
+  
+  const isToday = (day) => {
+    if (!day) return false;
+    const today = new Date();
+    return day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+  };
+  
+  const isSelected = (day) => {
+    if (!day || !selectedDate) return false;
+    return day === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear();
+  };
+  
+  const formatDisplayDate = () => {
+    if (!selectedDate) return 'Selecionar data';
+    return selectedDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+  };
 
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between px-4 py-3.5 rounded-xl border transition-all"
+        style={{ 
+          background: 'var(--brand-card-bg)', 
+          borderColor: isOpen ? 'var(--brand-accent)' : 'var(--brand-border)', 
+          color: 'var(--brand-text)',
+          boxShadow: isOpen ? '0 0 0 3px rgba(var(--brand-accent-rgb, 59, 130, 246), 0.15)' : 'none'
+        }}
+      >
+        <div className="flex items-center gap-3">
+          <Icons.Calendar className="w-5 h-5" style={{ color: 'var(--brand-accent)' }} />
+          <span className={selectedDate ? 'font-medium' : 'opacity-50'}>{formatDisplayDate()}</span>
+        </div>
+        <svg className={`w-5 h-5 transition-transform ${isOpen ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--brand-text-muted)' }}>
+          <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+      
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.15 }}
+            className="absolute z-50 mt-2 w-full rounded-2xl overflow-hidden"
+            style={{ background: 'rgba(20, 20, 25, 0.98)', backdropFilter: 'blur(20px)', border: '1px solid var(--brand-border)', boxShadow: '0 20px 40px rgba(0,0,0,0.5), 0 0 60px var(--brand-glow)' }}
+          >
+            <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid var(--brand-border)' }}>
+              <button type="button" onClick={handlePrevMonth} className="p-2 rounded-lg transition-all hover:opacity-80" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: '#FFFFFF' }}><path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </button>
+              <div className="text-center">
+                <p className="font-semibold" style={{ color: 'var(--brand-text)' }}>{MONTH_NAMES[month]}</p>
+                <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>{year}</p>
+              </div>
+              <button type="button" onClick={handleNextMonth} className="p-2 rounded-lg transition-all hover:opacity-80" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: '#FFFFFF' }}><path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-7 px-2 py-2" style={{ borderBottom: '1px solid var(--brand-border)' }}>
+              {WEEKDAY_NAMES.map(day => (
+                <div key={day} className="text-center text-[10px] font-medium uppercase tracking-wider py-1" style={{ color: 'var(--brand-text-muted)' }}>{day}</div>
+              ))}
+            </div>
+            
+            <div className="grid grid-cols-7 gap-1 p-2">
+              {days.map((day, index) => (
+                <button key={index} type="button" onClick={() => handleSelectDay(day)} disabled={!day}
+                  className={`aspect-square rounded-lg text-sm font-medium transition-all ${!day ? 'invisible' : 'hover:opacity-80'}`}
+                  style={{ background: isSelected(day) ? 'var(--brand-accent)' : isToday(day) ? 'rgba(255,255,255,0.1)' : 'transparent', color: isSelected(day) ? '#FFFFFF' : isToday(day) ? 'var(--brand-accent)' : 'var(--brand-text)', boxShadow: isSelected(day) ? '0 4px 12px rgba(0,0,0,0.3)' : 'none' }}
+                >{day}</button>
+              ))}
+            </div>
+            
+            <div className="px-3 py-2 flex justify-between items-center" style={{ borderTop: '1px solid var(--brand-border)', background: 'rgba(0,0,0,0.2)' }}>
+              <button type="button" onClick={() => { const today = new Date(); setViewDate(today); const newDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`; onChange(newDate); setIsOpen(false); }} className="text-xs font-medium px-3 py-1.5 rounded-lg transition-all" style={{ color: 'var(--brand-accent)', background: 'rgba(255,255,255,0.05)' }}>Hoje</button>
+              {selectedDate && <button type="button" onClick={() => { onChange(''); setIsOpen(false); }} className="text-xs px-3 py-1.5 rounded-lg transition-all" style={{ color: 'var(--brand-text-muted)', background: 'rgba(255,255,255,0.05)' }}>Limpar</button>}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      {selectedDate && (
+        <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg mt-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <Icons.Calendar className="w-4 h-4" style={{ color: 'var(--brand-accent)' }} />
+          <p className="text-sm" style={{ color: 'var(--brand-text)' }}>{selectedDate.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
+const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) => {
+  const [activeSection, setActiveSection] = useState('client');
   const [isLoading, setIsLoading] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [clientData, setClientData] = useState(null);
+  const [isLoadingClient, setIsLoadingClient] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const [customReason, setCustomReason] = useState('');
+  
+  const { clients, fetchClients } = useClientStore();
+  
+  const [formData, setFormData] = useState({
+    clientName: '', clientPhone: '', clientEmail: '',
+    vehiclePlate: '', vehicleBrand: '', vehicleModel: '', vehicleYear: '', vehicleColor: '', vehicleKm: '',
+    services: [], notes: '', internalNotes: '', status: 'pending', priority: 'normal', estimatedCompletion: '',
+  });
 
+  const effectiveBrand = useMemo(() => getEffectiveBrand(checkinData?.vehicleBrand, checkinData?.vehicleModel), [checkinData?.vehicleBrand, checkinData?.vehicleModel]);
+  const brandStyles = useMemo(() => getBrandModalStyles(effectiveBrand || 'default'), [effectiveBrand]);
+  const logoUrl = useMemo(() => getBrandLogoUrl(effectiveBrand, checkinData?.vehicleModel, false), [effectiveBrand, checkinData?.vehicleModel]);
+  
+  const isColoredLogo = COLORED_LOGO_BRANDS.includes(effectiveBrand?.toLowerCase());
+  const isSmallLogo = SMALL_LOGO_BRANDS.includes(effectiveBrand?.toLowerCase());
+  const isLargeLogo = LARGE_LOGO_BRANDS.includes(effectiveBrand?.toLowerCase());
+
+  useEffect(() => { if (isOpen && clients.length === 0) fetchClients(); }, [isOpen, clients.length, fetchClients]);
+  
   useEffect(() => {
-    if (checkinData) {
+    if (checkinData && isOpen && clients.length > 0) {
+      setIsLoadingClient(true);
+      const clientId = checkinData.clientId;
+      let foundClient = clientId ? clients.find(c => c.id === clientId) : null;
+      if (!foundClient && checkinData.clientName) {
+        foundClient = clients.find(c => c.name?.toLowerCase() === checkinData.clientName?.toLowerCase() || c.phone === checkinData.clientPhone);
+      }
+      setClientData(foundClient || null);
+      setIsLoadingClient(false);
+    }
+  }, [checkinData, isOpen, clients]);
+  
+  useEffect(() => {
+    if (checkinData && isOpen) {
       setFormData({
-        clientName: checkinData.clientName || checkinData.nomeCliente || '',
-        clientPhone: checkinData.clientPhone || checkinData.telefoneCliente || '',
-        clientEmail: checkinData.clientEmail || checkinData.emailCliente || '',
-        vehicleBrand: checkinData.vehicleBrand || checkinData.marca || checkinData.marcaVeiculo || '',
-        vehicleModel: checkinData.vehicleModel || checkinData.modelo || checkinData.modeloVeiculo || '',
-        vehiclePlate: checkinData.vehiclePlate || checkinData.placa || checkinData.placaVeiculo || '',
-        vehicleYear: checkinData.vehicleYear || checkinData.ano || checkinData.anoVeiculo || '',
-        vehicleColor: checkinData.vehicleColor || checkinData.cor || checkinData.corVeiculo || '',
-        vehicleType: checkinData.vehicleType || checkinData.tipo || checkinData.tipoVeiculo || 'car',
-        mileage: checkinData.mileage || checkinData.kilometragem || '',
-        fuelLevel: checkinData.fuelLevel || checkinData.nivelCombustivel || '',
-        vehicleConditions: checkinData.vehicleConditions || checkinData.condicoesVeiculo || [],
-        services: checkinData.services || checkinData.servicoSolicitado || checkinData.servicos || '',
-        priority: checkinData.priority || checkinData.prioridade || 'normal',
-        responsible: checkinData.responsible || checkinData.responsavel || '',
-        observations: checkinData.observations || checkinData.observacoes || '',
-        status: checkinData.status || 'in_progress'
+        clientName: checkinData.clientName || '', clientPhone: checkinData.clientPhone || '', clientEmail: checkinData.clientEmail || '',
+        vehiclePlate: checkinData.vehiclePlate || '', vehicleBrand: checkinData.vehicleBrand || '', vehicleModel: checkinData.vehicleModel || '',
+        vehicleYear: checkinData.vehicleYear || '', vehicleColor: checkinData.vehicleColor || '', vehicleKm: checkinData.vehicleKm || checkinData.mileage || '',
+        services: checkinData.services || [], notes: checkinData.notes || '', internalNotes: checkinData.internalNotes || '',
+        status: checkinData.status || 'pending', priority: checkinData.priority || 'normal', estimatedCompletion: checkinData.estimatedCompletion || '',
       });
+      setActiveSection('client');
       setHasChanges(false);
     }
-  }, [checkinData]);
+  }, [checkinData, isOpen]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleChange = useCallback((field, value) => { setFormData(prev => ({ ...prev, [field]: value })); setHasChanges(true); }, []);
+  const handleServiceToggle = useCallback((serviceName) => {
+    setFormData(prev => ({ ...prev, services: prev.services.includes(serviceName) ? prev.services.filter(s => s !== serviceName) : [...prev.services, serviceName] }));
+    setHasChanges(true);
+  }, []);
+
+  const handleSave = async () => {
+    const docId = checkinData?.firestoreId;
+    if (!docId) { toast.error('Erro: ID do check-in não encontrado'); return; }
     setIsLoading(true);
-
     try {
-      // Simular salvamento
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      if (onSave) {
-        onSave({
-          ...checkinData,
-          ...formData,
-          updatedAt: new Date().toISOString()
-        });
-      }
-      
+      const docRef = doc(db, 'checkins', docId);
+      await updateDoc(docRef, { ...formData, updatedAt: new Date() });
+      toast.success('Check-in atualizado com sucesso!');
+      if (onSave) onSave({ ...checkinData, ...formData });
       onClose();
     } catch (error) {
       console.error('Erro ao salvar:', error);
-    } finally {
-      setIsLoading(false);
-    }
+      toast.error('Erro ao salvar alterações');
+    } finally { setIsLoading(false); }
   };
 
-  const handleChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  const handleDelete = async () => {
+    const docId = checkinData?.firestoreId;
+    if (!docId) { toast.error('Erro: ID do check-in não encontrado'); return; }
+    const finalReason = cancelReason === 'outro' ? customReason : cancelReason;
+    if (!finalReason) { toast.error('Por favor, selecione um motivo para o cancelamento'); return; }
+    setIsDeleting(true);
+    try {
+      const docRef = doc(db, 'checkins', docId);
+      await updateDoc(docRef, { 
+        status: 'cancelled', cancelledAt: new Date(), cancelReason: finalReason,
+        cancelReasonLabel: cancelReason === 'outro' ? customReason : CANCEL_REASONS.find(r => r.value === cancelReason)?.label || finalReason
+      });
+      toast.success('Check-in cancelado com sucesso');
+      setShowDeleteConfirm(false); setCancelReason(''); setCustomReason('');
+      if (onDelete) onDelete(checkinData);
+      onClose();
+    } catch (error) {
+      console.error('Erro ao cancelar:', error);
+      toast.error('Erro ao cancelar check-in');
+    } finally { setIsDeleting(false); }
+  };
+
+  const formatPhone = (value) => {
+    const numbers = value.replace(/\D/g, '');
+    if (numbers.length <= 11) return numbers.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    return value;
   };
 
   if (!isOpen) return null;
 
-  return (
+  // ============================================================================
+  // RENDER
+  // ============================================================================
+  return createPortal(
     <AnimatePresence>
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 overflow-y-auto">
-        {/* Backdrop */}
+      {isOpen && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/90"
+          style={brandStyles}
           onClick={onClose}
-        />
-
-        {/* Modal - Apple-like Design - Centralizado e Responsivo */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.97, y: 10 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.97, y: 10 }}
-          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-full max-w-6xl my-auto bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 max-h-[90vh] overflow-hidden"
         >
-          {/* Header - Apple-like */}
-          <div className="flex items-center justify-between px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6 border-b border-gray-200/50 dark:border-gray-700/50 bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-950/20 dark:to-purple-950/20">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <motion.div 
-                initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 flex-shrink-0"
-              >
-                <ClipboardCheckIcon />
-              </motion.div>
-              <div className="min-w-0">
-                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white tracking-tight truncate">
-                  Editar Check-in
-                </h2>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-0.5 truncate">
-                  Modifique as informações do registro
-                </p>
+          <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.5) 100%)' }} />
+          
+          <motion.div
+            initial={{ scale: 0.96, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.96, opacity: 0, y: 20 }}
+            transition={{ type: 'spring', damping: 35, stiffness: 400 }}
+            onClick={e => e.stopPropagation()}
+            className="relative w-full max-w-[1000px] h-[85vh] max-h-[700px] rounded-3xl overflow-hidden flex flex-col"
+            style={{ background: 'var(--brand-modal-bg)', boxShadow: `0 0 0 1px var(--brand-border), 0 25px 50px -12px rgba(0,0,0,0.8), 0 0 120px var(--brand-glow), inset 0 1px 0 rgba(255,255,255,0.05)` }}
+          >
+            <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'linear-gradient(90deg, var(--brand-accent) 0%, transparent 60%)', opacity: 0.5 }} />
+
+            {/* HEADER */}
+            <div className="px-7 pt-6 pb-4 flex-shrink-0 relative" style={{ background: 'var(--brand-header-bg)', borderBottom: '1px solid var(--brand-border)' }}>
+              <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%)' }} />
+              
+              <div className="flex items-center justify-between mb-5 relative">
+                <div className="flex items-center gap-5">
+                  {logoUrl ? (
+                    <img src={logoUrl} alt={effectiveBrand} className={`${isSmallLogo ? 'h-10' : isLargeLogo ? 'h-[74px]' : 'h-16'} w-auto object-contain`}
+                      style={{ maxWidth: isSmallLogo ? '100px' : isLargeLogo ? '207px' : '180px', filter: isColoredLogo ? 'none' : 'brightness(0) invert(1)' }} />
+                  ) : (
+                    <span className="text-4xl font-bold tracking-tight" style={{ color: '#FFFFFF' }}>{(effectiveBrand || 'V').toUpperCase()}</span>
+                  )}
+                  <div className="h-10 w-px" style={{ background: 'var(--brand-border)' }} />
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <h2 className="text-xl font-semibold tracking-tight" style={{ color: 'var(--brand-text)' }}>{checkinData?.vehiclePlate}</h2>
+                      <span className="text-xs px-2.5 py-1 rounded-full font-medium" style={{ background: 'var(--brand-card-bg)', color: 'var(--brand-accent)' }}>Editando</span>
+                    </div>
+                    <p className="text-sm mt-0.5" style={{ color: 'var(--brand-text-muted)' }}>
+                      {formatVehicleDisplay(checkinData?.vehicleBrand, checkinData?.vehicleModel)}{checkinData?.vehicleYear && ` • ${checkinData.vehicleYear}`}
+                    </p>
+                  </div>
+                </div>
+                <button onClick={onClose} className="p-2.5 rounded-xl transition-all duration-200 hover:opacity-80" style={{ background: 'var(--brand-card-bg)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }}>
+                  <Icons.Close className="w-[18px] h-[18px]" />
+                </button>
+              </div>
+
+              <div className="flex gap-1.5 relative">
+                {SECTIONS.map(section => {
+                  const Icon = section.icon;
+                  const isActive = activeSection === section.id;
+                  return (
+                    <motion.button key={section.id} onClick={() => setActiveSection(section.id)}
+                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150"
+                      style={{ background: isActive ? 'var(--brand-accent)' : 'transparent', color: isActive ? '#FFFFFF' : 'var(--brand-text-muted)', boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15)' : 'none' }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Icon className="w-4 h-4" /><span>{section.label}</span>
+                    </motion.button>
+                  );
+                })}
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              {hasChanges && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-100 dark:bg-orange-900/30"
-                >
-                  <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-                  <span className="text-xs font-semibold text-orange-700 dark:text-orange-300">
-                    Não salvo
-                  </span>
-                </motion.div>
-              )}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={onClose}
-                className="w-10 h-10 rounded-xl bg-gray-100/80 dark:bg-gray-800/80 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center transition-all backdrop-blur-sm"
-              >
-                <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-              </motion.button>
-            </div>
-          </div>
 
-          {/* Content - Layout em 2 colunas */}
-          <div className="p-4 sm:p-6 md:p-8 overflow-y-auto max-h-[calc(90vh-200px)] scroll-smooth">
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Seção Cliente */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 }}
-                className="lg:col-span-1 space-y-5 p-6 rounded-2xl bg-gradient-to-br from-blue-50/50 to-indigo-50/50 dark:from-blue-950/20 dark:to-indigo-950/20 border border-blue-100/50 dark:border-blue-900/30"
-              >
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="p-2 rounded-lg bg-blue-500/10 dark:bg-blue-500/20">
-                    <User className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Informações do Cliente
-                  </h3>
-                </div>
-                
-                <div className="space-y-3">
-                  <label className="text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide">
-                    Nome Completo
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.clientName}
-                    onChange={(e) => {
-                      handleChange('clientName', e.target.value);
-                      setHasChanges(true);
-                    }}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all placeholder:text-gray-400"
-                    placeholder="Digite o nome do cliente..."
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-3">
-                    <label className="text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide flex items-center gap-1">
-                      <Phone className="w-3 h-3" />
-                      Telefone
-                    </label>
-                    <input
-                      type="tel"
-                      value={formData.clientPhone}
-                      onChange={(e) => {
-                        handleChange('clientPhone', e.target.value);
-                        setHasChanges(true);
-                      }}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                      placeholder="(00) 00000-0000"
-                    />
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <label className="text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide flex items-center gap-1">
-                      <Mail className="w-3 h-3" />
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      value={formData.clientEmail}
-                      onChange={(e) => {
-                        handleChange('clientEmail', e.target.value);
-                        setHasChanges(true);
-                      }}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                      placeholder="email@exemplo.com"
-                    />
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Seção Veículo */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="lg:col-span-1 space-y-5 p-6 rounded-2xl bg-gradient-to-br from-orange-50/50 to-amber-50/50 dark:from-orange-950/20 dark:to-amber-950/20 border border-orange-100/50 dark:border-orange-900/30"
-              >
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="p-2 rounded-lg bg-orange-500/10 dark:bg-orange-500/20">
-                    <Car className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Informações do Veículo
-                  </h3>
-                </div>
-                
-                <div className="space-y-3">
-                  <label className="text-xs font-medium text-orange-600 dark:text-orange-400 uppercase tracking-wide">
-                    Placa
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.vehiclePlate}
-                    onChange={(e) => {
-                      handleChange('vehiclePlate', e.target.value.toUpperCase());
-                      setHasChanges(true);
-                    }}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all font-mono text-lg tracking-wider"
-                    placeholder="ABC-1234"
-                    maxLength={8}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-3">
-                    <label className="text-xs font-medium text-orange-600 dark:text-orange-400 uppercase tracking-wide">
-                      Marca
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.vehicleBrand}
-                      onChange={(e) => {
-                        handleChange('vehicleBrand', e.target.value);
-                        setHasChanges(true);
-                      }}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
-                      placeholder="Ex: Toyota"
-                    />
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <label className="text-xs font-medium text-orange-600 dark:text-orange-400 uppercase tracking-wide">
-                      Modelo
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.vehicleModel}
-                      onChange={(e) => {
-                        handleChange('vehicleModel', e.target.value);
-                        setHasChanges(true);
-                      }}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
-                      placeholder="Ex: Corolla"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-3">
-                    <label className="text-xs font-medium text-orange-600 dark:text-orange-400 uppercase tracking-wide">
-                      Ano
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.vehicleYear}
-                      onChange={(e) => {
-                        handleChange('vehicleYear', e.target.value);
-                        setHasChanges(true);
-                      }}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
-                      placeholder="2024"
-                      min="1900"
-                      max="2025"
-                    />
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <label className="text-xs font-medium text-orange-600 dark:text-orange-400 uppercase tracking-wide">
-                      Cor
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.vehicleColor}
-                      onChange={(e) => {
-                        handleChange('vehicleColor', e.target.value);
-                        setHasChanges(true);
-                      }}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
-                      placeholder="Ex: Prata"
-                    />
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Seção Serviços e Status */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 }}
-                className="lg:col-span-2 space-y-5 p-6 rounded-2xl bg-gradient-to-br from-purple-50/50 to-pink-50/50 dark:from-purple-950/20 dark:to-pink-950/20 border border-purple-100/50 dark:border-purple-900/30"
-              >
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="p-2 rounded-lg bg-purple-500/10 dark:bg-purple-500/20">
-                    <Wrench className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Serviços e Atendimento
-                  </h3>
-                </div>
-                
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                  <div className="lg:col-span-2 space-y-3">
-                    <label className="text-xs font-medium text-purple-600 dark:text-purple-400 uppercase tracking-wide">
-                      Serviços Solicitados
-                    </label>
-                    <textarea
-                      value={formData.services}
-                      onChange={(e) => {
-                        handleChange('services', e.target.value);
-                        setHasChanges(true);
-                      }}
-                      rows={3}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all resize-none"
-                      placeholder="Descreva os serviços solicitados..."
-                    />
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <div className="space-y-3">
-                      <label className="text-xs font-medium text-purple-600 dark:text-purple-400 uppercase tracking-wide flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        Status
-                      </label>
-                      <div className="relative">
-                        <select
-                          value={formData.status}
-                          onChange={(e) => {
-                            handleChange('status', e.target.value);
-                            setHasChanges(true);
-                          }}
-                          className="w-full px-4 py-3 pl-11 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all appearance-none cursor-pointer font-medium"
-                          style={{
-                            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
-                            backgroundRepeat: 'no-repeat',
-                            backgroundPosition: 'right 0.75rem center',
-                            backgroundSize: '1.25rem'
-                          }}
-                        >
-                          <option value="pending">Pendente</option>
-                          <option value="in_progress">Em Andamento</option>
-                          <option value="completed">Concluído</option>
-                          <option value="cancelled">Cancelado</option>
-                        </select>
-                        <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                          <div className={`
-                            ${formData.status === 'pending' ? 'text-amber-500' : ''}
-                            ${formData.status === 'in_progress' ? 'text-blue-500' : ''}
-                            ${formData.status === 'completed' ? 'text-emerald-500' : ''}
-                            ${formData.status === 'cancelled' ? 'text-red-500' : ''}
-                          `}>
-                            {formData.status === 'pending' && <StatusIcons.pending />}
-                            {formData.status === 'in_progress' && <StatusIcons.in_progress />}
-                            {formData.status === 'completed' && <StatusIcons.completed />}
-                            {formData.status === 'cancelled' && <StatusIcons.cancelled />}
+            {/* CONTENT */}
+            <div className="flex-1 overflow-y-auto p-6 relative" style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.4) 100%)' }}>
+              <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.3) 100%)' }} />
+              
+              <AnimatePresence mode="wait">
+                {/* CLIENT SECTION */}
+                {activeSection === 'client' && (
+                  <motion.div key="client" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="space-y-5 relative">
+                    {isLoadingClient && <div className="flex items-center justify-center py-8"><Icons.Loader className="w-6 h-6" style={{ color: 'var(--brand-accent)' }} /></div>}
+                    
+                    <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                          <Icons.Client className="w-5 h-5" style={{ color: '#FFFFFF' }} />
+                        </div>
+                        <div>
+                          <p className="text-lg font-semibold" style={{ color: 'var(--brand-text)' }}>{formData.clientName || 'Cliente não identificado'}</p>
+                          <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>{clientData?.personType === 'juridica' ? 'Pessoa Jurídica' : 'Pessoa Física'}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-3 mt-4">
+                        {(clientData?.cpf || clientData?.cnpj) && (
+                          <div className="flex items-center gap-2 p-2.5 rounded-lg" style={{ background: 'rgba(255,255,255,0.03)' }}>
+                            <Icons.Document className="w-4 h-4 flex-shrink-0" style={{ color: '#FFFFFF' }} />
+                            <div>
+                              <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--brand-text-muted)' }}>{clientData?.cnpj ? 'CNPJ' : 'CPF'}</p>
+                              <p className="text-sm font-mono" style={{ color: 'var(--brand-text)' }}>{clientData?.cnpj ? formatCNPJDisplay(clientData.cnpj) : formatCPFDisplay(clientData?.cpf)}</p>
+                            </div>
+                          </div>
+                        )}
+                        {clientData?.birthDate && (
+                          <div className="flex items-center gap-2 p-2.5 rounded-lg" style={{ background: 'rgba(255,255,255,0.03)' }}>
+                            <Icons.Cake className="w-4 h-4 flex-shrink-0" style={{ color: '#FFFFFF' }} />
+                            <div>
+                              <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--brand-text-muted)' }}>Nascimento</p>
+                              <p className="text-sm" style={{ color: 'var(--brand-text)' }}>{formatBirthDateDisplay(clientData.birthDate)}</p>
+                            </div>
+                          </div>
+                        )}
+                        {clientData?.razaoSocial && (
+                          <div className="flex items-center gap-2 p-2.5 rounded-lg col-span-2" style={{ background: 'rgba(255,255,255,0.03)' }}>
+                            <Icons.Building className="w-4 h-4 flex-shrink-0" style={{ color: '#FFFFFF' }} />
+                            <div>
+                              <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--brand-text-muted)' }}>Razão Social</p>
+                              <p className="text-sm" style={{ color: 'var(--brand-text)' }}>{clientData.razaoSocial}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {(clientData?.address || clientData?.city) && (
+                        <div className="flex items-start gap-2 p-2.5 rounded-lg mt-3" style={{ background: 'rgba(255,255,255,0.03)' }}>
+                          <Icons.MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#FFFFFF' }} />
+                          <div>
+                            <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--brand-text-muted)' }}>Endereço</p>
+                            <p className="text-sm" style={{ color: 'var(--brand-text)' }}>{formatAddressDisplay(clientData)}</p>
                           </div>
                         </div>
+                      )}
+                      {!clientData && !isLoadingClient && <p className="text-xs mt-2" style={{ color: 'var(--brand-text-muted)' }}>Cliente não encontrado no cadastro.</p>}
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-xs font-medium px-2 py-1 rounded-md" style={{ background: 'var(--brand-accent)', color: '#FFFFFF' }}>Editável</span>
+                        <span className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Apenas telefone e email podem ser alterados</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium" style={{ color: 'var(--brand-text)' }}>Telefone</label>
+                          <div className="relative">
+                            <Icons.Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#FFFFFF' }} />
+                            <input type="tel" value={formData.clientPhone} onChange={e => handleChange('clientPhone', formatPhone(e.target.value))}
+                              className="w-full pl-12 pr-4 py-3.5 rounded-xl border outline-none transition-all"
+                              style={{ background: 'var(--brand-card-bg)', borderColor: 'var(--brand-border)', color: 'var(--brand-text)' }}
+                              placeholder="(00) 00000-0000" maxLength={15} />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium" style={{ color: 'var(--brand-text)' }}>Email</label>
+                          <div className="relative">
+                            <Icons.Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#FFFFFF' }} />
+                            <input type="email" value={formData.clientEmail} onChange={e => handleChange('clientEmail', e.target.value)}
+                              className="w-full pl-12 pr-4 py-3.5 rounded-xl border outline-none transition-all"
+                              style={{ background: 'var(--brand-card-bg)', borderColor: 'var(--brand-border)', color: 'var(--brand-text)' }}
+                              placeholder="email@exemplo.com" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* VEHICLE SECTION */}
+                {activeSection === 'vehicle' && (
+                  <motion.div key="vehicle" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="space-y-5 relative">
+                    <div className="flex justify-center">
+                      <div className="px-8 py-4 rounded-lg text-center" style={{ background: '#FFFFFF', border: '3px solid #1a1a1a', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}>
+                        <p className="text-3xl font-bold font-mono tracking-[0.4em] text-gray-900">{formData.vehiclePlate || 'ABC1D23'}</p>
+                        <p className="text-[10px] text-gray-500 mt-1 tracking-wider">BRASIL</p>
                       </div>
                     </div>
                     
-                    <div className="space-y-3">
-                      <label className="text-xs font-medium text-purple-600 dark:text-purple-400 uppercase tracking-wide flex items-center gap-1">
-                        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M12 2L2 22H22L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
-                          <path d="M12 9V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          <circle cx="12" cy="17" r="1" fill="currentColor"/>
-                        </svg>
-                        Prioridade
-                      </label>
+                    <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+                      <div className="flex items-center gap-2 mb-4">
+                        <Icons.Lock className="w-4 h-4" style={{ color: 'var(--brand-text-muted)' }} />
+                        <span className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Dados do veículo não podem ser alterados</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1"><p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--brand-text-muted)' }}>Marca</p><p className="text-base font-medium" style={{ color: 'var(--brand-text)' }}>{formData.vehicleBrand || '-'}</p></div>
+                        <div className="space-y-1"><p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--brand-text-muted)' }}>Modelo</p><p className="text-base font-medium" style={{ color: 'var(--brand-text)' }}>{formData.vehicleModel || '-'}</p></div>
+                        <div className="space-y-1"><p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--brand-text-muted)' }}>Ano</p><p className="text-base font-medium" style={{ color: 'var(--brand-text)' }}>{formData.vehicleYear || '-'}</p></div>
+                        <div className="space-y-1"><p className="text-[10px] uppercase tracking-wider flex items-center gap-1" style={{ color: 'var(--brand-text-muted)' }}><Icons.Palette className="w-3 h-3" /> Cor</p><p className="text-base font-medium" style={{ color: 'var(--brand-text)' }}>{formData.vehicleColor || '-'}</p></div>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xs font-medium px-2 py-1 rounded-md" style={{ background: 'var(--brand-accent)', color: '#FFFFFF' }}>Editável</span>
+                        <span className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Atualize a quilometragem atual</span>
+                      </div>
+                      <label className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--brand-text)' }}><Icons.Odometer className="w-4 h-4" style={{ color: '#FFFFFF' }} /> Quilometragem (KM)</label>
                       <div className="relative">
-                        <select
-                          value={formData.priority}
-                          onChange={(e) => {
-                            handleChange('priority', e.target.value);
-                            setHasChanges(true);
-                          }}
-                          className="w-full px-4 py-3 pl-11 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all appearance-none cursor-pointer font-medium"
-                          style={{
-                            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
-                            backgroundRepeat: 'no-repeat',
-                            backgroundPosition: 'right 0.75rem center',
-                            backgroundSize: '1.25rem'
-                          }}
-                        >
-                          <option value="low">Baixa</option>
-                          <option value="normal">Normal</option>
-                          <option value="high">Alta</option>
-                          <option value="urgent">Urgente</option>
-                        </select>
-                        <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                          <div className={`
-                            ${formData.priority === 'low' ? 'text-gray-400' : ''}
-                            ${formData.priority === 'normal' ? 'text-blue-500' : ''}
-                            ${formData.priority === 'high' ? 'text-orange-500' : ''}
-                            ${formData.priority === 'urgent' ? 'text-red-500' : ''}
-                          `}>
-                            {formData.priority === 'low' && <PriorityIcons.low />}
-                            {formData.priority === 'normal' && <PriorityIcons.normal />}
-                            {formData.priority === 'high' && <PriorityIcons.high />}
-                            {formData.priority === 'urgent' && <PriorityIcons.urgent />}
+                        <input type="text" value={formData.vehicleKm} onChange={e => handleChange('vehicleKm', e.target.value.replace(/\D/g, ''))}
+                          className="w-full px-4 py-4 rounded-xl border outline-none text-xl font-mono text-center"
+                          style={{ background: 'var(--brand-card-bg)', borderColor: 'var(--brand-border)', color: 'var(--brand-text)' }} placeholder="50000" />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm" style={{ color: 'var(--brand-text-muted)' }}>km</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* SERVICES SECTION */}
+                {activeSection === 'service' && (
+                  <motion.div key="service" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="space-y-6 relative">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm" style={{ color: 'var(--brand-text-muted)' }}>Selecione os serviços</p>
+                      <span className="px-3 py-1 rounded-full text-xs font-medium" style={{ background: formData.services.length > 0 ? 'var(--brand-accent)' : 'var(--brand-card-bg)', color: '#FFFFFF' }}>
+                        {formData.services.length} selecionado{formData.services.length !== 1 ? 's' : ''}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      {COMMON_SERVICES.map((service) => {
+                        const isSelected = formData.services.includes(service.name);
+                        return (
+                          <motion.button key={service.name} type="button" onClick={() => handleServiceToggle(service.name)} whileTap={{ scale: 0.98 }}
+                            className="relative px-4 py-3 rounded-xl text-sm font-medium transition-all border text-left"
+                            style={{ background: isSelected ? 'var(--brand-accent)' : 'var(--brand-card-bg)', borderColor: isSelected ? 'var(--brand-accent)' : 'var(--brand-border)', color: isSelected ? '#FFFFFF' : 'var(--brand-text)' }}>
+                            <span className="block truncate">{service.name}</span>
+                            <span className="text-xs" style={{ opacity: 0.7 }}>{service.category}</span>
+                            {isSelected && <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-2 right-2"><Icons.Check className="w-4 h-4" /></motion.div>}
+                          </motion.button>
+                        );
+                      })}
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--brand-text)' }}><Icons.Notes className="w-4 h-4" /> Observações</label>
+                      <textarea value={formData.notes} onChange={e => handleChange('notes', e.target.value)} rows={3}
+                        className="w-full px-4 py-3 rounded-xl border outline-none resize-none"
+                        style={{ background: 'var(--brand-card-bg)', borderColor: 'var(--brand-border)', color: 'var(--brand-text)' }} placeholder="Problemas relatados..." />
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* STATUS SECTION */}
+                {activeSection === 'status' && (
+                  <motion.div key="status" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="space-y-6 relative">
+                    <div className="space-y-3">
+                      <label className="text-sm font-medium" style={{ color: 'var(--brand-text)' }}>Status do Atendimento</label>
+                      <div className="grid grid-cols-2 gap-3">
+                        {STATUS_OPTIONS.map((option) => {
+                          const isSelected = formData.status === option.value;
+                          return (
+                            <motion.button key={option.value} type="button" onClick={() => handleChange('status', option.value)} whileTap={{ scale: 0.99 }}
+                              className="relative p-4 rounded-xl text-left transition-all border"
+                              style={{ background: isSelected ? 'var(--brand-accent)' : 'var(--brand-card-bg)', borderColor: isSelected ? 'var(--brand-accent)' : 'var(--brand-border)', color: isSelected ? '#FFFFFF' : 'var(--brand-text)' }}>
+                              <p className="text-sm font-semibold">{option.label}</p>
+                              <p className="text-xs mt-0.5" style={{ opacity: 0.7 }}>{option.description}</p>
+                              {isSelected && <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-3 right-3"><Icons.Check className="w-5 h-5" /></motion.div>}
+                            </motion.button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--brand-text)' }}><Icons.Flag className="w-4 h-4" /> Prioridade</label>
+                      <div className="flex gap-2">
+                        {PRIORITY_OPTIONS.map((option) => {
+                          const isSelected = formData.priority === option.value;
+                          return (
+                            <motion.button key={option.value} type="button" onClick={() => handleChange('priority', option.value)} whileTap={{ scale: 0.98 }}
+                              className="flex-1 px-4 py-3 rounded-xl text-sm font-medium transition-all border"
+                              style={{ background: isSelected ? 'var(--brand-accent)' : 'var(--brand-card-bg)', borderColor: isSelected ? 'var(--brand-accent)' : 'var(--brand-border)', color: isSelected ? '#FFFFFF' : 'var(--brand-text)' }}>
+                              {option.label}
+                            </motion.button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--brand-text)' }}><Icons.Calendar className="w-4 h-4" style={{ color: '#FFFFFF' }} /> Previsão de Conclusão</label>
+                      <DatePickerBrand value={formData.estimatedCompletion} onChange={(date) => handleChange('estimatedCompletion', date)} />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* FOOTER */}
+            <div className="px-6 py-4 flex items-center justify-between flex-shrink-0" style={{ background: 'var(--brand-header-bg)', borderTop: '1px solid var(--brand-border)' }}>
+              <div className="flex items-center gap-3">
+                <motion.button onClick={() => setShowDeleteConfirm(true)} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all"
+                  style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#EF4444' }}>
+                  <Icons.Close className="w-4 h-4" />Cancelar Check-in
+                </motion.button>
+                {hasChanges && (
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-2 px-3 py-1.5 rounded-lg" style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#FBBF24' }}>
+                    <Icons.AlertCircle className="w-4 h-4" /><span className="text-xs font-medium">Alterações não salvas</span>
+                  </motion.div>
+                )}
+              </div>
+              <div className="flex items-center gap-3">
+                <button onClick={onClose} className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all" style={{ background: 'var(--brand-card-bg)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }}>Fechar</button>
+                <motion.button onClick={handleSave} disabled={isLoading || !hasChanges} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ background: 'var(--brand-accent)', color: '#FFFFFF' }}>
+                  {isLoading ? <><Icons.Loader className="w-4 h-4" />Salvando...</> : <><Icons.Save className="w-4 h-4" />Salvar Alterações</>}
+                </motion.button>
+              </div>
+            </div>
+
+            {/* ===== MODAL DE CANCELAMENTO - HORIZONTAL COM BLUR E BRAND COLORS ===== */}
+            <AnimatePresence>
+              {showDeleteConfirm && (
+                <div
+                  className="absolute inset-0 z-50 flex items-center justify-center p-4"
+                  onClick={() => { setShowDeleteConfirm(false); setCancelReason(''); setCustomReason(''); }}
+                >
+                  {/* Fundo com blur - aparece instantaneamente */}
+                  <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }} />
+                  
+                  {/* Modal Horizontal - só ele anima */}
+                  <motion.div
+                    initial={{ scale: 0.95, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.95, opacity: 0 }}
+                    transition={{ duration: 0.15, ease: 'easeOut' }}
+                    onClick={e => e.stopPropagation()}
+                    className="relative w-full max-w-[800px] rounded-2xl overflow-hidden flex"
+                    style={{ background: 'var(--brand-modal-bg)', boxShadow: '0 0 0 1px var(--brand-border), 0 25px 60px rgba(0,0,0,0.5), 0 0 100px var(--brand-glow)' }}
+                  >
+                    {/* Linha de energia superior */}
+                    <motion.div className="absolute top-0 left-0 right-0 h-[2px]" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: 0.05, duration: 0.3 }}
+                      style={{ background: 'linear-gradient(90deg, var(--brand-accent) 0%, transparent 70%)', transformOrigin: 'left' }} />
+
+                    {/* LADO ESQUERDO - Info do Veículo */}
+                    <div className="w-[260px] flex-shrink-0 p-6 flex flex-col items-center" style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 100%)', borderRight: '1px solid var(--brand-border)' }}>
+                      {/* Logo da marca - maior e mais destacado */}
+                      <div className="mb-5">
+                        {logoUrl ? (
+                          <img src={logoUrl} alt={effectiveBrand} className={`${isSmallLogo ? 'h-10' : isLargeLogo ? 'h-14' : 'h-12'} w-auto object-contain`}
+                            style={{ maxWidth: '140px', filter: isColoredLogo ? 'none' : 'brightness(0) invert(1)' }} />
+                        ) : (
+                          <span className="text-2xl font-bold tracking-tight" style={{ color: 'var(--brand-accent)' }}>{(effectiveBrand || 'VEÍCULO').toUpperCase()}</span>
+                        )}
+                      </div>
+                      
+                      {/* Placa estilo brasileiro Mercosul - Premium */}
+                      <div className="mb-5">
+                        <div className="px-5 py-2.5 rounded-lg relative overflow-hidden" style={{ background: 'linear-gradient(180deg, #FFFFFF 0%, #F0F0F0 100%)', boxShadow: '0 6px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,1)' }}>
+                          <div className="absolute top-0 left-0 right-0 h-[6px] flex items-center justify-center" style={{ background: 'linear-gradient(90deg, #002776 0%, #003399 50%, #002776 100%)' }}>
+                            <span className="text-[5px] font-bold text-white tracking-widest">BRASIL</span>
+                          </div>
+                          <p className="text-lg font-black font-mono tracking-[0.25em] text-gray-900 mt-1">{checkinData?.vehiclePlate}</p>
+                        </div>
+                      </div>
+                      
+                      {/* Info do veículo - Formatado corretamente */}
+                      <div className="text-center mb-5 px-2">
+                        <p className="text-base font-semibold leading-tight" style={{ color: 'var(--brand-text)' }}>
+                          {formatVehicleDisplay(checkinData?.vehicleBrand, checkinData?.vehicleModel)}
+                        </p>
+                        {checkinData?.vehicleYear && (
+                          <p className="text-sm mt-1.5 font-medium" style={{ color: 'var(--brand-accent)' }}>{checkinData.vehicleYear}</p>
+                        )}
+                        {checkinData?.vehicleColor && (
+                          <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>{checkinData.vehicleColor}</p>
+                        )}
+                      </div>
+                      
+                      {/* Separador elegante */}
+                      <div className="w-12 h-px mb-5" style={{ background: 'linear-gradient(90deg, transparent, var(--brand-border), transparent)' }} />
+                      
+                      {/* Cliente - Card mais elegante */}
+                      <div className="w-full p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--brand-accent)', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
+                            <Icons.Client className="w-4 h-4" style={{ color: '#FFFFFF' }} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--brand-text-muted)' }}>Cliente</p>
+                            <p className="text-sm font-medium truncate" style={{ color: 'var(--brand-text)' }}>{checkinData?.clientName}</p>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
 
-                <div className="space-y-3">
-                  <label className="text-xs font-medium text-purple-600 dark:text-purple-400 uppercase tracking-wide">
-                    Observações Adicionais
-                  </label>
-                  <textarea
-                    value={formData.observations}
-                    onChange={(e) => {
-                      handleChange('observations', e.target.value);
-                      setHasChanges(true);
-                    }}
-                    rows={3}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all resize-none"
-                    placeholder="Observações, detalhes importantes, condições especiais..."
-                  />
+                    {/* LADO DIREITO - Formulário */}
+                    <div className="flex-1 flex flex-col">
+                      {/* Header */}
+                      <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--brand-border)' }}>
+                        <div className="flex items-center gap-3">
+                          <motion.div className="w-9 h-9 rounded-xl flex items-center justify-center" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', damping: 15, delay: 0.1 }}
+                            style={{ background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                            <Icons.Warning className="w-4 h-4" style={{ color: '#EF4444' }} />
+                          </motion.div>
+                          <div>
+                            <h3 className="text-sm font-bold" style={{ color: 'var(--brand-text)' }}>Cancelar Check-in</h3>
+                            <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Selecione o motivo</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Motivos em Grid */}
+                      <div className="flex-1 p-4 overflow-y-auto">
+                        <div className="grid grid-cols-2 gap-1.5">
+                          {CANCEL_REASONS.map((reason, index) => {
+                            const isSelected = cancelReason === reason.value;
+                            return (
+                              <motion.button key={reason.value} type="button"
+                                onClick={() => { setCancelReason(reason.value); if (reason.value !== 'outro') setCustomReason(''); }}
+                                initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 + index * 0.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="relative p-2.5 rounded-lg text-left transition-all"
+                                style={{ background: isSelected ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.02)', border: `1px solid ${isSelected ? 'rgba(239,68,68,0.3)' : 'var(--brand-border)'}` }}>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 rounded-full flex items-center justify-center flex-shrink-0"
+                                    style={{ background: isSelected ? '#EF4444' : 'transparent', border: `2px solid ${isSelected ? '#EF4444' : 'rgba(255,255,255,0.2)'}`, boxShadow: isSelected ? '0 0 6px rgba(239,68,68,0.4)' : 'none' }}>
+                                    {isSelected && <div className="w-1 h-1 rounded-full bg-white" />}
+                                  </div>
+                                  <span className="text-[11px] font-medium" style={{ color: isSelected ? '#FFFFFF' : 'var(--brand-text-muted)' }}>{reason.label}</span>
+                                </div>
+                              </motion.button>
+                            );
+                          })}
+                        </div>
+                        
+                        {/* Campo para outro motivo */}
+                        <AnimatePresence>
+                          {cancelReason === 'outro' && (
+                            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mt-3 overflow-hidden">
+                              <textarea value={customReason} onChange={(e) => setCustomReason(e.target.value)} placeholder="Descreva o motivo..." rows={2}
+                                className="w-full px-3 py-2 rounded-lg border outline-none resize-none text-xs"
+                                style={{ background: 'rgba(255,255,255,0.03)', borderColor: customReason ? 'rgba(239,68,68,0.3)' : 'var(--brand-border)', color: 'var(--brand-text)' }} />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                      
+                      {/* Footer */}
+                      <div className="px-4 py-3 flex items-center gap-3" style={{ background: 'rgba(0,0,0,0.2)', borderTop: '1px solid var(--brand-border)' }}>
+                        <div className="flex-1 flex items-center gap-1.5">
+                          <Icons.AlertCircle className="w-3 h-3" style={{ color: 'var(--brand-text-muted)' }} />
+                          <p className="text-[10px]" style={{ color: 'var(--brand-text-muted)' }}>Check-in será marcado como cancelado</p>
+                        </div>
+                        <motion.button onClick={() => { setShowDeleteConfirm(false); setCancelReason(''); setCustomReason(''); }} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                          className="px-4 py-2 rounded-lg text-xs font-medium" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }}>Voltar</motion.button>
+                        <motion.button onClick={handleDelete} disabled={isDeleting || !cancelReason || (cancelReason === 'outro' && !customReason.trim())}
+                          whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                          className="px-5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed"
+                          style={{ background: cancelReason ? 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)' : 'rgba(239,68,68,0.15)', boxShadow: cancelReason ? '0 4px 12px rgba(239, 68, 68, 0.3)' : 'none', color: '#FFFFFF' }}>
+                          {isDeleting ? <><Icons.Loader className="w-3 h-3 animate-spin" /><span>Cancelando...</span></> : <><Icons.Close className="w-3 h-3" /><span>Confirmar</span></>}
+                        </motion.button>
+                      </div>
+                    </div>
+                  </motion.div>
                 </div>
-              </motion.div>
-            </form>
-          </div>
-
-          {/* Footer - Apple-like */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 md:px-8 py-4 sm:py-5 border-t border-gray-200/50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-900/50 backdrop-blur-sm">
-            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 w-full sm:w-auto justify-center sm:justify-start">
-              <Clock className="w-3 h-3 flex-shrink-0" />
-              <span className="truncate">
-                {checkinData?.updatedAt 
-                  ? `Última atualização: ${new Date(checkinData.updatedAt).toLocaleString('pt-BR')}`
-                  : 'Novo registro'
-                }
-              </span>
-            </div>
-            
-            <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                type="button"
-                onClick={onClose}
-                className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all font-medium text-sm sm:text-base"
-              >
-                Cancelar
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleSubmit}
-                disabled={isLoading}
-                className="flex-1 sm:flex-none px-4 sm:px-8 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 text-sm sm:text-base"
-              >
-                {isLoading ? (
-                  <>
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/30 border-t-white rounded-full"
-                    />
-                    <span className="hidden sm:inline">Salvando...</span>
-                    <span className="sm:hidden">Salvando</span>
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="hidden sm:inline">Salvar Alterações</span>
-                    <span className="sm:hidden">Salvar</span>
-                  </>
-                )}
-              </motion.button>
-            </div>
-          </div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </motion.div>
-      </div>
-    </AnimatePresence>
+      )}
+    </AnimatePresence>,
+    document.body
   );
 };
 

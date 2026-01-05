@@ -1,15 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Plus } from 'lucide-react';
 import { useBudgetStore } from '../store/budgetStore';
-import BudgetModal from './budgets/components/BudgetModalPremium';
 import BudgetCard from './budgets/components/BudgetCard';
 import BudgetFilters from './budgets/components/BudgetFilters';
 import BudgetStats from './budgets/components/BudgetStats';
 import SendBudgetModal from './budgets/components/SendBudgetModal';
 import CheckinFromBudgetModal from './budgets/components/CheckinFromBudgetModal';
 import './budgets/BudgetsPage.css';
+
+// Lazy load new budget modals
+const CreateBudgetRoute = lazy(() => import('../features/budget/routes/create').then(m => ({ default: m.CreateBudgetRoute })));
+const EditBudgetRoute = lazy(() => import('../features/budget/routes/edit').then(m => ({ default: m.EditBudgetRoute })));
 
 const BudgetsPage = () => {
   const budgetStore = useBudgetStore();
@@ -208,14 +211,37 @@ const BudgetsPage = () => {
         </div>
 
         {/* Modals */}
-        <BudgetModal
-          isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            setSelectedBudget(null);
-          }}
-          budget={selectedBudget}
-        />
+        <Suspense fallback={null}>
+          {isModalOpen && !selectedBudget && (
+            <CreateBudgetRoute
+              isOpen={isModalOpen}
+              onClose={() => {
+                setIsModalOpen(false);
+                setSelectedBudget(null);
+              }}
+              onSuccess={() => {
+                setIsModalOpen(false);
+                setSelectedBudget(null);
+                fetchBudgets();
+              }}
+            />
+          )}
+          {isModalOpen && selectedBudget && (
+            <EditBudgetRoute
+              isOpen={isModalOpen}
+              onClose={() => {
+                setIsModalOpen(false);
+                setSelectedBudget(null);
+              }}
+              onSuccess={() => {
+                setIsModalOpen(false);
+                setSelectedBudget(null);
+                fetchBudgets();
+              }}
+              budgetId={selectedBudget.id || selectedBudget.firestoreId}
+            />
+          )}
+        </Suspense>
 
         <SendBudgetModal
           isOpen={isSendModalOpen}

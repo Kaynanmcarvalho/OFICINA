@@ -138,13 +138,16 @@ async function scrapeKeplaca(plate) {
             const bodyText = document.body.innerText;
             
             // Debug: captura trecho relevante do texto
-            const corIndex = bodyText.indexOf('Cor:');
-            if (corIndex !== -1) {
-                result._debug = bodyText.substring(corIndex, corIndex + 100);
+            const marcaIndex = bodyText.indexOf('Marca:');
+            if (marcaIndex !== -1) {
+                result._debug = bodyText.substring(marcaIndex, marcaIndex + 200);
             }
             
-            // Extrai Marca
-            const marcaMatch = bodyText.match(/Marca:\s*([A-Z\/\s]+?)(?=\s*Modelo:|$)/i);
+            // Extrai Marca - regex mais preciso, para antes de quebra de linha ou "Modelo:"
+            let marcaMatch = bodyText.match(/Marca:\s*([^\n\r]+?)(?=\s*Modelo:)/i);
+            if (!marcaMatch) {
+                marcaMatch = bodyText.match(/Marca:\s*([A-Z][A-Za-z\s\/\-]+?)[\n\r]/i);
+            }
             if (marcaMatch) result.marca = marcaMatch[1].trim();
             
             // Extrai Modelo
@@ -198,9 +201,9 @@ async function scrapeKeplaca(plate) {
         await page.close();
         page = null;
 
-        // Debug: mostra trecho do texto onde está a cor
+        // Debug: mostra trecho do texto onde está a marca
         if (data._debug) {
-            console.log('[KEPLACA] 🔍 Debug Cor:', data._debug);
+            console.log('[KEPLACA] 🔍 Debug Marca:', data._debug);
         }
         
         // Verifica se encontrou dados

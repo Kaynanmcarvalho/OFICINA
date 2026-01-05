@@ -4,6 +4,9 @@ import { useThemeStore } from '../../store/index.jsx';
 import LogoSVG from './LogoSVG';
 import styles from './Logo.module.css';
 
+// Logo personalizada para tema escuro
+const DARK_MODE_LOGO = '/logos/torq-dark.png';
+
 /**
  * Logo Component - Sistema de Logo Dinâmico
  * 
@@ -85,9 +88,9 @@ const Logo = ({
   // Calcular dimensões baseado no tamanho
   const dimensions = useMemo(() => {
     const sizes = {
-      small: { width: 120, height: 36 },
-      medium: { width: 160, height: 48 },
-      large: { width: 200, height: 60 },
+      small: { width: 140, height: 42 },
+      medium: { width: 180, height: 54 },
+      large: { width: 220, height: 66 },
       auto: { width: undefined, height: undefined },
     };
     return sizes[size] || sizes.medium;
@@ -128,12 +131,84 @@ const Logo = ({
       aria-busy={isLoading}
       aria-disabled={hasError}
     >
-      <LogoSVG
-        theme={currentTheme}
-        width={dimensions.width}
-        height={dimensions.height}
-        className={styles.logoSvg}
-      />
+      {isDarkMode ? (
+        <div
+          style={{
+            width: dimensions.width * 2.2,
+            height: dimensions.height * 1.5,
+            overflow: 'hidden',
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'center',
+            isolation: 'isolate',
+            position: 'relative',
+          }}
+        >
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundColor: 'rgb(18, 18, 20)',
+              zIndex: 0,
+            }}
+          />
+          <img
+            src={DARK_MODE_LOGO}
+            alt="TORQ"
+            style={{
+              width: dimensions.width * 3,
+              height: 'auto',
+              objectFit: 'cover',
+              objectPosition: 'center top',
+              transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+              clipPath: 'inset(15% 10% 35% 10%)',
+              transform: 'scale(1.4)',
+              position: 'relative',
+              zIndex: 1,
+              mixBlendMode: 'lighten',
+            }}
+          />
+        </div>
+      ) : (
+        <div
+          style={{
+            width: dimensions.width * 2.2,
+            height: dimensions.height * 1.5,
+            overflow: 'hidden',
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'center',
+            isolation: 'isolate',
+            position: 'relative',
+          }}
+        >
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundColor: 'rgb(255, 255, 255)',
+              zIndex: 0,
+            }}
+          />
+          <img
+            src={DARK_MODE_LOGO}
+            alt="TORQ"
+            style={{
+              width: dimensions.width * 3,
+              height: 'auto',
+              objectFit: 'cover',
+              objectPosition: 'center top',
+              transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+              clipPath: 'inset(15% 10% 35% 10%)',
+              transform: 'scale(1.4)',
+              position: 'relative',
+              zIndex: 1,
+              mixBlendMode: 'darken',
+              filter: 'invert(1) hue-rotate(180deg)',
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };

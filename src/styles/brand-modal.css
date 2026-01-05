@@ -1,0 +1,1594 @@
+/**
+ * TORQ Brand Design System - CSS PREMIUM
+ * Sistema visual unificado para cards e modais
+ * A marca é SENTIDA, não EXIBIDA
+ * Janeiro 2026
+ */
+
+/* ============================================================================
+   CSS VARIABLES - Base Premium Neutra
+   ============================================================================ */
+:root {
+  /* Fundos neutros premium */
+  --bg-primary: #0D0D0F;
+  --bg-secondary: #141417;
+  --bg-tertiary: #1A1A1E;
+  --bg-elevated: #1F1F24;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  
+  /* Textos */
+  --text-primary: #F5F5F7;
+  --text-secondary: rgba(245, 245, 247, 0.7);
+  --text-muted: rgba(245, 245, 247, 0.5);
+  
+  /* Bordas */
+  --border-default: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
+  
+  /* Brand tokens default */
+  --brand-accent: #6B7280;
+  --brand-accent-muted: rgb(150, 153, 158);
+  --brand-surface-soft: rgba(107, 114, 128, 0.05);
+  --brand-surface-deep: rgba(107, 114, 128, 0.09);
+  --brand-divider: rgba(107, 114, 128, 0.15);
+  --brand-focus-ring: rgba(107, 114, 128, 0.35);
+  --brand-glow: rgba(107, 114, 128, 0.12);
+  --brand-border: rgba(107, 114, 128, 0.20);
+}
+
+/* ============================================================================
+   CARD HOVER - MODO LISTA (PRIORIDADE ALTA)
+   ============================================================================ */
+
+/* Card base */
+.brand-card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  transition: 
+    background-color 200ms ease-out,
+    border-color 200ms ease-out,
+    transform 200ms ease-out;
+}
+
+/* Linha de energia lateral - invisível por padrão */
+.brand-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: 12px 0 0 12px;
+  background: var(--brand-energy-line, var(--brand-accent));
+  opacity: 0;
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: 
+    opacity 200ms ease-out,
+    transform 200ms ease-out;
+}
+
+/* HOVER - Ativação elegante */
+.brand-card:hover {
+  background: var(--brand-surface-soft);
+  border-color: var(--brand-border);
+}
+
+/* Linha de energia aparece no hover */
+.brand-card:hover::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+/* Logo glow sutil no hover */
+.brand-card:hover .brand-card__logo {
+  filter: drop-shadow(0 0 8px var(--brand-glow));
+}
+
+/* Ícones recebem cor muted no hover */
+.brand-card:hover .brand-card__icon {
+  color: var(--brand-accent-muted);
+}
+
+/* ============================================================================
+   MODAL - CONTINUIDADE VISUAL
+   ============================================================================ */
+
+/* Overlay */
+.brand-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: modalOverlayFadeIn 250ms ease-out;
+}
+
+@keyframes modalOverlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Container do modal */
+.brand-modal-container {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  background: var(--bg-secondary);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 
+    0 0 0 1px var(--border-default),
+    var(--shadow-lg),
+    0 0 60px var(--brand-glow);
+  animation: modalSlideIn 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Vinheta atmosférica */
+.brand-modal-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--vignette, radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.3) 100%));
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Linha de energia superior - assinatura da marca */
+.brand-modal-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--brand-accent) 0%, transparent 60%);
+  opacity: 0.8;
+  z-index: 2;
+  animation: energyLineReveal 400ms cubic-bezier(0.16, 1, 0.3, 1) 100ms both;
+}
+
+@keyframes energyLineReveal {
+  from {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  to {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+/* ============================================================================
+   MODAL HEADER
+   ============================================================================ */
+.brand-modal-header {
+  position: relative;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--brand-divider);
+  background: var(--brand-surface-soft);
+  z-index: 2;
+}
+
+/* ============================================================================
+   MODAL TABS - Abas premium
+   ============================================================================ */
+.brand-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--bg-card);
+  border-radius: 12px;
+}
+
+.brand-tab {
+  position: relative;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: 
+    color 180ms ease-out,
+    background-color 180ms ease-out;
+}
+
+.brand-tab:hover:not(.brand-tab--active) {
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Aba ativa - texto com cor da marca, indicador inferior */
+.brand-tab--active {
+  color: var(--brand-accent);
+  background: var(--brand-surface-soft);
+}
+
+.brand-tab--active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 2px;
+  background: var(--brand-accent);
+  border-radius: 1px;
+}
+
+/* Transição de conteúdo */
+.brand-tab-content {
+  animation: tabContentFade 180ms ease-out;
+}
+
+@keyframes tabContentFade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================================
+   MODAL CONTENT
+   ============================================================================ */
+.brand-modal-content {
+  position: relative;
+  padding: 24px;
+  overflow-y: auto;
+  max-height: calc(90vh - 180px);
+  z-index: 2;
+}
+
+/* Cards internos - cinza claro premium, NUNCA branco puro */
+.brand-modal-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--brand-divider);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 180ms ease-out;
+}
+
+.brand-modal-card:hover {
+  border-color: var(--brand-border);
+}
+
+/* Dividers internos */
+.brand-modal-divider {
+  height: 1px;
+  background: var(--brand-divider);
+  margin: 16px 0;
+}
+
+/* ============================================================================
+   BOTÕES
+   ============================================================================ */
+
+/* Botão primário - fundo neutro escuro, borda/highlight com brand */
+.brand-btn-primary {
+  position: relative;
+  padding: 12px 24px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--brand-border);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: 
+    background-color 180ms ease-out,
+    border-color 180ms ease-out,
+    transform 180ms ease-out,
+    box-shadow 180ms ease-out;
+}
+
+.brand-btn-primary:hover {
+  background: var(--bg-elevated);
+  border-color: var(--brand-accent);
+  transform: translateY(-1px);
+  box-shadow: 
+    var(--shadow-md),
+    0 0 20px var(--brand-glow);
+}
+
+.brand-btn-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Botão secundário - monocromático */
+.brand-btn-secondary {
+  padding: 12px 24px;
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 
+    background-color 180ms ease-out,
+    border-color 180ms ease-out,
+    color 180ms ease-out;
+}
+
+.brand-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--border-default);
+  color: var(--text-primary);
+}
+
+/* Focus ring com cor da marca */
+.brand-btn-primary:focus-visible,
+.brand-btn-secondary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--brand-focus-ring);
+}
+
+/* ============================================================================
+   MODAL FOOTER
+   ============================================================================ */
+.brand-modal-footer {
+  position: relative;
+  padding: 16px 24px;
+  border-top: 1px solid var(--brand-divider);
+  background: var(--brand-surface-soft);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  z-index: 2;
+}
+
+/* ============================================================================
+   INPUTS - Focus ring com cor da marca
+   ============================================================================ */
+.brand-input,
+.brand-textarea,
+.brand-select {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: 
+    border-color 180ms ease-out,
+    box-shadow 180ms ease-out;
+}
+
+.brand-input:focus,
+.brand-textarea:focus,
+.brand-select:focus {
+  outline: none;
+  border-color: var(--brand-accent);
+  box-shadow: 0 0 0 3px var(--brand-focus-ring);
+}
+
+.brand-input::placeholder,
+.brand-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* ============================================================================
+   UTILITIES
+   ============================================================================ */
+
+/* Texto com cor da marca - apenas para foco/estado/ação */
+.brand-text-accent {
+  color: var(--brand-accent);
+}
+
+/* Borda com cor da marca */
+.brand-border-accent {
+  border-color: var(--brand-border);
+}
+
+/* Glow sutil */
+.brand-glow {
+  box-shadow: 0 0 20px var(--brand-glow);
+}
+
+/* ============================================================================
+   LEGIBILIDADE - INVIOLÁVEL
+   ============================================================================ */
+
+/* Texto longo SEMPRE neutro */
+.brand-text-body {
+  color: var(--text-primary);
+}
+
+.brand-text-secondary {
+  color: var(--text-secondary);
+}
+
+/* Labels e captions */
+.brand-label {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================================================
+   PERFORMANCE - CSS PURO
+   ============================================================================ */
+
+/* Todas as transições usam apenas propriedades performáticas */
+.brand-transition-fast {
+  transition-duration: 150ms;
+}
+
+.brand-transition-normal {
+  transition-duration: 200ms;
+}
+
+.brand-transition-slow {
+  transition-duration: 300ms;
+}
+
+/* Timing functions */
+.brand-ease-out {
+  transition-timing-function: ease-out;
+}
+
+.brand-ease-spring {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+/* ============================================================================
+   BRAND THEME INPUTS - Estilos para inputs quando tema de marca está ativo
+   ============================================================================ */
+
+/* Placeholder com cor clara para inputs em tema escuro de marca */
+input[style*="--brand"]::placeholder,
+textarea[style*="--brand"]::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+  opacity: 1;
+}
+
+/* Inputs com tema de marca - garantir legibilidade */
+.brand-theme-input {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: var(--brand-border) !important;
+  color: var(--brand-text) !important;
+}
+
+.brand-theme-input::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.brand-theme-input:focus {
+  border-color: var(--brand-accent) !important;
+  box-shadow: 0 0 0 3px var(--brand-focus-ring) !important;
+}
+
+/* Cards internos com tema de marca */
+.brand-theme-card {
+  background: var(--brand-card-bg) !important;
+  border-color: var(--brand-border) !important;
+}
+
+/* Textos com tema de marca */
+.brand-theme-text {
+  color: var(--brand-text) !important;
+}
+
+.brand-theme-text-muted {
+  color: var(--brand-text-muted) !important;
+}
+
+/* Dropdown com tema de marca */
+.brand-theme-dropdown {
+  background: rgba(30, 30, 35, 0.98) !important;
+  backdrop-filter: blur(20px);
+  border-color: var(--brand-border) !important;
+}
+
+.brand-theme-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* ============================================================================
+   FORÇAR ESTILOS ESCUROS EM MODAIS COM TEMA DE MARCA
+   Usa classe .brand-theme-modal para targeting preciso
+   ALTA ESPECIFICIDADE para sobrescrever Tailwind
+   ============================================================================ */
+
+/* Modal container com tema de marca */
+.brand-theme-modal {
+  color-scheme: dark;
+}
+
+/* Inputs, textareas e selects dentro do modal com tema de marca */
+/* Usando múltiplos seletores para aumentar especificidade */
+.brand-theme-modal input,
+.brand-theme-modal textarea,
+.brand-theme-modal select,
+div.brand-theme-modal input,
+div.brand-theme-modal textarea,
+div.brand-theme-modal select {
+  background: rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #FFFFFF !important;
+  color-scheme: dark;
+}
+
+/* FORÇA MÁXIMA - Sobrescrever QUALQUER estilo de input */
+.brand-theme-modal input[class],
+.brand-theme-modal textarea[class],
+.brand-theme-modal select[class],
+.brand-theme-modal input[style],
+.brand-theme-modal textarea[style],
+.brand-theme-modal select[style] {
+  background: rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #FFFFFF !important;
+}
+
+/* Especificidade extra para inputs com classes Tailwind */
+.brand-theme-modal input.rounded-xl,
+.brand-theme-modal input.rounded-2xl,
+.brand-theme-modal textarea.rounded-xl,
+.brand-theme-modal textarea.rounded-2xl,
+.brand-theme-modal select.rounded-xl,
+.brand-theme-modal input.border-2,
+.brand-theme-modal textarea.border-2,
+.brand-theme-modal input.w-full,
+.brand-theme-modal textarea.w-full {
+  background: rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #FFFFFF !important;
+}
+
+/* Sobrescrever qualquer bg-white do Tailwind */
+.brand-theme-modal input.bg-white,
+.brand-theme-modal textarea.bg-white,
+.brand-theme-modal select.bg-white,
+.brand-theme-modal [class*="bg-white"] input,
+.brand-theme-modal [class*="bg-white"] textarea {
+  background: rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.brand-theme-modal input::placeholder,
+.brand-theme-modal textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+  opacity: 1 !important;
+}
+
+.brand-theme-modal input:focus,
+.brand-theme-modal textarea:focus,
+.brand-theme-modal select:focus {
+  border-color: var(--brand-accent, rgba(255, 255, 255, 0.3)) !important;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1) !important;
+  outline: none !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Input de data específico */
+.brand-theme-modal input[type="date"] {
+  color-scheme: dark;
+  background: rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.brand-theme-modal input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+/* Input de número */
+.brand-theme-modal input[type="number"] {
+  background: rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  color: #FFFFFF !important;
+}
+
+/* Input de tel, email, text */
+.brand-theme-modal input[type="tel"],
+.brand-theme-modal input[type="email"],
+.brand-theme-modal input[type="text"] {
+  background: rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  color: #FFFFFF !important;
+}
+
+/* Labels */
+.brand-theme-modal label {
+  color: var(--brand-text, #FFFFFF) !important;
+}
+
+/* Cards internos / glass surfaces */
+.brand-theme-modal .glass,
+.brand-theme-modal [class*="glass"] {
+  background: rgba(255, 255, 255, 0.04) !important;
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Dropdowns */
+.brand-theme-modal [class*="dropdown"] {
+  background: rgba(30, 30, 35, 0.98) !important;
+  background-color: rgba(30, 30, 35, 0.98) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Botões secundários */
+.brand-theme-modal button[class*="Secondary"],
+.brand-theme-modal button[class*="secondary"] {
+  background: rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #FFFFFF !important;
+}
+
+/* Surface backgrounds */
+.brand-theme-modal [class*="surface"],
+.brand-theme-modal [class*="Surface"] {
+  background: rgba(255, 255, 255, 0.04) !important;
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Textos dentro do modal - apenas para elementos sem style inline */
+.brand-theme-modal p:not([style]),
+.brand-theme-modal span:not([style]),
+.brand-theme-modal h1:not([style]),
+.brand-theme-modal h2:not([style]),
+.brand-theme-modal h3:not([style]),
+.brand-theme-modal h4:not([style]),
+.brand-theme-modal h5:not([style]),
+.brand-theme-modal h6:not([style]) {
+  color: var(--brand-text, #FFFFFF);
+}
+
+/* SVG Icons - garantir que herdem a cor do pai */
+.brand-theme-modal svg {
+  color: inherit;
+}
+
+/* SVG Icons sem cor definida - usar branco como fallback */
+.brand-theme-modal svg:not([style*="color"]) {
+  color: var(--brand-text, #FFFFFF);
+}
+
+/* ============================================================================
+   FORÇAR FUNDO ESCURO - MÁXIMA PRIORIDADE
+   Usando !important e alta especificidade para sobrescrever TUDO
+   ============================================================================ */
+
+/* Reset agressivo para modal com tema de marca */
+div.brand-theme-modal,
+div.brand-theme-modal *:not(input):not(textarea):not(select):not(button):not(svg):not(path):not(img):not(span):not(p):not(h1):not(h2):not(h3):not(h4):not(label) {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Forçar fundo no container principal do modal */
+div.brand-theme-modal {
+  background: var(--brand-modal-bg, #0A0F1A) !important;
+  background-color: var(--brand-modal-bg, #0A0F1A) !important;
+}
+
+/* Wrapper que contém sidebar e main */
+div.brand-theme-modal > div.flex-1.flex.overflow-hidden,
+div.brand-theme-modal .brand-theme-content-wrapper {
+  background: var(--brand-modal-bg, #0A0F1A) !important;
+  background-color: var(--brand-modal-bg, #0A0F1A) !important;
+}
+
+/* MAIN element */
+div.brand-theme-modal main,
+div.brand-theme-modal main.flex-1,
+div.brand-theme-modal .brand-theme-main {
+  background: var(--brand-modal-bg, #0A0F1A) !important;
+  background-color: var(--brand-modal-bg, #0A0F1A) !important;
+}
+
+/* STEP TITLE - primeira div dentro do main */
+div.brand-theme-modal main > div:first-child,
+div.brand-theme-modal main > div.px-6.py-4,
+div.brand-theme-modal .brand-theme-main > div:first-child {
+  background: var(--brand-header-bg, #0F1419) !important;
+  background-color: var(--brand-header-bg, #0F1419) !important;
+  border-color: var(--brand-border, rgba(255, 255, 255, 0.1)) !important;
+}
+
+/* Content area - segunda div dentro do main */
+div.brand-theme-modal main > div:nth-child(2),
+div.brand-theme-modal main > div.flex-1.overflow-y-auto,
+div.brand-theme-modal .brand-theme-content {
+  background: var(--brand-modal-bg, #0A0F1A) !important;
+  background-color: var(--brand-modal-bg, #0A0F1A) !important;
+}
+
+/* Footer */
+div.brand-theme-modal footer,
+div.brand-theme-modal main > footer {
+  background: rgba(0, 0, 0, 0.3) !important;
+  background-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Sidebar */
+div.brand-theme-modal aside {
+  background: rgba(0, 0, 0, 0.3) !important;
+  background-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Scrollbar elegante para modal com tema de marca */
+.brand-theme-modal ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.brand-theme-modal ::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 3px;
+}
+
+.brand-theme-modal ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+.brand-theme-modal ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Botões de seleção (fuel level, conditions, services) */
+.brand-theme-modal button {
+  transition: all 0.2s ease;
+}
+
+/* Garantir que divs com fundo claro fiquem escuras */
+.brand-theme-modal div[class*="bg-white"],
+.brand-theme-modal div[class*="bg-gray"],
+.brand-theme-modal div[class*="bg-slate"] {
+  background: rgba(255, 255, 255, 0.04) !important;
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Aside/Sidebar dentro do modal */
+.brand-theme-modal aside {
+  background: rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Main content area */
+.brand-theme-modal main {
+  background: var(--brand-modal-bg, #08140D) !important;
+}
+
+/* Footer */
+.brand-theme-modal footer {
+  background: rgba(0, 0, 0, 0.2) !important;
+  border-color: var(--brand-border, rgba(255, 255, 255, 0.1)) !important;
+}
+
+/* Header */
+.brand-theme-modal header {
+  background: var(--brand-header-bg, rgba(0, 0, 0, 0.3)) !important;
+  border-color: var(--brand-border, rgba(255, 255, 255, 0.1)) !important;
+}
+
+/* Step Title - área abaixo do header */
+.brand-theme-step-title,
+.brand-theme-modal .brand-theme-step-title,
+.brand-step-title-dark {
+  background: #0A1A12 !important;
+  background-color: #0A1A12 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* FORÇAR FUNDO ESCURO EM TODAS AS DIVS DO MODAL COM TEMA DE MARCA */
+.brand-theme-modal div {
+  background-color: transparent;
+}
+
+.brand-theme-modal > div > div > div {
+  background: transparent !important;
+}
+
+/* Área do step title especificamente */
+.brand-theme-modal main > div:first-child {
+  background: #0A1A12 !important;
+  background-color: #0A1A12 !important;
+}
+
+/* Main content area */
+.brand-theme-main,
+.brand-theme-modal .brand-theme-main {
+  background: var(--brand-modal-bg, #08140D) !important;
+  background-color: var(--brand-modal-bg, #08140D) !important;
+}
+
+/* Content area */
+.brand-theme-content,
+.brand-theme-modal .brand-theme-content {
+  background: var(--brand-modal-bg, #08140D) !important;
+  background-color: var(--brand-modal-bg, #08140D) !important;
+}
+
+/* Content wrapper - área que envolve sidebar e main */
+.brand-theme-content-wrapper,
+.brand-theme-modal .brand-theme-content-wrapper {
+  background: var(--brand-modal-bg, #08140D) !important;
+  background-color: var(--brand-modal-bg, #08140D) !important;
+}
+
+/* ============================================================================
+   FALLBACK: Seletor baseado em style inline (backup)
+   ============================================================================ */
+
+/* Quando o modal tem tema de marca (detectado pelo style inline com --brand) */
+[style*="--brand-modal-bg"] input,
+[style*="--brand-modal-bg"] textarea,
+[style*="--brand-modal-bg"] select {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #FFFFFF !important;
+}
+
+[style*="--brand-modal-bg"] input::placeholder,
+[style*="--brand-modal-bg"] textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+[style*="--brand-modal-bg"] input:focus,
+[style*="--brand-modal-bg"] textarea:focus,
+[style*="--brand-modal-bg"] select:focus {
+  border-color: var(--brand-accent, rgba(255, 255, 255, 0.3)) !important;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1) !important;
+  outline: none !important;
+}
+
+/* Labels e textos */
+[style*="--brand-modal-bg"] label {
+  color: #FFFFFF !important;
+}
+
+/* Cards internos */
+[style*="--brand-modal-bg"] .glass,
+[style*="--brand-modal-bg"] [class*="glass"] {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Dropdowns */
+[style*="--brand-modal-bg"] [class*="dropdown"] {
+  background: rgba(30, 30, 35, 0.98) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Botões secundários */
+[style*="--brand-modal-bg"] button[class*="Secondary"],
+[style*="--brand-modal-bg"] button[class*="secondary"] {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #FFFFFF !important;
+}
+
+/* Surface backgrounds */
+[style*="--brand-modal-bg"] [class*="surface"],
+[style*="--brand-modal-bg"] [class*="Surface"] {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* ============================================================================
+   ULTRA FORÇA - INPUTS COM STYLE INLINE
+   Sobrescrever até mesmo estilos inline com !important
+   ============================================================================ */
+
+/* Inputs dentro de brand-theme-modal com qualquer estilo inline */
+.brand-theme-modal input[style*="background"],
+.brand-theme-modal textarea[style*="background"],
+.brand-theme-modal select[style*="background"] {
+  background: rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Força máxima para inputs com rounded-xl (Tailwind) */
+.brand-theme-modal input.rounded-xl[style],
+.brand-theme-modal textarea.rounded-xl[style],
+.brand-theme-modal input.rounded-2xl[style],
+.brand-theme-modal textarea.rounded-2xl[style] {
+  background: rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #FFFFFF !important;
+}
+
+/* Seletor de atributo para pegar QUALQUER input dentro do modal */
+div.brand-theme-modal input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+div.brand-theme-modal textarea,
+div.brand-theme-modal select {
+  background: rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #FFFFFF !important;
+}
+
+
+/* ============================================================================
+   KAWASAKI - Logo menor nos modais
+   ============================================================================ */
+
+/* Kawasaki logo no header do modal - 70% menor */
+.brand-theme-modal img[src*="kawasaki"],
+.brand-theme-modal img[alt*="Kawasaki"],
+.brand-theme-modal img[alt*="KAWASAKI"],
+[style*="--brand-modal-bg"] img[src*="kawasaki"],
+[style*="--brand-modal-bg"] img[alt*="Kawasaki"] {
+  transform: scale(0.3) !important;
+  max-width: 80px !important;
+  max-height: 30px !important;
+}
+
+
+/* ============================================================================
+   PREMIUM DEPTH & STRUCTURE - Contornos, Sombras e Profundidade
+   Design Apple-like com hierarquia visual clara
+   ============================================================================ */
+
+/* === MODAL CONTAINER - Sombra externa premium === */
+.brand-theme-modal {
+  box-shadow: 
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 25px 50px -12px rgba(0, 0, 0, 0.6),
+    0 12px 24px -8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+/* === HEADER - Separação clara do conteúdo === */
+.brand-theme-modal header,
+.brand-theme-modal [class*="header"] {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3) !important;
+}
+
+/* === STEP INDICATORS - Linha de separação abaixo === */
+.brand-theme-modal [class*="step"],
+.brand-theme-modal [class*="wizard"] {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* === CARDS INTERNOS - Profundidade e contornos === */
+.brand-theme-modal [class*="card"],
+.brand-theme-modal [class*="surface"],
+.brand-theme-modal [class*="glass"] {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
+  border-radius: 12px !important;
+}
+
+/* === INPUTS - Contornos mais visíveis === */
+.brand-theme-modal input,
+.brand-theme-modal textarea,
+.brand-theme-modal select {
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.2),
+    0 1px 0 rgba(255, 255, 255, 0.03) !important;
+  border-radius: 12px !important;
+}
+
+.brand-theme-modal input:focus,
+.brand-theme-modal textarea:focus,
+.brand-theme-modal select:focus {
+  border-color: var(--brand-accent, rgba(255, 255, 255, 0.3)) !important;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.2),
+    0 0 0 3px rgba(var(--brand-accent-rgb, 107, 114, 128), 0.2),
+    0 1px 0 rgba(255, 255, 255, 0.03) !important;
+}
+
+/* === SEÇÕES - Divisores claros entre seções === */
+.brand-theme-modal section,
+.brand-theme-modal [class*="section"] {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+
+.brand-theme-modal section:last-child,
+.brand-theme-modal [class*="section"]:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+/* === LABELS - Mais destaque === */
+.brand-theme-modal label {
+  font-weight: 500 !important;
+  letter-spacing: 0.01em !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  margin-bottom: 8px !important;
+  display: block !important;
+}
+
+/* === BOTÕES - Profundidade e hierarquia === */
+.brand-theme-modal button[class*="primary"],
+.brand-theme-modal button[class*="Primary"] {
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+.brand-theme-modal button[class*="secondary"],
+.brand-theme-modal button[class*="Secondary"] {
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* === FOOTER - Separação clara do conteúdo === */
+.brand-theme-modal footer,
+.brand-theme-modal [class*="footer"] {
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3) !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+
+/* === LISTA DE ITENS - Separadores entre itens === */
+.brand-theme-modal ul li,
+.brand-theme-modal [class*="list"] > div,
+.brand-theme-modal [class*="item"] {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 12px 0;
+}
+
+.brand-theme-modal ul li:last-child,
+.brand-theme-modal [class*="list"] > div:last-child,
+.brand-theme-modal [class*="item"]:last-child {
+  border-bottom: none;
+}
+
+/* === DROPDOWN/SELECT - Contornos premium === */
+.brand-theme-modal [class*="dropdown"],
+.brand-theme-modal [class*="select"],
+.brand-theme-modal [class*="menu"] {
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  border-radius: 12px !important;
+}
+
+/* === BADGES/TAGS - Contornos sutis === */
+.brand-theme-modal [class*="badge"],
+.brand-theme-modal [class*="tag"],
+.brand-theme-modal [class*="chip"] {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* === ÍCONES EM CONTAINERS - Fundo com profundidade === */
+.brand-theme-modal [class*="icon-container"],
+.brand-theme-modal .rounded-xl[class*="flex"][class*="items-center"][class*="justify-center"],
+.brand-theme-modal .rounded-lg[class*="flex"][class*="items-center"][class*="justify-center"] {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* === ÁREA DE CLIENTE SELECIONADO - Destaque premium === */
+.brand-theme-modal [class*="client-selected"],
+.brand-theme-modal [class*="selected-client"] {
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  border-radius: 16px !important;
+}
+
+/* === ÁREA DE VEÍCULO - Card com profundidade === */
+.brand-theme-modal [class*="vehicle"],
+.brand-theme-modal [class*="car-info"] {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 16px !important;
+}
+
+/* === SEPARADORES HORIZONTAIS === */
+.brand-theme-modal hr,
+.brand-theme-modal [class*="divider"],
+.brand-theme-modal [class*="separator"] {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  height: 1px !important;
+  margin: 16px 0 !important;
+}
+
+/* === ÁREA DE INFORMAÇÕES IMPORTADAS === */
+.brand-theme-modal [class*="info-banner"],
+.brand-theme-modal [class*="alert"],
+.brand-theme-modal [class*="notice"] {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-left: 3px solid var(--brand-accent, rgba(255, 255, 255, 0.3)) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* === TABS/TOGGLE - Contornos e profundidade === */
+.brand-theme-modal [class*="tab"],
+.brand-theme-modal [class*="toggle"] {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+}
+
+/* === SCROLL AREA - Sombra interna para indicar scroll === */
+.brand-theme-modal [class*="scroll"],
+.brand-theme-modal [class*="overflow-auto"],
+.brand-theme-modal [class*="overflow-y-auto"] {
+  box-shadow: 
+    inset 0 8px 8px -8px rgba(0, 0, 0, 0.3),
+    inset 0 -8px 8px -8px rgba(0, 0, 0, 0.3);
+}
+
+/* === GRID DE CAMPOS - Espaçamento consistente === */
+.brand-theme-modal [class*="grid"] {
+  gap: 16px !important;
+}
+
+/* === ÁREA DE BUSCA - Destaque premium === */
+.brand-theme-modal [class*="search"] {
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 14px !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* === RESULTADOS DE BUSCA - Lista com separadores === */
+.brand-theme-modal [class*="search-results"] > *,
+.brand-theme-modal [class*="results"] > * {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.brand-theme-modal [class*="search-results"] > *:last-child,
+.brand-theme-modal [class*="results"] > *:last-child {
+  border-bottom: none !important;
+}
+
+/* === HOVER STATES - Feedback visual premium === */
+.brand-theme-modal [class*="hover"]:hover,
+.brand-theme-modal button:hover,
+.brand-theme-modal [role="button"]:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* === ÁREA DE RESUMO/TOTAIS - Destaque especial === */
+.brand-theme-modal [class*="summary"],
+.brand-theme-modal [class*="total"],
+.brand-theme-modal [class*="resume"] {
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 16px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+
+/* ============================================================================
+   BUDGET MODAL PREMIUM OVERRIDES - Apple/Tesla Level Design
+   REFINADO: -20% bordas, +15% hierarquia luz/sombra
+   Aplicado ao modal de orçamento existente
+   ============================================================================ */
+
+/* === MODAL CONTAINER - Sombra externa premium multi-camada REFORÇADA === */
+.brand-theme-modal.rounded-3xl {
+  box-shadow: 
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 8px 16px rgba(0, 0, 0, 0.35),
+    0 16px 32px rgba(0, 0, 0, 0.4),
+    0 32px 64px rgba(0, 0, 0, 0.45),
+    0 64px 128px rgba(0, 0, 0, 0.5) !important;
+  /* Borda MÍNIMA */
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* === HEADER PREMIUM - Borda MÍNIMA, luz REFORÇADA === */
+.brand-theme-modal header {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.01) 100%
+  ) !important;
+  /* Borda MÍNIMA */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  /* Sombra REFORÇADA */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* === STEP WIZARD PREMIUM === */
+.brand-theme-modal [class*="step"],
+.brand-theme-modal [class*="wizard"] {
+  background: rgba(0, 0, 0, 0.2) !important;
+  /* Borda MÍNIMA */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Step icons - Borda MÍNIMA, sombra REFORÇADA */
+.brand-theme-modal [class*="step"] [class*="icon"],
+.brand-theme-modal [class*="step"] .rounded-xl,
+.brand-theme-modal [class*="step"] .rounded-2xl {
+  background: rgba(255, 255, 255, 0.04) !important;
+  /* Borda MÍNIMA */
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  /* Sombra REFORÇADA */
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* === SECTIONS/CARDS PREMIUM - Hierarquia por sombra === */
+.brand-theme-modal [class*="section"],
+.brand-theme-modal [class*="card"]:not(button),
+.brand-theme-modal [class*="surface"] {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  ) !important;
+  /* Borda MÍNIMA */
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  border-radius: 16px !important;
+  /* Sombra REFORÇADA */
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+/* === INPUTS PREMIUM - Embutidos, não cards === */
+.brand-theme-modal input:not([type="checkbox"]):not([type="radio"]),
+.brand-theme-modal textarea,
+.brand-theme-modal select {
+  background: rgba(255, 255, 255, 0.05) !important;
+  /* Borda MÍNIMA */
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  border-radius: 12px !important;
+  /* Sombra INSET REFORÇADA */
+  box-shadow: 
+    inset 0 2px 6px rgba(0, 0, 0, 0.25),
+    inset 0 1px 2px rgba(0, 0, 0, 0.15) !important;
+  height: 48px !important;
+  padding: 0 16px !important;
+  font-size: 15px !important;
+  transition: all 150ms ease !important;
+}
+
+.brand-theme-modal input:hover,
+.brand-theme-modal textarea:hover,
+.brand-theme-modal select:hover {
+  /* Borda permanece MÍNIMA */
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+}
+
+.brand-theme-modal input:focus,
+.brand-theme-modal textarea:focus,
+.brand-theme-modal select:focus {
+  /* Borda com cor da marca, mas SUTIL */
+  border-color: rgba(var(--brand-accent-rgb, 59, 130, 246), 0.3) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 
+    inset 0 1px 3px rgba(0, 0, 0, 0.15),
+    0 0 0 3px rgba(var(--brand-accent-rgb, 59, 130, 246), 0.1),
+    0 0 20px rgba(var(--brand-accent-rgb, 59, 130, 246), 0.08) !important;
+  outline: none !important;
+}
+
+/* === LABELS PREMIUM === */
+.brand-theme-modal label {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  letter-spacing: 0.02em !important;
+  margin-bottom: 10px !important;
+  display: block !important;
+}
+
+/* === SEARCH DROPDOWN PREMIUM === */
+.brand-theme-modal [class*="dropdown"],
+.brand-theme-modal [class*="results"],
+.brand-theme-modal [class*="menu"] {
+  background: rgba(20, 20, 24, 0.98) !important;
+  /* Borda MÍNIMA */
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 16px !important;
+  /* Sombra REFORÇADA */
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.45),
+    0 20px 60px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+/* === ITEMS LIST PREMIUM === */
+.brand-theme-modal [class*="item"],
+.brand-theme-modal [class*="list"] > div {
+  background: rgba(255, 255, 255, 0.025) !important;
+  /* Borda MÍNIMA */
+  border: 1px solid rgba(255, 255, 255, 0.03) !important;
+  border-radius: 12px !important;
+  margin-bottom: 10px !important;
+  /* Sombra para separação */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18) !important;
+  transition: all 150ms ease !important;
+}
+
+.brand-theme-modal [class*="item"]:hover,
+.brand-theme-modal [class*="list"] > div:hover {
+  background: rgba(255, 255, 255, 0.045) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+  /* Sombra REFORÇADA no hover */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* === BUTTONS PREMIUM - CTA flutua === */
+.brand-theme-modal button[class*="primary"],
+.brand-theme-modal button[class*="Primary"],
+.brand-theme-modal button.bg-blue,
+.brand-theme-modal button[class*="bg-blue"] {
+  background: var(--brand-accent, #3B82F6) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  /* Sombra REFORÇADA - flutua */
+  box-shadow: 
+    0 6px 20px rgba(var(--brand-accent-rgb, 59, 130, 246), 0.45),
+    0 3px 8px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+  font-weight: 600 !important;
+  transition: all 150ms ease !important;
+}
+
+.brand-theme-modal button[class*="primary"]:hover,
+.brand-theme-modal button[class*="Primary"]:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 
+    0 8px 28px rgba(var(--brand-accent-rgb, 59, 130, 246), 0.55),
+    0 6px 14px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+.brand-theme-modal button[class*="secondary"],
+.brand-theme-modal button[class*="Secondary"] {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.03) 100%
+  ) !important;
+  /* Borda MÍNIMA */
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 12px !important;
+  /* Sombra REFORÇADA */
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+.brand-theme-modal button[class*="secondary"]:hover,
+.brand-theme-modal button[class*="Secondary"]:hover {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  ) !important;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 4px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* === FOOTER PREMIUM - Separação por sombra === */
+.brand-theme-modal footer,
+.brand-theme-modal [class*="footer"] {
+  background: rgba(0, 0, 0, 0.35) !important;
+  /* Borda MÍNIMA */
+  border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+  /* Sombra REFORÇADA */
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* === SUMMARY/TOTALS PREMIUM === */
+.brand-theme-modal [class*="summary"],
+.brand-theme-modal [class*="total"],
+.brand-theme-modal [class*="resume"] {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  ) !important;
+  /* Borda MÍNIMA */
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 16px !important;
+  /* Sombra REFORÇADA */
+  box-shadow: 
+    0 6px 24px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+/* === INFO BANNER PREMIUM === */
+.brand-theme-modal [class*="info"],
+.brand-theme-modal [class*="alert"],
+.brand-theme-modal [class*="notice"],
+.brand-theme-modal [class*="banner"] {
+  background: rgba(255, 255, 255, 0.025) !important;
+  /* Borda MÍNIMA */
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  border-left: 3px solid var(--brand-accent, #3B82F6) !important;
+  border-radius: 12px !important;
+  /* Sombra para profundidade */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* === ICON CONTAINERS PREMIUM === */
+.brand-theme-modal .rounded-xl.flex.items-center.justify-center,
+.brand-theme-modal .rounded-lg.flex.items-center.justify-center,
+.brand-theme-modal .rounded-2xl.flex.items-center.justify-center {
+  background: rgba(255, 255, 255, 0.04) !important;
+  /* Borda MÍNIMA */
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  /* Sombra inset para profundidade */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.18) !important;
+}
+
+/* === DIVIDERS PREMIUM - Gradiente sutil === */
+.brand-theme-modal hr,
+.brand-theme-modal [class*="divider"],
+.brand-theme-modal [class*="separator"] {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 20%,
+    rgba(255, 255, 255, 0.06) 80%,
+    transparent 100%
+  ) !important;
+  border: none !important;
+  height: 1px !important;
+}
+
+/* === TOGGLE BUTTONS PREMIUM === */
+.brand-theme-modal [class*="toggle"] {
+  background: rgba(0, 0, 0, 0.3) !important;
+  /* Borda MÍNIMA */
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  border-radius: 12px !important;
+  padding: 4px !important;
+  /* Sombra inset */
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* === SCROLLBAR PREMIUM === */
+.brand-theme-modal ::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+.brand-theme-modal ::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.brand-theme-modal ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 3px !important;
+}
+
+.brand-theme-modal ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+
+/* ============================================================================
+   MODAL EDITAR CHECKIN - DATE PICKER PREMIUM
+   Calendário personalizado para tema escuro da marca
+   ============================================================================ */
+
+/* Date input base styling */
+.modal-editar-checkin-date {
+  color-scheme: dark !important;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+/* Calendar icon styling */
+.modal-editar-checkin-date::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.2);
+  opacity: 0.8;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.modal-editar-checkin-date::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Date picker dropdown styling (Chrome/Edge) */
+.modal-editar-checkin-date::-webkit-datetime-edit {
+  color: #FFFFFF;
+  padding: 0;
+}
+
+.modal-editar-checkin-date::-webkit-datetime-edit-fields-wrapper {
+  color: #FFFFFF;
+}
+
+.modal-editar-checkin-date::-webkit-datetime-edit-text {
+  color: rgba(255, 255, 255, 0.5);
+  padding: 0 4px;
+}
+
+.modal-editar-checkin-date::-webkit-datetime-edit-day-field,
+.modal-editar-checkin-date::-webkit-datetime-edit-month-field,
+.modal-editar-checkin-date::-webkit-datetime-edit-year-field {
+  color: #FFFFFF;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.modal-editar-checkin-date::-webkit-datetime-edit-day-field:focus,
+.modal-editar-checkin-date::-webkit-datetime-edit-month-field:focus,
+.modal-editar-checkin-date::-webkit-datetime-edit-year-field:focus {
+  background: var(--brand-accent, rgba(59, 130, 246, 0.3));
+  outline: none;
+}
+
+/* Focus state for date input */
+.modal-editar-checkin-date:focus {
+  border-color: var(--brand-accent, #3B82F6) !important;
+  box-shadow: 0 0 0 3px rgba(var(--brand-accent-rgb, 59, 130, 246), 0.2) !important;
+}
+
+/* ============================================================================
+   INPUT ICONS - FORÇAR BRANCO EM MODAIS COM TEMA DE MARCA
+   ============================================================================ */
+
+/* Ícones dentro de inputs em modais com tema de marca */
+[style*="--brand-modal-bg"] .relative svg,
+[style*="--brand-accent"] .relative svg {
+  color: #FFFFFF !important;
+}
+
+/* Ícones em labels */
+[style*="--brand-modal-bg"] label svg,
+[style*="--brand-accent"] label svg {
+  color: #FFFFFF !important;
+}
+
+/* Garantir que ícones posicionados absolutamente sejam brancos */
+.brand-theme-modal .absolute svg,
+[style*="--brand-modal-bg"] .absolute svg {
+  color: #FFFFFF !important;
+}

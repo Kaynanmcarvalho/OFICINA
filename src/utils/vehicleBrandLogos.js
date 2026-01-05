@@ -29,7 +29,7 @@ const MODEL_TO_BRAND_MAP = {
   'fiorino': 'fiat', 'doblo': 'fiat', 'ducato': 'fiat', 'punto': 'fiat', 'linea': 'fiat',
   'bravo': 'fiat', 'idea': 'fiat', 'weekend': 'fiat', 'stilo': 'fiat', 'marea': 'fiat',
   'tempra': 'fiat', 'tipo': 'fiat', 'elba': 'fiat', 'premio': 'fiat', '147': 'fiat',
-  'cinquecento': 'fiat', '500': 'fiat', 'renegade': 'jeep', 'compass': 'jeep', 'commander': 'jeep',
+  'cinquecento': 'fiat', '500': 'fiat',
   
   // Ford
   'ka': 'ford', 'fiesta': 'ford', 'focus': 'ford', 'fusion': 'ford', 'ecosport': 'ford',
@@ -162,7 +162,7 @@ const MODEL_TO_BRAND_MAP = {
   'j2': 'jac', 'j3': 'jac', 'j5': 'jac', 'j6': 'jac', 't40': 'jac', 't50': 'jac', 't60': 'jac', 't80': 'jac',
   
   // GWM / Haval
-  'h6': 'haval', 'h2': 'haval', 'jolion': 'haval', 'poer': 'gwm', 'ora': 'gwm',
+  'h6': 'haval', 'jolion': 'haval', 'poer': 'gwm', 'ora': 'gwm',
 };
 
 // Map of brand names to their logo file names on GitHub CDN
@@ -184,6 +184,7 @@ const BRAND_LOGO_MAP = {
   'citroen': 'citroen',
   'citroën': 'citroen',
   'kia': 'kia',
+  'kia motors': 'kia',
   'bmw': 'bmw',
   'mercedes': 'mercedes-benz',
   'mercedes-benz': 'mercedes-benz',
@@ -234,6 +235,7 @@ const BRAND_LOGO_MAP = {
   'triumph': 'triumph',
   'ktm': 'ktm',
   'royal enfield': 'royal-enfield',
+  'royal enfield': 'royal-enfield',
   'dafra': 'dafra',
   'shineray': 'shineray',
   // Trucks
@@ -248,15 +250,66 @@ const LOGO_CDN_BASE = 'https://raw.githubusercontent.com/filippofilip95/car-logo
 
 // Local logos for brands not available in CDN (stored in /public/logos/)
 const LOCAL_BRAND_LOGOS = {
-  'yamaha': 'https://cdn.worldvectorlogo.com/logos/yamaha-12.svg',
-  'kawasaki': '/logos/kawasaki.png',
+  // SVG logos (melhor qualidade)
+  'yamaha': '/logos/yamaha.svg',
+  'kia': '/logos/kia.svg',
+  // PNG logos (fallback local do CDN)
+  'ford': '/logos/ford.png',
+  'fiat': '/logos/fiat.png',
+  'chevrolet': '/logos/chevrolet.png',
+  'volkswagen': '/logos/volkswagen.png',
+  'toyota': '/logos/toyota.png',
+  'honda': '/logos/honda.png',
+  'hyundai': '/logos/hyundai.png',
+  'nissan': '/logos/nissan.png',
+  'renault': '/logos/renault.png',
+  'jeep': '/logos/jeep.png',
+  'mitsubishi': '/logos/mitsubishi.png',
+  'peugeot': '/logos/peugeot.png',
+  'citroen': '/logos/citroen.png',
+  'bmw': '/logos/bmw.png',
+  'mercedes-benz': '/logos/mercedes-benz.png',
+  'audi': '/logos/audi.png',
+  'volvo': '/logos/volvo.png',
+  'subaru': '/logos/subaru.png',
+  'mazda': '/logos/mazda.png',
+  'suzuki': '/logos/suzuki.png',
+  'lexus': '/logos/lexus.png',
+  'land-rover': '/logos/land-rover.svg',
+  'ferrari': '/logos/ferrari.png',
+  'byd': '/logos/byd-auto.svg',
+  'gwm': '/Logotipo Branco PNG.png',
+  // Logos que ainda precisam ser baixadas
+  'kawasaki': 'https://upload.wikimedia.org/wikipedia/commons/e/e1/Kawasaki_Motors_logo.svg',
+  'royal-enfield': '/Royal_Enfield-OtWUyWXCP_brandlogos.net.svg',
   'ducati': '/logos/ducati.png',
   'harley-davidson': '/logos/harley-davidson.png',
 };
 
-// Logos específicas para dark mode (já são brancas/claras)
+// Logos específicas para dark mode (versões claras/brancas que funcionam em fundo escuro)
 const DARK_MODE_LOGOS = {
-  'fiat': 'https://www.svgrepo.com/show/306040/fiat.svg',
+  'ford': '/logos/ford-dark.svg',
+  'fiat': '/logos/fiat.svg',
+  'land-rover': '/logos/land-rover.svg',
+  'kia': '/logos/kia.svg',
+  'ferrari': '/logos/ferrari-dark.svg',
+  'lamborghini': '/logos/lamborghini-dark.svg',
+  'bmw': '/logos/bmw-dark.svg',
+  'byd': '/logos/byd-auto.svg',
+  'mini': 'https://cdn.worldvectorlogo.com/logos/bmw-mini-1.svg',
+  'dodge': 'https://cdn.worldvectorlogo.com/logos/dodge-ram.svg',
+  'volvo': 'https://www.svgrepo.com/show/306942/volvo.svg',
+  'porsche': 'https://www.svgrepo.com/show/446911/porsche.svg',
+  'jac': 'https://iconape.com/wp-content/files/bc/163841/png/jac-motors-logo.png',
+};
+
+// Logos específicas para light mode (versões coloridas)
+const LIGHT_MODE_LOGOS = {
+  'land-rover': '/logos/land-rover-light.svg',
+  'bmw': '/logos/bmw-light.svg',
+  'dodge': 'https://cdn.worldvectorlogo.com/logos/dodge-ram.svg',
+  'ram': 'https://cdn.worldvectorlogo.com/logos/dodge-ram.svg',
+  'porsche': '/porsche-logo-E5720D9afC_brandlogos.net.svg',
 };
 
 /**
@@ -282,7 +335,7 @@ export const inferBrandFromModel = (model) => {
   }
   
   // Check for partial matches (first word)
-  const firstWord = normalizedModel.split(/[\s\-\/]+/)[0];
+  const firstWord = normalizedModel.split(/[\s\-/]+/)[0];
   if (MODEL_TO_BRAND_MAP[firstWord]) {
     return MODEL_TO_BRAND_MAP[firstWord];
   }
@@ -334,6 +387,11 @@ export const getBrandLogoUrl = (brand, model = '', isDarkMode = false) => {
       return DARK_MODE_LOGOS[logoName];
     }
     
+    // Check for light mode specific logo
+    if (!isDarkMode && LIGHT_MODE_LOGOS[logoName]) {
+      return LIGHT_MODE_LOGOS[logoName];
+    }
+    
     // Check if it's a brand with local logo
     if (LOCAL_BRAND_LOGOS[logoName]) {
       return LOCAL_BRAND_LOGOS[logoName];
@@ -347,6 +405,11 @@ export const getBrandLogoUrl = (brand, model = '', isDarkMode = false) => {
   // Check for dark mode specific logo
   if (isDarkMode && DARK_MODE_LOGOS[directMatch]) {
     return DARK_MODE_LOGOS[directMatch];
+  }
+  
+  // Check for light mode specific logo
+  if (!isDarkMode && LIGHT_MODE_LOGOS[directMatch]) {
+    return LIGHT_MODE_LOGOS[directMatch];
   }
   
   // Check if it's a brand with local logo
@@ -398,6 +461,7 @@ export const hasBrandLogo = (brand, model = '') => {
 
 /**
  * Format vehicle display text (Brand + Model) avoiding duplication
+ * Handles cases like "KIA MOTORS KIA CERATO" -> "KIA CERATO"
  * @param {string} brand - The vehicle brand
  * @param {string} model - The vehicle model
  * @returns {string} - Formatted vehicle text
@@ -411,22 +475,35 @@ export const formatVehicleDisplay = (brand, model) => {
   }
   
   const brandUpper = effectiveBrand.toUpperCase();
-  const modelUpper = modelText.toUpperCase();
+  let modelUpper = modelText.toUpperCase();
+  
+  // Normalize brand name (remove common suffixes like "MOTORS", "DO BRASIL", etc.)
+  const brandCore = brandUpper
+    .replace(/\s*(MOTORS?|DO BRASIL|BRASIL|AUTOMOVEIS|AUTOMÓVEIS|AUTOMOTIVE)\s*/gi, '')
+    .trim();
+  
+  // Check if model already contains the brand name - if so, just return the model
+  if (modelUpper.includes(brandCore)) {
+    // Remove duplicate brand from model if it appears twice
+    // e.g., "KIA CERATO" when brand is "KIA MOTORS" -> just return "KIA CERATO"
+    return modelUpper;
+  }
   
   // Check if model already starts with the brand name
-  if (modelUpper.startsWith(brandUpper)) {
+  if (modelUpper.startsWith(brandUpper) || modelUpper.startsWith(brandCore)) {
     return modelUpper;
   }
   
   // Check if model contains the brand name at the beginning (with variations)
-  const brandVariations = [brandUpper, brandUpper.replace('-', ' '), brandUpper.replace(' ', '-')];
+  const brandVariations = [brandUpper, brandCore, brandUpper.replace('-', ' '), brandUpper.replace(' ', '-')];
   for (const variation of brandVariations) {
-    if (modelUpper.startsWith(variation)) {
+    if (variation && modelUpper.startsWith(variation)) {
       return modelUpper;
     }
   }
   
-  return `${brandUpper} ${modelUpper}`.trim();
+  // Brand not in model, combine them using the core brand name
+  return `${brandCore} ${modelUpper}`.trim();
 };
 
 export default {

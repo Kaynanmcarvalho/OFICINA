@@ -27,12 +27,16 @@ export const createCheckin = async (checkinData, empresaId) => {
   try {
     const userId = sessionStorage.getItem('userId') || 'unknown';
     const userName = sessionStorage.getItem('userName') || 'Usuário';
+    const now = new Date().toISOString();
     
     const docData = {
       ...checkinData,
-      empresaId,
-      status: 'em_atendimento',
+      empresaId: empresaId || null,
+      status: 'in-progress',
       currentStage: 'checkin',
+      checkinDate: now,
+      createdAt: now,
+      updatedAt: now,
       stages: {
         checkin: {
           completed: true,

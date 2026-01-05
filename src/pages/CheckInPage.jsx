@@ -5,23 +5,25 @@
  * Janeiro 2026
  */
 
-import { useState, useEffect, lazy, Suspense, useMemo } from 'react';
+import { useState, useEffect, lazy, Suspense, useMemo, useCallback } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCheckinStore, useThemeStore } from '../store';
+import { useBudgetStore } from '../store/budgetStore';
 import { getBrandLogoUrl, getEffectiveBrand, formatVehicleDisplay } from '../utils/vehicleBrandLogos';
+import { getBrandTheme, OFFICIAL_BRAND_COLORS } from '../utils/brandModalTheme';
 import '../styles/checkin-cinematic.css';
 
 // Lazy load modals
 const ModalCheckin = lazy(() => import('./checkin/componentes/ModalCheckinPremium'));
 const ModalCheckout = lazy(() => import('./checkin/componentes/ModalCheckoutPremium'));
 const ModalEditarCheckin = lazy(() => import('./checkin/componentes/ModalEditarCheckin'));
-const BudgetModal = lazy(() => import('./budgets/components/BudgetModalPremium'));
+const CreateBudgetRoute = lazy(() => import('../features/budget/routes/create').then(m => ({ default: m.CreateBudgetRoute })));
+const EditBudgetRoute = lazy(() => import('../features/budget/routes/edit').then(m => ({ default: m.EditBudgetRoute })));
 const CheckinDetailsModal = lazy(() => import('./checkin/components/details/CheckinDetailsModal'));
 
 // Dock feature modals
 const OBDScannerModal = lazy(() => import('../components/modals/OBDScannerModal'));
-const VehicleHealthModal = lazy(() => import('../components/modals/VehicleHealthModal'));
 const VehicleHistoryModal = lazy(() => import('../components/modals/VehicleHistoryModal'));
 
 // === ICON SYSTEM - Autoral, consistente ===
@@ -47,11 +49,6 @@ const Icons = {
       <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
       <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
       <line x1="7" y1="12" x2="17" y2="12" />
-    </svg>
-  ),
-  Pulse: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
     </svg>
   ),
   Clock: () => (
@@ -128,6 +125,7 @@ const Icons = {
 const CheckInPage = () => {
   const { checkins, fetchCheckins, isLoading } = useCheckinStore();
   const { isDarkMode } = useThemeStore();
+  const { budgets, fetchBudgets } = useBudgetStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState('list'); // 'list' | 'grid'
   const [isCheckInModalOpen, setIsCheckInModalOpen] = useState(false);
@@ -136,22 +134,24 @@ const CheckInPage = () => {
   const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [detailsCheckinId, setDetailsCheckinId] = useState(null);
+  const [detailsVehicleBrand, setDetailsVehicleBrand] = useState(null); // Marca do veículo para tema do modal
   const [selectedCheckin, setSelectedCheckin] = useState(null);
   const [selectedForCheckout, setSelectedForCheckout] = useState(null);
   const [checkinToEdit, setCheckinToEdit] = useState(null);
   const [checkinForBudget, setCheckinForBudget] = useState(null);
+  const [existingBudget, setExistingBudget] = useState(null);
   
   // Dock feature modals
   const [isOBDModalOpen, setIsOBDModalOpen] = useState(false);
-  const [isHealthModalOpen, setIsHealthModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
 
   useEffect(() => {
     fetchCheckins();
+    fetchBudgets();
     // Restore view preference
     const saved = localStorage.getItem('checkin-view-mode');
     if (saved) setViewMode(saved);
-  }, [fetchCheckins]);
+  }, [fetchCheckins, fetchBudgets]);
 
   // Save view preference
   const handleViewChange = (mode) => {
@@ -162,10 +162,21 @@ const CheckInPage = () => {
   // Stats
   const stats = useMemo(() => {
     const inProgress = checkins.filter(c => c.status === 'in-progress' || c.status === 'pending').length;
-    const waiting = checkins.filter(c => c.status === 'waiting-budget').length;
+    
+    // Contar checkins que NÃO têm orçamento ainda
+    const waiting = checkins.filter(c => {
+      const checkinId = c.firestoreId || c.id;
+      const hasBudget = budgets.some(b => 
+        b.checkinId === checkinId || 
+        (b.vehiclePlate === c.vehiclePlate && b.clientName === c.clientName)
+      );
+      // Só conta se não tem orçamento E não está completo/entregue
+      return !hasBudget && c.status !== 'completed';
+    }).length;
+    
     const ready = checkins.filter(c => c.status === 'ready').length;
     return { inProgress, waiting, ready, total: checkins.length };
-  }, [checkins]);
+  }, [checkins, budgets]);
 
   // Filtered records
   const filteredCheckins = useMemo(() => {
@@ -214,6 +225,27 @@ const CheckInPage = () => {
     };
     return configs[status] || configs['in-progress'];
   };
+
+  // Função inteligente para abrir modal de orçamento
+  const handleBudgetClick = useCallback((checkin) => {
+    // Buscar orçamento existente para este checkin
+    const checkinId = checkin.firestoreId || checkin.id;
+    const foundBudget = budgets.find(b => 
+      b.checkinId === checkinId || 
+      (b.vehiclePlate === checkin.vehiclePlate && b.clientName === checkin.clientName)
+    );
+    
+    if (foundBudget) {
+      // Já existe orçamento - abrir em modo edição
+      setExistingBudget(foundBudget);
+      setCheckinForBudget(checkin);
+    } else {
+      // Não existe orçamento - abrir em modo criação
+      setExistingBudget(null);
+      setCheckinForBudget(checkin);
+    }
+    setIsBudgetModalOpen(true);
+  }, [budgets]);
 
   return (
     <div className={`ck-premium ${isDarkMode ? 'dark' : 'light'}`}>
@@ -310,14 +342,6 @@ const CheckInPage = () => {
         </button>
         <button 
           className="ck-dock__btn" 
-          title="Saúde do Veículo"
-          onClick={() => setIsHealthModalOpen(true)}
-        >
-          <Icons.Pulse />
-          <span>Saúde</span>
-        </button>
-        <button 
-          className="ck-dock__btn" 
           title="Histórico"
           onClick={() => setIsHistoryModalOpen(true)}
         >
@@ -381,13 +405,18 @@ const CheckInPage = () => {
                     index={i}
                     isSelected={selectedForCheckout?.firestoreId === checkin.firestoreId}
                     onSelect={handleSelectForCheckout}
-                    onView={() => { setDetailsCheckinId(checkin.firestoreId); setShowDetailsModal(true); }}
+                    onView={() => { 
+                      setDetailsCheckinId(checkin.firestoreId); 
+                      setDetailsVehicleBrand(checkin.vehicleBrand);
+                      setShowDetailsModal(true); 
+                    }}
                     onEdit={() => { setCheckinToEdit(checkin); setIsEditModalOpen(true); }}
-                    onBudget={() => { setCheckinForBudget(checkin); setIsBudgetModalOpen(true); }}
+                    onBudget={() => handleBudgetClick(checkin)}
                     formatDate={formatDate}
                     formatTimeAgo={formatTimeAgo}
                     getStatusConfig={getStatusConfig}
                     isDarkMode={isDarkMode}
+                    hasBudget={budgets.some(b => b.checkinId === (checkin.firestoreId || checkin.id) || (b.vehiclePlate === checkin.vehiclePlate && b.clientName === checkin.clientName))}
                   />
                 ))}
               </motion.div>
@@ -406,12 +435,17 @@ const CheckInPage = () => {
                     index={i}
                     isSelected={selectedForCheckout?.firestoreId === checkin.firestoreId}
                     onSelect={handleSelectForCheckout}
-                    onView={() => { setDetailsCheckinId(checkin.firestoreId); setShowDetailsModal(true); }}
+                    onView={() => { 
+                      setDetailsCheckinId(checkin.firestoreId); 
+                      setDetailsVehicleBrand(checkin.vehicleBrand);
+                      setShowDetailsModal(true); 
+                    }}
                     onEdit={() => { setCheckinToEdit(checkin); setIsEditModalOpen(true); }}
-                    onBudget={() => { setCheckinForBudget(checkin); setIsBudgetModalOpen(true); }}
+                    onBudget={() => handleBudgetClick(checkin)}
                     formatDate={formatDate}
                     getStatusConfig={getStatusConfig}
                     isDarkMode={isDarkMode}
+                    hasBudget={budgets.some(b => b.checkinId === (checkin.firestoreId || checkin.id) || (b.vehiclePlate === checkin.vehiclePlate && b.clientName === checkin.clientName))}
                   />
                 ))}
               </motion.div>
@@ -445,24 +479,48 @@ const CheckInPage = () => {
             onSave={() => fetchCheckins()}
           />
         )}
-        {isBudgetModalOpen && (
-          <BudgetModal
+        {isBudgetModalOpen && !existingBudget && (
+          <CreateBudgetRoute
             isOpen={isBudgetModalOpen}
-            onClose={() => { setIsBudgetModalOpen(false); setCheckinForBudget(null); }}
-            budget={checkinForBudget ? {
+            onClose={() => { setIsBudgetModalOpen(false); setCheckinForBudget(null); setExistingBudget(null); }}
+            onSuccess={() => { setIsBudgetModalOpen(false); setCheckinForBudget(null); setExistingBudget(null); }}
+            checkinData={checkinForBudget ? {
+              checkinId: checkinForBudget.id || checkinForBudget.firestoreId,
               clientId: checkinForBudget.clientId,
               clientName: checkinForBudget.clientName,
+              clientPhone: checkinForBudget.clientPhone,
               vehiclePlate: checkinForBudget.vehiclePlate,
               vehicleBrand: checkinForBudget.vehicleBrand,
               vehicleModel: checkinForBudget.vehicleModel,
-              items: []
-            } : null}
+              vehicleYear: checkinForBudget.vehicleYear,
+              vehicleColor: checkinForBudget.vehicleColor,
+            } : undefined}
+          />
+        )}
+        {isBudgetModalOpen && existingBudget && (
+          <EditBudgetRoute
+            isOpen={isBudgetModalOpen}
+            onClose={() => { setIsBudgetModalOpen(false); setCheckinForBudget(null); setExistingBudget(null); }}
+            onSuccess={() => { setIsBudgetModalOpen(false); setCheckinForBudget(null); setExistingBudget(null); }}
+            budgetId={existingBudget.id || existingBudget.firestoreId}
           />
         )}
         {showDetailsModal && detailsCheckinId && (
           <CheckinDetailsModal
             checkinId={detailsCheckinId}
-            onClose={() => { setShowDetailsModal(false); setDetailsCheckinId(null); }}
+            vehicleBrand={detailsVehicleBrand}
+            onClose={() => { 
+              setShowDetailsModal(false); 
+              setDetailsCheckinId(null); 
+              setDetailsVehicleBrand(null);
+            }}
+            onEdit={(checkin) => {
+              setShowDetailsModal(false);
+              setDetailsCheckinId(null);
+              setDetailsVehicleBrand(null);
+              setCheckinToEdit(checkin);
+              setIsEditModalOpen(true);
+            }}
           />
         )}
         
@@ -477,20 +535,6 @@ const CheckInPage = () => {
               model: selectedForCheckout.vehicleModel,
               mileage: selectedForCheckout.mileage || 45000,
             } : null}
-            checkinId={selectedForCheckout?.firestoreId}
-          />
-        )}
-        {isHealthModalOpen && (
-          <VehicleHealthModal
-            isOpen={isHealthModalOpen}
-            onClose={() => setIsHealthModalOpen(false)}
-            vehicleInfo={selectedForCheckout ? {
-              plate: selectedForCheckout.vehiclePlate,
-              make: selectedForCheckout.vehicleBrand,
-              model: selectedForCheckout.vehicleModel,
-              mileage: selectedForCheckout.mileage || 45000,
-            } : null}
-            checkinId={selectedForCheckout?.firestoreId}
           />
         )}
         {isHistoryModalOpen && (
@@ -503,7 +547,6 @@ const CheckInPage = () => {
               model: selectedForCheckout.vehicleModel,
               mileage: selectedForCheckout.mileage || 45000,
             } : null}
-            checkinId={selectedForCheckout?.firestoreId}
           />
         )}
       </Suspense>
@@ -511,15 +554,107 @@ const CheckInPage = () => {
   );
 };
 
+// ============================================================================
+// BRAND COLORS - Sistema de tokens derivados automaticamente
+// Usa cores oficiais como acento controlado, nunca dominante
+// ============================================================================
+
+/**
+ * PREMIUM AUTOMOTIVE HOVER SYSTEM
+ * Usa o mapa de temas premium para gerar cores de hover
+ * Inspirado em pintura automotiva metálica
+ */
+const getBrandColors = (brand) => {
+  const theme = getBrandTheme(brand);
+  
+  return {
+    // Cor oficial
+    primary: theme.brandOfficialColor,
+    accent: theme.brandAccent,
+    secondary: theme.brandAccentMuted,
+    
+    // Hover gradient premium - inspirado em pintura metálica
+    hover: theme.brandHoverGradient,
+    
+    // Overlay metálico
+    metallicOverlay: theme.brandMetallicOverlay,
+    
+    // Glow da marca
+    glow: theme.brandGlow,
+    
+    // Borda luminosa
+    borderGlow: theme.brandBorderGlow,
+    
+    // Sombra adaptada
+    shadow: theme.brandShadow,
+    
+    // Texto
+    text: '#FFFFFF',
+    
+    // Accent para destaques
+    accentLight: theme.brandAccentLight,
+    
+    // Divider e border
+    divider: theme.brandDivider,
+    border: theme.brandBorder,
+    
+    // Focus
+    focusRing: theme.brandFocusRing,
+    
+    // Linha lateral - cor pura
+    energyLine: theme.brandAccent
+  };
+};
+
+
 // === RECORD ROW (List Mode) ===
-const RecordRow = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBudget, formatDate, formatTimeAgo, getStatusConfig, isDarkMode }) => {
+const RecordRow = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBudget, formatDate, formatTimeAgo, getStatusConfig, isDarkMode, hasBudget }) => {
   const effectiveBrand = getEffectiveBrand(checkin.vehicleBrand, checkin.vehicleModel);
   const logoUrl = getBrandLogoUrl(effectiveBrand, checkin.vehicleModel, isDarkMode);
   const status = getStatusConfig(checkin.status);
   const brandInitial = (effectiveBrand || 'V').charAt(0).toUpperCase();
+  const brandColors = getBrandColors(effectiveBrand);
   
-  // Verificar se é uma logo específica para dark mode (não aplicar filtro)
-  const hasDarkModeLogo = isDarkMode && logoUrl && logoUrl.includes('svgrepo.com');
+  // Verificar tipo de logo para dark mode e tamanhos especiais
+  const isNoFilterLogo = isDarkMode && logoUrl && (logoUrl.includes('ford-dark') || logoUrl.includes('ferrari-dark') || logoUrl.includes('bmw-dark'));
+  const isInvertOnlyLogo = isDarkMode && logoUrl && (logoUrl.includes('svgrepo.com') || logoUrl.includes('kia') || logoUrl.includes('lamborghini-dark'));
+  const isPorscheNoFilter = isDarkMode && logoUrl && logoUrl.includes('porsche') && logoUrl.includes('worldvectorlogo');
+  const isJeep = !isDarkMode && logoUrl && logoUrl.includes('jeep');
+  const isFord = logoUrl && logoUrl.includes('ford');
+  const isMercedes = logoUrl && logoUrl.includes('mercedes');
+  const isLandRover = logoUrl && (logoUrl.includes('land-rover') || logoUrl.includes('land_rover'));
+  const isChevrolet = logoUrl && logoUrl.includes('chevrolet');
+  const isKia = logoUrl && logoUrl.includes('kia');
+  const isFerrari = logoUrl && logoUrl.includes('ferrari');
+  const isByd = logoUrl && logoUrl.includes('byd');
+  const isLamborghini = logoUrl && logoUrl.includes('lamborghini');
+  const isMclaren = logoUrl && logoUrl.includes('mclaren');
+  const isPeugeot = logoUrl && logoUrl.includes('peugeot');
+  const isMitsubishi = logoUrl && logoUrl.includes('mitsubishi');
+  const isCitroen = logoUrl && logoUrl.includes('citroen');
+  const isNissan = logoUrl && logoUrl.includes('nissan');
+  const isJaguar = logoUrl && logoUrl.includes('jaguar');
+  const isHonda = logoUrl && logoUrl.includes('honda');
+  const isRenault = logoUrl && logoUrl.includes('renault');
+  const isVolkswagen = logoUrl && logoUrl.includes('volkswagen');
+  const isYamaha = logoUrl && logoUrl.includes('yamaha');
+  const isHyundai = logoUrl && logoUrl.includes('hyundai');
+  const isToyota = logoUrl && logoUrl.includes('toyota');
+  const isAudi = logoUrl && logoUrl.includes('audi');
+  const isFiat = logoUrl && logoUrl.includes('fiat');
+  const isBmw = logoUrl && logoUrl.includes('bmw');
+  const isMini = logoUrl && logoUrl.includes('mini');
+  const isDodge = logoUrl && logoUrl.includes('dodge');
+  const isVolvo = logoUrl && logoUrl.includes('volvo');
+  const isPorsche = logoUrl && logoUrl.includes('porsche');
+  const isGwm = logoUrl && (logoUrl.includes('gwm') || logoUrl.includes('Logotipo Branco'));
+  const isKawasaki = logoUrl && logoUrl.toLowerCase().includes('kawasaki');
+  const isSuzuki = logoUrl && logoUrl.toLowerCase().includes('suzuki');
+  const isJac = logoUrl && logoUrl.toLowerCase().includes('jac');
+  const isRoyalEnfield = logoUrl && (logoUrl.includes('royal') || logoUrl.includes('Royal_Enfield'));
+  const isChery = logoUrl && logoUrl.toLowerCase().includes('chery');
+  const brandLower = (effectiveBrand || '').toLowerCase();
+  const isLandRoverBrand = brandLower.includes('land') && brandLower.includes('rover');
 
   return (
     <motion.div
@@ -528,6 +663,14 @@ const RecordRow = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBud
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.02 }}
       onClick={() => onSelect(checkin)}
+      style={{
+        '--brand-primary': brandColors.primary,
+        '--brand-secondary': brandColors.secondary,
+        '--brand-accent': brandColors.accent || brandColors.secondary,
+        '--brand-hover': brandColors.hover,
+        '--brand-glow': brandColors.glow || 'rgba(0, 0, 0, 0.2)',
+        '--brand-text': brandColors.text,
+      }}
     >
       {/* Checkbox */}
       <div className={`ck-row__check ${isSelected ? 'checked' : ''}`}>
@@ -540,7 +683,7 @@ const RecordRow = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBud
           <img 
             src={logoUrl} 
             alt={effectiveBrand} 
-            className={`ck-row__brand-img ${hasDarkModeLogo ? 'ck-row__brand-img--no-filter' : ''}`} 
+            className={`ck-row__brand-img ${isNoFilterLogo ? 'ck-row__brand-img--no-filter' : ''} ${isInvertOnlyLogo ? 'ck-row__brand-img--invert-only' : ''} ${isJeep ? 'ck-row__brand-img--jeep' : ''} ${isFord ? 'ck-row__brand-img--ford' : ''} ${isMercedes ? 'ck-row__brand-img--mercedes' : ''} ${(isLandRover || isLandRoverBrand) ? 'ck-row__brand-img--land-rover' : ''} ${isChevrolet ? 'ck-row__brand-img--chevrolet' : ''} ${isKia ? 'ck-row__brand-img--kia' : ''} ${isFerrari ? 'ck-row__brand-img--ferrari' : ''} ${isByd ? 'ck-row__brand-img--byd' : ''} ${isLamborghini ? 'ck-row__brand-img--lamborghini' : ''} ${isMclaren ? 'ck-row__brand-img--mclaren' : ''} ${isPeugeot ? 'ck-row__brand-img--peugeot' : ''} ${isMitsubishi ? 'ck-row__brand-img--mitsubishi' : ''} ${isCitroen ? 'ck-row__brand-img--citroen' : ''} ${isNissan ? 'ck-row__brand-img--nissan' : ''} ${isJaguar ? 'ck-row__brand-img--jaguar' : ''} ${isHonda ? 'ck-row__brand-img--honda' : ''} ${isRenault ? 'ck-row__brand-img--renault' : ''} ${isVolkswagen ? 'ck-row__brand-img--volkswagen' : ''} ${isYamaha ? 'ck-row__brand-img--yamaha' : ''} ${isHyundai ? 'ck-row__brand-img--hyundai' : ''} ${isToyota ? 'ck-row__brand-img--toyota' : ''} ${isAudi ? 'ck-row__brand-img--audi' : ''} ${isFiat ? 'ck-row__brand-img--fiat' : ''} ${isBmw ? 'ck-row__brand-img--bmw' : ''} ${isMini ? 'ck-row__brand-img--mini' : ''} ${isDodge ? 'ck-row__brand-img--dodge' : ''} ${isVolvo ? 'ck-row__brand-img--volvo' : ''} ${isPorsche ? 'ck-row__brand-img--porsche' : ''} ${isGwm ? 'ck-row__brand-img--gwm' : ''} ${isKawasaki ? 'ck-row__brand-img--kawasaki' : ''} ${isSuzuki ? 'ck-row__brand-img--suzuki' : ''} ${isJac ? 'ck-row__brand-img--jac' : ''} ${isRoyalEnfield ? 'ck-row__brand-img--royal-enfield' : ''} ${isChery ? 'ck-row__brand-img--chery' : ''}`}
           />
         ) : (
           <span className="ck-row__brand-fallback">{brandInitial}</span>
@@ -576,16 +719,29 @@ const RecordRow = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBud
         {status.label}
       </div>
 
-      {/* Actions */}
+      {/* Actions - Premium hierarchy */}
       <div className="ck-row__actions">
-        <button onClick={(e) => { e.stopPropagation(); onView(); }} title="Ver detalhes">
+        <button 
+          className="ck-action-btn ck-action-btn--primary"
+          onClick={(e) => { e.stopPropagation(); onView(); }} 
+          title="Ver detalhes"
+        >
           <Icons.Eye />
         </button>
-        <button onClick={(e) => { e.stopPropagation(); onEdit(); }} title="Editar">
+        <button 
+          className="ck-action-btn ck-action-btn--secondary"
+          onClick={(e) => { e.stopPropagation(); onEdit(); }} 
+          title="Editar"
+        >
           <Icons.Edit />
         </button>
-        <button onClick={(e) => { e.stopPropagation(); onBudget(); }} title="Orçamento">
+        <button 
+          className={`ck-action-btn ck-action-btn--secondary ${hasBudget ? 'has-budget' : ''}`}
+          onClick={(e) => { e.stopPropagation(); onBudget(); }} 
+          title={hasBudget ? "Editar Orçamento" : "Criar Orçamento"}
+        >
           <Icons.File />
+          {hasBudget && <span className="budget-indicator" />}
         </button>
       </div>
     </motion.div>
@@ -593,14 +749,50 @@ const RecordRow = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBud
 };
 
 // === RECORD CARD (Grid Mode) - Premium Design ===
-const RecordCard = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBudget, formatDate, getStatusConfig, isDarkMode }) => {
+const RecordCard = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBudget, formatDate, getStatusConfig, isDarkMode, hasBudget }) => {
   const effectiveBrand = getEffectiveBrand(checkin.vehicleBrand, checkin.vehicleModel);
   const logoUrl = getBrandLogoUrl(effectiveBrand, checkin.vehicleModel, isDarkMode);
   const status = getStatusConfig(checkin.status);
   const brandInitial = (effectiveBrand || 'V').charAt(0).toUpperCase();
+  const brandColors = getBrandColors(effectiveBrand);
   
-  // Verificar se é uma logo específica para dark mode (não aplicar filtro)
-  const hasDarkModeLogo = isDarkMode && logoUrl && logoUrl.includes('svgrepo.com');
+  // Verificar tipo de logo para dark mode
+  const isNoFilterLogo = isDarkMode && logoUrl && (logoUrl.includes('ford-dark') || logoUrl.includes('ferrari-dark') || logoUrl.includes('bmw-dark'));
+  const isInvertOnlyLogo = isDarkMode && logoUrl && (logoUrl.includes('svgrepo.com') || logoUrl.includes('kia') || logoUrl.includes('lamborghini-dark'));
+  const isYamaha = logoUrl && logoUrl.includes('yamaha');
+  const isLandRover = logoUrl && logoUrl.includes('land-rover');
+  const isMercedes = logoUrl && logoUrl.includes('mercedes');
+  const isJeep = !isDarkMode && logoUrl && logoUrl.includes('jeep');
+  const isKia = logoUrl && logoUrl.includes('kia');
+  const isFerrari = logoUrl && logoUrl.includes('ferrari');
+  const isHonda = logoUrl && logoUrl.includes('honda');
+  const isAudi = logoUrl && logoUrl.includes('audi');
+  const isNissan = logoUrl && logoUrl.includes('nissan');
+  const isCitroen = logoUrl && logoUrl.includes('citroen');
+  const isToyota = logoUrl && logoUrl.includes('toyota');
+  const isByd = logoUrl && logoUrl.includes('byd');
+  const isLamborghini = logoUrl && logoUrl.includes('lamborghini');
+  const isMclaren = logoUrl && logoUrl.includes('mclaren');
+  const isFord = logoUrl && logoUrl.includes('ford');
+  const isChevrolet = logoUrl && logoUrl.includes('chevrolet');
+  const isRenault = logoUrl && logoUrl.includes('renault');
+  const isFiat = logoUrl && logoUrl.includes('fiat');
+  const isBmw = logoUrl && logoUrl.includes('bmw');
+  const isPeugeot = logoUrl && logoUrl.includes('peugeot');
+  const isMitsubishi = logoUrl && logoUrl.includes('mitsubishi');
+  const isJaguar = logoUrl && logoUrl.includes('jaguar');
+  const isVolkswagen = logoUrl && logoUrl.includes('volkswagen');
+  const isHyundai = logoUrl && logoUrl.includes('hyundai');
+  const isMini = logoUrl && logoUrl.includes('mini');
+  const isDodge = logoUrl && logoUrl.includes('dodge');
+  const isVolvo = logoUrl && logoUrl.includes('volvo');
+  const isGwm = logoUrl && (logoUrl.includes('gwm') || logoUrl.includes('Logotipo Branco'));
+  const isKawasaki = logoUrl && logoUrl.toLowerCase().includes('kawasaki');
+  const isSuzuki = logoUrl && logoUrl.toLowerCase().includes('suzuki');
+  const isJac = logoUrl && logoUrl.toLowerCase().includes('jac');
+  const isRoyalEnfield = logoUrl && (logoUrl.includes('royal') || logoUrl.includes('Royal_Enfield'));
+  const brandLower = (effectiveBrand || '').toLowerCase();
+  const isLandRoverBrand = brandLower.includes('land') && brandLower.includes('rover');
 
   return (
     <motion.div
@@ -609,6 +801,14 @@ const RecordCard = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBu
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.03 }}
       onClick={() => onSelect(checkin)}
+      style={{
+        '--brand-primary': brandColors.primary,
+        '--brand-secondary': brandColors.secondary,
+        '--brand-accent': brandColors.accent || brandColors.secondary,
+        '--brand-hover': brandColors.hover,
+        '--brand-glow': brandColors.glow || 'rgba(0, 0, 0, 0.2)',
+        '--brand-text': brandColors.text,
+      }}
     >
       {/* Selection Indicator */}
       <div className={`ck-card__selector ${isSelected ? 'active' : ''}`}>
@@ -621,7 +821,7 @@ const RecordCard = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBu
           <img 
             src={logoUrl} 
             alt={effectiveBrand} 
-            className={`ck-card__brand-logo ${hasDarkModeLogo ? 'ck-card__brand-logo--no-filter' : ''}`} 
+            className={`ck-card__brand-logo ${isNoFilterLogo ? 'ck-card__brand-logo--no-filter' : ''} ${isInvertOnlyLogo ? 'ck-card__brand-logo--invert-only' : ''} ${isYamaha ? 'ck-card__brand-logo--yamaha' : ''} ${isLandRover || isLandRoverBrand ? 'ck-card__brand-logo--land-rover' : ''} ${isMercedes ? 'ck-card__brand-logo--mercedes' : ''} ${isJeep ? 'ck-card__brand-logo--jeep' : ''} ${isKia ? 'ck-card__brand-logo--kia' : ''} ${isFerrari ? 'ck-card__brand-logo--ferrari' : ''} ${isHonda ? 'ck-card__brand-logo--honda' : ''} ${isAudi ? 'ck-card__brand-logo--audi' : ''} ${isNissan ? 'ck-card__brand-logo--nissan' : ''} ${isCitroen ? 'ck-card__brand-logo--citroen' : ''} ${isToyota ? 'ck-card__brand-logo--toyota' : ''} ${isByd ? 'ck-card__brand-logo--byd' : ''} ${isLamborghini ? 'ck-card__brand-logo--lamborghini' : ''} ${isMclaren ? 'ck-card__brand-logo--mclaren' : ''} ${isFord ? 'ck-card__brand-logo--ford' : ''} ${isChevrolet ? 'ck-card__brand-logo--chevrolet' : ''} ${isRenault ? 'ck-card__brand-logo--renault' : ''} ${isFiat ? 'ck-card__brand-logo--fiat' : ''} ${isBmw ? 'ck-card__brand-logo--bmw' : ''} ${isPeugeot ? 'ck-card__brand-logo--peugeot' : ''} ${isMitsubishi ? 'ck-card__brand-logo--mitsubishi' : ''} ${isJaguar ? 'ck-card__brand-logo--jaguar' : ''} ${isVolkswagen ? 'ck-card__brand-logo--volkswagen' : ''} ${isHyundai ? 'ck-card__brand-logo--hyundai' : ''} ${isMini ? 'ck-card__brand-logo--mini' : ''} ${isDodge ? 'ck-card__brand-logo--dodge' : ''} ${isVolvo ? 'ck-card__brand-logo--volvo' : ''} ${isGwm ? 'ck-card__brand-logo--gwm' : ''} ${isKawasaki ? 'ck-card__brand-logo--kawasaki' : ''} ${isSuzuki ? 'ck-card__brand-logo--suzuki' : ''} ${isJac ? 'ck-card__brand-logo--jac' : ''} ${isRoyalEnfield ? 'ck-card__brand-logo--royal-enfield' : ''}`}
           />
         ) : (
           <span className="ck-card__brand-initial">{brandInitial}</span>
@@ -661,8 +861,13 @@ const RecordCard = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBu
           <button onClick={(e) => { e.stopPropagation(); onEdit(); }} title="Editar">
             <Icons.Edit />
           </button>
-          <button onClick={(e) => { e.stopPropagation(); onBudget(); }} title="Orçamento">
+          <button 
+            onClick={(e) => { e.stopPropagation(); onBudget(); }} 
+            title={hasBudget ? "Editar Orçamento" : "Criar Orçamento"}
+            className={hasBudget ? 'has-budget' : ''}
+          >
             <Icons.File />
+            {hasBudget && <span className="budget-indicator" />}
           </button>
         </div>
       </div>

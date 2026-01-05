@@ -447,6 +447,15 @@
     transition-duration: 0.2s !important;
   }
   
+  /* GLOBAL: Logos de marcas - SEM transição durante mudança de tema */
+  img[class*="brand"],
+  [class*="brand-img"],
+  [class*="brand-logo"],
+  .ck-row__brand-img,
+  .ck-card__brand-logo {
+    transition: none !important;
+  }
+  
   /* Prevent horizontal overflow */
   .prevent-overflow {
     max-width: 100vw;
