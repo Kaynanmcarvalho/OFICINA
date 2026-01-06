@@ -1,0 +1,66 @@
+/**
+ * TORQ — Novo Check-in Modal
+ * CSS específico para forçar tema escuro nos inputs
+ * Sobrescreve regras globais com !important
+ */
+
+/* Container do modal - identificador único */
+.novo-checkin-modal input,
+.novo-checkin-modal input[type="text"],
+.novo-checkin-modal input[type="email"],
+.novo-checkin-modal input[type="tel"],
+.novo-checkin-modal input[type="number"],
+.novo-checkin-modal input[type="search"],
+.novo-checkin-modal textarea,
+.novo-checkin-modal select {
+  background: #1a1a1a !important;
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  caret-color: #ffffff !important;
+}
+
+.novo-checkin-modal input::placeholder,
+.novo-checkin-modal textarea::placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.novo-checkin-modal input:focus,
+.novo-checkin-modal textarea:focus,
+.novo-checkin-modal select:focus {
+  background: #1a1a1a !important;
+  background-color: #1a1a1a !important;
+  border-color: rgba(59, 130, 246, 0.5) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Autofill override - Chrome/Safari */
+.novo-checkin-modal input:-webkit-autofill,
+.novo-checkin-modal input:-webkit-autofill:hover,
+.novo-checkin-modal input:-webkit-autofill:focus,
+.novo-checkin-modal input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #1a1a1a inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background-color: #1a1a1a !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* Textarea específico */
+.novo-checkin-modal textarea {
+  resize: none !important;
+}
+
+/* Select específico */
+.novo-checkin-modal select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+/* Remove estilos de validação do browser */
+.novo-checkin-modal input:invalid,
+.novo-checkin-modal textarea:invalid {
+  box-shadow: none !important;
+}

@@ -15,7 +15,7 @@ import { getBrandTheme, OFFICIAL_BRAND_COLORS } from '../utils/brandModalTheme';
 import '../styles/checkin-cinematic.css';
 
 // Lazy load modals
-const ModalCheckin = lazy(() => import('./checkin/componentes/ModalCheckinPremium'));
+const ModalCheckin = lazy(() => import('./checkin/componentes/NovoCheckinModal'));
 const ModalCheckout = lazy(() => import('./checkin/componentes/ModalCheckoutPremium'));
 const ModalEditarCheckin = lazy(() => import('./checkin/componentes/ModalEditarCheckin'));
 const CreateBudgetRoute = lazy(() => import('../features/budget/routes/create').then(m => ({ default: m.CreateBudgetRoute })));
