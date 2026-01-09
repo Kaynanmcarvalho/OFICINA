@@ -53,7 +53,7 @@ export const shellStyles = {
 export const headerStyles = {
   container: {
     position: 'relative' as const,
-    padding: `${spacing.lg} ${spacing.xl}`,
+    padding: `${spacing.sm} ${spacing.xl}`,
     background: colors.base.secondary,
     borderBottom: `1px solid ${colors.border.subtle}`,
     zIndex: 2,
@@ -73,7 +73,7 @@ export const headerStyles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: spacing.lg,
+    marginBottom: spacing.sm,
   },
   
   brandInfo: {
@@ -98,7 +98,7 @@ export const headerStyles = {
     ...typography.caption,
     padding: `${spacing.xs} ${spacing.sm}`,
     background: `${accentHex}20`,
-    color: accentHex,
+    color: '#FFFFFF',
     borderRadius: radius.full,
     fontWeight: 500,
   }),
@@ -162,7 +162,7 @@ export const sectionStyles = {
 export const footerStyles = {
   container: {
     position: 'relative' as const,
-    padding: `${spacing.lg} ${spacing.xl}`,
+    padding: `${spacing.sm} ${spacing.xl}`,
     background: colors.base.secondary,
     borderTop: `1px solid ${colors.border.subtle}`,
     display: 'flex',
@@ -185,7 +185,7 @@ export const footerStyles = {
   totalValue: {
     ...typography.title,
     color: colors.text.primary,
-    fontSize: '24px',
+    fontSize: '20px',
   },
   
   actions: {
@@ -221,7 +221,9 @@ export const inputStyles = {
     width: '100%',
     padding: `${spacing.md} ${spacing.md}`,
     background: colors.surface.soft,
-    border: `1px solid ${colors.border.subtle}`,
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: colors.border.subtle,
     borderRadius: radius.md,
     boxShadow: shadows.interactive,
     color: colors.text.primary,
@@ -232,11 +234,15 @@ export const inputStyles = {
   
   fieldFocus: (accentRgb: string) => ({
     background: colors.surface.medium,
+    borderWidth: '1px',
+    borderStyle: 'solid',
     borderColor: `rgba(${accentRgb}, 0.3)`,
     boxShadow: shadows.focus(accentRgb),
   }),
   
   fieldError: {
+    borderWidth: '1px',
+    borderStyle: 'solid',
     borderColor: colors.state.error,
     boxShadow: `0 0 0 3px rgba(255, 69, 58, 0.15)`,
   },
@@ -296,7 +302,9 @@ export const buttonStyles = {
     padding: `${spacing.md} ${spacing.lg}`,
     background: colors.surface.soft,
     color: colors.text.secondary,
-    border: `1px solid ${colors.border.default}`,
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: colors.border.default,
     borderRadius: radius.md,
     ...typography.body,
     fontWeight: 500,
@@ -311,6 +319,8 @@ export const buttonStyles = {
   secondaryHover: {
     background: colors.surface.medium,
     color: colors.text.primary,
+    borderWidth: '1px',
+    borderStyle: 'solid',
     borderColor: colors.border.strong,
   },
   
@@ -360,11 +370,13 @@ export const stepperStyles = {
   },
   
   indicator: {
-    width: '48px',
-    height: '48px',
-    borderRadius: radius.lg,
+    width: '40px',
+    height: '40px',
+    borderRadius: radius.md,
     background: colors.surface.soft,
-    border: `1px solid ${colors.border.subtle}`,
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: colors.border.subtle,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -375,6 +387,8 @@ export const stepperStyles = {
   
   indicatorActive: (accentHex: string, accentRgb: string) => ({
     background: accentHex,
+    borderWidth: '1px',
+    borderStyle: 'solid',
     borderColor: 'transparent',
     color: '#FFFFFF',
     boxShadow: `
@@ -385,6 +399,8 @@ export const stepperStyles = {
   
   indicatorComplete: {
     background: `${colors.state.success}20`,
+    borderWidth: '1px',
+    borderStyle: 'solid',
     borderColor: colors.state.success,
     color: colors.state.success,
   },
@@ -403,7 +419,7 @@ export const stepperStyles = {
   
   connector: {
     position: 'absolute' as const,
-    top: '24px',
+    top: '20px',
     left: '60%',
     width: '80%',
     height: '2px',
@@ -496,13 +512,17 @@ export const itemListStyles = {
     gap: spacing.md,
     padding: spacing.md,
     background: colors.surface.soft,
-    border: `1px solid ${colors.border.subtle}`,
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: colors.border.subtle,
     borderRadius: radius.md,
     transition: transitions.fast,
   },
   
   itemHover: {
     background: colors.surface.medium,
+    borderWidth: '1px',
+    borderStyle: 'solid',
     borderColor: colors.border.default,
   },
   

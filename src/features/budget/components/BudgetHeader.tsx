@@ -80,15 +80,15 @@ export const BudgetHeader: React.FC<BudgetHeaderProps> = ({
   // Calculate logo dimensions
   const getLogoStyle = () => {
     if (isJac) {
-      return { height: '70px', maxWidth: '200px' };
+      return { height: '50px', maxWidth: '150px' };
     }
     if (isDodge) {
-      return { height: '65px', maxWidth: '190px' };
+      return { height: '48px', maxWidth: '140px' };
     }
     if (isSmallLogo) {
-      return { height: '40px', maxWidth: '100px' };
+      return { height: '32px', maxWidth: '80px' };
     }
-    return { height: '52px', maxWidth: '160px' };
+    return { height: '40px', maxWidth: '120px' };
   };
   
   const logoStyle = getLogoStyle();

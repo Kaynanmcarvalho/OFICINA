@@ -46,13 +46,25 @@ export const consultarPlaca = async (plate) => {
     }
 
     const responseData = await response.json();
-    console.log('[VehicleAPI] ✅ Dados recebidos:', responseData);
+    console.log('[VehicleAPI] ✅ Dados recebidos (raw):', JSON.stringify(responseData, null, 2));
+
+    // Verifica se a resposta indica sucesso
+    if (responseData.success === false) {
+      console.log('[VehicleAPI] ⚠️ API retornou success: false');
+      return {
+        success: false,
+        error: responseData.error || 'Veículo não encontrado'
+      };
+    }
 
     // A API pode retornar {success, data} ou diretamente os dados
     const vehicleData = responseData.data || responseData;
-    console.log('[VehicleAPI] 📦 Dados do veículo:', vehicleData);
+    console.log('[VehicleAPI] 📦 Dados do veículo extraídos:', JSON.stringify(vehicleData, null, 2));
 
-    return normalizeVehicleData(cleanPlate, vehicleData);
+    const normalized = normalizeVehicleData(cleanPlate, vehicleData);
+    console.log('[VehicleAPI] 🔄 Dados normalizados:', JSON.stringify(normalized, null, 2));
+    
+    return normalized;
 
   } catch (error) {
     console.error('[VehicleAPI] ❌ Erro na consulta:', error);

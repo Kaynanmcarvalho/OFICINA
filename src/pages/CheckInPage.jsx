@@ -610,14 +610,15 @@ const getBrandColors = (brand) => {
 // === RECORD ROW (List Mode) ===
 const RecordRow = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBudget, formatDate, formatTimeAgo, getStatusConfig, isDarkMode, hasBudget }) => {
   const effectiveBrand = getEffectiveBrand(checkin.vehicleBrand, checkin.vehicleModel);
-  const logoUrl = getBrandLogoUrl(effectiveBrand, checkin.vehicleModel, isDarkMode);
+  const logoUrl = getBrandLogoUrl(effectiveBrand, checkin.vehicleModel);
   const status = getStatusConfig(checkin.status);
   const brandInitial = (effectiveBrand || 'V').charAt(0).toUpperCase();
   const brandColors = getBrandColors(effectiveBrand);
   
-  // Verificar tipo de logo para dark mode e tamanhos especiais
-  const isNoFilterLogo = isDarkMode && logoUrl && (logoUrl.includes('ford-dark') || logoUrl.includes('ferrari-dark') || logoUrl.includes('bmw-dark'));
-  const isInvertOnlyLogo = isDarkMode && logoUrl && (logoUrl.includes('svgrepo.com') || logoUrl.includes('kia') || logoUrl.includes('lamborghini-dark'));
+  // Verificar tipo de logo para tamanhos especiais e filtros
+  // NOTA: Agora usamos CSS para inversão de cores, não mais URLs diferentes
+  const isNoFilterLogo = logoUrl && (logoUrl.includes('ford') || logoUrl.includes('mini'));
+  const isInvertOnlyLogo = logoUrl && logoUrl.includes('svgrepo.com');
   const isPorscheNoFilter = isDarkMode && logoUrl && logoUrl.includes('porsche') && logoUrl.includes('worldvectorlogo');
   const isJeep = !isDarkMode && logoUrl && logoUrl.includes('jeep');
   const isFord = logoUrl && logoUrl.includes('ford');
@@ -751,18 +752,19 @@ const RecordRow = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBud
 // === RECORD CARD (Grid Mode) - Premium Design ===
 const RecordCard = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBudget, formatDate, getStatusConfig, isDarkMode, hasBudget }) => {
   const effectiveBrand = getEffectiveBrand(checkin.vehicleBrand, checkin.vehicleModel);
-  const logoUrl = getBrandLogoUrl(effectiveBrand, checkin.vehicleModel, isDarkMode);
+  const logoUrl = getBrandLogoUrl(effectiveBrand, checkin.vehicleModel);
   const status = getStatusConfig(checkin.status);
   const brandInitial = (effectiveBrand || 'V').charAt(0).toUpperCase();
   const brandColors = getBrandColors(effectiveBrand);
   
-  // Verificar tipo de logo para dark mode
-  const isNoFilterLogo = isDarkMode && logoUrl && (logoUrl.includes('ford-dark') || logoUrl.includes('ferrari-dark') || logoUrl.includes('bmw-dark'));
-  const isInvertOnlyLogo = isDarkMode && logoUrl && (logoUrl.includes('svgrepo.com') || logoUrl.includes('kia') || logoUrl.includes('lamborghini-dark'));
+  // Verificar tipo de logo para filtros especiais
+  // NOTA: Agora usamos CSS para inversão de cores, não mais URLs diferentes
+  const isNoFilterLogo = logoUrl && (logoUrl.includes('ford') || logoUrl.includes('mini'));
+  const isInvertOnlyLogo = logoUrl && logoUrl.includes('svgrepo.com');
   const isYamaha = logoUrl && logoUrl.includes('yamaha');
   const isLandRover = logoUrl && logoUrl.includes('land-rover');
   const isMercedes = logoUrl && logoUrl.includes('mercedes');
-  const isJeep = !isDarkMode && logoUrl && logoUrl.includes('jeep');
+  const isJeep = logoUrl && logoUrl.includes('jeep');
   const isKia = logoUrl && logoUrl.includes('kia');
   const isFerrari = logoUrl && logoUrl.includes('ferrari');
   const isHonda = logoUrl && logoUrl.includes('honda');

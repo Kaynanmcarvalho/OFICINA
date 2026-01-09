@@ -2,10 +2,31 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 const { scrapeKeplaca } = require('../services/keplacaScraper');
+const { getStats } = require('../services/vehicleDatabase');
+
+/**
+ * GET /api/vehicles/database/stats
+ * Retorna estatísticas da base de dados de veículos
+ */
+router.get('/database/stats', async (req, res) => {
+    try {
+        const stats = await getStats();
+        res.json({
+            success: true,
+            data: stats
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
 
 /**
  * GET /api/vehicles/plate/:plate
- * Consulta dados do veículo pela placa usando APENAS Keplaca.com com Puppeteer
+ * Consulta dados do veículo pela placa
+ * PRIORIDADE: 1. Base própria (Firebase) → 2. APIs externas
  */
 router.get('/plate/:plate', async (req, res) => {
     try {
@@ -21,14 +42,14 @@ router.get('/plate/:plate', async (req, res) => {
 
         console.log(`[VEHICLE API] 🔍 Consultando placa: ${cleanPlate}`);
 
-        // Keplaca.com com Puppeteer
+        // Keplaca.com com Puppeteer (anti-bloqueio)
         const result = await scrapeKeplaca(cleanPlate);
         
         if (result.success) {
             console.log('[VEHICLE API] ✅ Keplaca - SUCESSO!');
             return res.json(result);
         } else {
-            console.log('[VEHICLE API] ⚠️  Keplaca - Placa não encontrada');
+            console.log('[VEHICLE API] ⚠️ Keplaca - Placa não encontrada');
             return res.json({
                 success: false,
                 error: result.error || 'Placa não encontrada',
@@ -59,7 +80,7 @@ router.get('/brands/:type', async (req, res) => {
         const { type } = req.params;
         const vehicleType = getVehicleTypeForApi(type);
 
-        console.log(`[VEHICLE API] 🏷️  Buscando marcas de ${vehicleType}...`);
+        console.log(`[VEHICLE API] 🏷️ Buscando marcas de ${vehicleType}...`);
 
         const response = await axios.get(
             `https://parallelum.com.br/fipe/api/v1/${vehicleType}/marcas`,
@@ -98,7 +119,7 @@ router.get('/models/:type/:brandCode', async (req, res) => {
         const { type, brandCode } = req.params;
         const vehicleType = getVehicleTypeForApi(type);
 
-        console.log(`[VEHICLE API] 🏍️  Buscando modelos de ${vehicleType}/${brandCode}...`);
+        console.log(`[VEHICLE API] 🏍️ Buscando modelos de ${vehicleType}/${brandCode}...`);
 
         const response = await axios.get(
             `https://parallelum.com.br/fipe/api/v1/${vehicleType}/marcas/${brandCode}/modelos`,

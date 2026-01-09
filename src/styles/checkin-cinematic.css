@@ -7,12 +7,46 @@
  */
 
 /* ============================================================================
-   GLOBAL: Desabilitar transições em imagens durante mudança de tema
+   GLOBAL: TRANSIÇÃO INSTANTÂNEA para logos durante mudança de tema
+   CRÍTICO: Estas regras devem ter alta especificidade para funcionar
    ============================================================================ */
+
+/* FORÇAR transição instantânea em TODAS as propriedades de logos */
 .ck-premium img,
 .ck-premium [class*="brand-img"],
-.ck-premium [class*="brand-logo"] {
+.ck-premium [class*="brand-logo"],
+.ck-row__brand-img,
+.ck-card__brand-logo,
+img[class*="brand"],
+[class*="ck-row__brand-img"],
+[class*="ck-card__brand-logo"] {
   transition: none !important;
+  transition-property: none !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+  /* Otimização de renderização - prepara o browser para mudanças de filter */
+  will-change: filter;
+  /* Força renderização em GPU para mudanças mais rápidas */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* FORÇAR filtro instantâneo - sem animação de filter */
+.ck-premium.dark .ck-row__brand-img,
+.ck-premium.dark .ck-card__brand-logo,
+.ck-premium.light .ck-row__brand-img,
+.ck-premium.light .ck-card__brand-logo,
+.ck-premium:not(.dark) .ck-row__brand-img,
+.ck-premium:not(.dark) .ck-card__brand-logo {
+  transition: none !important;
+  transition-property: none !important;
+}
+
+/* Permitir APENAS transform no hover (não filter) */
+.ck-premium .ck-row:hover .ck-row__brand-img,
+.ck-premium .ck-card:hover .ck-card__brand-logo {
+  transition: transform 0.15s ease-out !important;
+  transition-property: transform !important;
 }
 
 /* ============================================================================
@@ -140,24 +174,6 @@
 .ck-premium .ck-metric__value,
 .ck-premium .ck-metric__label {
   transition: color 0.15s ease;
-}
-
-/* Logos - transição INSTANTÂNEA para mudança de tema, suave apenas no hover */
-.ck-premium .ck-row__brand-img,
-.ck-premium .ck-card__brand-logo {
-  transition: none !important;
-}
-
-/* Logos - transição suave apenas no hover (transform only, não filter) */
-.ck-premium .ck-row:hover .ck-row__brand-img,
-.ck-premium .ck-card:hover .ck-card__brand-logo {
-  transition: transform 0.15s ease-out !important;
-}
-
-/* FORÇAR transição instantânea para TODAS as logos específicas de marca */
-.ck-row__brand-img[class*="--"],
-.ck-card__brand-logo[class*="--"] {
-  transition: none !important;
 }
 
 /* Elementos de UI - transição simplificada e mais rápida */
@@ -1958,10 +1974,18 @@
   max-height: none !important;
 }
 
-/* Volkswagen no modo lista */
+/* Volkswagen no modo lista - 5% menor */
 .ck-row__brand-img--volkswagen {
-  width: 85px !important;
-  height: 64px !important;
+  width: 81px !important;
+  height: 61px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Volkswagen no modo card - 5% menor */
+.ck-card__brand-logo--volkswagen {
+  width: 114px !important;
+  height: 71px !important;
   max-width: none !important;
   max-height: none !important;
 }

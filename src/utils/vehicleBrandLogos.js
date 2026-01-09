@@ -367,9 +367,11 @@ export const getEffectiveBrand = (brand, model) => {
 
 /**
  * Get the logo URL for a vehicle brand
+ * NOTA: Sempre retorna a mesma URL independente do tema para evitar recarregamento
+ * O CSS cuida da inversão de cores via filter: brightness(0) invert(1)
  * @param {string} brand - The vehicle brand name
  * @param {string} model - Optional model name for inference
- * @param {boolean} isDarkMode - Optional flag for dark mode logo variant
+ * @param {boolean} isDarkMode - DEPRECATED: Não mais usado, mantido para compatibilidade
  * @returns {string|null} - The logo URL or null if not found
  */
 export const getBrandLogoUrl = (brand, model = '', isDarkMode = false) => {
@@ -382,15 +384,8 @@ export const getBrandLogoUrl = (brand, model = '', isDarkMode = false) => {
   const logoName = BRAND_LOGO_MAP[normalizedBrand];
   
   if (logoName) {
-    // Check for dark mode specific logo first
-    if (isDarkMode && DARK_MODE_LOGOS[logoName]) {
-      return DARK_MODE_LOGOS[logoName];
-    }
-    
-    // Check for light mode specific logo
-    if (!isDarkMode && LIGHT_MODE_LOGOS[logoName]) {
-      return LIGHT_MODE_LOGOS[logoName];
-    }
+    // SEMPRE usar a logo padrão - CSS cuida da inversão de cores
+    // Isso evita recarregamento de imagem ao trocar de tema
     
     // Check if it's a brand with local logo
     if (LOCAL_BRAND_LOGOS[logoName]) {
@@ -401,16 +396,6 @@ export const getBrandLogoUrl = (brand, model = '', isDarkMode = false) => {
   
   // Try direct match with brand name
   const directMatch = normalizedBrand.replace(/\s+/g, '-');
-  
-  // Check for dark mode specific logo
-  if (isDarkMode && DARK_MODE_LOGOS[directMatch]) {
-    return DARK_MODE_LOGOS[directMatch];
-  }
-  
-  // Check for light mode specific logo
-  if (!isDarkMode && LIGHT_MODE_LOGOS[directMatch]) {
-    return LIGHT_MODE_LOGOS[directMatch];
-  }
   
   // Check if it's a brand with local logo
   if (LOCAL_BRAND_LOGOS[directMatch]) {

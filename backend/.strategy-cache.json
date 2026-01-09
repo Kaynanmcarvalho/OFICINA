@@ -1,0 +1,12 @@
+{
+  "lastSuccessful": "direct",
+  "successCount": {
+    "direct": 2,
+    "homepage_first": 0
+  },
+  "failCount": {
+    "direct": 3,
+    "homepage_first": 2
+  },
+  "lastUpdated": "2026-01-09T19:42:33.164Z"
+}

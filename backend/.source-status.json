@@ -1,0 +1,26 @@
+{
+  "apiplacas": {
+    "blocked": true,
+    "blockedUntil": 1767990008866,
+    "successCount": 0,
+    "failCount": 1
+  },
+  "placafipe": {
+    "blocked": true,
+    "blockedUntil": 1767990011988,
+    "successCount": 0,
+    "failCount": 1
+  },
+  "keplaca": {
+    "blocked": true,
+    "blockedUntil": 1767990015586,
+    "successCount": 0,
+    "failCount": 1
+  },
+  "consultaplaca": {
+    "blocked": false,
+    "blockedUntil": null,
+    "successCount": 4,
+    "failCount": 0
+  }
+}

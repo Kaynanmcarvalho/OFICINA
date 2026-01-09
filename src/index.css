@@ -448,12 +448,22 @@
   }
   
   /* GLOBAL: Logos de marcas - SEM transição durante mudança de tema */
+  /* CRÍTICO: Forçar transição instantânea para evitar flash de cor original */
   img[class*="brand"],
   [class*="brand-img"],
   [class*="brand-logo"],
   .ck-row__brand-img,
-  .ck-card__brand-logo {
+  .ck-card__brand-logo,
+  [class*="ck-row__brand-img"],
+  [class*="ck-card__brand-logo"] {
     transition: none !important;
+    transition-property: none !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    /* Otimização de renderização */
+    will-change: filter;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
   
   /* Prevent horizontal overflow */

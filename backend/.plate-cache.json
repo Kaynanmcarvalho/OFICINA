@@ -1,0 +1,41 @@
+{
+  "ABC1234": {
+    "data": {
+      "placa": "ABC1234",
+      "marca": "VOLKSWAGEN",
+      "modelo": "VOLKSWAGEN SANTANA CG 1986",
+      "ano": "1986",
+      "cor": "Vermelha",
+      "tipo": "Gasolina",
+      "chassi": "*****P246344",
+      "municipio": "LOBATO",
+      "uf": "PR"
+    },
+    "timestamp": 1767986665422
+  },
+  "BRA2E19": {
+    "data": {
+      "placa": "BRA2E19",
+      "marca": "FORD",
+      "modelo": "FORD F14000 HD 1994",
+      "ano": "1994",
+      "cor": "Branca",
+      "tipo": "Diesel",
+      "chassi": "",
+      "municipio": "VITORIA DE SANTO ANTAO",
+      "uf": "PE"
+    },
+    "timestamp": 1767986846840
+  },
+  "OZL7H33": {
+    "data": {
+      "placa": "OZL7H33",
+      "marca": "Fiat",
+      "modelo": "Fiat PUNTO ATTRACTIVE 2014",
+      "ano": "2014",
+      "cor": "Branca",
+      "fonte": "consultaplaca"
+    },
+    "timestamp": 1767988220194
+  }
+}
