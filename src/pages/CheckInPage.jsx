@@ -120,6 +120,12 @@ const Icons = {
       <polyline points="20 6 9 17 4 12" />
     </svg>
   ),
+  Clear: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  ),
 };
 
 const CheckInPage = () => {
@@ -178,15 +184,35 @@ const CheckInPage = () => {
     return { inProgress, waiting, ready, total: checkins.length };
   }, [checkins, budgets]);
 
-  // Filtered records
+  // Filtered records - Busca ampla por cliente, placa, marca, modelo, ano e cor
   const filteredCheckins = useMemo(() => {
     if (!searchTerm.trim()) return checkins;
-    const term = searchTerm.toLowerCase();
-    return checkins.filter(c => 
-      (c.clientName || '').toLowerCase().includes(term) ||
-      (c.vehiclePlate || '').toLowerCase().includes(term) ||
-      (c.vehicleModel || '').toLowerCase().includes(term)
-    );
+    const term = searchTerm.toLowerCase().trim();
+    
+    // Suporta múltiplos termos separados por espaço
+    const terms = term.split(/\s+/).filter(t => t.length > 0);
+    
+    return checkins.filter(c => {
+      // Campos pesquisáveis
+      const searchableFields = [
+        c.clientName || '',
+        c.clientPhone || '',
+        c.vehiclePlate || '',
+        c.vehicleBrand || '',
+        c.vehicleModel || '',
+        c.vehicleYear?.toString() || '',
+        c.vehicleColor || '',
+        // Combina marca + modelo para busca tipo "Honda Civic"
+        `${c.vehicleBrand || ''} ${c.vehicleModel || ''}`,
+        // Combina marca + modelo + ano para busca tipo "Civic 2020"
+        `${c.vehicleModel || ''} ${c.vehicleYear || ''}`,
+      ].map(f => f.toLowerCase());
+      
+      // Todos os termos devem corresponder a pelo menos um campo
+      return terms.every(t => 
+        searchableFields.some(field => field.includes(t))
+      );
+    });
   }, [checkins, searchTerm]);
 
   const handleSelectForCheckout = (checkin) => {
@@ -276,14 +302,23 @@ const CheckInPage = () => {
           </div>
         </div>
 
-        <div className="ck-panel__search">
+        <div className={`ck-panel__search ${searchTerm ? 'has-value' : ''}`}>
           <Icons.Search />
           <input
             type="text"
-            placeholder="Buscar cliente, placa ou veículo..."
+            placeholder="Buscar por cliente, placa, marca, modelo, ano..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+          {searchTerm && (
+            <button 
+              className="ck-panel__search-clear"
+              onClick={() => setSearchTerm('')}
+              aria-label="Limpar busca"
+            >
+              <Icons.Clear />
+            </button>
+          )}
         </div>
       </header>
 
@@ -654,6 +689,7 @@ const RecordRow = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBud
   const isJac = logoUrl && logoUrl.toLowerCase().includes('jac');
   const isRoyalEnfield = logoUrl && (logoUrl.includes('royal') || logoUrl.includes('Royal_Enfield'));
   const isChery = logoUrl && logoUrl.toLowerCase().includes('chery');
+  const isAstonMartin = logoUrl && (logoUrl.toLowerCase().includes('aston') || logoUrl.toLowerCase().includes('aston-martin'));
   const brandLower = (effectiveBrand || '').toLowerCase();
   const isLandRoverBrand = brandLower.includes('land') && brandLower.includes('rover');
 
@@ -684,7 +720,7 @@ const RecordRow = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBud
           <img 
             src={logoUrl} 
             alt={effectiveBrand} 
-            className={`ck-row__brand-img ${isNoFilterLogo ? 'ck-row__brand-img--no-filter' : ''} ${isInvertOnlyLogo ? 'ck-row__brand-img--invert-only' : ''} ${isJeep ? 'ck-row__brand-img--jeep' : ''} ${isFord ? 'ck-row__brand-img--ford' : ''} ${isMercedes ? 'ck-row__brand-img--mercedes' : ''} ${(isLandRover || isLandRoverBrand) ? 'ck-row__brand-img--land-rover' : ''} ${isChevrolet ? 'ck-row__brand-img--chevrolet' : ''} ${isKia ? 'ck-row__brand-img--kia' : ''} ${isFerrari ? 'ck-row__brand-img--ferrari' : ''} ${isByd ? 'ck-row__brand-img--byd' : ''} ${isLamborghini ? 'ck-row__brand-img--lamborghini' : ''} ${isMclaren ? 'ck-row__brand-img--mclaren' : ''} ${isPeugeot ? 'ck-row__brand-img--peugeot' : ''} ${isMitsubishi ? 'ck-row__brand-img--mitsubishi' : ''} ${isCitroen ? 'ck-row__brand-img--citroen' : ''} ${isNissan ? 'ck-row__brand-img--nissan' : ''} ${isJaguar ? 'ck-row__brand-img--jaguar' : ''} ${isHonda ? 'ck-row__brand-img--honda' : ''} ${isRenault ? 'ck-row__brand-img--renault' : ''} ${isVolkswagen ? 'ck-row__brand-img--volkswagen' : ''} ${isYamaha ? 'ck-row__brand-img--yamaha' : ''} ${isHyundai ? 'ck-row__brand-img--hyundai' : ''} ${isToyota ? 'ck-row__brand-img--toyota' : ''} ${isAudi ? 'ck-row__brand-img--audi' : ''} ${isFiat ? 'ck-row__brand-img--fiat' : ''} ${isBmw ? 'ck-row__brand-img--bmw' : ''} ${isMini ? 'ck-row__brand-img--mini' : ''} ${isDodge ? 'ck-row__brand-img--dodge' : ''} ${isVolvo ? 'ck-row__brand-img--volvo' : ''} ${isPorsche ? 'ck-row__brand-img--porsche' : ''} ${isGwm ? 'ck-row__brand-img--gwm' : ''} ${isKawasaki ? 'ck-row__brand-img--kawasaki' : ''} ${isSuzuki ? 'ck-row__brand-img--suzuki' : ''} ${isJac ? 'ck-row__brand-img--jac' : ''} ${isRoyalEnfield ? 'ck-row__brand-img--royal-enfield' : ''} ${isChery ? 'ck-row__brand-img--chery' : ''}`}
+            className={`ck-row__brand-img ${isNoFilterLogo ? 'ck-row__brand-img--no-filter' : ''} ${isInvertOnlyLogo ? 'ck-row__brand-img--invert-only' : ''} ${isJeep ? 'ck-row__brand-img--jeep' : ''} ${isFord ? 'ck-row__brand-img--ford' : ''} ${isMercedes ? 'ck-row__brand-img--mercedes' : ''} ${(isLandRover || isLandRoverBrand) ? 'ck-row__brand-img--land-rover' : ''} ${isChevrolet ? 'ck-row__brand-img--chevrolet' : ''} ${isKia ? 'ck-row__brand-img--kia' : ''} ${isFerrari ? 'ck-row__brand-img--ferrari' : ''} ${isByd ? 'ck-row__brand-img--byd' : ''} ${isLamborghini ? 'ck-row__brand-img--lamborghini' : ''} ${isMclaren ? 'ck-row__brand-img--mclaren' : ''} ${isPeugeot ? 'ck-row__brand-img--peugeot' : ''} ${isMitsubishi ? 'ck-row__brand-img--mitsubishi' : ''} ${isCitroen ? 'ck-row__brand-img--citroen' : ''} ${isNissan ? 'ck-row__brand-img--nissan' : ''} ${isJaguar ? 'ck-row__brand-img--jaguar' : ''} ${isHonda ? 'ck-row__brand-img--honda' : ''} ${isRenault ? 'ck-row__brand-img--renault' : ''} ${isVolkswagen ? 'ck-row__brand-img--volkswagen' : ''} ${isYamaha ? 'ck-row__brand-img--yamaha' : ''} ${isHyundai ? 'ck-row__brand-img--hyundai' : ''} ${isToyota ? 'ck-row__brand-img--toyota' : ''} ${isAudi ? 'ck-row__brand-img--audi' : ''} ${isFiat ? 'ck-row__brand-img--fiat' : ''} ${isBmw ? 'ck-row__brand-img--bmw' : ''} ${isMini ? 'ck-row__brand-img--mini' : ''} ${isDodge ? 'ck-row__brand-img--dodge' : ''} ${isVolvo ? 'ck-row__brand-img--volvo' : ''} ${isPorsche ? 'ck-row__brand-img--porsche' : ''} ${isGwm ? 'ck-row__brand-img--gwm' : ''} ${isKawasaki ? 'ck-row__brand-img--kawasaki' : ''} ${isSuzuki ? 'ck-row__brand-img--suzuki' : ''} ${isJac ? 'ck-row__brand-img--jac' : ''} ${isRoyalEnfield ? 'ck-row__brand-img--royal-enfield' : ''} ${isChery ? 'ck-row__brand-img--chery' : ''} ${isAstonMartin ? 'ck-row__brand-img--aston-martin' : ''}`}
           />
         ) : (
           <span className="ck-row__brand-fallback">{brandInitial}</span>

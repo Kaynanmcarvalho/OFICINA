@@ -275,7 +275,7 @@ const LOCAL_BRAND_LOGOS = {
   'mazda': '/logos/mazda.png',
   'suzuki': '/logos/suzuki.png',
   'lexus': '/logos/lexus.png',
-  'land-rover': '/logos/land-rover.svg',
+  'land-rover': '/logos/land-rover-green.svg',
   'ferrari': '/logos/ferrari.png',
   'byd': '/logos/byd-auto.svg',
   'gwm': '/Logotipo Branco PNG.png',
@@ -290,11 +290,11 @@ const LOCAL_BRAND_LOGOS = {
 const DARK_MODE_LOGOS = {
   'ford': '/logos/ford-dark.svg',
   'fiat': '/logos/fiat.svg',
-  'land-rover': '/logos/land-rover.svg',
+  'land-rover': '/logos/land-rover-green.svg',
   'kia': '/logos/kia.svg',
   'ferrari': '/logos/ferrari-dark.svg',
   'lamborghini': '/logos/lamborghini-dark.svg',
-  'bmw': '/logos/bmw-dark.svg',
+  'bmw': '/logos/bmw-light.svg',
   'byd': '/logos/byd-auto.svg',
   'mini': 'https://cdn.worldvectorlogo.com/logos/bmw-mini-1.svg',
   'dodge': 'https://cdn.worldvectorlogo.com/logos/dodge-ram.svg',
@@ -305,7 +305,7 @@ const DARK_MODE_LOGOS = {
 
 // Logos específicas para light mode (versões coloridas)
 const LIGHT_MODE_LOGOS = {
-  'land-rover': '/logos/land-rover-light.svg',
+  'land-rover': '/logos/land-rover-green.svg',
   'bmw': '/logos/bmw-light.svg',
   'dodge': 'https://cdn.worldvectorlogo.com/logos/dodge-ram.svg',
   'ram': 'https://cdn.worldvectorlogo.com/logos/dodge-ram.svg',

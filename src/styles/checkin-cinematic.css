@@ -286,45 +286,245 @@ img[class*="brand"],
   letter-spacing: 0.04em;
 }
 
-/* Search */
+/* ============================================================================
+   PREMIUM SEARCH BAR - Design com profundidade e elegância
+   ============================================================================ */
 .ck-panel__search {
   position: relative;
   width: 100%;
-  max-width: 320px;
+  max-width: 400px;
 }
 
+/* Container externo com borda luminosa */
+.ck-panel__search::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: calc(var(--ck-radius-lg) + 1px);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ícone de busca premium */
 .ck-panel__search svg {
   position: absolute;
-  left: var(--ck-space-md);
+  left: 16px;
   top: 50%;
   transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   color: var(--ck-text-muted);
   pointer-events: none;
+  z-index: 2;
+  transition: all 0.25s ease;
 }
 
+/* Input premium com profundidade */
 .ck-panel__search input {
+  position: relative;
   width: 100%;
-  height: 44px;
-  padding: 0 var(--ck-space-lg) 0 42px;
-  background: var(--ck-bg-sunken);
+  height: 52px;
+  padding: 0 20px 0 48px;
+  background: linear-gradient(
+    180deg,
+    var(--ck-bg-sunken) 0%,
+    rgba(0, 0, 0, 0.02) 100%
+  );
   border: 1px solid var(--ck-border-light);
-  border-radius: var(--ck-radius-md);
-  font-size: 14px;
+  border-radius: var(--ck-radius-lg);
+  font-size: 15px;
   font-weight: 450;
   color: var(--ck-text-primary);
-  transition: all var(--ck-duration) var(--ck-ease);
+  letter-spacing: -0.01em;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+  
+  /* Sombra interna para profundidade */
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.06),
+    inset 0 1px 2px rgba(0, 0, 0, 0.04),
+    0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .ck-panel__search input::placeholder {
   color: var(--ck-text-dim);
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
+/* Estado de foco premium */
 .ck-panel__search input:focus {
   outline: none;
   border-color: var(--ck-accent-blue);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  background: linear-gradient(
+    180deg,
+    var(--ck-bg-elevated) 0%,
+    var(--ck-bg-sunken) 100%
+  );
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.04),
+    0 0 0 4px rgba(59, 130, 246, 0.12),
+    0 4px 12px rgba(59, 130, 246, 0.08);
+}
+
+.ck-panel__search:focus-within svg {
+  color: var(--ck-accent-blue);
+  transform: translateY(-50%) scale(1.05);
+}
+
+/* Hover sutil */
+.ck-panel__search input:hover:not(:focus) {
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Dark mode enhancements */
+.ck-premium.dark .ck-panel__search::before {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.02) 50%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+}
+
+.ck-premium.dark .ck-panel__search input {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.4) 0%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    inset 0 2px 6px rgba(0, 0, 0, 0.3),
+    inset 0 1px 2px rgba(0, 0, 0, 0.2),
+    0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.ck-premium.dark .ck-panel__search input:focus {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
+  border-color: var(--ck-accent-blue);
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.2),
+    0 0 0 4px rgba(59, 130, 246, 0.15),
+    0 4px 16px rgba(59, 130, 246, 0.1);
+}
+
+.ck-premium.dark .ck-panel__search input:hover:not(:focus) {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    inset 0 2px 6px rgba(0, 0, 0, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode refinements */
+.ck-premium.light .ck-panel__search input {
+  background: linear-gradient(
+    180deg,
+    #FFFFFF 0%,
+    #F8F9FA 100%
+  );
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.04),
+    inset 0 1px 2px rgba(0, 0, 0, 0.02),
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.ck-premium.light .ck-panel__search input:focus {
+  background: #FFFFFF;
+  border-color: var(--ck-accent-blue);
+  box-shadow: 
+    inset 0 1px 2px rgba(0, 0, 0, 0.02),
+    0 0 0 4px rgba(59, 130, 246, 0.1),
+    0 4px 12px rgba(59, 130, 246, 0.06);
+}
+
+.ck-premium.light .ck-panel__search input:hover:not(:focus) {
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.03),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Botão de limpar busca */
+.ck-panel__search-clear {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ck-bg-elevated);
+  border: 1px solid var(--ck-border-light);
+  border-radius: 50%;
+  color: var(--ck-text-muted);
+  cursor: pointer;
+  z-index: 2;
+  transition: all 0.2s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ck-panel__search-clear svg {
+  width: 14px;
+  height: 14px;
+  position: static;
+  transform: none;
+}
+
+.ck-panel__search.has-value .ck-panel__search-clear {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ck-panel__search-clear:hover {
+  background: var(--ck-accent-blue);
+  border-color: var(--ck-accent-blue);
+  color: white;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.ck-panel__search.has-value input {
+  padding-right: 48px;
+}
+
+/* Dark mode clear button */
+.ck-premium.dark .ck-panel__search-clear {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.ck-premium.dark .ck-panel__search-clear:hover {
+  background: var(--ck-accent-blue);
+  border-color: var(--ck-accent-blue);
+}
+
+/* Light mode clear button */
+.ck-premium.light .ck-panel__search-clear {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.ck-premium.light .ck-panel__search-clear:hover {
+  background: var(--ck-accent-blue);
+  border-color: var(--ck-accent-blue);
 }
 
 /* ============================================================================
@@ -874,34 +1074,47 @@ img[class*="brand"],
 }
 
 .ck-row--selected {
-  background: rgba(59, 130, 246, 0.06);
+  /* Sem mudança visual no card - apenas o checkbox muda */
 }
 
 .ck-row--selected:hover {
-  background: rgba(59, 130, 246, 0.1);
+  /* Mantém o hover normal */
 }
 
-/* Checkbox */
+/* Checkbox Premium */
 .ck-row__check {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border: 2px solid var(--ck-border-medium);
-  border-radius: 5px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--ck-duration) var(--ck-ease);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--ck-bg-surface);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.ck-row__check:hover {
+  border-color: var(--ck-accent-blue);
+  background: rgba(59, 130, 246, 0.08);
 }
 
 .ck-row__check.checked {
-  background: var(--ck-accent-blue);
-  border-color: var(--ck-accent-blue);
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  border-color: transparent;
+  box-shadow: 
+    0 2px 8px rgba(59, 130, 246, 0.4),
+    0 4px 12px rgba(59, 130, 246, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
 }
 
 .ck-row__check svg {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   color: white;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
 }
 
 /* Brand Logo - Clean without box */
@@ -945,18 +1158,297 @@ img[class*="brand"],
   opacity: 1;
 }
 
+/* ============================================================================
+   PADRONIZAÇÃO DE TAMANHOS - MODO LISTA TEMA ESCURO
+   Tamanho padrão: ~60-70px de largura para proporção visual uniforme
+   Ajustes: +20% (maioria), +50% (McLaren), +400% (GWM, Suzuki, Royal Enfield, JAC)
+   ============================================================================ */
+
+/* Ford - logo horizontal com texto (+70%: 122→134, 50→55) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--ford {
+  width: 134px !important;
+  height: 55px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Mercedes - logo circular (+95%: 111→122) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--mercedes {
+  width: 122px !important;
+  height: 122px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Land Rover - regra movida para depois das regras genéricas para maior especificidade */
+
+/* Chevrolet - logo gravata (+80%: 106→117, 39→43) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--chevrolet {
+  width: 117px !important;
+  height: 43px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Kia - logo oval horizontal (+100%: 132→152, 67→77) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--kia {
+  width: 152px !important;
+  height: 77px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Ferrari - logo cavalo vertical (+105%: 100→121, 122→147) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--ferrari {
+  width: 121px !important;
+  height: 147px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Porsche - logo escudo (+70%: 84→97, 67→77) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--porsche {
+  width: 97px !important;
+  height: 77px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Volvo - logo circular com seta (+80%: 92→106) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--volvo {
+  width: 106px !important;
+  height: 106px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Lamborghini - logo touro (+65%: 92→101) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--lamborghini {
+  width: 101px !important;
+  height: 101px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Fiat - logo circular (+70%: 74→98) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--fiat {
+  width: 98px !important;
+  height: 98px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* JAC - logo oval (+390%: 120→108, 80→72) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--jac {
+  width: 108px !important;
+  height: 72px !important;
+  max-width: none !important;
+  max-height: none !important;
+  transform: none !important;
+}
+
+/* BMW - logo circular (+95%: 92→111) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--bmw {
+  width: 111px !important;
+  height: 111px !important;
+  max-width: none !important;
+  max-height: none !important;
+  filter: none !important;
+}
+
+/* Audi - logo anéis horizontal (+75%: 130→143, 47→52) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--audi {
+  width: 143px !important;
+  height: 52px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Volkswagen - logo circular (+20%: 55→61) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--volkswagen {
+  width: 61px !important;
+  height: 61px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Toyota - logo oval horizontal (+25%: 84→76, 56→50) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--toyota {
+  width: 76px !important;
+  height: 50px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Honda - logo H (+55%: 84→92, 68→75) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--honda {
+  width: 92px !important;
+  height: 75px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Hyundai - logo H inclinado (+65%: 92→101, 50→55) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--hyundai {
+  width: 101px !important;
+  height: 55px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Nissan - logo circular (+55%: 91→100, 76→84) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--nissan {
+  width: 100px !important;
+  height: 84px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Renault - logo losango (+20%: 55→61, 61→67) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--renault {
+  width: 61px !important;
+  height: 67px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Peugeot - logo leão (+90%: 106→117) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--peugeot {
+  width: 117px !important;
+  height: 117px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Citroën - logo chevrons (+55%: 84→92, 68→75) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--citroen {
+  width: 92px !important;
+  height: 75px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Jeep - logo texto (+30%: 73→80, 31→34) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--jeep {
+  width: 80px !important;
+  height: 34px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Mini - logo circular com asas (+85%: 124→157, 54→68) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--mini {
+  width: 157px !important;
+  height: 68px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Dodge - logo carneiro (+80%: 101→116) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--dodge {
+  width: 116px !important;
+  height: 116px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* BYD - logo texto (+45%: 100→90, 50→45) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--byd {
+  width: 90px !important;
+  height: 45px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Yamaha - logo diapasões (+60%: 88→97) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--yamaha {
+  width: 97px !important;
+  height: 97px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Suzuki - logo S (+385%: 110→94) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--suzuki {
+  width: 94px !important;
+  height: 94px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Kawasaki - logo texto (+10%: 70→77, 20→22) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--kawasaki {
+  width: 77px !important;
+  height: 22px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Mitsubishi - logo três diamantes (+40%: 83→79, 76→72) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--mitsubishi {
+  width: 79px !important;
+  height: 72px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Jaguar - logo felino (+105%: 138→175, 54→68) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--jaguar {
+  width: 175px !important;
+  height: 68px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* McLaren - logo texto (+190%: 277→319, 61→70) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--mclaren {
+  width: 319px !important;
+  height: 70px !important;
+  max-width: none !important;
+  max-height: none !important;
+  transform: none !important;
+}
+
+/* Chery - logo (+20%: 61→67, 39→43) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--chery {
+  width: 67px !important;
+  height: 43px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* GWM - logo texto (+400%: 128→115, 54→49) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--gwm {
+  width: 115px !important;
+  height: 49px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Royal Enfield - logo circular (+365%: 80→76) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--royal-enfield {
+  width: 76px !important;
+  height: 76px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Aston Martin - logo (+20%: novo 78x30) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--aston-martin {
+  width: 78px !important;
+  height: 30px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* ============================================================================
+   FIM DA PADRONIZAÇÃO - MODO LISTA TEMA ESCURO
+   ============================================================================ */
+
 /* Logos com texto no modo lista - tamanho maior (ambos os temas) */
 .ck-row__brand-img--ford {
   width: 100px !important;
   height: 56px !important;
-}
-
-/* Ford no tema escuro - tamanho maior */
-.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--ford {
-  width: 160px !important;
-  height: 90px !important;
-  max-width: none !important;
-  max-height: none !important;
 }
 
 .ck-row__brand-img--mercedes {
@@ -967,22 +1459,23 @@ img[class*="brand"],
 }
 
 .ck-row__brand-img--land-rover {
-  width: 150px !important;
-  height: 80px !important;
-}
-
-/* Land Rover no tema escuro - tamanho maior */
-.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--land-rover {
-  width: 160px !important;
-  height: 85px !important;
-  max-width: none !important;
-  max-height: none !important;
+  width: 120px !important;
+  height: 64px !important;
 }
 
 /* Land Rover no tema claro - tamanho menor e cor original (verde) */
 .ck-premium:not(.dark) .ck-row__brand-img--land-rover {
   width: 100px !important;
   height: 55px !important;
+  filter: none !important;
+}
+
+/* Land Rover no tema ESCURO modo lista - tamanho reduzido e cor original (verde) */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--land-rover {
+  width: 131px !important;
+  height: 65px !important;
+  max-width: none !important;
+  max-height: none !important;
   filter: none !important;
 }
 
@@ -1007,6 +1500,12 @@ img[class*="brand"],
   height: 83px !important;
   max-width: none !important;
   max-height: none !important;
+}
+
+/* Ferrari no tema ESCURO - manter cores originais */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--ferrari,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--ferrari {
+  filter: none !important;
 }
 
 /* Dodge - 45% menor no modo lista (ambos os temas) */
@@ -1039,16 +1538,16 @@ img[class*="brand"],
   transform: scale(1.155) !important;
 }
 
-/* Porsche no tema escuro - logo branca sem fundo, 20% maior */
+/* Porsche no tema escuro - manter cores originais */
 .ck-premium.dark .ck-row__brand-img--porsche {
-  filter: brightness(0) invert(1) !important;
+  filter: none !important;
   background: none !important;
   background-color: transparent !important;
   transform: scale(1.20) !important;
 }
 
 .ck-premium.dark .ck-card__brand-logo--porsche {
-  filter: brightness(0) invert(1) !important;
+  filter: none !important;
   background: none !important;
   background-color: transparent !important;
 }
@@ -1070,13 +1569,13 @@ img[class*="brand"],
   max-height: none !important;
 }
 
-/* Volvo - tamanho no modo lista tema ESCURO (branca) */
+/* Volvo - tamanho no modo lista tema ESCURO - manter cores originais */
 .ck-premium.dark .ck-row__brand-img--volvo {
   width: 53px !important;
   height: 53px !important;
   max-width: none !important;
   max-height: none !important;
-  filter: brightness(0) invert(1) !important;
+  filter: none !important;
 }
 
 /* Mini - 15% maior no modo lista (ambos os temas) */
@@ -1126,9 +1625,9 @@ img[class*="brand"],
   transform: scale(1.27) !important;
 }
 
-/* GWM no modo lista tema ESCURO - muito menor */
+/* GWM no modo lista tema ESCURO - tamanho normal */
 .ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--gwm {
-  transform: scale(0.021) !important;
+  transform: none !important;
 }
 
 /* GWM no tema claro modo lista - inverter para preto (logo é branca) */
@@ -1149,10 +1648,10 @@ img[class*="brand"],
   transform: scale(0.022) !important;
 }
 
-/* GWM - hover no tema escuro (manter branca) - cresce 5% */
+/* GWM - hover no tema escuro (manter branca) */
 .ck-premium.dark .ck-row:hover .ck-row__brand-img.ck-row__brand-img--gwm {
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4)) !important;
-  transform: scale(0.022) !important;
+  transform: scale(1.05) !important;
 }
 
 /* GWM - hover no modo GRADE tema claro (logo branca) - cresce 5% */
@@ -1566,8 +2065,11 @@ img[class*="brand"],
 }
 
 .ck-card--selected {
-  border-color: var(--ck-accent-blue);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2), var(--ck-shadow-lg);
+  /* Sem mudança visual no card - apenas o checkbox muda */
+}
+
+.ck-card--selected::after {
+  display: none;
 }
 
 /* Status accent line at top */
@@ -1583,37 +2085,96 @@ img[class*="brand"],
   border-radius: var(--ck-radius-xl) var(--ck-radius-xl) 0 0;
 }
 
+.ck-card--selected::before {
+  /* Mantém a linha de status normal */
+}
+
 .ck-card--amber::before { background: var(--ck-accent-amber); }
 .ck-card--blue::before { background: var(--ck-accent-blue); }
 .ck-card--green::before { background: var(--ck-accent-green); }
 .ck-card--gray::before { background: var(--ck-text-dim); }
 
-/* Selection Indicator */
+/* Selection Indicator - Premium Design */
 .ck-card__selector {
   position: absolute;
   top: 12px;
   right: 12px;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border: 2px solid var(--ck-border-medium);
-  border-radius: 6px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--ck-bg-surface);
-  transition: background-color 0.15s ease-out, border-color 0.15s ease-out;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 10;
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.1),
+    inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.ck-card__selector:hover {
+  border-color: var(--ck-accent-blue);
+  background: rgba(59, 130, 246, 0.1);
+  transform: scale(1.08);
 }
 
 .ck-card__selector.active {
-  background: var(--ck-accent-blue);
-  border-color: var(--ck-accent-blue);
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  border-color: transparent;
+  box-shadow: 
+    0 4px 12px rgba(59, 130, 246, 0.4),
+    0 2px 6px rgba(59, 130, 246, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
 }
 
 .ck-card__selector svg {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   color: white;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+/* ============================================================================
+   SELECTION STYLES - Dark/Light Mode Premium
+   ============================================================================ */
+
+/* Dark Mode - Checkbox apenas */
+.ck-premium.dark .ck-card__selector {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.ck-premium.dark .ck-card__selector:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+/* Light Mode - Checkbox apenas */
+.ck-premium.light .ck-card__selector {
+  background: #FFFFFF;
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.ck-premium.light .ck-card__selector:hover {
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.ck-premium.light .ck-row__check {
+  background: #FFFFFF;
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.ck-premium.light .ck-row__check:hover {
+  border-color: var(--ck-accent-blue);
+  background: rgba(59, 130, 246, 0.05);
 }
 
 /* Brand Logo - Hero Element */
@@ -1888,6 +2449,12 @@ img[class*="brand"],
   height: 70px !important;
 }
 
+/* Lamborghini no tema ESCURO - manter cores originais */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--lamborghini,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--lamborghini {
+  filter: none !important;
+}
+
 /* McLaren - tamanho maior */
 .ck-card__brand-logo--mclaren {
   width: 200px !important;
@@ -1966,12 +2533,17 @@ img[class*="brand"],
   max-height: none !important;
 }
 
-/* Fiat no tema escuro - 10% menor */
+/* Fiat no tema escuro - manter cores originais */
 .ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--fiat {
   width: 79px !important;
   height: 59px !important;
   max-width: none !important;
   max-height: none !important;
+  filter: none !important;
+}
+
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--fiat {
+  filter: none !important;
 }
 
 /* Volkswagen no modo lista - 5% menor */
@@ -2493,17 +3065,17 @@ img[class*="brand"],
   transform: scale(1.50) !important;
 }
 
-/* JAC no tema ESCURO modo LISTA - 30% menor */
+/* JAC no tema ESCURO modo LISTA - manter cores originais */
 .ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--jac {
-  filter: brightness(0) invert(1) !important;
+  filter: none !important;
   transform: scale(1.09) !important;
 }
 
-/* JAC no tema ESCURO modo GRADE - 35% menor */
+/* JAC no tema ESCURO modo GRADE - manter cores originais */
 .ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--jac,
 .ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--jac,
 .ck-premium.dark .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--jac {
-  filter: brightness(0) invert(1) !important;
+  filter: none !important;
   transform: scale(1.02) !important;
 }
 
