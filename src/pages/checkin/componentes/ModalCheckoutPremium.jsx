@@ -243,9 +243,9 @@ const PAYMENT_METHODS = [
   { value: 'transferencia', label: 'Transferência', icon: Icons.BankTransfer, color: '#3B82F6' }
 ];
 
-const COLORED_LOGO_BRANDS = ['bmw', 'fiat', 'ferrari', 'lamborghini', 'land rover', 'land-rover', 'chevrolet', 'ford', 'renault', 'mini', 'dodge', 'ram', 'volvo', 'porsche', 'chery', 'jac', 'jac motors'];
-const SMALL_LOGO_BRANDS = ['byd', 'yamaha'];
-const LARGE_LOGO_BRANDS = ['dodge', 'jac', 'jac motors'];
+const COLORED_LOGO_BRANDS = ['bmw', 'fiat', 'ferrari', 'lamborghini', 'land rover', 'land-rover', 'chevrolet', 'ford', 'renault', 'mini', 'dodge', 'ram', 'volvo', 'porsche', 'chery', 'jac', 'jac motors', 'yamaha', 'mercedes', 'mercedes-benz'];
+const SMALL_LOGO_BRANDS = ['byd', 'land rover', 'land-rover', 'chevrolet', 'toyota'];
+const LARGE_LOGO_BRANDS = ['dodge', 'jac', 'jac motors', 'citroen', 'citroën', 'kia', 'ferrari', 'mitsubishi', 'jaguar', 'lamborghini', 'mclaren', 'bmw', 'peugeot', 'mini', 'volvo', 'yamaha', 'mercedes', 'mercedes-benz'];
 
 // ============================================================================
 // MAIN COMPONENT

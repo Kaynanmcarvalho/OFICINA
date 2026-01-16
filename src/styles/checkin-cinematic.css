@@ -1230,12 +1230,13 @@ img[class*="brand"],
   max-height: none !important;
 }
 
-/* Fiat - logo circular (+70%: 74→98) */
+/* Fiat - logo circular (+80%: 74→107) */
 .ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--fiat {
-  width: 98px !important;
-  height: 98px !important;
+  width: 107px !important;
+  height: 107px !important;
   max-width: none !important;
   max-height: none !important;
+  filter: none !important;
 }
 
 /* JAC - logo oval (+390%: 120→108, 80→72) */
@@ -1328,10 +1329,10 @@ img[class*="brand"],
   max-height: none !important;
 }
 
-/* Jeep - logo texto (+30%: 73→80, 31→34) */
+/* Jeep - logo texto (+40%: 73→88, 31→37) */
 .ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--jeep {
-  width: 80px !important;
-  height: 34px !important;
+  width: 88px !important;
+  height: 37px !important;
   max-width: none !important;
   max-height: none !important;
 }
@@ -1360,12 +1361,24 @@ img[class*="brand"],
   max-height: none !important;
 }
 
-/* Yamaha - logo diapasões (+60%: 88→97) */
+/* Yamaha - logo vermelha sem filtro (+60%: 88→97) */
 .ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--yamaha {
   width: 97px !important;
   height: 97px !important;
   max-width: none !important;
   max-height: none !important;
+  filter: none !important;
+}
+
+/* Yamaha - modo grade sem filtro */
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--yamaha {
+  filter: none !important;
+}
+
+/* Yamaha - tema claro sem filtro */
+.ck-premium:not(.dark) .ck-row .ck-row__brand-img.ck-row__brand-img--yamaha,
+.ck-premium:not(.dark) .ck-card .ck-card__brand-logo.ck-card__brand-logo--yamaha {
+  filter: none !important;
 }
 
 /* Suzuki - logo S (+385%: 110→94) */
@@ -1406,13 +1419,17 @@ img[class*="brand"],
   height: 70px !important;
   max-width: none !important;
   max-height: none !important;
-  transform: none !important;
 }
 
-/* Chery - logo (+20%: 61→67, 39→43) */
+/* McLaren - hover no modo lista tema escuro */
+.ck-premium.dark .ck-row:hover .ck-row__brand-img.ck-row__brand-img--mclaren {
+  transform: scale(1.03) !important;
+}
+
+/* Chery - logo (+30%: 61→74, 39→47) */
 .ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--chery {
-  width: 67px !important;
-  height: 43px !important;
+  width: 74px !important;
+  height: 47px !important;
   max-width: none !important;
   max-height: none !important;
 }
@@ -1472,8 +1489,8 @@ img[class*="brand"],
 
 /* Land Rover no tema ESCURO modo lista - tamanho reduzido e cor original (verde) */
 .ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--land-rover {
-  width: 131px !important;
-  height: 65px !important;
+  width: 95px !important;
+  height: 47px !important;
   max-width: none !important;
   max-height: none !important;
   filter: none !important;
@@ -2209,6 +2226,17 @@ img[class*="brand"],
   opacity: 1;
 }
 
+/* Exceções para logos com cores originais no tema escuro (base) */
+.ck-premium.dark .ck-card__brand-logo.ck-card__brand-logo--porsche,
+.ck-premium.dark .ck-card__brand-logo.ck-card__brand-logo--bmw,
+.ck-premium.dark .ck-card__brand-logo.ck-card__brand-logo--land-rover,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--porsche,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--porsche,
+.ck-premium.dark .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--porsche {
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
 /* Logos específicas para dark mode - sem filtro (já otimizadas como Ford) */
 .ck-premium.dark .ck-card__brand-logo--no-filter {
   filter: none !important;
@@ -2223,6 +2251,27 @@ img[class*="brand"],
   opacity: 1;
   width: 120px !important;
   height: 75px !important;
+}
+
+/* Porsche - sem filtro no dark mode (cores originais dourado/vermelho) */
+.ck-premium.dark .ck-card__brand-logo--porsche {
+  filter: none !important;
+  opacity: 1;
+  background: transparent !important;
+}
+
+/* BMW - sem filtro no dark mode (cores originais) */
+.ck-premium.dark .ck-card__brand-logo--bmw {
+  filter: none !important;
+  opacity: 1;
+  background: transparent !important;
+}
+
+/* Land Rover - sem filtro no dark mode (cor verde original) */
+.ck-premium.dark .ck-card__brand-logo--land-rover {
+  filter: none !important;
+  opacity: 1;
+  background: transparent !important;
 }
 
 /* Mini - 30% maior no tema claro */
@@ -2243,29 +2292,17 @@ img[class*="brand"],
   height: 134px !important;
 }
 
-/* Volvo no tema ESCURO modo grade - 25% menor */
+/* Volvo no tema ESCURO modo grade - +20% (100px base * 1.20 = 120px) */
 .ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--volvo {
-  width: 83px !important;
-  height: 83px !important;
-  max-width: 83px !important;
-  max-height: 83px !important;
-}
-
-/* Dodge no tema ESCURO - sem filtro, logo já é preta com fundo transparente */
-.ck-premium.dark .ck-card__brand-logo--dodge,
-.ck-premium.dark .ck-card:hover .ck-card__brand-logo--dodge {
-  filter: none !important;
+  width: 100px !important;
+  height: 100px !important;
+  max-width: 100px !important;
+  max-height: 100px !important;
 }
 
 /* Volvo no tema ESCURO - sem filtro (logo já é branca/preta) */
 .ck-premium.dark .ck-card__brand-logo--volvo,
 .ck-premium.dark .ck-card:hover .ck-card__brand-logo--volvo {
-  filter: none !important;
-}
-
-/* Dodge no modo lista tema ESCURO - sem filtro */
-.ck-premium.dark .ck-row__brand-img--dodge,
-.ck-premium.dark .ck-row:hover .ck-row__brand-img--dodge {
   filter: none !important;
 }
 
@@ -2292,6 +2329,17 @@ img[class*="brand"],
   filter: none !important;
   width: 110px !important;
   height: 60px !important;
+}
+
+/* Land Rover - tema ESCURO modo grade - -15% (170px * 0.85 = 145px) */
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--land-rover,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--land-rover {
+  width: 145px !important;
+  height: 80px !important;
+  max-width: 145px !important;
+  max-height: 80px !important;
+  filter: none !important;
+  background: transparent !important;
 }
 
 /* Mercedes-Benz - tamanho maior (logo estrela) */
@@ -2417,6 +2465,33 @@ img[class*="brand"],
   height: 88px !important;
 }
 
+/* Peugeot - 10% maior no tema claro (grade) */
+.ck-premium:not(.dark) .ck-card__brand-logo--peugeot {
+  transform: scale(1.10) !important;
+}
+
+.ck-premium:not(.dark) .ck-card:hover .ck-card__brand-logo--peugeot {
+  transform: scale(1.155) !important;
+}
+
+/* Volvo - 10% maior no tema claro (grade) */
+.ck-premium:not(.dark) .ck-card__brand-logo--volvo {
+  transform: scale(1.10) !important;
+}
+
+.ck-premium:not(.dark) .ck-card:hover .ck-card__brand-logo--volvo {
+  transform: scale(1.155) !important;
+}
+
+/* Mini - 10% maior no tema claro (grade) */
+.ck-premium:not(.dark) .ck-card__brand-logo--mini {
+  transform: scale(1.10) !important;
+}
+
+.ck-premium:not(.dark) .ck-card:hover .ck-card__brand-logo--mini {
+  transform: scale(1.155) !important;
+}
+
 /* Mitsubishi - 10% maior no dark mode */
 .ck-premium.dark .ck-card__brand-logo--mitsubishi {
   width: 132px !important;
@@ -2533,14 +2608,7 @@ img[class*="brand"],
   max-height: none !important;
 }
 
-/* Fiat no tema escuro - manter cores originais */
-.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--fiat {
-  width: 79px !important;
-  height: 59px !important;
-  max-width: none !important;
-  max-height: none !important;
-  filter: none !important;
-}
+/* Fiat no tema escuro - tamanho definido na seção PADRONIZAÇÃO DE TAMANHOS */
 
 .ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--fiat {
   filter: none !important;
@@ -2652,12 +2720,21 @@ img[class*="brand"],
   filter: brightness(0) invert(1) drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5));
 }
 
+/* Exceções para logos com cores originais no hover tema escuro */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--porsche,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--bmw,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--land-rover,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--porsche,
+.ck-premium.dark .ck-card:hover .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--porsche {
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+  -webkit-filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+}
+
 /* === HOVER NO TEMA CLARO - Logos que precisam ficar BRANCAS === */
 .ck-premium:not(.dark) .ck-card:hover .ck-card__brand-logo--jaguar,
 .ck-premium:not(.dark) .ck-card:hover .ck-card__brand-logo--mitsubishi,
 .ck-premium:not(.dark) .ck-card:hover .ck-card__brand-logo--jeep,
 .ck-premium:not(.dark) .ck-card:hover .ck-card__brand-logo--volkswagen,
-.ck-premium:not(.dark) .ck-card:hover .ck-card__brand-logo--yamaha,
 .ck-premium:not(.dark) .ck-card:hover .ck-card__brand-logo--hyundai,
 .ck-premium:not(.dark) .ck-card:hover .ck-card__brand-logo--toyota,
 .ck-premium:not(.dark) .ck-card:hover .ck-card__brand-logo--honda,
@@ -2669,6 +2746,12 @@ img[class*="brand"],
 .ck-premium:not(.dark) .ck-card:hover .ck-card__brand-logo--peugeot,
 .ck-premium:not(.dark) .ck-card:hover .ck-card__brand-logo--mclaren {
   filter: brightness(0) invert(1) drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+}
+
+/* Yamaha - hover no tema claro SEM filtro branco (manter cores originais) */
+.ck-premium:not(.dark) .ck-card:hover .ck-card__brand-logo--yamaha,
+.ck-premium:not(.dark) .ck-card:hover .ck-card__brand-hero .ck-card__brand-logo--yamaha {
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.3)) !important;
 }
 
 /* BYD - logo branca no hover (ambos os temas) */
@@ -3071,12 +3154,12 @@ img[class*="brand"],
   transform: scale(1.09) !important;
 }
 
-/* JAC no tema ESCURO modo GRADE - manter cores originais */
+/* JAC no tema ESCURO modo GRADE - +35% (1.35) - ATUALIZADO */
 .ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--jac,
 .ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--jac,
 .ck-premium.dark .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--jac {
   filter: none !important;
-  transform: scale(1.02) !important;
+  transform: scale(1.35) !important;
 }
 
 /* JAC hover modo LISTA tema ESCURO - crescer 5% */
@@ -3094,18 +3177,18 @@ img[class*="brand"],
   transform: scale(1.575) !important;
 }
 
-/* JAC hover tema ESCURO modo GRADE - 5% de crescimento */
+/* JAC hover tema ESCURO modo GRADE - hover elegante (+42%) */
 .ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--jac,
 .ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--jac {
-  transform: scale(1.07) !important;
+  transform: scale(1.42) !important;
 }
 
 /* ============================================================================
-   LOGOS 10% MAIORES NO MODO GRADE TEMA ESCURO
-   GWM, Porsche, Dodge, Peugeot, McLaren, Jaguar, Mitsubishi, Kia, Mercedes
+   LOGOS NO MODO GRADE TEMA ESCURO
+   Ajustes de tamanho e filtros para preservar cores originais
    ============================================================================ */
 
-/* GWM - 10% maior no modo grade tema escuro */
+/* GWM - mantém escala atual */
 .ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--gwm,
 .ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--gwm {
   transform: scale(1.33) !important;
@@ -3115,37 +3198,138 @@ img[class*="brand"],
   transform: scale(1.40) !important;
 }
 
-/* Porsche - 20% maior no modo grade tema escuro */
+/* Porsche - sem filtro branco, cores originais - FORÇA MÁXIMA */
 .ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--porsche,
 .ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--porsche {
   transform: scale(1.21) !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+  background: transparent !important;
 }
 
 .ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--porsche {
   transform: scale(1.27) !important;
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+  -webkit-filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
 }
 
-/* Dodge - 10% maior no modo grade tema escuro */
+/* BMW - sem filtro branco no modo grade, +15% (1.15) */
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--bmw,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--bmw {
+  transform: scale(1.15) !important;
+  filter: none !important;
+  background: transparent !important;
+}
+
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--bmw {
+  transform: scale(1.21) !important;
+  filter: none !important;
+}
+
+/* Land Rover - sem filtro branco, -15% (0.85) */
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--land-rover,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--land-rover {
+  transform: scale(0.85) !important;
+  filter: none !important;
+  background: transparent !important;
+}
+
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--land-rover {
+  transform: scale(0.89) !important;
+  filter: none !important;
+}
+
+/* JAC - +35% (1.35, hover: 1.42) - ATUALIZADO */
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--jac,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--jac {
+  transform: scale(1.35) !important;
+}
+
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--jac {
+  transform: scale(1.42) !important;
+}
+
+/* Volvo - +20% (1.20) */
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--volvo,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--volvo {
+  transform: scale(1.20) !important;
+}
+
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--volvo {
+  transform: scale(1.26) !important;
+}
+
+/* Dodge - +15% (1.15 → era 1.10) */
 .ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--dodge,
 .ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--dodge {
-  transform: scale(1.10) !important;
+  transform: scale(1.15) !important;
 }
 
 .ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--dodge {
-  transform: scale(1.155) !important;
+  transform: scale(1.21) !important;
 }
 
-/* Peugeot - 10% maior no modo grade tema escuro */
+/* Mini - +30% (1.30, hover: 1.37) - ATUALIZADO */
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--mini,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--mini {
+  transform: scale(1.30) !important;
+}
+
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--mini {
+  transform: scale(1.37) !important;
+}
+
+/* Peugeot - +20% (1.20, hover: 1.26) - ATUALIZADO */
 .ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--peugeot,
 .ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--peugeot {
-  transform: scale(1.10) !important;
+  transform: scale(1.20) !important;
 }
 
 .ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--peugeot {
+  transform: scale(1.26) !important;
+}
+
+/* Jaguar - +20% (1.20, hover: 1.26) - ATUALIZADO */
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--jaguar,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--jaguar {
+  transform: scale(1.20) !important;
+}
+
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--jaguar {
+  transform: scale(1.26) !important;
+}
+
+/* Citroën - +10% (1.10) */
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--citroen,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--citroen {
+  transform: scale(1.10) !important;
+}
+
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--citroen {
   transform: scale(1.155) !important;
 }
 
-/* McLaren - 10% maior no modo grade tema escuro */
+/* Volkswagen - +10% (1.10) */
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--volkswagen,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--volkswagen {
+  transform: scale(1.10) !important;
+}
+
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--volkswagen {
+  transform: scale(1.155) !important;
+}
+
+/* Fiat - +10% (1.10) */
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--fiat,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--fiat {
+  transform: scale(1.10) !important;
+}
+
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--fiat {
+  transform: scale(1.155) !important;
+}
+
+/* McLaren - mantém escala atual */
 .ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--mclaren,
 .ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--mclaren {
   transform: scale(1.27) !important;
@@ -3155,17 +3339,7 @@ img[class*="brand"],
   transform: scale(1.33) !important;
 }
 
-/* Jaguar - 20% maior no modo grade tema escuro */
-.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--jaguar,
-.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--jaguar {
-  transform: scale(1.21) !important;
-}
-
-.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--jaguar {
-  transform: scale(1.27) !important;
-}
-
-/* Mitsubishi - 10% maior no modo grade tema escuro */
+/* Mitsubishi - mantém escala atual */
 .ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--mitsubishi,
 .ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--mitsubishi {
   transform: scale(1.27) !important;
@@ -3175,7 +3349,7 @@ img[class*="brand"],
   transform: scale(1.33) !important;
 }
 
-/* Kia - 10% maior no modo grade tema escuro */
+/* Kia - mantém escala atual */
 .ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--kia,
 .ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--kia {
   transform: scale(1.10) !important;
@@ -3308,6 +3482,10 @@ img[class*="brand"],
   max-width: none !important;
   max-height: none !important;
   transform: scale(1.38) !important;
+  image-rendering: -webkit-optimize-contrast !important;
+  image-rendering: crisp-edges !important;
+  -webkit-backface-visibility: hidden !important;
+  backface-visibility: hidden !important;
 }
 
 /* Royal Enfield no tema CLARO - converter para preto */
@@ -3317,7 +3495,7 @@ img[class*="brand"],
   filter: brightness(0) !important;
 }
 
-/* Royal Enfield no tema ESCURO - inverter para branco */
+/* Royal Enfield no tema ESCURO - inverter para branco com nitidez */
 .ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--royal-enfield,
 .ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--royal-enfield {
   filter: brightness(0) invert(1) !important;
@@ -3455,4 +3633,627 @@ img[class*="brand"],
 
 .ck-premium:not(.dark) .ck-row:hover .ck-row__brand-img.ck-row__brand-img--yamaha {
   transform: scale(1.155) !important;
+}
+
+
+/* ============================================================================
+   CORREÇÕES FINAIS - MODO GRADE TEMA ESCURO
+   Regras com máxima especificidade para garantir aplicação correta
+   ============================================================================ */
+
+/* Porsche - SEM filtro branco, preservar cores originais (dourado/vermelho) - FORÇA MÁXIMA */
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--porsche,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--porsche,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--porsche,
+.ck-premium.dark .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--porsche,
+.ck-premium.dark .ck-card__brand-logo.ck-card__brand-logo--porsche {
+  filter: none !important;
+  -webkit-filter: none !important;
+  transform: scale(1.21) !important;
+  background: transparent !important;
+}
+
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--porsche,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--porsche,
+.ck-premium.dark .ck-card:hover .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--porsche {
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+  -webkit-filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+  transform: scale(1.27) !important;
+}
+
+/* BMW - SEM filtro branco, preservar cores originais, +25% (era 15%, +10% adicional) */
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--bmw,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--bmw,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--bmw {
+  filter: none !important;
+  transform: scale(1.25) !important;
+  background: transparent !important;
+}
+
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--bmw,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--bmw {
+  filter: none !important;
+  transform: scale(1.31) !important;
+}
+
+/* Land Rover - SEM filtro branco, preservar cor verde, -15% */
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--land-rover,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--land-rover,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--land-rover {
+  filter: none !important;
+  transform: scale(0.85) !important;
+  background: transparent !important;
+}
+
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--land-rover,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--land-rover {
+  filter: none !important;
+  transform: scale(0.89) !important;
+}
+
+/* JAC - +35% (era 25%, +10% adicional) */
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--jac,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--jac,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--jac {
+  transform: scale(1.35) !important;
+}
+
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--jac,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--jac {
+  transform: scale(1.42) !important;
+}
+
+/* Volvo - +54% (era 40%, +10% adicional) */
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--volvo,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--volvo,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--volvo {
+  transform: scale(1.54) !important;
+}
+
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--volvo,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--volvo {
+  transform: scale(1.62) !important;
+}
+
+/* Dodge - +35% (era 25%, +10% adicional) */
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--dodge,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--dodge,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--dodge {
+  transform: scale(1.35) !important;
+}
+
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--dodge,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--dodge {
+  transform: scale(1.42) !important;
+}
+
+/* Mini - +30% (hover: +37%) */
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--mini,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--mini,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--mini {
+  transform: scale(1.30) !important;
+}
+
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--mini,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--mini,
+.ck-premium.dark .ck-card:hover .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--mini,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--mini {
+  transform: scale(1.37) !important;
+}
+
+/* Peugeot - +20% (era 10%, +10% adicional) */
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--peugeot,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--peugeot,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--peugeot {
+  transform: scale(1.20) !important;
+}
+
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--peugeot,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--peugeot {
+  transform: scale(1.26) !important;
+}
+
+/* Jaguar - +20% (era 10%, +10% adicional) */
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--jaguar,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--jaguar,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--jaguar {
+  transform: scale(1.20) !important;
+}
+
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--jaguar,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--jaguar {
+  transform: scale(1.26) !important;
+}
+
+/* Citroën - +10% */
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--citroen,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--citroen,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--citroen {
+  transform: scale(1.10) !important;
+}
+
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--citroen,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--citroen {
+  transform: scale(1.155) !important;
+}
+
+/* Volkswagen - +10% */
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--volkswagen,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--volkswagen,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--volkswagen {
+  transform: scale(1.10) !important;
+}
+
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--volkswagen,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--volkswagen {
+  transform: scale(1.155) !important;
+}
+
+/* Fiat - +10% */
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--fiat,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--fiat,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--fiat {
+  transform: scale(1.10) !important;
+}
+
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--fiat,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--fiat {
+  transform: scale(1.155) !important;
+}
+
+/* KIA - +10% */
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--kia,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--kia,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--kia {
+  transform: scale(1.10) !important;
+}
+
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--kia,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--kia {
+  transform: scale(1.155) !important;
+}
+
+/* Renault - +10% */
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--renault,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--renault,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--renault {
+  transform: scale(1.10) !important;
+}
+
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--renault,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--renault {
+  transform: scale(1.155) !important;
+}
+
+/* Ford - -5% (0.95, hover: 1.00) */
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--ford,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--ford,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--ford,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--no-filter,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--no-filter {
+  transform: scale(0.95) !important;
+}
+
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--ford,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--ford,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--no-filter,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--no-filter {
+  transform: scale(1.00) !important;
+}
+
+/* Yamaha - +20% (1.20, hover: 1.26) - AUMENTADO */
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--yamaha,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--yamaha,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--yamaha {
+  transform: scale(1.20) !important;
+}
+
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--yamaha,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--yamaha,
+.ck-premium.dark .ck-card:hover .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--yamaha,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--yamaha {
+  transform: scale(1.26) !important;
+}
+
+
+/* ============================================================================
+   PORSCHE - FORÇA ABSOLUTA - SEM FILTRO BRANCO
+   ============================================================================ */
+.ck-premium.dark .ck-card__brand-logo[class*="porsche"],
+.ck-premium.dark .ck-card .ck-card__brand-logo[class*="porsche"],
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo[class*="porsche"],
+.ck-premium.dark .ck-card__brand-hero .ck-card__brand-logo[class*="porsche"],
+.ck-premium.dark img.ck-card__brand-logo[class*="porsche"],
+.ck-premium.dark img[class*="brand-logo"][class*="porsche"] {
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo[class*="porsche"],
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo[class*="porsche"],
+.ck-premium.dark .ck-card:hover img.ck-card__brand-logo[class*="porsche"] {
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+  -webkit-filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+}
+
+
+/* ============================================================================
+   HOVER ELEGANTE PREMIUM - MODO GRADE TEMA ESCURO
+   Efeito de crescimento suave e elegante para todas as logos
+   ============================================================================ */
+
+/* Regra base de hover para todas as logos no modo grade tema escuro */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo {
+  transform: scale(1.08) !important;
+}
+
+/* Mini - hover elegante (+37%) - ESPECIFICIDADE MÁXIMA */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--mini,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--mini,
+.ck-premium.dark .ck-card:hover .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--mini,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--mini {
+  transform: scale(1.37) !important;
+}
+
+/* JAC - hover elegante (+42%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--jac,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--jac {
+  transform: scale(1.42) !important;
+}
+
+/* Volvo - hover elegante (+62%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--volvo,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--volvo {
+  transform: scale(1.62) !important;
+}
+
+/* Dodge - hover elegante (+42%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--dodge,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--dodge {
+  transform: scale(1.42) !important;
+}
+
+/* Peugeot - hover elegante (+26%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--peugeot,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--peugeot {
+  transform: scale(1.26) !important;
+}
+
+/* Jaguar - hover elegante (+26%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--jaguar,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--jaguar {
+  transform: scale(1.26) !important;
+}
+
+/* BMW - hover elegante (+31%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--bmw,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--bmw {
+  transform: scale(1.31) !important;
+  filter: none !important;
+}
+
+/* Porsche - hover elegante (+27%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--porsche,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--porsche {
+  transform: scale(1.27) !important;
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+}
+
+/* Land Rover - hover elegante (+89% de 0.85) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--land-rover,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--land-rover {
+  transform: scale(0.89) !important;
+  filter: none !important;
+}
+
+/* Citroën - hover elegante (+16%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--citroen,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--citroen {
+  transform: scale(1.16) !important;
+}
+
+/* Volkswagen - hover elegante (+16%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--volkswagen,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--volkswagen {
+  transform: scale(1.16) !important;
+}
+
+/* Fiat - hover elegante (+16%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--fiat,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--fiat {
+  transform: scale(1.16) !important;
+}
+
+/* KIA - hover elegante (+16%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--kia,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--kia {
+  transform: scale(1.16) !important;
+}
+
+/* Renault - hover elegante (+16%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--renault,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--renault {
+  transform: scale(1.16) !important;
+}
+
+/* Ford - hover elegante (1.00) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--ford,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--ford,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--no-filter,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--no-filter {
+  transform: scale(1.00) !important;
+}
+
+/* Yamaha - hover elegante (+26%) - ESPECIFICIDADE MÁXIMA */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--yamaha,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--yamaha,
+.ck-premium.dark .ck-card:hover .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--yamaha,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--yamaha {
+  transform: scale(1.26) !important;
+}
+
+/* GWM - hover elegante (+40%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--gwm,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--gwm {
+  transform: scale(1.40) !important;
+}
+
+/* Kawasaki - hover elegante */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--kawasaki,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--kawasaki {
+  transform: scale(1.16) !important;
+}
+
+/* McLaren - hover elegante (+33%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--mclaren,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--mclaren {
+  transform: scale(1.33) !important;
+}
+
+/* Mitsubishi - hover elegante (+33%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--mitsubishi,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--mitsubishi {
+  transform: scale(1.33) !important;
+}
+
+/* Mercedes - hover elegante (+16%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--mercedes,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--mercedes {
+  transform: scale(1.16) !important;
+}
+
+/* Ferrari - hover elegante (+16%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--ferrari,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--ferrari {
+  transform: scale(1.16) !important;
+}
+
+/* Suzuki - hover elegante (+16%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--suzuki,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--suzuki {
+  transform: scale(1.16) !important;
+}
+
+/* Chevrolet - hover elegante (+16%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--chevrolet,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--chevrolet {
+  transform: scale(1.16) !important;
+}
+
+/* Toyota - hover elegante (+16%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--toyota,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--toyota {
+  transform: scale(1.16) !important;
+}
+
+/* Honda - hover elegante (+16%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--honda,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--honda {
+  transform: scale(1.16) !important;
+}
+
+/* Hyundai - hover elegante (+16%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--hyundai,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--hyundai {
+  transform: scale(1.16) !important;
+}
+
+/* Nissan - hover elegante (+16%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--nissan,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--nissan {
+  transform: scale(1.16) !important;
+}
+
+/* Audi - hover elegante (+16%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--audi,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--audi {
+  transform: scale(1.16) !important;
+}
+
+/* Lamborghini - hover elegante (+16%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--lamborghini,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--lamborghini {
+  transform: scale(1.16) !important;
+}
+
+/* BYD - hover elegante (+16%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--byd,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--byd {
+  transform: scale(1.16) !important;
+}
+
+/* Jeep - hover elegante (+16%) */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--jeep,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--jeep {
+  transform: scale(1.16) !important;
+}
+
+/* Royal Enfield - hover elegante */
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--royal-enfield,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--royal-enfield {
+  transform: scale(1.50) !important;
+}
+
+/* ============================================================================
+   YAMAHA - TAMANHO BASE AUMENTADO +10% (1.20)
+   ============================================================================ */
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--yamaha,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--yamaha,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--yamaha {
+  transform: scale(1.20) !important;
+}
+
+/* YAMAHA - HOVER ELEGANTE (+26%) - ESPECIFICIDADE MÁXIMA */
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--yamaha,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--yamaha,
+.ck-premium.dark .ck-card:hover .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--yamaha,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--yamaha,
+.ck-premium.dark .ck-card.ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--yamaha {
+  transform: scale(1.26) !important;
+}
+
+/* ============================================================================
+   MINI - TAMANHO BASE (+43%) E HOVER (+51%)
+   ============================================================================ */
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--mini,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--mini,
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--mini {
+  transform: scale(1.43) !important;
+}
+
+/* MINI - HOVER ELEGANTE (+51%) - ESPECIFICIDADE MÁXIMA */
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--mini,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--mini,
+.ck-premium.dark .ck-card:hover .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--mini,
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--mini,
+.ck-premium.dark .ck-card.ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--mini {
+  transform: scale(1.51) !important;
+}
+
+
+/* ============================================================================
+   CHERY - SEM FILTRO BRANCO NO TEMA ESCURO (MODO GRADE)
+   Preservar cores originais da logo
+   ============================================================================ */
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--chery,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--chery,
+.ck-premium.dark .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--chery {
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--chery,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--chery {
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+  -webkit-filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+}
+
+/* ============================================================================
+   PORSCHE - DIMINUIR 20% NO MODO LISTA TEMA ESCURO
+   ============================================================================ */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--porsche {
+  transform: scale(0.80) !important;
+}
+
+.ck-premium.dark .ck-row:hover .ck-row__brand-img.ck-row__brand-img--porsche {
+  transform: scale(0.84) !important;
+}
+
+
+/* ============================================================================
+   CHERY E CHEVROLET - SEM FILTRO BRANCO NO MODO LISTA TEMA ESCURO
+   Preservar cores originais das logos
+   ============================================================================ */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--chery,
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--chevrolet {
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+.ck-premium.dark .ck-row:hover .ck-row__brand-img.ck-row__brand-img--chery,
+.ck-premium.dark .ck-row:hover .ck-row__brand-img.ck-row__brand-img--chevrolet {
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+  -webkit-filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+}
+
+
+/* ===========================================================================
+   CHEVROLET - SEM FILTRO BRANCO NO MODO GRADE TEMA ESCURO
+   Preservar cores originais da logo (gravata dourada)
+   =========================================================================== */
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--chevrolet,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--chevrolet,
+.ck-premium.dark .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--chevrolet {
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--chevrolet,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--chevrolet {
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+  -webkit-filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+}
+
+/* ===========================================================================
+   RENAULT - SEM FILTRO BRANCO NO TEMA ESCURO (MODO GRADE E LISTA)
+   Preservar cores originais da logo (losango amarelo/dourado)
+   =========================================================================== */
+
+/* RENAULT - MODO GRADE */
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--renault,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--renault,
+.ck-premium.dark .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--renault {
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--renault,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--renault {
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+  -webkit-filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+}
+
+/* RENAULT - MODO LISTA */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--renault {
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+.ck-premium.dark .ck-row:hover .ck-row__brand-img.ck-row__brand-img--renault {
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+  -webkit-filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+}
+
+
+/* ===========================================================================
+   DODGE - LOGO SEM FILTRO NO TEMA ESCURO (MODO GRADE E LISTA)
+   Imagem PNG com fundo transparente - mostra cores originais
+   =========================================================================== */
+
+/* DODGE - MODO GRADE - SEM FILTRO */
+.ck-premium.dark .ck-card .ck-card__brand-logo.ck-card__brand-logo--dodge,
+.ck-premium.dark .ck-grid .ck-card .ck-card__brand-logo.ck-card__brand-logo--dodge,
+.ck-premium.dark .ck-card .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--dodge {
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+.ck-premium.dark .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--dodge,
+.ck-premium.dark .ck-grid .ck-card:hover .ck-card__brand-logo.ck-card__brand-logo--dodge,
+.ck-premium.dark .ck-card:hover .ck-card__brand-hero .ck-card__brand-logo.ck-card__brand-logo--dodge {
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+  -webkit-filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+}
+
+/* DODGE - MODO LISTA - SEM FILTRO + REDUZIDO 40% */
+.ck-premium.dark .ck-row .ck-row__brand-img.ck-row__brand-img--dodge {
+  filter: none !important;
+  -webkit-filter: none !important;
+  transform: scale(0.60) !important;
+}
+
+.ck-premium.dark .ck-row:hover .ck-row__brand-img.ck-row__brand-img--dodge {
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+  -webkit-filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)) !important;
+  transform: scale(0.63) !important;
 }

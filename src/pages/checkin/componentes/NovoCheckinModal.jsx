@@ -600,6 +600,16 @@ const COLORED_LOGO_BRANDS = [
   'porsche', 'chery', 'jac', 'jac motors', 'byd', 'yamaha'
 ];
 
+// Logos menores (-10%)
+const SMALL_LOGO_BRANDS = ['byd', 'land rover', 'land-rover', 'chevrolet'];
+
+// Logos maiores (+15%)
+const LARGE_LOGO_BRANDS = [
+  'dodge', 'jac', 'jac motors', 'citroen', 'citroën', 'kia', 'ferrari', 
+  'mitsubishi', 'jaguar', 'lamborghini', 'mclaren', 'bmw', 'peugeot', 
+  'mini', 'volvo', 'yamaha'
+];
+
 // ═══════════════════════════════════════════════════════════════════════════
 // ANIMAÇÕES
 // ═══════════════════════════════════════════════════════════════════════════
@@ -691,6 +701,8 @@ const CheckinHeader = ({ plate, brand, model, year, currentStep, onStepClick, is
   const logoUrl = getBrandLogoUrl(effectiveBrand, model || '');
   const shouldApplyFilter = !COLORED_LOGO_BRANDS.includes(effectiveBrand?.toLowerCase() || '');
   const hasBrand = !!effectiveBrand && effectiveBrand.toLowerCase() !== 'default';
+  const isSmallLogo = SMALL_LOGO_BRANDS.includes(effectiveBrand?.toLowerCase() || '');
+  const isLargeLogo = LARGE_LOGO_BRANDS.includes(effectiveBrand?.toLowerCase() || '');
   
   // Estilos dinâmicos do header
   const dynamicHeaderStyles = getHeaderStyles(accent.hex, accent.rgb, hasBrand);
@@ -706,9 +718,9 @@ const CheckinHeader = ({ plate, brand, model, year, currentStep, onStepClick, is
               src={logoUrl}
               alt={effectiveBrand || 'Marca'}
               style={{
-                height: '40px',
+                height: isSmallLogo ? '36px' : isLargeLogo ? '46px' : '40px',
                 width: 'auto',
-                maxWidth: '120px',
+                maxWidth: isSmallLogo ? '108px' : isLargeLogo ? '138px' : '120px',
                 objectFit: 'contain',
                 filter: shouldApplyFilter ? 'brightness(0) invert(1)' : 'none',
               }}

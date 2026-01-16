@@ -918,3 +918,64 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   AJUSTES DE TAMANHO DE LOGOS POR MARCA - MODAL
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Volvo - aumentar 10% */
+.ncm-logo[src*="volvo"] {
+  transform: scale(1.10);
+}
+
+/* Mini - aumentar 10% */
+.ncm-logo[src*="mini"] {
+  transform: scale(1.10);
+}
+
+/* Lamborghini - aumentar 10% */
+.ncm-logo[src*="lamborghini"] {
+  transform: scale(1.10);
+}
+
+/* Ferrari - aumentar 10% */
+.ncm-logo[src*="ferrari"] {
+  transform: scale(1.10);
+}
+
+/* KIA - aumentar 10% */
+.ncm-logo[src*="kia"] {
+  transform: scale(1.10);
+}
+
+/* Citroen - aumentar 10% */
+.ncm-logo[src*="citroen"] {
+  transform: scale(1.10);
+}
+
+/* Mercedes - aumentar 10% */
+.ncm-logo[src*="mercedes"] {
+  transform: scale(1.10);
+}
+
+/* McLaren - aumentar 15% */
+.ncm-logo[src*="mclaren"] {
+  transform: scale(1.15);
+}
+
+/* Toyota - diminuir 10% */
+.ncm-logo[src*="toyota"] {
+  transform: scale(0.90);
+}
+
+/* Yamaha - aumentar 10% e remover filtro branco */
+.ncm-logo[src*="yamaha"] {
+  transform: scale(1.10);
+  filter: none !important;
+}
+
+/* Garantir que Yamaha não tenha filtro branco mesmo com classe --white */
+.ncm-logo--white[src*="yamaha"] {
+  filter: none !important;
+}

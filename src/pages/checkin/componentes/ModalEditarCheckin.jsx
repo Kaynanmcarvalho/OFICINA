@@ -224,11 +224,11 @@ const CANCEL_REASONS = [
 ];
 
 // Logos que mantêm cor original (não ficam brancas)
-const COLORED_LOGO_BRANDS = ['bmw', 'fiat', 'ferrari', 'lamborghini', 'land rover', 'land-rover', 'chevrolet', 'ford', 'renault', 'mini', 'dodge', 'ram', 'volvo', 'porsche', 'chery', 'jac', 'jac motors'];
-// Logos menores
-const SMALL_LOGO_BRANDS = ['byd', 'yamaha'];
-// Logos maiores (15% maior)
-const LARGE_LOGO_BRANDS = ['dodge', 'jac', 'jac motors'];
+const COLORED_LOGO_BRANDS = ['bmw', 'fiat', 'ferrari', 'lamborghini', 'land rover', 'land-rover', 'chevrolet', 'ford', 'renault', 'mini', 'dodge', 'ram', 'volvo', 'porsche', 'chery', 'jac', 'jac motors', 'yamaha', 'mercedes', 'mercedes-benz'];
+// Logos menores (-10%)
+const SMALL_LOGO_BRANDS = ['byd', 'land rover', 'land-rover', 'chevrolet', 'toyota'];
+// Logos maiores (+10% a +15%)
+const LARGE_LOGO_BRANDS = ['dodge', 'jac', 'jac motors', 'citroen', 'citroën', 'kia', 'ferrari', 'mitsubishi', 'jaguar', 'lamborghini', 'mclaren', 'bmw', 'peugeot', 'mini', 'volvo', 'yamaha', 'mercedes', 'mercedes-benz'];
 
 // ============================================================================
 // HELPER FUNCTIONS

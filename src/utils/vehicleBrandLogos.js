@@ -251,8 +251,10 @@ const LOGO_CDN_BASE = 'https://raw.githubusercontent.com/filippofilip95/car-logo
 // Local logos for brands not available in CDN (stored in /public/logos/)
 const LOCAL_BRAND_LOGOS = {
   // SVG logos (melhor qualidade)
-  'yamaha': '/logos/yamaha.svg',
+  'yamaha': '/logos/yamaha-red.svg',
   'kia': '/logos/kia.svg',
+  'porsche': '/porsche-logo-E5720D9afC_brandlogos.net.svg',
+  'dodge': 'https://www.svgrepo.com/show/303429/dodge-ram-logo.svg',
   // PNG logos (fallback local do CDN)
   'ford': '/logos/ford.png',
   'fiat': '/logos/fiat.png',
@@ -267,7 +269,7 @@ const LOCAL_BRAND_LOGOS = {
   'mitsubishi': '/logos/mitsubishi.png',
   'peugeot': '/logos/peugeot.png',
   'citroen': '/logos/citroen.png',
-  'bmw': '/logos/bmw.png',
+  'bmw': 'https://cdn.worldvectorlogo.com/logos/bmw-7.svg',
   'mercedes-benz': '/logos/mercedes-benz.png',
   'audi': '/logos/audi.png',
   'volvo': '/logos/volvo.png',
@@ -297,9 +299,9 @@ const DARK_MODE_LOGOS = {
   'bmw': '/logos/bmw-light.svg',
   'byd': '/logos/byd-auto.svg',
   'mini': 'https://cdn.worldvectorlogo.com/logos/bmw-mini-1.svg',
-  'dodge': 'https://cdn.worldvectorlogo.com/logos/dodge-ram.svg',
+  'dodge': 'https://www.svgrepo.com/show/303429/dodge-ram-logo.svg',
   'volvo': 'https://www.svgrepo.com/show/306942/volvo.svg',
-  'porsche': 'https://www.svgrepo.com/show/446911/porsche.svg',
+  'porsche': '/porsche-logo-E5720D9afC_brandlogos.net.svg',
   'jac': 'https://iconape.com/wp-content/files/bc/163841/png/jac-motors-logo.png',
 };
 
@@ -307,8 +309,8 @@ const DARK_MODE_LOGOS = {
 const LIGHT_MODE_LOGOS = {
   'land-rover': '/logos/land-rover-green.svg',
   'bmw': '/logos/bmw-light.svg',
-  'dodge': 'https://cdn.worldvectorlogo.com/logos/dodge-ram.svg',
-  'ram': 'https://cdn.worldvectorlogo.com/logos/dodge-ram.svg',
+  'dodge': 'https://www.svgrepo.com/show/303429/dodge-ram-logo.svg',
+  'ram': 'https://www.svgrepo.com/show/303429/dodge-ram-logo.svg',
   'porsche': '/porsche-logo-E5720D9afC_brandlogos.net.svg',
 };
 
