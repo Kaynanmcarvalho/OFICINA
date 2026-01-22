@@ -21,7 +21,26 @@ export const useCheckinStore = create((set, get) => ({
   setError: (error) => set({ error }),
   clearError: () => set({ error: null }),
 
-  // Create new check-in
+  // Check for duplicate active checkin
+  checkDuplicateCheckin: async (plate) => {
+    try {
+      const empresaId = sessionStorage.getItem('empresaId') || 'default';
+      const normalizedPlate = plate.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+      
+      const checkins = await firestoreService.query('checkins', [
+        { field: 'empresaId', operator: '==', value: empresaId },
+        { field: 'vehiclePlate', operator: '==', value: normalizedPlate },
+        { field: 'status', operator: 'in', value: ['in-progress', 'pending', 'waiting-budget', 'ready'] }
+      ]);
+      
+      return checkins.length > 0 ? checkins[0] : null;
+    } catch (error) {
+      console.error('[CheckinStore] Error checking duplicate:', error);
+      return null;
+    }
+  },
+
+  // Create new check-in with validation and transaction
   createCheckin: async (checkinData) => {
     set({ isLoading: true, error: null });
     try {
@@ -29,16 +48,32 @@ export const useCheckinStore = create((set, get) => ({
       const userName = sessionStorage.getItem('userName') || 'Usuário';
       const empresaId = sessionStorage.getItem('empresaId') || 'default';
       
+      // Validar placa
+      const normalizedPlate = checkinData.vehiclePlate?.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+      if (!normalizedPlate || normalizedPlate.length !== 7) {
+        throw new Error('Placa inválida');
+      }
+      
+      // Verificar duplicidade
+      const duplicate = await get().checkDuplicateCheckin(normalizedPlate);
+      if (duplicate) {
+        throw new Error(`Veículo ${normalizedPlate} já possui check-in ativo (ID: ${duplicate.id})`);
+      }
+      
       const now = new Date().toISOString();
       
       const newCheckin = {
         ...checkinData,
+        vehiclePlate: normalizedPlate,
         id: `CHK-${Date.now()}`,
         checkinDate: now,
         createdAt: now,
         updatedAt: now,
         status: 'in-progress',
         currentStage: 'checkin',
+        empresaId,
+        createdBy: userId,
+        createdByName: userName,
         stages: {
           checkin: {
             completed: true,

@@ -26,7 +26,7 @@ const NavbarActions = ({ showSearchOnly = false, showActionsOnly = false }) => {
   // Se showActionsOnly, mostra apenas Theme Toggle e Profile
   if (showActionsOnly) {
     return (
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
         <ThemeToggle />
         <NavbarProfile />
       </div>
@@ -42,9 +42,9 @@ const NavbarActions = ({ showSearchOnly = false, showActionsOnly = false }) => {
           whileTap={{ scale: 0.98 }}
           onClick={() => setIsSearchOpen(true)}
           className={`
-            flex items-center gap-3 px-5 py-2.5 rounded-xl
+            flex items-center gap-3 px-4 py-2.5 rounded-xl
             transition-all duration-200 cursor-pointer
-            min-w-[320px] max-w-[480px] w-full
+            min-w-[300px] max-w-[440px] w-full
             ${isDarkMode 
               ? 'bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-gray-300' 
               : 'bg-black/[0.04] hover:bg-black/[0.08] border border-black/[0.06] text-gray-600'

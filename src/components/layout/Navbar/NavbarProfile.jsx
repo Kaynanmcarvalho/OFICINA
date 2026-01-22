@@ -42,31 +42,31 @@ const NavbarProfile = () => {
       <button
         onClick={toggleDropdown}
         type="button"
-        className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-colors duration-200 ${
+        className={`flex items-center gap-2.5 p-2 rounded-xl cursor-pointer transition-colors duration-200 ${
           isOpen 
             ? (isDarkMode ? 'bg-gray-700' : 'bg-gray-200') 
             : (isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100')
         }`}
       >
         <div className="relative">
-          <div className="flex items-center justify-center h-10 w-10 rounded-full bg-orange-500 text-white">
-            <User size={24} />
+          <div className="flex items-center justify-center h-9 w-9 rounded-full bg-orange-500 text-white">
+            <User size={20} />
           </div>
-          <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
+          <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
         </div>
 
-        <div className="text-left hidden md:block">
-          <p className={`text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+        <div className="text-left hidden lg:block">
+          <p className={`text-sm font-medium leading-tight ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
             {user?.displayName || user?.email?.split('@')[0] || 'Usuário'}
           </p>
-          <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+          <p className={`text-xs leading-tight ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
             {user?.role || 'Usuário'}
           </p>
         </div>
 
         <ChevronDown
           size={18}
-          className={`transition-transform duration-200 ${
+          className={`hidden lg:block transition-transform duration-200 ${
             isOpen ? 'rotate-180' : ''
           } ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}
         />

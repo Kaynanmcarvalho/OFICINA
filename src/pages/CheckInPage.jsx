@@ -5,13 +5,14 @@
  * Janeiro 2026
  */
 
-import { useState, useEffect, lazy, Suspense, useMemo, useCallback } from 'react';
+import { useState, useEffect, lazy, Suspense, useMemo, useCallback, useRef } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCheckinStore, useThemeStore } from '../store';
 import { useBudgetStore } from '../store/budgetStore';
 import { getBrandLogoUrl, getEffectiveBrand, formatVehicleDisplay } from '../utils/vehicleBrandLogos';
 import { getBrandTheme, OFFICIAL_BRAND_COLORS } from '../utils/brandModalTheme';
+import { useNavigationShortcuts } from '../hooks/useKeyboardShortcuts';
 import '../styles/checkin-cinematic.css';
 
 // Lazy load modals
@@ -150,6 +151,15 @@ const CheckInPage = () => {
   // Dock feature modals
   const [isOBDModalOpen, setIsOBDModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  
+  // Ref para campo de busca
+  const searchInputRef = useRef(null);
+  
+  // Atalhos de teclado
+  useNavigationShortcuts({
+    onNew: () => setIsCheckInModalOpen(true),
+    onSearch: () => searchInputRef.current?.focus()
+  });
 
   useEffect(() => {
     fetchCheckins();
@@ -305,8 +315,9 @@ const CheckInPage = () => {
         <div className={`ck-panel__search ${searchTerm ? 'has-value' : ''}`}>
           <Icons.Search />
           <input
+            ref={searchInputRef}
             type="text"
-            placeholder="Buscar por cliente, placa, marca, modelo, ano..."
+            placeholder="Buscar por cliente, placa, marca, modelo, ano... (Ctrl+F)"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />

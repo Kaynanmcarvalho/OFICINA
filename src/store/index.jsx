@@ -143,3 +143,4 @@ export { useTeamStore } from './teamStore.jsx';
 export { useSettingsStore } from './settingsStore.jsx';
 export { useOrganizationStore } from './organizationStore.jsx';
 export { useBudgetStore } from './budgetStore.jsx';
+export { default as useCaixaStore } from './caixaStore.js';

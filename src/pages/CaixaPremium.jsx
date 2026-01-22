@@ -15,6 +15,7 @@ import {
   Sparkles, Settings, Store, ChevronRight, Receipt, Tag
 } from 'lucide-react';
 import { useAuthStore, useInventoryStore, useClientStore } from '../store';
+import useCaixaStore from '../store/caixaStore';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { activityService } from '../config/activityService';
@@ -23,6 +24,9 @@ import SaleConfirmationModal from '../components/modals/SaleConfirmationModal';
 import PrintReceiptModal from '../components/modals/PrintReceiptModal';
 import TaxPreviewModal from '../components/modals/TaxPreviewModal';
 import PrinterConfigModal from '../components/modals/PrinterConfigModal';
+import ModalAberturaCaixa from '../components/modals/ModalAberturaCaixa';
+import ModalFechamentoCaixa from '../components/modals/ModalFechamentoCaixa';
+import BannerCaixaAberto from '../components/caixa/BannerCaixaAberto';
 import configService from '../config/configService';
 import taxCalculationService from '../config/taxCalculationService';
 import printService from '../config/printService';
@@ -643,6 +647,9 @@ const CaixaPremium = () => {
   const { user: currentUser } = useAuthStore();
   const { parts: inventoryProducts, fetchParts, isLoading: inventoryLoading } = useInventoryStore();
   
+  // NOVO: Hook do store de caixa
+  const { caixaAtual, carregarCaixaAberto, registrarVenda } = useCaixaStore();
+  
   // State
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -666,6 +673,10 @@ const CaixaPremium = () => {
   const [taxCalculation, setTaxCalculation] = useState(null);
   const [paymentModalKey, setPaymentModalKey] = useState(0);
   
+  // NOVO: Estados dos modais de caixa
+  const [showModalAberturaCaixa, setShowModalAberturaCaixa] = useState(false);
+  const [showModalFechamentoCaixa, setShowModalFechamentoCaixa] = useState(false);
+  
   const searchInputRef = useRef(null);
   
   // Computed
@@ -686,6 +697,13 @@ const CaixaPremium = () => {
     activityService.logCaixaAccess();
     fetchParts().catch(console.error);
   }, []);
+  
+  // NOVO: Carregar caixa aberto ao montar
+  useEffect(() => {
+    if (currentUser) {
+      carregarCaixaAberto(currentUser);
+    }
+  }, [currentUser, carregarCaixaAberto]);
   
   useEffect(() => {
     if (inventoryProducts?.length > 0) {
@@ -809,6 +827,13 @@ const CaixaPremium = () => {
   }, [cartItems, fetchParts]);
   
   const handleCheckout = useCallback(() => {
+    // NOVO: Verificar se tem caixa aberto
+    if (!caixaAtual) {
+      showNotification('Abra o caixa antes de fazer vendas', 'error');
+      setShowModalAberturaCaixa(true);
+      return;
+    }
+    
     if (cartItems.length === 0) { 
       showNotification('Carrinho vazio', 'error'); 
       return; 
@@ -822,7 +847,7 @@ const CaixaPremium = () => {
     });
     setPaymentModalKey(k => k + 1);
     setShowPaymentModal(true);
-  }, [cartItems, cartTotal, currentUser, selectedClient, showNotification]);
+  }, [caixaAtual, cartItems, cartTotal, currentUser, selectedClient, showNotification]);
   
   const handlePaymentConfirm = useCallback((payment) => {
     setLastSaleData(prev => ({ 
@@ -858,10 +883,34 @@ const CaixaPremium = () => {
         userId: currentUser.uid, 
         empresaId: currentUser.empresaId, 
         nfId: null, 
-        syncStatus: 'pending'
+        syncStatus: 'pending',
+        
+        // NOVO: Campos de caixa
+        caixaId: caixaAtual?.id || null,
+        caixaNumero: caixaAtual?.numero || null,
+        operadorCaixa: caixaAtual ? {
+          uid: caixaAtual.operadorAbertura.uid,
+          nome: caixaAtual.operadorAbertura.nome
+        } : null,
+        afetaCaixaFisico: paymentData.pagamentos.some(p => 
+          p.metodo.toLowerCase() === 'dinheiro'
+        ),
+        valorCaixaFisico: paymentData.pagamentos
+          .filter(p => p.metodo.toLowerCase() === 'dinheiro')
+          .reduce((sum, p) => sum + parseFloat(p.valor || 0), 0)
       };
       
       const vendaDoc = await addDoc(collection(db, 'vendas'), vendaData);
+      
+      // NOVO: Registrar venda no caixa
+      if (caixaAtual) {
+        await registrarVenda(
+          vendaDoc.id,
+          paymentData.totalComDesconto,
+          paymentData.pagamentos
+        );
+      }
+      
       await activityService.logSaleCompleted(paymentData.totalComDesconto.toFixed(2));
       
       setLastSaleData(prev => ({ 
@@ -898,7 +947,7 @@ const CaixaPremium = () => {
       console.error(error); 
       showNotification('Erro ao finalizar', 'error'); 
     }
-  }, [cartItems, cartTotal, currentUser, paymentData, clearCart, showNotification, products]);
+  }, [caixaAtual, registrarVenda, cartItems, cartTotal, currentUser, paymentData, clearCart, showNotification, products]);
   
   const handlePrintReceipt = useCallback(async (receiptData) => {
     const result = await printService.printReceipt(receiptData, currentUser?.uid);
@@ -913,6 +962,17 @@ const CaixaPremium = () => {
 
   return (
     <div className="pdv-container">
+      {/* ================================================================
+          BANNER DE CAIXA ABERTO
+          ================================================================ */}
+      <AnimatePresence>
+        {caixaAtual && (
+          <BannerCaixaAberto 
+            onFecharCaixa={() => setShowModalFechamentoCaixa(true)} 
+          />
+        )}
+      </AnimatePresence>
+      
       {/* ================================================================
           HEADER - 3 Column Layout: Logo | Search (centered) | Client
           ================================================================ */}
@@ -1236,6 +1296,38 @@ const CaixaPremium = () => {
         onClose={() => setShowPrinterConfig(false)}
         onSave={() => showNotification('Configurações salvas!')}
       />
+      
+      {/* ================================================================
+          MODAIS DE CAIXA
+          ================================================================ */}
+      <AnimatePresence>
+        {showModalAberturaCaixa && (
+          <ModalAberturaCaixa
+            isOpen={showModalAberturaCaixa}
+            onClose={() => setShowModalAberturaCaixa(false)}
+            onSuccess={() => {
+              showNotification('Caixa aberto com sucesso!');
+              setShowModalAberturaCaixa(false);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showModalFechamentoCaixa && (
+          <ModalFechamentoCaixa
+            isOpen={showModalFechamentoCaixa}
+            onClose={() => setShowModalFechamentoCaixa(false)}
+            onSuccess={(resultado) => {
+              const msg = resultado.diferenca === 0 
+                ? 'Caixa fechado! Sem diferenças.' 
+                : `Caixa fechado! Diferença: ${formatCurrency(Math.abs(resultado.diferenca))}`;
+              showNotification(msg);
+              setShowModalFechamentoCaixa(false);
+            }}
+          />
+        )}
+      </AnimatePresence>
       
       {/* Toast */}
       <AnimatePresence>

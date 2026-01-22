@@ -88,9 +88,9 @@ const Logo = ({
   // Calcular dimensões baseado no tamanho
   const dimensions = useMemo(() => {
     const sizes = {
-      small: { width: 140, height: 42 },
-      medium: { width: 180, height: 54 },
-      large: { width: 220, height: 66 },
+      small: { width: 100, height: 30 },
+      medium: { width: 120, height: 36 },
+      large: { width: 160, height: 48 },
       auto: { width: undefined, height: undefined },
     };
     return sizes[size] || sizes.medium;

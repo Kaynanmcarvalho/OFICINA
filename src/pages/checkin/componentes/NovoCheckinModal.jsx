@@ -16,7 +16,7 @@
  * Janeiro 2026
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -24,11 +24,21 @@ import toast from 'react-hot-toast';
 // Stores & Context
 import { useClientStore } from '../../../store/clientStore';
 import { useEmpresa } from '../../../contexts/EmpresaContext';
+import { useCheckinStore } from '../../../store/checkinStore';
 
 // Services
 import { consultarPlaca, isValidPlate } from '../../../services/vehicleApiService';
 import { createCheckin } from '../../../services/checkinService';
 import { getBrandLogoUrl, getEffectiveBrand } from '../../../utils/vehicleBrandLogos';
+import { logCheckinCreated } from '../../../services/auditService';
+
+// Hooks
+import useAutoSave from '../../../hooks/useAutoSave';
+import useAutoPlateSearch from '../../../hooks/useAutoPlateSearch';
+import { useFormShortcuts, useModalShortcuts } from '../../../hooks/useKeyboardShortcuts';
+
+// Validators
+import { validateCPF, validateCNPJ, validatePlate, validatePhone, validateEmail, formatPhone, formatCPF, formatCNPJ } from '../../../utils/validators';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // DESIGN TOKENS (copiados de budget.tokens.ts)
@@ -1053,15 +1063,17 @@ const StepCliente = ({ form, updateForm, clients, accent, isLoadingClients }) =>
 // ═══════════════════════════════════════════════════════════════════════════
 // STEP 2: VEÍCULO
 // ═══════════════════════════════════════════════════════════════════════════
-const StepVeiculo = ({ form, updateForm, onSearchPlate, searchingPlate, vehicleFound, accent }) => {
+const StepVeiculo = ({ form, updateForm, onSearchPlate, searchingPlate, vehicleFound, accent, autoSearching, autoSearchError }) => {
   // Compute section style with conditional border
   const sectionWithBorder = {
     ...sectionStyles.container,
     borderWidth: '1px',
     borderStyle: 'solid',
-    borderColor: vehicleFound ? colors.state.success : colors.border.subtle,
+    borderColor: vehicleFound ? colors.state.success : autoSearchError ? colors.state.error : colors.border.subtle,
     boxShadow: vehicleFound 
       ? `0 0 0 1px ${colors.state.success}40, ${sectionStyles.container.boxShadow}` 
+      : autoSearchError
+      ? `0 0 0 1px ${colors.state.error}40, ${sectionStyles.container.boxShadow}`
       : sectionStyles.container.boxShadow,
   };
 
@@ -1069,7 +1081,10 @@ const StepVeiculo = ({ form, updateForm, onSearchPlate, searchingPlate, vehicleF
     <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.lg }}>
       <div style={sectionWithBorder}>
         <h3 style={sectionStyles.title}>Consulta de Placa</h3>
-        <p style={sectionStyles.description}>Digite a placa para buscar os dados do veículo automaticamente</p>
+        <p style={sectionStyles.description}>
+          Digite a placa - busca automática após 7 caracteres
+          {autoSearching && <span style={{ color: colors.state.info, marginLeft: spacing.sm }}>• Buscando...</span>}
+        </p>
         
         <div style={{ display: 'flex', gap: spacing.md, marginTop: spacing.md }}>
           <input
@@ -1090,14 +1105,14 @@ const StepVeiculo = ({ form, updateForm, onSearchPlate, searchingPlate, vehicleF
           />
           <button
             onClick={onSearchPlate}
-            disabled={form.plate.length < 7 || searchingPlate}
+            disabled={form.plate.length < 7 || searchingPlate || autoSearching}
             style={{
               ...buttonStyles.primary(accent.hex, accent.rgb),
               minWidth: '120px',
-              opacity: form.plate.length < 7 || searchingPlate ? 0.5 : 1,
+              opacity: form.plate.length < 7 || searchingPlate || autoSearching ? 0.5 : 1,
             }}
           >
-            {searchingPlate ? <Icons.Loader /> : <Icons.Search />}
+            {searchingPlate || autoSearching ? <Icons.Loader /> : <Icons.Search />}
             Buscar
           </button>
         </div>
@@ -1114,7 +1129,23 @@ const StepVeiculo = ({ form, updateForm, onSearchPlate, searchingPlate, vehicleF
             color: colors.state.success,
             ...typography.caption,
           }}>
-            <Icons.Check /> Veículo encontrado na base de dados
+            <Icons.Check /> Veículo encontrado automaticamente
+          </div>
+        )}
+        
+        {autoSearchError && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: spacing.sm,
+            marginTop: spacing.md,
+            padding: spacing.sm,
+            background: `${colors.state.warning}15`,
+            borderRadius: radius.sm,
+            color: colors.state.warning,
+            ...typography.caption,
+          }}>
+            {autoSearchError}
           </div>
         )}
       </div>
@@ -1431,6 +1462,10 @@ const NovoCheckinModal = ({ isOpen, onClose, onSuccess }) => {
   const empresaContext = useEmpresa();
   const empresaId = empresaContext?.empresaId || null;
   const { clients, fetchClients, isLoading: clientsLoading } = useClientStore();
+  const { checkDuplicateCheckin } = useCheckinStore();
+  
+  // Ref para handleSubmit (para usar nos atalhos antes de definir)
+  const handleSubmitRef = useRef(null);
   
   // Form state
   const [form, setForm] = useState({
@@ -1463,6 +1498,100 @@ const NovoCheckinModal = ({ isOpen, onClose, onSuccess }) => {
   const effectiveBrand = getEffectiveBrand(form.brand, form.model);
   const accent = getBrandAccent(effectiveBrand);
   
+  // ═══════════════════════════════════════════════════════════════════════════
+  // INTEGRAÇÃO: AUTO-SAVE
+  // ═══════════════════════════════════════════════════════════════════════════
+  const { loadDraft, clearDraft, hasDraft } = useAutoSave(form, 'novo-checkin', 30000);
+  
+  // Carregar rascunho ao abrir modal
+  useEffect(() => {
+    if (isOpen && hasDraft()) {
+      const draft = loadDraft();
+      if (draft) {
+        console.log('[NovoCheckinModal] 💾 Rascunho recuperado');
+        setForm(draft);
+        toast.success('Rascunho recuperado!', { duration: 2000 });
+      }
+    }
+  }, [isOpen, hasDraft, loadDraft]);
+  
+  // ═══════════════════════════════════════════════════════════════════════════
+  // INTEGRAÇÃO: BUSCA AUTOMÁTICA DE PLACA
+  // ═══════════════════════════════════════════════════════════════════════════
+  const { 
+    isSearching: autoSearching, 
+    vehicleData: autoVehicleData, 
+    error: autoSearchError,
+    hasSearched: autoHasSearched
+  } = useAutoPlateSearch(form.plate, 500);
+  
+  // Preencher dados automaticamente quando encontrar veículo
+  useEffect(() => {
+    if (autoVehicleData && autoHasSearched) {
+      console.log('[NovoCheckinModal] 🚗 Preenchendo dados automáticos:', autoVehicleData);
+      setForm(prev => ({
+        ...prev,
+        brand: autoVehicleData.brand || autoVehicleData.marca || prev.brand,
+        model: autoVehicleData.model || autoVehicleData.modelo || prev.model,
+        year: (autoVehicleData.year || autoVehicleData.ano)?.toString() || prev.year,
+        color: autoVehicleData.color || autoVehicleData.cor || prev.color,
+      }));
+      setVehicleFound(true);
+      toast.success(`Veículo encontrado: ${autoVehicleData.brand || autoVehicleData.marca} ${autoVehicleData.model || autoVehicleData.modelo}`, { duration: 3000 });
+    }
+  }, [autoVehicleData, autoHasSearched]);
+  
+  // ═══════════════════════════════════════════════════════════════════════════
+  // VALIDAÇÃO DE STEPS (precisa estar antes dos atalhos)
+  // ═══════════════════════════════════════════════════════════════════════════
+  
+  // Step validation
+  const isStepValid = useCallback((step) => {
+    switch (step) {
+      case 0: return !!form.clientName.trim();
+      case 1: return !!form.plate.trim();
+      case 2: return form.services.length > 0;
+      case 3: return true;
+      default: return false;
+    }
+  }, [form]);
+  
+  const canProceed = isStepValid(currentStep);
+  
+  // ═══════════════════════════════════════════════════════════════════════════
+  // INTEGRAÇÃO: ATALHOS DE TECLADO
+  // ═══════════════════════════════════════════════════════════════════════════
+  
+  // Atalhos de modal (Esc para fechar)
+  useModalShortcuts({
+    onClose: onClose,
+    isOpen: isOpen
+  });
+  
+  // Atalhos de formulário (Enter, Shift+Enter, Ctrl+Enter)
+  useFormShortcuts({
+    onNext: () => {
+      if (canProceed && currentStep < STEPS.length - 1) {
+        setDirection(1);
+        setCurrentStep(prev => prev + 1);
+      }
+    },
+    onPrevious: () => {
+      if (currentStep > 0) {
+        setDirection(-1);
+        setCurrentStep(prev => prev - 1);
+      }
+    },
+    onSubmit: () => {
+      // Usar a ref para chamar handleSubmit
+      if (handleSubmitRef.current) {
+        handleSubmitRef.current();
+      }
+    },
+    canSubmit: canProceed && currentStep === STEPS.length - 1,
+    isEnabled: isOpen
+  });
+  
   // Fetch clients on mount - fetchClients uses sessionStorage empresaId internally
   useEffect(() => {
     if (isOpen) {
@@ -1490,20 +1619,30 @@ const NovoCheckinModal = ({ isOpen, onClose, onSuccess }) => {
     }
   }, [clients]);
   
-  // Handle ESC key
+  // Handle ESC key (removido - agora usa useModalShortcuts)
+  // useEffect(() => {
+  //   const handleKeyDown = (e) => {
+  //     if (e.key === 'Escape') onClose();
+  //   };
+  //   if (isOpen) {
+  //     document.addEventListener('keydown', handleKeyDown);
+  //     document.body.style.overflow = 'hidden';
+  //   }
+  //   return () => {
+  //     document.removeEventListener('keydown', handleKeyDown);
+  //     document.body.style.overflow = '';
+  //   };
+  // }, [isOpen, onClose]);
+  
+  // Gerenciar overflow do body
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') onClose();
-    };
     if (isOpen) {
-      document.addEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'hidden';
     }
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
   
   // Form helpers
   const updateForm = useCallback((field, value) => {
@@ -1574,19 +1713,6 @@ const NovoCheckinModal = ({ isOpen, onClose, onSuccess }) => {
     }
   }, [form.plate]);
   
-  // Step validation
-  const isStepValid = useCallback((step) => {
-    switch (step) {
-      case 0: return !!form.clientName.trim();
-      case 1: return !!form.plate.trim();
-      case 2: return form.services.length > 0;
-      case 3: return true;
-      default: return false;
-    }
-  }, [form]);
-  
-  const canProceed = isStepValid(currentStep);
-  
   // Navigation
   const goToStep = useCallback((step) => {
     if (step < currentStep || (step === currentStep + 1 && isStepValid(currentStep))) {
@@ -1613,15 +1739,54 @@ const NovoCheckinModal = ({ isOpen, onClose, onSuccess }) => {
   const handleSubmit = useCallback(async () => {
     if (!canProceed) return;
     
+    // ═══════════════════════════════════════════════════════════════════════════
+    // INTEGRAÇÃO: VALIDAÇÃO DE DUPLICIDADE
+    // ═══════════════════════════════════════════════════════════════════════════
+    if (form.plate) {
+      const duplicate = await checkDuplicateCheckin(form.plate);
+      if (duplicate) {
+        toast.error(
+          `Já existe um check-in ativo para esta placa!\nCheck-in ID: ${duplicate.id}\nStatus: ${duplicate.status}`,
+          { duration: 5000 }
+        );
+        return;
+      }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // INTEGRAÇÃO: VALIDADORES
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    // Validar telefone se preenchido
+    if (form.clientPhone && !validatePhone(form.clientPhone)) {
+      toast.error('Telefone inválido');
+      setCurrentStep(0); // Voltar para step do cliente
+      return;
+    }
+    
+    // Validar email se preenchido
+    if (form.clientEmail && !validateEmail(form.clientEmail)) {
+      toast.error('Email inválido');
+      setCurrentStep(0);
+      return;
+    }
+    
+    // Validar placa
+    if (!validatePlate(form.plate)) {
+      toast.error('Placa inválida');
+      setCurrentStep(1); // Voltar para step do veículo
+      return;
+    }
+    
     setIsLoading(true);
     try {
       const checkinData = {
         empresaId,
         clientId: form.clientId || null,
         clientName: form.clientName,
-        clientPhone: form.clientPhone,
+        clientPhone: form.clientPhone ? formatPhone(form.clientPhone) : '',
         clientEmail: form.clientEmail,
-        vehiclePlate: form.plate,
+        vehiclePlate: form.plate.toUpperCase(),
         vehicleBrand: form.brand,
         vehicleModel: form.model,
         vehicleYear: form.year,
@@ -1637,17 +1802,35 @@ const NovoCheckinModal = ({ isOpen, onClose, onSuccess }) => {
         createdAt: new Date(),
       };
       
-      await createCheckin(checkinData);
+      const result = await createCheckin(checkinData);
+      
+      // ═══════════════════════════════════════════════════════════════════════════
+      // INTEGRAÇÃO: AUDITORIA
+      // ═══════════════════════════════════════════════════════════════════════════
+      if (result?.id) {
+        await logCheckinCreated(result.id, checkinData);
+      }
+      
+      // ═══════════════════════════════════════════════════════════════════════════
+      // INTEGRAÇÃO: LIMPAR AUTO-SAVE
+      // ═══════════════════════════════════════════════════════════════════════════
+      clearDraft();
+      
       toast.success('Check-in realizado com sucesso!');
       onSuccess?.();
       onClose();
     } catch (error) {
       console.error('Erro ao criar check-in:', error);
-      toast.error('Erro ao realizar check-in');
+      toast.error('Erro ao realizar check-in: ' + (error.message || 'Tente novamente'));
     } finally {
       setIsLoading(false);
     }
-  }, [form, empresaId, canProceed, onSuccess, onClose]);
+  }, [form, empresaId, canProceed, onSuccess, onClose, checkDuplicateCheckin, clearDraft]);
+  
+  // Armazenar handleSubmit na ref para uso nos atalhos
+  useEffect(() => {
+    handleSubmitRef.current = handleSubmit;
+  }, [handleSubmit]);
   
   // Render step content
   const renderStepContent = () => {
@@ -1655,7 +1838,16 @@ const NovoCheckinModal = ({ isOpen, onClose, onSuccess }) => {
       case 0:
         return <StepCliente form={form} updateForm={updateForm} clients={clients} accent={accent} isLoadingClients={clientsLoading} />;
       case 1:
-        return <StepVeiculo form={form} updateForm={updateForm} onSearchPlate={handleSearchPlate} searchingPlate={searchingPlate} vehicleFound={vehicleFound} accent={accent} />;
+        return <StepVeiculo 
+          form={form} 
+          updateForm={updateForm} 
+          onSearchPlate={handleSearchPlate} 
+          searchingPlate={searchingPlate} 
+          vehicleFound={vehicleFound} 
+          accent={accent}
+          autoSearching={autoSearching}
+          autoSearchError={autoSearchError}
+        />;
       case 2:
         return <StepServico form={form} toggleService={toggleService} toggleCondition={toggleCondition} updateForm={updateForm} accent={accent} />;
       case 3:
