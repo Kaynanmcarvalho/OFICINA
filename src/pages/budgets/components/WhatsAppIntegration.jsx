@@ -36,7 +36,6 @@ export default function WhatsAppIntegration({ budget, onSent }) {
       const result = await whatsappService.sendBudget(
         budget.client.phone,
         budget
-      );
 
       if (result.success) {
         toast.success('Orçamento enviado com sucesso!');
@@ -102,5 +101,5 @@ export default function WhatsAppIntegration({ budget, onSent }) {
         onClose={() => setIsModalOpen(false)}
       />
     </>
-  );
+
 }

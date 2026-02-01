@@ -207,7 +207,7 @@ export const AlertCenter = ({
                     )}
                   </div>
                 </motion.div>
-              );
+
             })
           )}
         </AnimatePresence>

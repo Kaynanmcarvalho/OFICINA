@@ -1,7 +1,7 @@
 /**
  * TORQ Modal Editar Check-in - Premium Brand Identity
  * Design sincronizado com CheckinDetailsModal
- * Cores da marca do veículo refletidas no modal
+ * Cores da marca do veÃ­culo refletidas no modal
  * Janeiro 2026
  */
 
@@ -176,18 +176,18 @@ const Icons = {
 // ============================================================================
 const SECTIONS = [
   { id: 'client', label: 'Cliente', icon: Icons.Client, description: 'Dados de contato' },
-  { id: 'vehicle', label: 'Veículo', icon: Icons.Vehicle, description: 'Informações do veículo' },
-  { id: 'service', label: 'Serviços', icon: Icons.Services, description: 'Serviços solicitados' },
-  { id: 'status', label: 'Status', icon: Icons.Status, description: 'Situação atual' },
+  { id: 'vehicle', label: 'VeÃ­culo', icon: Icons.Vehicle, description: 'InformaÃ§Ãµes do veÃ­culo' },
+  { id: 'service', label: 'ServiÃ§os', icon: Icons.Services, description: 'ServiÃ§os solicitados' },
+  { id: 'status', label: 'Status', icon: Icons.Status, description: 'SituaÃ§Ã£o atual' },
 ];
 
 const STATUS_OPTIONS = [
-  { value: 'pending', label: 'Aguardando', description: 'Aguardando início', color: 'amber' },
-  { value: 'diagnosis', label: 'Diagnóstico', description: 'Em análise técnica', color: 'blue' },
-  { value: 'waiting-budget', label: 'Orçamento', description: 'Aguardando aprovação', color: 'purple' },
-  { value: 'in-progress', label: 'Em Execução', description: 'Trabalho em andamento', color: 'cyan' },
+  { value: 'pending', label: 'Aguardando', description: 'Aguardando inÃ­cio', color: 'amber' },
+  { value: 'diagnosis', label: 'DiagnÃ³stico', description: 'Em anÃ¡lise tÃ©cnica', color: 'blue' },
+  { value: 'waiting-budget', label: 'OrÃ§amento', description: 'Aguardando aprovaÃ§Ã£o', color: 'purple' },
+  { value: 'in-progress', label: 'Em ExecuÃ§Ã£o', description: 'Trabalho em andamento', color: 'cyan' },
   { value: 'ready', label: 'Pronto', description: 'Aguardando retirada', color: 'emerald' },
-  { value: 'completed', label: 'Concluído', description: 'Entregue ao cliente', color: 'green' },
+  { value: 'completed', label: 'ConcluÃ­do', description: 'Entregue ao cliente', color: 'green' },
 ];
 
 const PRIORITY_OPTIONS = [
@@ -198,37 +198,37 @@ const PRIORITY_OPTIONS = [
 ];
 
 const COMMON_SERVICES = [
-  { name: 'Troca de Óleo', category: 'Manutenção' },
-  { name: 'Alinhamento', category: 'Suspensão' },
-  { name: 'Balanceamento', category: 'Suspensão' },
-  { name: 'Freios', category: 'Segurança' },
-  { name: 'Suspensão', category: 'Suspensão' },
-  { name: 'Motor', category: 'Mecânica' },
-  { name: 'Elétrica', category: 'Elétrica' },
+  { name: 'Troca de Ã“leo', category: 'ManutenÃ§Ã£o' },
+  { name: 'Alinhamento', category: 'SuspensÃ£o' },
+  { name: 'Balanceamento', category: 'SuspensÃ£o' },
+  { name: 'Freios', category: 'SeguranÃ§a' },
+  { name: 'SuspensÃ£o', category: 'SuspensÃ£o' },
+  { name: 'Motor', category: 'MecÃ¢nica' },
+  { name: 'ElÃ©trica', category: 'ElÃ©trica' },
   { name: 'Ar Condicionado', category: 'Conforto' },
-  { name: 'Revisão Completa', category: 'Manutenção' },
-  { name: 'Diagnóstico', category: 'Análise' },
-  { name: 'Embreagem', category: 'Transmissão' },
-  { name: 'Câmbio', category: 'Transmissão' },
+  { name: 'RevisÃ£o Completa', category: 'ManutenÃ§Ã£o' },
+  { name: 'DiagnÃ³stico', category: 'AnÃ¡lise' },
+  { name: 'Embreagem', category: 'TransmissÃ£o' },
+  { name: 'CÃ¢mbio', category: 'TransmissÃ£o' },
 ];
 
 const CANCEL_REASONS = [
-  { value: 'cliente_desistiu', label: 'Cliente desistiu do serviço' },
-  { value: 'orcamento_recusado', label: 'Orçamento não aprovado pelo cliente' },
-  { value: 'veiculo_retirado', label: 'Veículo retirado sem conclusão' },
-  { value: 'falta_pecas', label: 'Falta de peças disponíveis' },
+  { value: 'cliente_desistiu', label: 'Cliente desistiu do serviÃ§o' },
+  { value: 'orcamento_recusado', label: 'OrÃ§amento nÃ£o aprovado pelo cliente' },
+  { value: 'veiculo_retirado', label: 'VeÃ­culo retirado sem conclusÃ£o' },
+  { value: 'falta_pecas', label: 'Falta de peÃ§as disponÃ­veis' },
   { value: 'problema_pagamento', label: 'Problema com pagamento' },
   { value: 'erro_cadastro', label: 'Check-in cadastrado por engano' },
   { value: 'duplicado', label: 'Check-in duplicado' },
   { value: 'outro', label: 'Outro motivo' },
 ];
 
-// Logos que mantêm cor original (não ficam brancas)
+// Logos que mantÃªm cor original (nÃ£o ficam brancas)
 const COLORED_LOGO_BRANDS = ['bmw', 'fiat', 'ferrari', 'lamborghini', 'land rover', 'land-rover', 'chevrolet', 'ford', 'renault', 'mini', 'dodge', 'ram', 'volvo', 'porsche', 'chery', 'jac', 'jac motors', 'yamaha', 'mercedes', 'mercedes-benz'];
 // Logos menores (-10%)
 const SMALL_LOGO_BRANDS = ['byd', 'land rover', 'land-rover', 'chevrolet', 'toyota'];
 // Logos maiores (+10% a +15%)
-const LARGE_LOGO_BRANDS = ['dodge', 'jac', 'jac motors', 'citroen', 'citroën', 'kia', 'ferrari', 'mitsubishi', 'jaguar', 'lamborghini', 'mclaren', 'bmw', 'peugeot', 'mini', 'volvo', 'yamaha', 'mercedes', 'mercedes-benz'];
+const LARGE_LOGO_BRANDS = ['dodge', 'jac', 'jac motors', 'citroen', 'citroÃ«n', 'kia', 'ferrari', 'mitsubishi', 'jaguar', 'lamborghini', 'mclaren', 'bmw', 'peugeot', 'mini', 'volvo', 'yamaha', 'mercedes', 'mercedes-benz'];
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -279,8 +279,8 @@ const formatAddressDisplay = (client) => {
 // ============================================================================
 // CUSTOM DATE PICKER COMPONENT - Brand Themed
 // ============================================================================
-const MONTH_NAMES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-const WEEKDAY_NAMES = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const MONTH_NAMES = ['Janeiro', 'Fevereiro', 'MarÃ§o', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+const WEEKDAY_NAMES = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'SÃ¡b'];
 
 const DatePickerBrand = ({ value, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -474,7 +474,7 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
 
   const handleSave = async () => {
     const docId = checkinData?.firestoreId;
-    if (!docId) { toast.error('Erro: ID do check-in não encontrado'); return; }
+    if (!docId) { toast.error('Erro: ID do check-in nÃ£o encontrado'); return; }
     setIsLoading(true);
     try {
       const docRef = doc(db, 'checkins', docId);
@@ -484,13 +484,13 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
       onClose();
     } catch (error) {
       console.error('Erro ao salvar:', error);
-      toast.error('Erro ao salvar alterações');
+      toast.error('Erro ao salvar alteraÃ§Ãµes');
     } finally { setIsLoading(false); }
   };
 
   const handleDelete = async () => {
     const docId = checkinData?.firestoreId;
-    if (!docId) { toast.error('Erro: ID do check-in não encontrado'); return; }
+    if (!docId) { toast.error('Erro: ID do check-in nÃ£o encontrado'); return; }
     const finalReason = cancelReason === 'outro' ? customReason : cancelReason;
     if (!finalReason) { toast.error('Por favor, selecione um motivo para o cancelamento'); return; }
     setIsDeleting(true);
@@ -565,7 +565,7 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                       <span className="text-xs px-2.5 py-1 rounded-full font-medium" style={{ background: 'var(--brand-card-bg)', color: 'var(--brand-accent)' }}>Editando</span>
                     </div>
                     <p className="text-sm mt-0.5" style={{ color: 'var(--brand-text-muted)' }}>
-                      {formatVehicleDisplay(checkinData?.vehicleBrand, checkinData?.vehicleModel)}{checkinData?.vehicleYear && ` • ${checkinData.vehicleYear}`}
+                      {formatVehicleDisplay(checkinData?.vehicleBrand, checkinData?.vehicleModel)}{checkinData?.vehicleYear && ` â€¢ ${checkinData.vehicleYear}`}
                     </p>
                   </div>
                 </div>
@@ -573,7 +573,6 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                   <Icons.Close className="w-[18px] h-[18px]" />
                 </button>
               </div>
-
               <div className="flex gap-1.5 relative">
                 {SECTIONS.map(section => {
                   const Icon = section.icon;
@@ -607,8 +606,8 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                           <Icons.Client className="w-5 h-5" style={{ color: '#FFFFFF' }} />
                         </div>
                         <div>
-                          <p className="text-lg font-semibold" style={{ color: 'var(--brand-text)' }}>{formData.clientName || 'Cliente não identificado'}</p>
-                          <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>{clientData?.personType === 'juridica' ? 'Pessoa Jurídica' : 'Pessoa Física'}</p>
+                          <p className="text-lg font-semibold" style={{ color: 'var(--brand-text)' }}>{formData.clientName || 'Cliente nÃ£o identificado'}</p>
+                          <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>{clientData?.personType === 'juridica' ? 'Pessoa JurÃ­dica' : 'Pessoa FÃ­sica'}</p>
                         </div>
                       </div>
                       
@@ -635,7 +634,7 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                           <div className="flex items-center gap-2 p-2.5 rounded-lg col-span-2" style={{ background: 'rgba(255,255,255,0.03)' }}>
                             <Icons.Building className="w-4 h-4 flex-shrink-0" style={{ color: '#FFFFFF' }} />
                             <div>
-                              <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--brand-text-muted)' }}>Razão Social</p>
+                              <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--brand-text-muted)' }}>RazÃ£o Social</p>
                               <p className="text-sm" style={{ color: 'var(--brand-text)' }}>{clientData.razaoSocial}</p>
                             </div>
                           </div>
@@ -646,17 +645,17 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                         <div className="flex items-start gap-2 p-2.5 rounded-lg mt-3" style={{ background: 'rgba(255,255,255,0.03)' }}>
                           <Icons.MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#FFFFFF' }} />
                           <div>
-                            <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--brand-text-muted)' }}>Endereço</p>
+                            <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--brand-text-muted)' }}>EndereÃ§o</p>
                             <p className="text-sm" style={{ color: 'var(--brand-text)' }}>{formatAddressDisplay(clientData)}</p>
                           </div>
                         </div>
                       )}
-                      {!clientData && !isLoadingClient && <p className="text-xs mt-2" style={{ color: 'var(--brand-text-muted)' }}>Cliente não encontrado no cadastro.</p>}
+                      {!clientData && !isLoadingClient && <p className="text-xs mt-2" style={{ color: 'var(--brand-text-muted)' }}>Cliente nÃ£o encontrado no cadastro.</p>}
                     </div>
 
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 mb-3">
-                        <span className="text-xs font-medium px-2 py-1 rounded-md" style={{ background: 'var(--brand-accent)', color: '#FFFFFF' }}>Editável</span>
+                        <span className="text-xs font-medium px-2 py-1 rounded-md" style={{ background: 'var(--brand-accent)', color: '#FFFFFF' }}>EditÃ¡vel</span>
                         <span className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Apenas telefone e email podem ser alterados</span>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
@@ -698,7 +697,7 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                     <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
                       <div className="flex items-center gap-2 mb-4">
                         <Icons.Lock className="w-4 h-4" style={{ color: 'var(--brand-text-muted)' }} />
-                        <span className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Dados do veículo não podem ser alterados</span>
+                        <span className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Dados do veÃ­culo nÃ£o podem ser alterados</span>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1"><p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--brand-text-muted)' }}>Marca</p><p className="text-base font-medium" style={{ color: 'var(--brand-text)' }}>{formData.vehicleBrand || '-'}</p></div>
@@ -710,7 +709,7 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                     
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-xs font-medium px-2 py-1 rounded-md" style={{ background: 'var(--brand-accent)', color: '#FFFFFF' }}>Editável</span>
+                        <span className="text-xs font-medium px-2 py-1 rounded-md" style={{ background: 'var(--brand-accent)', color: '#FFFFFF' }}>EditÃ¡vel</span>
                         <span className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Atualize a quilometragem atual</span>
                       </div>
                       <label className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--brand-text)' }}><Icons.Odometer className="w-4 h-4" style={{ color: '#FFFFFF' }} /> Quilometragem (KM)</label>
@@ -728,7 +727,7 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                 {activeSection === 'service' && (
                   <motion.div key="service" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="space-y-6 relative">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm" style={{ color: 'var(--brand-text-muted)' }}>Selecione os serviços</p>
+                      <p className="text-sm" style={{ color: 'var(--brand-text-muted)' }}>Selecione os serviÃ§os</p>
                       <span className="px-3 py-1 rounded-full text-xs font-medium" style={{ background: formData.services.length > 0 ? 'var(--brand-accent)' : 'var(--brand-card-bg)', color: '#FFFFFF' }}>
                         {formData.services.length} selecionado{formData.services.length !== 1 ? 's' : ''}
                       </span>
@@ -744,11 +743,12 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                             <span className="text-xs" style={{ opacity: 0.7 }}>{service.category}</span>
                             {isSelected && <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-2 right-2"><Icons.Check className="w-4 h-4" /></motion.div>}
                           </motion.button>
-                        );
+                          );
+
                       })}
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--brand-text)' }}><Icons.Notes className="w-4 h-4" /> Observações</label>
+                      <label className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--brand-text)' }}><Icons.Notes className="w-4 h-4" /> ObservaÃ§Ãµes</label>
                       <textarea value={formData.notes} onChange={e => handleChange('notes', e.target.value)} rows={3}
                         className="w-full px-4 py-3 rounded-xl border outline-none resize-none"
                         style={{ background: 'var(--brand-card-bg)', borderColor: 'var(--brand-border)', color: 'var(--brand-text)' }} placeholder="Problemas relatados..." />
@@ -773,6 +773,7 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                               {isSelected && <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-3 right-3"><Icons.Check className="w-5 h-5" /></motion.div>}
                             </motion.button>
                           );
+
                         })}
                       </div>
                     </div>
@@ -788,11 +789,12 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                               {option.label}
                             </motion.button>
                           );
+
                         })}
                       </div>
                     </div>
                     <div className="space-y-3">
-                      <label className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--brand-text)' }}><Icons.Calendar className="w-4 h-4" style={{ color: '#FFFFFF' }} /> Previsão de Conclusão</label>
+                      <label className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--brand-text)' }}><Icons.Calendar className="w-4 h-4" style={{ color: '#FFFFFF' }} /> PrevisÃ£o de ConclusÃ£o</label>
                       <DatePickerBrand value={formData.estimatedCompletion} onChange={(date) => handleChange('estimatedCompletion', date)} />
                     </div>
                   </motion.div>
@@ -810,7 +812,7 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                 </motion.button>
                 {hasChanges && (
                   <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-2 px-3 py-1.5 rounded-lg" style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#FBBF24' }}>
-                    <Icons.AlertCircle className="w-4 h-4" /><span className="text-xs font-medium">Alterações não salvas</span>
+                    <Icons.AlertCircle className="w-4 h-4" /><span className="text-xs font-medium">AlteraÃ§Ãµes nÃ£o salvas</span>
                   </motion.div>
                 )}
               </div>
@@ -819,7 +821,7 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                 <motion.button onClick={handleSave} disabled={isLoading || !hasChanges} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                   className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ background: 'var(--brand-accent)', color: '#FFFFFF' }}>
-                  {isLoading ? <><Icons.Loader className="w-4 h-4" />Salvando...</> : <><Icons.Save className="w-4 h-4" />Salvar Alterações</>}
+                  {isLoading ? <><Icons.Loader className="w-4 h-4" />Salvando...</> : <><Icons.Save className="w-4 h-4" />Salvar AlteraÃ§Ãµes</>}
                 </motion.button>
               </div>
             </div>
@@ -834,7 +836,7 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                   {/* Fundo com blur - aparece instantaneamente */}
                   <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }} />
                   
-                  {/* Modal Horizontal - só ele anima */}
+                  {/* Modal Horizontal - sÃ³ ele anima */}
                   <motion.div
                     initial={{ scale: 0.95, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
@@ -848,7 +850,7 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                     <motion.div className="absolute top-0 left-0 right-0 h-[2px]" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: 0.05, duration: 0.3 }}
                       style={{ background: 'linear-gradient(90deg, var(--brand-accent) 0%, transparent 70%)', transformOrigin: 'left' }} />
 
-                    {/* LADO ESQUERDO - Info do Veículo */}
+                    {/* LADO ESQUERDO - Info do VeÃ­culo */}
                     <div className="w-[260px] flex-shrink-0 p-6 flex flex-col items-center" style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 100%)', borderRight: '1px solid var(--brand-border)' }}>
                       {/* Logo da marca - maior e mais destacado */}
                       <div className="mb-5">
@@ -856,7 +858,7 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                           <img src={logoUrl} alt={effectiveBrand} className={`${isSmallLogo ? 'h-10' : isLargeLogo ? 'h-14' : 'h-12'} w-auto object-contain`}
                             style={{ maxWidth: '140px', filter: isColoredLogo ? 'none' : 'brightness(0) invert(1)' }} />
                         ) : (
-                          <span className="text-2xl font-bold tracking-tight" style={{ color: 'var(--brand-accent)' }}>{(effectiveBrand || 'VEÍCULO').toUpperCase()}</span>
+                          <span className="text-2xl font-bold tracking-tight" style={{ color: 'var(--brand-accent)' }}>{(effectiveBrand || 'VEÃCULO').toUpperCase()}</span>
                         )}
                       </div>
                       
@@ -870,7 +872,7 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                         </div>
                       </div>
                       
-                      {/* Info do veículo - Formatado corretamente */}
+                      {/* Info do veÃ­culo - Formatado corretamente */}
                       <div className="text-center mb-5 px-2">
                         <p className="text-base font-semibold leading-tight" style={{ color: 'var(--brand-text)' }}>
                           {formatVehicleDisplay(checkinData?.vehicleBrand, checkinData?.vehicleModel)}
@@ -900,7 +902,7 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                       </div>
                     </div>
 
-                    {/* LADO DIREITO - Formulário */}
+                    {/* LADO DIREITO - FormulÃ¡rio */}
                     <div className="flex-1 flex flex-col">
                       {/* Header */}
                       <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--brand-border)' }}>
@@ -936,7 +938,8 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                                   <span className="text-[11px] font-medium" style={{ color: isSelected ? '#FFFFFF' : 'var(--brand-text-muted)' }}>{reason.label}</span>
                                 </div>
                               </motion.button>
-                            );
+                          );
+
                           })}
                         </div>
                         
@@ -956,7 +959,7 @@ const ModalEditarCheckin = ({ isOpen, onClose, checkinData, onSave, onDelete }) 
                       <div className="px-4 py-3 flex items-center gap-3" style={{ background: 'rgba(0,0,0,0.2)', borderTop: '1px solid var(--brand-border)' }}>
                         <div className="flex-1 flex items-center gap-1.5">
                           <Icons.AlertCircle className="w-3 h-3" style={{ color: 'var(--brand-text-muted)' }} />
-                          <p className="text-[10px]" style={{ color: 'var(--brand-text-muted)' }}>Check-in será marcado como cancelado</p>
+                          <p className="text-[10px]" style={{ color: 'var(--brand-text-muted)' }}>Check-in serÃ¡ marcado como cancelado</p>
                         </div>
                         <motion.button onClick={() => { setShowDeleteConfirm(false); setCancelReason(''); setCustomReason(''); }} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                           className="px-4 py-2 rounded-lg text-xs font-medium" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }}>Voltar</motion.button>

@@ -891,7 +891,7 @@ const SchedulePage = () => {
                         )}
                         </div>
                       </motion.div>
-                    );
+                          );
                   })}
                 </AnimatePresence>
               )

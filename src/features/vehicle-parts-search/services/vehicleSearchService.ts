@@ -8,8 +8,6 @@ import { BRAZILIAN_VEHICLES_DATABASE, VEHICLES_BY_BRAND, BRAND_LOGOS } from '../
 import type { VehicleVariant, VehicleSuggestion, VehicleType } from '../types';
 
 // Log para verificar se a base foi carregada
-console.log(`[VehicleSearchService] Database loaded: ${BRAZILIAN_VEHICLES_DATABASE?.length || 0} vehicles`);
-
 // Lista de todas as marcas conhecidas (normalizado)
 const KNOWN_BRANDS = new Set([
   'volkswagen', 'vw', 'chevrolet', 'gm', 'fiat', 'ford', 'toyota', 'honda',
@@ -243,14 +241,6 @@ export const searchVehicles = (
   // Analisa a query para entender a intenção do usuário
   const analysis = analyzeQuery(query);
   
-  console.log(`[VehicleSearch] Query: "${query}"`);
-  console.log(`[VehicleSearch] Analysis:`, {
-    brand: analysis.detectedBrand,
-    year: analysis.detectedYear,
-    modelTokens: analysis.modelTokens,
-    isExact: analysis.isExactSearch
-  });
-  
   const startTime = performance.now();
   
   // Filtra e pontua
@@ -323,7 +313,6 @@ export const searchVehicles = (
   });
   
   const elapsed = performance.now() - startTime;
-  console.log(`[VehicleSearch] Found ${suggestions.length} results in ${elapsed.toFixed(1)}ms`);
   
   return suggestions;
 };

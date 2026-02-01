@@ -25,7 +25,6 @@ const FinalizeModal = ({ isOpen, onClose, onFinalize, vehicleData, placa }) => {
   const getLocation = async () => {
     try {
       if (!navigator.geolocation) {
-        console.warn('Geolocalização não suportada');
         return;
       }
 
@@ -37,7 +36,7 @@ const FinalizeModal = ({ isOpen, onClose, onFinalize, vehicleData, placa }) => {
           try {
             const response = await fetch(
               `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=pt-BR`
-            );
+
             const data = await response.json();
             
             setLocation({
@@ -59,7 +58,7 @@ const FinalizeModal = ({ isOpen, onClose, onFinalize, vehicleData, placa }) => {
         (error) => {
           console.error('Erro ao obter localização:', error);
         }
-      );
+
     } catch (error) {
       console.error('Erro na geolocalização:', error);
     }

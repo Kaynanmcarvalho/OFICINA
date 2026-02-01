@@ -81,7 +81,6 @@ const RecurrenceAnalyzer = ({ history = [], monthsToAnalyze = 6 }) => {
 
       const matchedKey = Object.keys(suggestions).find(key => 
         rec.service.toLowerCase().includes(key.toLowerCase())
-      );
 
       return {
         service: rec.service,
@@ -106,10 +105,10 @@ const RecurrenceAnalyzer = ({ history = [], monthsToAnalyze = 6 }) => {
           O veículo está com manutenção em dia nos últimos {monthsToAnalyze} meses
         </p>
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <div className="space-y-6">
       {/* Header */}
       <div>

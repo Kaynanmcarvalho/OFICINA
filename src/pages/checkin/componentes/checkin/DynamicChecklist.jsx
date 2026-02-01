@@ -377,7 +377,7 @@ const DynamicChecklist = ({
                 )}
               </AnimatePresence>
             </motion.div>
-          );
+
         })}
       </div>
 

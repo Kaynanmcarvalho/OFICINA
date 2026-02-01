@@ -252,7 +252,7 @@ const ProductSelector = ({ onSelect, onClose, selectedProducts = [] }) => {
                       </div>
                     </div>
                   </button>
-                );
+
               })}
             </div>
           )}

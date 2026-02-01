@@ -81,8 +81,7 @@ export const useServiceSuggestions = (vehiclePlate, empresaId, checkinId) => {
   const acceptAll = useCallback(async () => {
     const results = await Promise.all(
       suggestions.map(s => acceptSuggestion(s))
-    );
-    
+
     const successful = results.filter(r => r.success).length;
     return { success: successful === suggestions.length, count: successful };
   }, [suggestions, acceptSuggestion]);
@@ -91,8 +90,7 @@ export const useServiceSuggestions = (vehiclePlate, empresaId, checkinId) => {
   const ignoreAll = useCallback(async () => {
     const results = await Promise.all(
       suggestions.map(s => ignoreSuggestion(s))
-    );
-    
+
     const successful = results.filter(r => r.success).length;
     return { success: successful === suggestions.length, count: successful };
   }, [suggestions, ignoreSuggestion]);

@@ -52,11 +52,7 @@ const BudgetApprovalPage = () => {
     setIsSubmitting(true);
 
     try {
-      console.log('🔍 Budget ID:', budget.id || budget.firestoreId);
-      console.log('🔍 Itens selecionados:', selectedItems.size, 'de', budget.items.length);
-      
       const approvedItemsList = budget.items.filter(item => selectedItems.has(item.id));
-      console.log('📋 Itens aprovados:', approvedItemsList.map(i => i.name));
       
       const budgetId = budget.id || budget.firestoreId;
       if (!budgetId) {
@@ -64,8 +60,6 @@ const BudgetApprovalPage = () => {
       }
       
       const result = await approveBudget(budgetId, approvedItemsList);
-
-      console.log('✅ Resultado da aprovação:', result);
 
       if (result.success) {
         toast.success('Orçamento aprovado com sucesso!');
@@ -274,10 +268,10 @@ const BudgetApprovalPage = () => {
           <p className="text-gray-600 font-semibold">Carregando orçamento...</p>
         </div>
       </div>
-    );
-  }
+  );
+}
 
-  if (!budget) {
+if (!budget) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
         <div className="text-center">
@@ -286,10 +280,10 @@ const BudgetApprovalPage = () => {
           <p className="text-gray-600">O link pode estar incorreto ou o orçamento pode ter expirado.</p>
         </div>
       </div>
-    );
-  }
+  );
+}
 
-  const isExpired = new Date(budget.expiresAt) < new Date();
+const isExpired = new Date(budget.expiresAt) < new Date();
   const isAlreadyProcessed = budget.status !== 'pending';
   
   // Criar set de IDs aprovados para verificação rápida

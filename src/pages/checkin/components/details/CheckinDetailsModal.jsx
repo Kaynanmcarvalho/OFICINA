@@ -226,7 +226,6 @@ const TABS = [
   { id: 'budget', label: 'Orçamento', icon: Icons.Budget },
 ];
 
-
 // ============ MAIN COMPONENT ============
 const CheckinDetailsModal = ({ checkinId, vehicleBrand, onClose, onEdit }) => {
   const empresaContext = useEmpresa();
@@ -284,7 +283,8 @@ const CheckinDetailsModal = ({ checkinId, vehicleBrand, onClose, onEdit }) => {
         where('vehiclePlate', '==', plate),
         orderBy('createdAt', 'desc'),
         limit(10)
-      );
+            );
+
       const snapshot = await getDocs(q);
       setVehicleHistory(snapshot.docs.map(d => ({ id: d.id, ...d.data() })).filter(h => h.id !== checkinId));
     } catch (error) {
@@ -301,7 +301,8 @@ const CheckinDetailsModal = ({ checkinId, vehicleBrand, onClose, onEdit }) => {
         where('vehiclePlate', '==', plate),
         orderBy('timestamp', 'desc'),
         limit(5)
-      );
+            );
+
       const snapshot = await getDocs(q);
       setObdScans(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
     } catch (error) {
@@ -371,6 +372,7 @@ const CheckinDetailsModal = ({ checkinId, vehicleBrand, onClose, onEdit }) => {
     const message = encodeURIComponent(
       `Olá ${checkinData.clientName || ''}! Aqui é da oficina. Seu veículo ${checkinData.vehiclePlate} está em atendimento.`
     );
+
     window.open(`https://wa.me/${phoneFormatted}?text=${message}`, '_blank');
   };
 
@@ -576,7 +578,6 @@ const CheckinDetailsModal = ({ checkinId, vehicleBrand, onClose, onEdit }) => {
               })}
             </div>
           </div>
-
 
           {/* ===== CONTENT - Área imersiva ===== */}
           <div 
@@ -982,7 +983,6 @@ const CheckinDetailsModal = ({ checkinId, vehicleBrand, onClose, onEdit }) => {
                   )}
                 </motion.div>
               )}
-
 
               {/* ========== HISTORY TAB - PREMIUM ========== */}
               {activeTab === 'history' && (

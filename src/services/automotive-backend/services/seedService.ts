@@ -352,7 +352,6 @@ export const SEED_VEHICLES = [
   },
 ];
 
-
 // ============================================================================
 // CONVERTER REAL PARTS TO SEED FORMAT
 // ============================================================================
@@ -389,14 +388,10 @@ export async function seedAutomotiveDatabase(): Promise<{
   let partsCreated = 0;
   let sharedPartsCreated = 0;
 
-  console.log('[SeedService] 🚀 Iniciando seed com dados REAIS verificados...');
-  
   const stats = getDatabaseStats();
-  console.log(`[SeedService] 📊 Database: ${stats.totalParts} peças, ${stats.totalVehicles} veículos`);
-  console.log(`[SeedService] 🏭 Marcas: ${stats.brandsCovered.join(', ')}`);
+  }`);
 
   // 1. Criar veículos
-  console.log('[SeedService] 📦 Criando veículos...');
   for (const vehicle of SEED_VEHICLES) {
     try {
       await firebaseService.saveVehicle({
@@ -404,16 +399,13 @@ export async function seedAutomotiveDatabase(): Promise<{
         lastValidatedAt: Timestamp.now(),
       });
       vehiclesCreated++;
-      console.log(`[SeedService] ✅ ${vehicle.brand} ${vehicle.model} ${vehicle.year}`);
-    } catch (err: any) {
+      } catch (err: any) {
       errors.push(`Erro veículo ${vehicle.id}: ${err.message}`);
       console.error(`[SeedService] ❌ ${vehicle.id}`, err);
     }
   }
 
   // 2. Criar peças com dados REAIS
-  console.log('[SeedService] 🔧 Criando peças com códigos OEM REAIS...');
-  
   for (const realPart of ALL_REAL_PARTS) {
     try {
       // Find matching vehicle IDs from our seed vehicles
@@ -430,7 +422,6 @@ export async function seedAutomotiveDatabase(): Promise<{
         .map(v => v.id);
       
       if (matchingVehicleIds.length === 0) {
-        console.log(`[SeedService] ⚠️ Sem veículos para: ${realPart.name}`);
         continue;
       }
       
@@ -442,7 +433,7 @@ export async function seedAutomotiveDatabase(): Promise<{
       });
       
       partsCreated++;
-      console.log(`[SeedService] ✅ ${realPart.name} (${realPart.oemCode}) → ${matchingVehicleIds.length} veículos`);
+      → ${matchingVehicleIds.length} veículos`);
     } catch (err: any) {
       errors.push(`Erro peça ${realPart.id}: ${err.message}`);
       console.error(`[SeedService] ❌ ${realPart.id}`, err);
@@ -450,8 +441,6 @@ export async function seedAutomotiveDatabase(): Promise<{
   }
 
   // 3. Registrar peças compartilhadas (cross-compatibility)
-  console.log('[SeedService] 🔄 Registrando cross-compatibility...');
-  
   // Group parts that are shared across multiple brands
   const sharedParts = ALL_REAL_PARTS.filter(p => {
     const brands = new Set(p.compatibility.map(c => c.brand));
@@ -462,8 +451,7 @@ export async function seedAutomotiveDatabase(): Promise<{
     try {
       const vehicleNames = shared.compatibility.map(c => 
         `${c.brand} ${c.model} ${c.yearStart}-${c.yearEnd}`
-      );
-      
+
       await firebaseService.registerSharedPart({
         id: `SHARED_${shared.id}`,
         partNumber: shared.oemCode,
@@ -483,9 +471,6 @@ export async function seedAutomotiveDatabase(): Promise<{
     }
   }
 
-  console.log('[SeedService] 🎉 Seed concluído!');
-  console.log(`[SeedService] Veículos: ${vehiclesCreated}, Peças: ${partsCreated}, Shared: ${sharedPartsCreated}`);
-
   return {
     success: errors.length === 0,
     vehiclesCreated,
@@ -494,7 +479,6 @@ export async function seedAutomotiveDatabase(): Promise<{
     errors,
   };
 }
-
 
 // ============================================================================
 // FUNÇÃO DE VERIFICAÇÃO - CHECA SE SEED JÁ FOI EXECUTADO
@@ -540,8 +524,6 @@ export async function smartSearch(query: string): Promise<{
   vehicles: any[];
   message: string;
 }> {
-  console.log(`[SmartSearch] 🔍 Buscando: "${query}"`);
-  
   // Parse da query
   const parts = query.trim().toUpperCase().split(/\s+/);
   const brand = parts[0];
@@ -551,7 +533,6 @@ export async function smartSearch(query: string): Promise<{
     const firebaseResults = await firebaseService.searchVehicles({ brand });
     
     if (firebaseResults.length > 0) {
-      console.log(`[SmartSearch] ✅ Firebase retornou ${firebaseResults.length} veículos`);
       return {
         source: 'firebase',
         vehicles: firebaseResults,
@@ -559,8 +540,7 @@ export async function smartSearch(query: string): Promise<{
       };
     }
   } catch (err) {
-    console.log('[SmartSearch] ⚠️ Erro ao buscar no Firebase, usando local');
-  }
+    }
   
   // Se não encontrou no Firebase, retorna vazio
   return {

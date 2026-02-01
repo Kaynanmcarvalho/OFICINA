@@ -228,7 +228,7 @@ const ClientFilter = ({
                       ))}
                     </div>
                   </div>
-                );
+
               })}
             </div>
           </motion.div>

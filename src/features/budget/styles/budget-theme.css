@@ -1,0 +1,194 @@
+/**
+ * TORQ Budget - Tema Adaptativo
+ * Sistema de cores técnico e funcional
+ * SEM decorações, SEM gradientes, SEM efeitos
+ */
+
+/* ============================================================================
+   VARIÁVEIS CSS - TEMA CLARO
+   Contraste adequado para legibilidade perfeita
+   Bordas VISÍVEIS e EVIDENTES
+   ============================================================================ */
+:root {
+  /* Backgrounds sólidos - Brancos e cinzas claros */
+  --bg-modal: #FFFFFF;
+  --bg-modal-header: #F8F9FA;
+  --bg-modal-content: #FFFFFF;
+  --bg-section: #F8F9FA;
+  --bg-section-hover: #F1F3F5;
+  --bg-input: #FFFFFF;
+  --bg-input-focus: #FFFFFF;
+  
+  /* Texto com contraste FORTE para tema claro */
+  --text-primary: #111827;        /* Preto forte - máxima legibilidade */
+  --text-secondary: #374151;      /* Cinza escuro - bem visível */
+  --text-muted: #6B7280;          /* Cinza médio - legível */
+  --text-disabled: #9CA3AF;       /* Cinza claro - desabilitado */
+  
+  /* Bordas funcionais - VISÍVEIS e EVIDENTES no tema claro */
+  --border-subtle: #D1D5DB;       /* Borda sutil mas VISÍVEL */
+  --border-default: #9CA3AF;      /* Borda padrão FORTE */
+  --border-strong: #6B7280;       /* Borda forte - alto contraste */
+  
+  /* Sombras leves para separação */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================================================
+   VARIÁVEIS CSS - TEMA ESCURO PREMIUM DEFINITIVO
+   Preto profundo real com contraste perceptual máximo
+   Engenharia de luz e legibilidade para software profissional
+   ============================================================================ */
+.dark {
+  /* Backgrounds - Preto profundo REAL como base */
+  --bg-modal: #0B0E13;              /* Preto profundo principal - REAL */
+  --bg-modal-header: #080A0F;       /* Preto mais profundo para header */
+  --bg-modal-content: #0B0E13;      /* Mesmo do modal */
+  --bg-section: #141922;            /* Cards/blocos - separação clara */
+  --bg-section-hover: #1A1F28;      /* Hover perceptível */
+  --bg-input: #080A0F;              /* Inputs mais escuros - contraste com cards */
+  --bg-input-focus: #0D1016;        /* Input em foco - sutil mas visível */
+  
+  /* Texto - BRANCO para máxima legibilidade */
+  --text-primary: #FFFFFF;          /* BRANCO PURO - máxima legibilidade */
+  --text-secondary: #E8ECEF;        /* Quase branco - totalmente legível */
+  --text-muted: #B8BFC7;            /* Cinza claro - bem visível */
+  --text-disabled: #6B7280;         /* Desabilitado mas visível */
+  
+  /* Bordas - Sutis mas PERCEPTÍVEIS */
+  --border-subtle: #1A1F28;         /* Separação mínima visível */
+  --border-default: #252B36;        /* Borda padrão clara */
+  --border-strong: #3A4150;         /* Borda forte - alto contraste */
+  
+  /* Sombras - Mínimas, apenas profundidade */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+/* ============================================================================
+   CONTAINER PRINCIPAL
+   ============================================================================ */
+.budget-modal-container {
+  background: var(--bg-modal);
+  color: var(--text-primary);
+}
+
+/* ============================================================================
+   HEADER E FOOTER
+   ============================================================================ */
+.budget-modal-header,
+.budget-modal-footer {
+  background: var(--bg-modal-header);
+  border-color: var(--border-subtle);
+}
+
+/* ============================================================================
+   CONTENT AREA
+   ============================================================================ */
+.budget-modal-content {
+  background: var(--bg-modal-content);
+}
+
+/* ============================================================================
+   SECTIONS
+   ============================================================================ */
+.budget-section {
+  background: linear-gradient(to bottom, var(--bg-section) 0%, var(--bg-section-hover) 100%);
+  border-color: var(--border-subtle);
+  color: var(--text-primary);
+}
+
+/* ============================================================================
+   INPUTS
+   ============================================================================ */
+.budget-input {
+  background: var(--bg-input);
+  border-color: var(--border-default);
+  color: var(--text-primary);
+}
+
+.budget-input:focus {
+  background: var(--bg-input-focus);
+  border-color: var(--border-strong);
+}
+
+/* ============================================================================
+   LABELS E TEXTO
+   ============================================================================ */
+.budget-label {
+  color: var(--text-secondary);
+}
+
+.budget-text-primary {
+  color: var(--text-primary);
+}
+
+.budget-text-secondary {
+  color: var(--text-secondary);
+}
+
+.budget-text-muted {
+  color: var(--text-muted);
+}
+
+/* ============================================================================
+   BOTÕES
+   ============================================================================ */
+.budget-button-secondary {
+  background: var(--bg-section);
+  border-color: var(--border-default);
+  color: var(--text-secondary);
+}
+
+.budget-button-secondary:hover {
+  background: var(--bg-section-hover);
+  color: var(--text-primary);
+}
+
+/* ============================================================================
+   CLOSE BUTTON
+   ============================================================================ */
+.budget-close-button {
+  background: var(--bg-section);
+  border-color: var(--border-subtle);
+  color: var(--text-muted);
+}
+
+.budget-close-button:hover {
+  background: var(--bg-section-hover);
+  color: var(--text-primary);
+}
+
+/* ============================================================================
+   STEPPER
+   ============================================================================ */
+.budget-step-indicator {
+  background: var(--bg-section);
+  border-color: var(--border-subtle);
+  color: var(--text-muted);
+}
+
+.budget-step-label {
+  color: var(--text-muted);
+}
+
+.budget-step-label-active {
+  color: var(--text-primary);
+}
+
+/* ============================================================================
+   DROPDOWN
+   ============================================================================ */
+.budget-dropdown {
+  background: var(--bg-modal);
+  border-color: var(--border-default);
+}
+
+.budget-dropdown-item {
+  border-color: var(--border-subtle);
+}
+
+.budget-dropdown-item:hover {
+  background: var(--bg-section);
+}

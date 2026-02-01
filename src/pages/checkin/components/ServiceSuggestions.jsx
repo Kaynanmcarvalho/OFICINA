@@ -180,7 +180,7 @@ const ServiceSuggestions = ({ vehicleData, onServicesChange }) => {
                 )}
               </div>
             </motion.div>
-          );
+
         })}
       </div>
       

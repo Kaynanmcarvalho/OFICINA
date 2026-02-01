@@ -92,10 +92,10 @@ const WidgetClima = () => {
           Clima indisponível
         </p>
       </motion.div>
-    );
-  }
+  );
+}
 
-  const IconeClima = getIconeClima(clima.codigo);
+const IconeClima = getIconeClima(clima.codigo);
 
   return (
     <motion.div

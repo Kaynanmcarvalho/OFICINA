@@ -6,20 +6,34 @@ import { getStorage } from 'firebase/storage';
 import { getFunctions } from 'firebase/functions';
 import { getMessaging, isSupported } from 'firebase/messaging';
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v9-compat and later, measurementId is optional
-
-  // TODO: Add your Firebase config here
-  // You can get this from your Firebase Console
+// 🔒 SEGURANÇA: Credenciais movidas para variáveis de ambiente
+// NUNCA commitar credenciais no código-fonte
 const firebaseConfig = {
-  apiKey: "AIzaSyCMhYAH03gzL0H705XjSBp8-4gxhmE246Q",
-  authDomain: "oficina-reparofacil.firebaseapp.com",
-  projectId: "oficina-reparofacil",
-  storageBucket: "oficina-reparofacil.firebasestorage.app",
-  messagingSenderId: "610352587990",
-  appId: "1:610352587990:web:dc0add122ccb7f54c09577",
-  measurementId: "G-YGV44MV8G3"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
+
+// Validar que todas as variáveis estão definidas
+const requiredEnvVars = [
+  'VITE_FIREBASE_API_KEY',
+  'VITE_FIREBASE_AUTH_DOMAIN',
+  'VITE_FIREBASE_PROJECT_ID',
+  'VITE_FIREBASE_STORAGE_BUCKET',
+  'VITE_FIREBASE_MESSAGING_SENDER_ID',
+  'VITE_FIREBASE_APP_ID'
+];
+
+const missingVars = requiredEnvVars.filter(varName => !import.meta.env[varName]);
+
+if (missingVars.length > 0) {
+  console.error('🚨 ERRO CRÍTICO: Variáveis de ambiente Firebase faltando:', missingVars);
+  throw new Error(`Configuração Firebase incompleta. Variáveis faltando: ${missingVars.join(', ')}`);
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -42,10 +56,8 @@ export const initializeMessaging = async () => {
       messaging = getMessaging(app);
       return messaging;
     }
-    console.warn('Firebase Messaging is not supported in this browser');
     return null;
   } catch (error) {
-    console.warn('Error checking messaging support:', error);
     return null;
   }
 };

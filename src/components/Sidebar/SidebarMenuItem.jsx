@@ -131,5 +131,5 @@ export function SidebarMenuItem({ icon: Icon, label, path, isExpanded, onClick }
         </motion.span>
       )}
     </motion.button>
-  );
+
 }

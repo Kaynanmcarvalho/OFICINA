@@ -25,7 +25,6 @@ export const uploadCheckinPhoto = async (file, placa, empresaId, tipo = 'entrada
     await uploadBytes(storageRef, file);
     const url = await getDownloadURL(storageRef);
     
-    console.log('Foto enviada:', url);
     return url;
   } catch (error) {
     console.error('Erro ao enviar foto:', error);

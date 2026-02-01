@@ -107,7 +107,6 @@ const Icons = {
   ),
 };
 
-
 // ============ STYLES ============
 const styles = {
   overlay: `fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md`,
@@ -163,7 +162,6 @@ const VehicleHistoryModal = ({ isOpen, onClose }) => {
       setIsLoading(false);
     }
   };
-
 
   const generateDemoScans = () => {
     const now = new Date();
@@ -248,7 +246,6 @@ const VehicleHistoryModal = ({ isOpen, onClose }) => {
     ];
   };
 
-
   // Filter scans
   const filteredScans = scans.filter(scan => {
     // Filter by mode
@@ -292,7 +289,6 @@ const VehicleHistoryModal = ({ isOpen, onClose }) => {
   };
 
   if (!isOpen) return null;
-
 
   return (
     <AnimatePresence>
@@ -339,7 +335,6 @@ const VehicleHistoryModal = ({ isOpen, onClose }) => {
               </div>
             </div>
           </div>
-
 
           {/* Content */}
           <div className={styles.content}>
@@ -402,7 +397,6 @@ const VehicleHistoryModal = ({ isOpen, onClose }) => {
                     <p className="text-xs text-white/40 mt-1">Com Falhas</p>
                   </div>
                 </div>
-
 
                 {/* Loading */}
                 {isLoading ? (
@@ -478,14 +472,13 @@ const VehicleHistoryModal = ({ isOpen, onClose }) => {
                           {/* Arrow */}
                           <span className="w-5 h-5 text-white/20"><Icons.ChevronRight /></span>
                         </button>
-                      );
+                          );
                     })}
                   </div>
                 )}
               </div>
             )}
           </div>
-
 
           {/* Footer */}
           <div className={styles.footer}>
@@ -511,9 +504,8 @@ const VehicleHistoryModal = ({ isOpen, onClose }) => {
         </motion.div>
       </motion.div>
     </AnimatePresence>
-  );
+      );
 };
-
 
 // ============ SCAN DETAIL VIEW ============
 const ScanDetailView = ({ scan, onBack, getHealthColor }) => {
@@ -577,7 +569,6 @@ const ScanDetailView = ({ scan, onBack, getHealthColor }) => {
         </div>
       </div>
 
-
       {/* Live Data */}
       {scan.liveData && scan.liveData.length > 0 && (
         <div>
@@ -598,7 +589,7 @@ const ScanDetailView = ({ scan, onBack, getHealthColor }) => {
                     {item.value}<span className="text-xs font-normal text-white/30 ml-1">{item.unit}</span>
                   </p>
                 </div>
-              );
+                  );
             })}
           </div>
         </div>

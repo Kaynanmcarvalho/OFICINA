@@ -146,7 +146,6 @@ export const useDiagnosis = (diagnosisId = null) => {
         setError(err);
         setIsLoading(false);
       }
-    );
 
     return () => unsubscribe();
   }, [diagnosisId]);

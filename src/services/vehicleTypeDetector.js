@@ -111,105 +111,87 @@ export const detectVehicleType = (marca, modelo, tipoOriginal = '') => {
     const modeloUpper = (modelo || '').toUpperCase().trim();
     const tipoUpper = (tipoOriginal || '').toUpperCase().trim();
 
-    console.log('[VEHICLE TYPE DETECTOR] Analisando:', { marca: marcaUpper, modelo: modeloUpper, tipoOriginal: tipoUpper });
-
     // 1. Verifica tipo original se for claro
     if (tipoUpper.includes('MOTO') || tipoUpper.includes('MOTOCICLETA') || tipoUpper.includes('CICLOMOTOR')) {
-        console.log('[VEHICLE TYPE DETECTOR] ✅ Tipo detectado pelo original: MOTO');
         return 'moto';
     }
     if (tipoUpper.includes('CAMINHAO') || tipoUpper.includes('CAMINHÃO') || tipoUpper.includes('TRUCK')) {
-        console.log('[VEHICLE TYPE DETECTOR] ✅ Tipo detectado pelo original: CAMINHÃO');
         return 'caminhao';
     }
 
     // 2. PRIORIDADE: Para marcas multi-tipo, analisa MODELO PRIMEIRO
     const isMultiTypeBrand = MULTI_TYPE_BRANDS.some(brand => 
         marcaUpper.includes(brand) || brand.includes(marcaUpper)
-    );
+  );
 
-    if (isMultiTypeBrand) {
-        console.log('[VEHICLE TYPE DETECTOR] 🔍 Marca multi-tipo detectada, analisando MODELO primeiro...');
-        
+  if (isMultiTypeBrand) {
         // Verifica palavras-chave no modelo para motos
         if (MOTO_KEYWORDS.some(keyword => modeloUpper.includes(keyword))) {
-            console.log('[VEHICLE TYPE DETECTOR] ✅ Palavra-chave de MOTO detectada no modelo (marca multi-tipo)');
+            ');
             return 'moto';
         }
 
         // Verifica palavras-chave no modelo para caminhões
         if (CAMINHAO_KEYWORDS.some(keyword => modeloUpper.includes(keyword))) {
-            console.log('[VEHICLE TYPE DETECTOR] ✅ Palavra-chave de CAMINHÃO detectada no modelo (marca multi-tipo)');
+            ');
             return 'caminhao';
         }
 
         // Verifica palavras-chave no modelo para carros
         if (CARRO_KEYWORDS.some(keyword => modeloUpper.includes(keyword))) {
-            console.log('[VEHICLE TYPE DETECTOR] ✅ Palavra-chave de CARRO detectada no modelo (marca multi-tipo)');
+            ');
             return 'carro';
         }
 
         // Casos específicos por marca multi-tipo
         if (marcaUpper.includes('HONDA')) {
             // Honda sem identificação clara: assume moto (mais comum no Brasil)
-            console.log('[VEHICLE TYPE DETECTOR] ⚠️  HONDA sem identificação clara no modelo, assumindo MOTO');
             return 'moto';
         }
 
         if (marcaUpper.includes('BMW')) {
             // BMW Motorrad = moto, senão carro
             if (marcaUpper.includes('MOTORRAD')) {
-                console.log('[VEHICLE TYPE DETECTOR] ✅ BMW MOTORRAD identificada como MOTO');
                 return 'moto';
             }
-            console.log('[VEHICLE TYPE DETECTOR] ✅ BMW sem MOTORRAD, assumindo CARRO');
             return 'carro';
         }
 
         if (marcaUpper.includes('VOLVO')) {
             // Volvo Trucks = caminhão, senão carro
             if (marcaUpper.includes('TRUCK')) {
-                console.log('[VEHICLE TYPE DETECTOR] ✅ VOLVO TRUCKS identificada como CAMINHÃO');
                 return 'caminhao';
             }
-            console.log('[VEHICLE TYPE DETECTOR] ✅ VOLVO sem TRUCKS, assumindo CARRO');
             return 'carro';
         }
 
         if (marcaUpper.includes('MERCEDES') || marcaUpper.includes('BENZ')) {
             // Mercedes-Benz Trucks = caminhão, senão carro
             if (marcaUpper.includes('TRUCK') || modeloUpper.includes('ATEGO') || modeloUpper.includes('AXOR') || modeloUpper.includes('ACTROS')) {
-                console.log('[VEHICLE TYPE DETECTOR] ✅ MERCEDES-BENZ identificada como CAMINHÃO');
                 return 'caminhao';
             }
-            console.log('[VEHICLE TYPE DETECTOR] ✅ MERCEDES-BENZ sem indicação de caminhão, assumindo CARRO');
             return 'carro';
         }
 
         if (marcaUpper.includes('VOLKSWAGEN') || marcaUpper.includes('VW')) {
             // VW Caminhões = caminhão, senão carro
             if (marcaUpper.includes('CAMINHAO') || marcaUpper.includes('CAMINHÃO') || marcaUpper.includes('TRUCK')) {
-                console.log('[VEHICLE TYPE DETECTOR] ✅ VOLKSWAGEN CAMINHÕES identificada como CAMINHÃO');
                 return 'caminhao';
             }
-            console.log('[VEHICLE TYPE DETECTOR] ✅ VOLKSWAGEN sem indicação de caminhão, assumindo CARRO');
             return 'carro';
         }
 
         // Default para marca multi-tipo sem identificação: carro
-        console.log('[VEHICLE TYPE DETECTOR] ⚠️  Marca multi-tipo sem identificação clara, assumindo CARRO');
         return 'carro';
     }
 
     // 3. Verifica marcas exclusivas de motos
     if (MOTO_BRANDS.some(brand => marcaUpper.includes(brand) || brand.includes(marcaUpper))) {
-        console.log('[VEHICLE TYPE DETECTOR] ✅ Marca exclusiva de MOTO detectada');
         return 'moto';
     }
 
     // 4. Verifica marcas exclusivas de caminhões
     if (CAMINHAO_BRANDS.some(brand => marcaUpper.includes(brand) || brand.includes(marcaUpper))) {
-        console.log('[VEHICLE TYPE DETECTOR] ✅ Marca exclusiva de CAMINHÃO detectada');
         return 'caminhao';
     }
 
@@ -218,30 +200,25 @@ export const detectVehicleType = (marca, modelo, tipoOriginal = '') => {
     const isCarBrand = CARRO_BRANDS.some(brand => marcaUpper.includes(brand) || brand.includes(marcaUpper));
     
     if (!isCarBrand && MOTO_KEYWORDS.some(keyword => modeloUpper.includes(keyword))) {
-        console.log('[VEHICLE TYPE DETECTOR] ✅ Palavra-chave de MOTO detectada no modelo');
         return 'moto';
     }
 
     // 6. Verifica palavras-chave no modelo para caminhões
     if (CAMINHAO_KEYWORDS.some(keyword => modeloUpper.includes(keyword))) {
-        console.log('[VEHICLE TYPE DETECTOR] ✅ Palavra-chave de CAMINHÃO detectada no modelo');
         return 'caminhao';
     }
 
     // 7. Verifica marcas exclusivas de carros
     if (CARRO_BRANDS.some(brand => marcaUpper.includes(brand) || brand.includes(marcaUpper))) {
-        console.log('[VEHICLE TYPE DETECTOR] ✅ Marca exclusiva de CARRO detectada');
         return 'carro';
     }
 
     // 8. Verifica palavras-chave no modelo para carros
     if (CARRO_KEYWORDS.some(keyword => modeloUpper.includes(keyword))) {
-        console.log('[VEHICLE TYPE DETECTOR] ✅ Palavra-chave de CARRO detectada no modelo');
         return 'carro';
     }
 
     // 9. Default: CARRO (mais comum)
-    console.log('[VEHICLE TYPE DETECTOR] ⚠️  Tipo não identificado claramente, assumindo CARRO');
     return 'carro';
 };
 
@@ -257,8 +234,7 @@ export const validateVehicleType = (tipo, marca, modelo) => {
     const isValid = tipo === tipoDetectado;
     
     if (!isValid) {
-        console.warn(`[VEHICLE TYPE VALIDATOR] ⚠️  Tipo inconsistente! Informado: ${tipo}, Detectado: ${tipoDetectado}`);
-    }
+        }
     
     return isValid;
 };
@@ -273,8 +249,7 @@ export const correctVehicleType = (vehicleData) => {
     const tipoDetectado = detectVehicleType(vehicleData.marca, vehicleData.modelo, tipoOriginal);
     
     if (tipoOriginal && tipoOriginal !== tipoDetectado) {
-        console.warn(`[VEHICLE TYPE CORRECTOR] 🔧 Corrigindo tipo: ${tipoOriginal} → ${tipoDetectado}`);
-    }
+        }
     
     return {
         ...vehicleData,

@@ -66,8 +66,7 @@ const CheckInForm = ({ onClose, onSubmit }) => {
           client.vehicles && client.vehicles.some(vehicle => 
             vehicle.placa && vehicle.placa.toLowerCase().includes(searchTerm.toLowerCase())
           )
-        );
-        
+
         // Combinar resultados e remover duplicatas
         const combinedResults = [...clientResults];
         vehicleResults.forEach(client => {

@@ -17,7 +17,7 @@ export const useCostVariationScanner = (productId, empresaId, period = 90) => {
         productId,
         empresaId,
         period
-      );
+
       setScan(data);
     } catch (err) {
       console.error('Erro ao carregar scan:', err);
@@ -59,7 +59,7 @@ export const useBulkCostVariationScanner = (productIds, empresaId, period = 90) 
         productIds,
         empresaId,
         period
-      );
+
       setScans(data);
     } catch (err) {
       console.error('Erro ao carregar scans:', err);

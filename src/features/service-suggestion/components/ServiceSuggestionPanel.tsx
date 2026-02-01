@@ -198,7 +198,7 @@ export function ServiceSuggestionPanel({
         </div>
       )}
     </div>
-  );
+
 }
 
 // Card de sugestão individual

@@ -209,7 +209,6 @@ export class CostAnalysisService {
       const breakEven = this.calculateBreakEven(
         totalCost + indirectCosts, 
         config.targetMargin
-      );
 
       const analysis = {
         budgetId: budgetData.id,
@@ -280,8 +279,7 @@ export class CostAnalysisService {
     // Itens com margem baixa
     const lowMarginItems = itemsAnalysis.filter(
       item => item.margin < config.minMargin
-    );
-    
+
     if (lowMarginItems.length > 0) {
       recommendations.push({
         type: 'warning',
@@ -316,8 +314,7 @@ export class CostAnalysisService {
         db, 
         'costAnalysis', 
         `${analysis.budgetId}_${Date.now()}`
-      );
-      
+
       await setDoc(analysisRef, analysis);
       return analysisRef.id;
     } catch (error) {
@@ -385,7 +382,6 @@ export class CostAnalysisService {
         where('createdAt', '>=', Timestamp.fromDate(startDate)),
         where('createdAt', '<=', Timestamp.fromDate(endDate)),
         orderBy('createdAt', 'desc')
-      );
 
       const snapshot = await getDocs(q);
       return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -408,7 +404,6 @@ export class CostAnalysisService {
         empresaId, 
         startDate, 
         endDate
-      );
 
       if (analyses.length === 0) {
         return {
@@ -422,17 +417,14 @@ export class CostAnalysisService {
       const totalMargin = analyses.reduce(
         (sum, a) => sum + (a.totals?.margin || 0), 
         0
-      );
-      
+
       const totalProfit = analyses.reduce(
         (sum, a) => sum + (a.totals?.profitAmount || 0), 
         0
-      );
-      
+
       const totalRevenue = analyses.reduce(
         (sum, a) => sum + (a.totals?.price || 0), 
         0
-      );
 
       return {
         averageMargin: Math.round((totalMargin / analyses.length) * 100) / 100,

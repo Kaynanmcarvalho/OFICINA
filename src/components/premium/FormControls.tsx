@@ -69,7 +69,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           </p>
         )}
       </div>
-    );
+
   }
 );
 
@@ -115,7 +115,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           </p>
         )}
       </div>
-    );
+
   }
 );
 
@@ -165,7 +165,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           </>
         )}
       </motion.button>
-    );
+
   }
 );
 

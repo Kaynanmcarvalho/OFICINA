@@ -25,8 +25,7 @@ const SendBudgetModal = ({ isOpen, onClose, budget }) => {
   // Debug: verificar se cada orçamento tem um link único
   useEffect(() => {
     if (budget && budget.approvalLink) {
-      console.log('[SendBudgetModal] Orçamento:', budget.budgetNumber, 'Link:', budget.approvalLink);
-    }
+      }
   }, [budget]);
 
   const generateWhatsAppMessage = useCallback(() => {
@@ -65,16 +64,13 @@ Qualquer dúvida, estamos à disposição!`;
   const checkWhatsAppStatus = async () => {
     try {
       const status = await checkConnectionStatus();
-      console.log('[SendBudget] Status verificado:', status);
-      
       // Considerar conectado se está conectado OU tem sessão salva
       const isConnected = status.connected === true || status.exists === true;
       setIsWhatsAppConnected(isConnected);
       
       // NÃO mostrar alerta automaticamente ao abrir o modal
       // O alerta só deve aparecer quando tentar enviar e falhar
-      console.log('[SendBudget] Status:', isConnected ? 'Conectado/Sessão disponível' : 'Desconectado');
-    } catch (error) {
+      } catch (error) {
       console.error('Erro ao verificar status:', error);
       setIsWhatsAppConnected(false);
       // NÃO mostrar alerta automaticamente
@@ -127,11 +123,7 @@ Qualquer dúvida, estamos à disposição!`;
   
 
   const handleSendWhatsApp = async (skipConnectionCheck = false) => {
-    console.log('[SendBudget] handleSendWhatsApp iniciado');
     const phone = phoneNumber || budget.clientPhone;
-    
-    console.log('[SendBudget] Telefone:', phone);
-    console.log('[SendBudget] Mensagem:', customMessage?.substring(0, 50) + '...');
     
     if (!phone) {
       console.error('[SendBudget] Telefone não informado');
@@ -146,27 +138,20 @@ Qualquer dúvida, estamos à disposição!`;
     }
 
     // Se não deve pular a verificação, verificar conexão primeiro
-    console.log('[SendBudget] skipConnectionCheck:', skipConnectionCheck);
     if (!skipConnectionCheck) {
       // Se já verificamos que está conectado, pular verificação
       if (isWhatsAppConnected) {
-        console.log('[SendBudget] WhatsApp já verificado como conectado - pulando verificação');
-      } else {
-        console.log('[SendBudget] Verificando conexão WhatsApp...');
+        } else {
         try {
           const status = await checkConnectionStatus();
-          console.log('[SendBudget] Status da conexão:', status);
-          
           // Se NÃO está conectado E NÃO tem sessão salva, mostrar alerta
           if (!status.connected && !status.exists) {
-            console.log('[SendBudget] WhatsApp sem sessão - mostrando alerta');
             setIsWhatsAppConnected(false);
             setShowDisconnectedAlert(true);
             return;
           }
           
           // Se está conectado OU tem sessão, continuar com envio
-          console.log('[SendBudget] WhatsApp disponível - enviando...');
           setIsWhatsAppConnected(true);
         } catch (error) {
           console.error('Erro ao verificar conexão:', error);
@@ -184,10 +169,6 @@ Qualquer dúvida, estamos à disposição!`;
     try {
       // Normalizar número (remover 9 extra se necessário)
       const normalizedPhone = normalizePhoneNumber(phone);
-      
-      console.log('[SendBudget] Número original:', phone);
-      console.log('[SendBudget] Número normalizado:', normalizedPhone);
-      console.log('[SendBudget] Enviando mensagem...');
       
       await sendMessage(normalizedPhone, customMessage);
 
@@ -218,7 +199,6 @@ Qualquer dúvida, estamos à disposição!`;
   };
 
   const handleWhatsAppConnected = (userData) => {
-    console.log('WhatsApp conectado:', userData);
     setShowWhatsAppModal(false);
     toast.success('Agora você pode enviar orçamentos automaticamente!');
     // Enviar mensagem diretamente após conexão (pulando verificação)
@@ -267,12 +247,9 @@ Qualquer dúvida, estamos à disposição!`;
   };
 
   const handleSend = () => {
-    console.log('[SendBudget] handleSend chamado - método:', sendMethod);
     if (sendMethod === 'whatsapp') {
-      console.log('[SendBudget] Chamando handleSendWhatsApp...');
       handleSendWhatsApp();
     } else {
-      console.log('[SendBudget] Chamando handleSendEmail...');
       handleSendEmail();
     }
   };

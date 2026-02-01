@@ -247,5 +247,5 @@ export default function NFeConfigModal({ config, onClose, onSave }) {
         </form>
       </div>
     </div>
-  );
+
 }

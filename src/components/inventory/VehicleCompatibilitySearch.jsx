@@ -230,7 +230,7 @@ const VehicleCompatibilitySearch = ({ isOpen, onClose, onPartSelect }) => {
         compatibility={selectedEvidence}
       />
     </>
-  );
+
 };
 
 export default VehicleCompatibilitySearch;

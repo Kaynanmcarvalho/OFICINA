@@ -68,27 +68,16 @@ export const useProductStore = create((set, get) => ({
     } 
   }),
 
-
   // Create new product
   createProduct: async (productData) => {
     const empresaId = getEmpresaId();
     
-    // Verificar se é Super Admin pelo userId (Super Admins não têm empresaId)
     const userId = sessionStorage.getItem('userId');
     const isSuperAdmin = !empresaId && userId;
     
-    console.log('[ProductStore] createProduct - empresaId:', empresaId);
-    console.log('[ProductStore] createProduct - userId:', userId);
-    console.log('[ProductStore] createProduct - isSuperAdmin:', isSuperAdmin);
-    
     if (!empresaId && !isSuperAdmin) {
-      // Apenas bloqueia se não for Super Admin E não tiver empresaId
       toast.error('Empresa não identificada');
       return { success: false, error: 'Empresa não identificada' };
-    }
-    
-    if (isSuperAdmin) {
-      console.log('[ProductStore] 🌟 Super Admin criando produto sem empresaId');
     }
 
     set({ isLoading: true, error: null });
@@ -135,17 +124,9 @@ export const useProductStore = create((set, get) => ({
     const userId = sessionStorage.getItem('userId');
     const isSuperAdmin = !empresaId && userId;
     
-    console.log('[ProductStore] updateProduct - empresaId:', empresaId);
-    console.log('[ProductStore] updateProduct - userId:', userId);
-    console.log('[ProductStore] updateProduct - isSuperAdmin:', isSuperAdmin);
-    
     if (!empresaId && !isSuperAdmin) {
       toast.error('Empresa não identificada');
       return { success: false, error: 'Empresa não identificada' };
-    }
-    
-    if (isSuperAdmin) {
-      console.log('[ProductStore] 🌟 Super Admin atualizando produto sem empresaId');
     }
 
     set({ isLoading: true, error: null });
@@ -243,15 +224,15 @@ export const useProductStore = create((set, get) => ({
           where('empresaId', '==', empresaId),
           orderBy('name', 'asc')
         );
+        
       } else if (isSuperAdmin) {
         // Super Admin: buscar todos os produtos (estrutura antiga sem empresaId)
-        console.log('[ProductStore] Super Admin mode: fetching all products');
         q = query(
           collection(db, 'products'),
           orderBy('name', 'asc')
         );
+        
       } else {
-        console.warn('empresaId not available and not Super Admin, skipping fetchProducts');
         return { success: false, error: 'Empresa não identificada' };
       }
 
@@ -327,7 +308,6 @@ export const useProductStore = create((set, get) => ({
       return { success: false, error: error.message };
     }
   },
-
 
   // ========== STOCK MANAGEMENT ==========
 
@@ -556,7 +536,6 @@ export const useProductStore = create((set, get) => ({
     }
   },
 
-
   // ========== STATISTICS & REPORTS ==========
 
   // Get filtered products
@@ -713,15 +692,14 @@ export const useProductStore = create((set, get) => ({
   subscribeToProducts: () => {
     const empresaId = getEmpresaId();
     if (!empresaId) {
-      console.warn('empresaId not available, skipping subscribeToProducts');
       return () => {};
     }
 
     const q = query(
+          );
       collection(db, 'products'),
       where('empresaId', '==', empresaId),
       orderBy('name', 'asc')
-    );
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const products = querySnapshot.docs.map(doc => ({

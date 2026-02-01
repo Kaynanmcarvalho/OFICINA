@@ -172,6 +172,7 @@ export async function getCheaperAlternatives(vehicleId: string, partNumber: stri
   const response = await fetch(
     `${API_BASE}/api/parts-full/cheaper-alternatives/${encodeURIComponent(vehicleId)}/${encodeURIComponent(partNumber)}`
   );
+
   const data = await response.json();
   
   if (!data.success) {
@@ -194,6 +195,7 @@ export async function getPartsByCategory(vehicleId: string, category: string): P
   const response = await fetch(
     `${API_BASE}/api/parts-full/by-category/${encodeURIComponent(vehicleId)}/${encodeURIComponent(category)}`
   );
+
   const data = await response.json();
   
   if (!data.success) {
@@ -271,6 +273,7 @@ export function calculateTotalSavings(parts: PartData[]): {
       const cheapest = part.cheaperAlternatives.reduce((min, alt) => 
         alt.avgPrice < min.avgPrice ? alt : min
       );
+
       totalWithAlternatives += cheapest.avgPrice;
     } else {
       totalWithAlternatives += part.avgPrice || 0;

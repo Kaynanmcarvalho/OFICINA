@@ -53,7 +53,7 @@ export const fetchYears = async (tipo, brandId, modelId) => {
   try {
     const response = await fetch(
       `${FIPE_BASE_URL}/${tipo}/marcas/${brandId}/modelos/${modelId}/anos`
-    );
+
     if (!response.ok) throw new Error('Erro ao buscar anos');
     return await response.json();
   } catch (error) {
@@ -73,7 +73,7 @@ export const fetchVehicleDetails = async (tipo, brandId, modelId, yearCode) => {
   try {
     const response = await fetch(
       `${FIPE_BASE_URL}/${tipo}/marcas/${brandId}/modelos/${modelId}/anos/${yearCode}`
-    );
+
     if (!response.ok) throw new Error('Erro ao buscar detalhes');
     return await response.json();
   } catch (error) {

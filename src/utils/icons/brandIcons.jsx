@@ -161,12 +161,7 @@ export const BrandIcon = ({
       if (IconComponent) {
         // Log de sucesso em modo debug
         if (DEBUG_ICONS) {
-          console.log('[Icon System] ✓ Brand icon found:', {
-            model: vehicleModel,
-            brand: brandInfo.brandName,
-            source: 'Simple Icons'
-          });
-        }
+          }
         
         return (
           <IconComponent 
@@ -174,7 +169,7 @@ export const BrandIcon = ({
             size={size}
             aria-label={`Ícone da marca ${brandInfo.brandName}`}
           />
-        );
+
       }
     }
     
@@ -185,13 +180,7 @@ export const BrandIcon = ({
       
       // Log de fallback
       if (DEBUG_ICONS) {
-        console.warn('[Icon System] ⚠ Brand icon not found, using fallback:', {
-          model: vehicleModel,
-          extractedBrand: brandInfo?.brandName || 'unknown',
-          fallbackType: vehicleType,
-          source: 'Custom/Lucide React'
-        });
-      }
+        }
       
       return (
         <VehicleTypeIcon 
@@ -199,7 +188,7 @@ export const BrandIcon = ({
           className={className}
           size={size}
         />
-      );
+
     }
     
     return null;
@@ -220,7 +209,7 @@ export const BrandIcon = ({
           className={className}
           size={size}
         />
-      );
+
     }
     
     return null;

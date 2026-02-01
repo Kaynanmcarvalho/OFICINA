@@ -87,8 +87,6 @@ const GlobalSearch = ({ isOpen, onClose }) => {
       
       if (needsLoading) {
         setIsLoadingData(true);
-        console.log('[GlobalSearch] Loading data from stores...');
-        
         try {
           await Promise.all([
             clients.length === 0 && fetchClients ? fetchClients() : Promise.resolve(),
@@ -97,8 +95,7 @@ const GlobalSearch = ({ isOpen, onClose }) => {
             parts.length === 0 && fetchParts ? fetchParts() : Promise.resolve(),
             budgets.length === 0 && fetchBudgets ? fetchBudgets() : Promise.resolve()
           ]);
-          console.log('[GlobalSearch] Data loaded successfully');
-        } catch (error) {
+          } catch (error) {
           console.error('[GlobalSearch] Error loading data:', error);
         } finally {
           setIsLoadingData(false);
@@ -111,14 +108,7 @@ const GlobalSearch = ({ isOpen, onClose }) => {
 
   // Debug: Log store data on mount and changes
   useEffect(() => {
-    console.log('[GlobalSearch] Store data loaded:', {
-      clients: clients.length,
-      vehicles: vehicles.length,
-      checkins: checkins.length,
-      parts: parts.length,
-      budgets: budgets.length
-    });
-  }, [clients, vehicles, checkins, parts, budgets]);
+    }, [clients, vehicles, checkins, parts, budgets]);
 
   // Total results count - defined early for use in effects
   const totalResults = useMemo(() => {
@@ -358,6 +348,7 @@ const GlobalSearch = ({ isOpen, onClose }) => {
         c.vehiclePlate === vehicle.plate ||
         c.vehicleId === vehicle.id
       );
+
       if (checkin) {
         return { name: checkin.clientName, fromCheckin: true };
       }
@@ -375,14 +366,6 @@ const GlobalSearch = ({ isOpen, onClose }) => {
 
     setIsSearching(true);
     const searchTerm = term.trim();
-
-    console.log('[GlobalSearch] Searching for:', searchTerm, {
-      clientsAvailable: clients.length,
-      vehiclesAvailable: vehicles.length,
-      checkinsAvailable: checkins.length,
-      partsAvailable: parts.length,
-      budgetsAvailable: budgets.length
-    });
 
     // ============================================
     // 1. SEARCH CLIENTS - Direct match
@@ -558,14 +541,6 @@ const GlobalSearch = ({ isOpen, onClose }) => {
       inventory: inventoryResults,
       budgets: budgetResults
     };
-
-    console.log('[GlobalSearch] Results found:', {
-      clients: clientResults.length,
-      vehicles: vehicleResults.length,
-      checkins: checkinResults.length,
-      inventory: inventoryResults.length,
-      budgets: budgetResults.length
-    });
 
     setResults(newResults);
     setIsSearching(false);
@@ -1160,6 +1135,7 @@ const GlobalSearch = ({ isOpen, onClose }) => {
             </div>
           </div>
         </motion.div>
+      )}
     </AnimatePresence>
   );
 };

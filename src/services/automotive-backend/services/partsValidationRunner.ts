@@ -104,7 +104,7 @@ function applyCorrections(
     if (!result.oemCodeValid) {
       const oemCorrection = result.suggestedCorrections.find(
         (c) => c.brand === 'OEM'
-      );
+
       if (oemCorrection) {
         corrections.push({
           field: 'oemCode',
@@ -119,7 +119,7 @@ function applyCorrections(
     for (const invalid of result.invalidEquivalents) {
       const correction = result.suggestedCorrections.find(
         (c) => c.brand === invalid.brand
-      );
+
       corrections.push({
         field: 'equivalent',
         brand: invalid.brand,
@@ -161,7 +161,7 @@ function generateReport(
       if (!result.oemCodeValid) {
         const oemCorrection = result.suggestedCorrections.find(
           (c) => c.brand === 'OEM'
-        );
+
         if (oemCorrection) {
           corrections.push({
             partId: key,
@@ -176,7 +176,7 @@ function generateReport(
       for (const invalid of result.invalidEquivalents) {
         const correction = result.suggestedCorrections.find(
           (c) => c.brand === invalid.brand
-        );
+
         corrections.push({
           partId: key,
           partName: key.split('_').pop() || key,
@@ -206,34 +206,20 @@ function generateReport(
 export async function runFullValidation(
   onProgress?: (current: number, total: number, partName: string) => void
 ): Promise<ValidationRunResult> {
-  console.log('[ValidationRunner] 🚀 Iniciando validação via Google Scraper...');
-  console.log(`[ValidationRunner] Total de peças: ${ALL_REAL_PARTS.length}`);
-
   // Convert parts to validation requests
   const requests = convertToValidationRequests(ALL_REAL_PARTS);
-  console.log(`[ValidationRunner] Requests gerados: ${requests.length}`);
-
   // Run validation with scraper
   const validationResults = await validatePartsBatch(
     requests,
     (progress: BulkValidationProgress) => {
       onProgress?.(progress.current, progress.total, progress.partName);
     }
-  );
 
   // Generate report
   const report = generateReport(validationResults);
 
   // Apply corrections
   const correctedParts = applyCorrections(ALL_REAL_PARTS, validationResults);
-
-  console.log('[ValidationRunner] ✅ Validação concluída!');
-  console.log(
-    `[ValidationRunner] Peças válidas: ${report.validParts}/${report.totalParts}`
-  );
-  console.log(
-    `[ValidationRunner] Correções necessárias: ${report.corrections.length}`
-  );
 
   return {
     report,
@@ -249,16 +235,11 @@ export async function runBrandValidation(
   brand: string,
   onProgress?: (current: number, total: number, partName: string) => void
 ): Promise<ValidationRunResult> {
-  console.log(`[ValidationRunner] 🚀 Validando peças para: ${brand}`);
-
   // Filter parts by brand
   const brandParts = ALL_REAL_PARTS.filter((part) =>
     part.compatibility.some(
       (c) => c.brand.toUpperCase() === brand.toUpperCase()
     )
-  );
-
-  console.log(`[ValidationRunner] Peças encontradas: ${brandParts.length}`);
 
   // Convert to requests
   const requests = convertToValidationRequests(brandParts);
@@ -269,7 +250,6 @@ export async function runBrandValidation(
     (progress: BulkValidationProgress) => {
       onProgress?.(progress.current, progress.total, progress.partName);
     }
-  );
 
   // Generate report
   const report = generateReport(validationResults);

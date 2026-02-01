@@ -73,10 +73,10 @@ export const VehicleHealthDashboard: React.FC<VehicleHealthDashboardProps> = ({
           </span>
         </div>
       </div>
-    );
-  }
+  );
+}
 
-  if (error) {
+if (error) {
     return (
       <div className={`bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 ${className}`}>
         <div className="flex items-center justify-center gap-3 text-red-500">
@@ -84,10 +84,10 @@ export const VehicleHealthDashboard: React.FC<VehicleHealthDashboardProps> = ({
           <span>{error}</span>
         </div>
       </div>
-    );
-  }
+  );
+}
 
-  if (!health) return null;
+if (!health) return null;
 
   const statusColors = HEALTH_STATUS_COLORS[health.overallStatus];
 
@@ -180,7 +180,7 @@ export const VehicleHealthDashboard: React.FC<VehicleHealthDashboardProps> = ({
                   health={systemHealth}
                   compact
                 />
-              );
+
             }
           )}
         </div>
@@ -254,5 +254,5 @@ export const VehicleHealthDashboard: React.FC<VehicleHealthDashboardProps> = ({
         </p>
       </div>
     </div>
-  );
+
 };

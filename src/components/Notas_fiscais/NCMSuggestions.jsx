@@ -226,7 +226,7 @@ const NCMSuggestions = ({ productName, onSelect, currentValue }) => {
           productWords.some(word => 
             word.includes(keyword) || keyword.includes(word)
           )
-        );
+
       }).slice(0, 5); // Limitar a 5 sugestões
       
       setSuggestions(filtered);

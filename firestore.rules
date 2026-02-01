@@ -170,6 +170,52 @@ service cloud.firestore {
     }
     
     // ============================================
+    // CAIXAS (Apenas leitura - Escrita via Cloud Functions)
+    // ============================================
+    
+    match /caixas/{caixaId} {
+      // Usuário pode ler caixas da própria empresa
+      allow read: if isAuthenticated() && 
+                     resource.data.empresaId == getUserEmpresaId();
+      
+      // Escrita apenas via Cloud Functions (mais seguro)
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false; // Nunca deletar caixas
+    }
+    
+    // ============================================
+    // MOVIMENTAÇÕES DE CAIXA (Apenas leitura - Auditoria)
+    // ============================================
+    
+    match /caixa_movimentacoes/{movimentacaoId} {
+      // Usuário pode ler movimentações da própria empresa
+      allow read: if isAuthenticated() && 
+                     resource.data.empresaId == getUserEmpresaId();
+      
+      // Escrita apenas via Cloud Functions (auditoria imutável)
+      allow write: if false;
+    }
+    
+    // ============================================
+    // ALERTAS DE CAIXA (Apenas leitura)
+    // ============================================
+    
+    match /alertas_caixa/{alertaId} {
+      // Usuário pode ler alertas da própria empresa
+      allow read: if isAuthenticated() && 
+                     resource.data.empresaId == getUserEmpresaId();
+      
+      // Pode marcar como lido
+      allow update: if isAuthenticated() && 
+                       resource.data.empresaId == getUserEmpresaId() &&
+                       request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lido', 'lidoEm', 'lidoPor']);
+      
+      // Criação e deleção apenas via Cloud Functions
+      allow create, delete: if false;
+    }
+    
+    // ============================================
     // ADMIN DASHBOARD (Super Admin apenas)
     // ============================================
     

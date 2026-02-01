@@ -29,13 +29,11 @@ class TicketImageService {
       const imageRef = ref(storage, `${this.basePath}/${ticketId}/${fileName}`);
       
       // Upload do arquivo
-      console.log('📤 Fazendo upload da imagem:', fileName);
       const snapshot = await uploadBytes(imageRef, file);
       
       // Obter URL de download
       const downloadURL = await getDownloadURL(snapshot.ref);
       
-      console.log('✅ Upload concluído:', downloadURL);
       return {
         url: downloadURL,
         fileName: fileName,
@@ -62,11 +60,8 @@ class TicketImageService {
 
       const uploadPromises = Array.from(files).map((file, index) => 
         this.uploadImage(file, ticketId, index + 1)
-      );
 
       const results = await Promise.all(uploadPromises);
-      console.log('✅ Upload múltiplo concluído:', results.length, 'imagens');
-      
       return results;
     } catch (error) {
       console.error('❌ Erro no upload múltiplo:', error);
@@ -89,8 +84,7 @@ class TicketImageService {
       const imageRef = ref(storage, imagePath);
       
       await deleteObject(imageRef);
-      console.log('✅ Imagem deletada:', imagePath);
-    } catch (error) {
+      } catch (error) {
       console.error('❌ Erro ao deletar imagem:', error);
       throw new Error(`Falha ao deletar imagem: ${error.message}`);
     }
@@ -106,8 +100,7 @@ class TicketImageService {
       const deletePromises = imageUrls.map(url => this.deleteImage(url));
       await Promise.all(deletePromises);
       
-      console.log('✅ Múltiplas imagens deletadas:', imageUrls.length);
-    } catch (error) {
+      } catch (error) {
       console.error('❌ Erro ao deletar múltiplas imagens:', error);
       throw error;
     }

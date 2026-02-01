@@ -144,18 +144,11 @@ export async function massiveSeedDatabase(
   let vehiclesSaved = 0;
   let partsSaved = 0;
 
-  console.log('[MassiveSeed] 🚀 Iniciando sincronização massiva com dados REAIS...');
-  console.log(`[MassiveSeed] Total de veículos na base local: ${TOTAL_VARIANTS}`);
-  
   const dbStats = getDatabaseStats();
-  console.log(`[MassiveSeed] Total de peças REAIS: ${dbStats.totalParts}`);
-  console.log(`[MassiveSeed] Marcas cobertas: ${Object.keys(dbStats.partsByBrand).join(', ')}`);
 
   // ============================================================================
   // FASE 1: SALVAR VEÍCULOS EM BATCHES
   // ============================================================================
-  console.log('[MassiveSeed] 📦 Fase 1: Salvando veículos...');
-  
   const totalBatches = Math.ceil(BRAZILIAN_VEHICLES_DATABASE.length / BATCH_SIZE);
   
   for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
@@ -202,8 +195,7 @@ export async function massiveSeedDatabase(
       await batch.commit();
       vehiclesSaved += batchVehicles.length;
       
-      console.log(`[MassiveSeed] ✅ Batch ${batchIndex + 1}/${totalBatches}: ${batchVehicles.length} veículos salvos`);
-    } catch (err: any) {
+      } catch (err: any) {
       console.error(`[MassiveSeed] ❌ Erro no batch ${batchIndex + 1}:`, err);
       errors.push(`Batch ${batchIndex + 1}: ${err.message}`);
     }
@@ -215,8 +207,6 @@ export async function massiveSeedDatabase(
   // ============================================================================
   // FASE 2: SALVAR PEÇAS REAIS E VINCULAR AOS VEÍCULOS
   // ============================================================================
-  console.log('[MassiveSeed] 🔧 Fase 2: Salvando peças REAIS e vinculando...');
-  
   onProgress?.({
     phase: 'Processando peças REAIS',
     current: 0,
@@ -244,8 +234,7 @@ export async function massiveSeedDatabase(
       await setDoc(docRef, partDoc, { merge: true });
       
       partsSaved++;
-      
-      console.log(`[MassiveSeed] ✅ ${realPart.name} (${realPart.oemCode}): ${compatibleVehicleIds.length} veículos`);
+
     } catch (err: any) {
       console.error(`[MassiveSeed] ❌ Erro na peça ${realPart.id}:`, err);
       errors.push(`Peça ${realPart.id}: ${err.message}`);
@@ -253,12 +242,6 @@ export async function massiveSeedDatabase(
   }
 
   const duration = Date.now() - startTime;
-  
-  console.log('[MassiveSeed] 🎉 Sincronização concluída!');
-  console.log(`[MassiveSeed] Veículos: ${vehiclesSaved}/${BRAZILIAN_VEHICLES_DATABASE.length}`);
-  console.log(`[MassiveSeed] Peças REAIS: ${partsSaved}/${ALL_REAL_PARTS.length}`);
-  console.log(`[MassiveSeed] Duração: ${(duration / 1000).toFixed(1)}s`);
-  console.log(`[MassiveSeed] Erros: ${errors.length}`);
 
   return {
     success: errors.length === 0,
@@ -304,8 +287,7 @@ export async function checkMassiveSeedStatus(): Promise<{
       needsUpdate = isFakeCode;
       
       if (needsUpdate) {
-        console.log('[MassiveSeed] ⚠️ Dados antigos detectados, precisa atualizar');
-      }
+        }
     }
     
     return {
@@ -330,8 +312,6 @@ export async function checkMassiveSeedStatus(): Promise<{
 // ============================================================================
 
 export async function clearOldPartsData(): Promise<void> {
-  console.log('[MassiveSeed] 🗑️ Limpando dados antigos de peças...');
-  
   try {
     const partsSnapshot = await getDocs(collection(db, COLLECTIONS.PARTS));
     
@@ -345,8 +325,7 @@ export async function clearOldPartsData(): Promise<void> {
       // Commit in batches of 400
       if (count % 400 === 0) {
         await batch.commit();
-        console.log(`[MassiveSeed] Deletados ${count} documentos...`);
-      }
+        }
     }
     
     // Commit remaining
@@ -354,8 +333,7 @@ export async function clearOldPartsData(): Promise<void> {
       await batch.commit();
     }
     
-    console.log(`[MassiveSeed] ✅ ${count} documentos de peças removidos`);
-  } catch (err) {
+    } catch (err) {
     console.error('[MassiveSeed] Erro ao limpar dados:', err);
     throw err;
   }
@@ -368,8 +346,6 @@ export async function clearOldPartsData(): Promise<void> {
 export async function forceReseedWithRealData(
   onProgress?: (progress: { phase: string; current: number; total: number }) => void
 ): Promise<MassiveSeedResult> {
-  console.log('[MassiveSeed] 🔄 Forçando re-seed com dados REAIS...');
-  
   // Clear old parts first
   onProgress?.({ phase: 'Limpando dados antigos...', current: 0, total: 100 });
   await clearOldPartsData();

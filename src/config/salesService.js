@@ -25,8 +25,6 @@ class SalesService {
    */
   async processSale(saleData, items, customer = null, paymentData = {}) {
     try {
-      console.log('🛒 Processando venda:', { saleData, items, customer, paymentData });
-
       // Validar itens
       if (!items || items.length === 0) {
         throw new Error('Venda deve conter pelo menos um item');
@@ -72,12 +70,9 @@ class SalesService {
         try {
           nfeData = await this.generateNFe(saleId, sale, items, customer);
         } catch (nfeError) {
-          console.warn('⚠️ Erro ao gerar NF-e:', nfeError.message);
           // Venda continua mesmo se NF-e falhar
         }
       }
-
-      console.log('✅ Venda processada com sucesso:', saleId);
 
       return {
         success: true,
@@ -141,7 +136,6 @@ class SalesService {
         item.quantidade,
         item.preco,
         customer?.uf || 'SP'
-      );
 
       totalImpostos += impostoItem.impostos.total || 0;
       
@@ -253,7 +247,6 @@ class SalesService {
         where('dataVenda', '<=', Timestamp.fromDate(endDate)),
         orderBy('dataVenda', 'desc'),
         limit(limitResults)
-      );
 
       const querySnapshot = await getDocs(q);
       const sales = [];
@@ -301,7 +294,6 @@ class SalesService {
         collection(db, this.salesItemsCollection),
         where('vendaId', '==', saleId),
         orderBy('ordem')
-      );
 
       const itemsSnapshot = await getDocs(itemsQuery);
       const items = [];
@@ -353,7 +345,6 @@ class SalesService {
         await Promise.all(promises);
       }
 
-      console.log('✅ Venda cancelada com sucesso:', saleId);
       return true;
     } catch (error) {
       console.error('❌ Erro ao cancelar venda:', error);
@@ -368,8 +359,6 @@ class SalesService {
    */
   async deleteSale(saleId) {
     try {
-      console.log('🗑️ Deletando venda:', saleId);
-
       // Buscar a venda para verificar se existe e obter dados dos itens
       const sale = await this.getSaleById(saleId);
       
@@ -379,7 +368,6 @@ class SalesService {
 
       // Reverter estoque se a venda não estava cancelada
       if (sale.status !== 'cancelada' && sale.itens && sale.itens.length > 0) {
-        console.log('🔄 Revertendo estoque dos itens...');
         const promises = sale.itens.map(async (item) => {
           return productService.updateStock(item.produtoId, item.quantidade);
         });
@@ -388,20 +376,18 @@ class SalesService {
 
       // Deletar itens da venda
       if (sale.itens && sale.itens.length > 0) {
-        console.log('🗑️ Deletando itens da venda...');
         const deleteItemsPromises = sale.itens.map(async (item) => {
           // Buscar o documento do item para deletar
           const itemsQuery = query(
             collection(db, this.salesItemsCollection),
             where('vendaId', '==', saleId),
             where('produtoId', '==', item.produtoId)
-          );
+
           const itemsSnapshot = await getDocs(itemsQuery);
           
           const deletePromises = itemsSnapshot.docs.map(itemDoc => 
             deleteDoc(doc(db, this.salesItemsCollection, itemDoc.id))
-          );
-          
+
           return Promise.all(deletePromises);
         });
         await Promise.all(deleteItemsPromises);
@@ -410,7 +396,6 @@ class SalesService {
       // Deletar a venda principal
       await deleteDoc(doc(db, this.salesCollection, saleId));
 
-      console.log('✅ Venda deletada com sucesso:', saleId);
       return true;
     } catch (error) {
       console.error('❌ Erro ao deletar venda:', error);

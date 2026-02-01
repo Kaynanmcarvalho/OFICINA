@@ -62,13 +62,6 @@ const BudgetCard = forwardRef(({ budget, onEdit, onSend, onCheckin }, ref) => {
   const isExpired = hoursUntilExpiration <= 0 && (budget.status === 'sent' || budget.status === 'pending' || budget.status === 'expired');
   
   // Debug log
-  console.log('Budget:', budget.budgetNumber, {
-    status: budget.status,
-    hoursUntilExpiration,
-    isExpired,
-    expiresAt: budget.expiresAt
-  });
-
   const handleReactivate = async () => {
     try {
       // Verificar estoque disponível para produtos
@@ -97,8 +90,7 @@ const BudgetCard = forwardRef(({ budget, onEdit, onSend, onCheckin }, ref) => {
           
           const confirm = window.confirm(
             `Alguns produtos não têm estoque suficiente:\n\n${itemsList}\n\nDeseja reativar mesmo assim? Os produtos serão reservados conforme disponibilidade.`
-          );
-          
+
           if (!confirm) return;
         }
 
@@ -114,7 +106,7 @@ const BudgetCard = forwardRef(({ budget, onEdit, onSend, onCheckin }, ref) => {
                 quantityToReserve,
                 'out',
                 `Reservado - orçamento reativado ${budget.budgetNumber}`
-              );
+
             }
           }
         }

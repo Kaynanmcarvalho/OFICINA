@@ -53,9 +53,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
 
     // Atualizar dados quando existingClient mudar
     useEffect(() => {
-        console.log('🔄 ModalNovoCliente - existingClient mudou:', existingClient);
         if (existingClient) {
-            console.log('📝 Preenchendo dados do cliente:', existingClient);
             setPersonType(existingClient.personType || 'fisica');
             setFormData({
                 name: existingClient.name || '',
@@ -230,8 +228,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                     icon: '🏢'
                 });
 
-                console.log('[CNPJ] Dados carregados:', dados);
-            } else {
+                } else {
                 toast.error(result.error || 'Erro ao consultar CNPJ');
             }
         } catch (error) {
@@ -288,7 +285,6 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
 
             // Só faz busca automática se estiver na busca manual
             if (searchMode === 'manual' && !isSearchingPlate[vehicleId]) {
-                console.log('[AUTO-SEARCH] Placa completa detectada na busca manual:', value);
                 handlePlateSearch(vehicleId, value);
             }
         }
@@ -300,15 +296,9 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
         setIsSearchingPlate(prev => ({ ...prev, [vehicleId]: true }));
         try {
             const result = await searchVehicleByPlate(plate);
-            console.log('[PLATE SEARCH] Resultado da busca:', result);
-
             if (result.success) {
                 const vehicleData = result.data;
-                console.log('[PLATE SEARCH] Dados do veículo:', vehicleData);
-
                 const searchMode = vehicleSearchMode[vehicleId] || 'plate';
-                console.log('[PLATE SEARCH] Modo de busca:', searchMode);
-
                 // Detecta o tipo de veículo baseado nos dados
                 let vehicleType = 'carro'; // padrão para carros
                 const categoria = (vehicleData.category || vehicleData.categoria || '').toLowerCase();
@@ -379,21 +369,8 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                     )
                 }));
 
-                console.log('[PLATE SEARCH] Dados processados:', {
-                    original: vehicleData,
-                    processado: {
-                        tipo: vehicleType,
-                        marca: marca,
-                        modelo: modeloVeiculo,
-                        ano: ano,
-                        cor: cor
-                    }
-                });
-
                 // Se estiver na busca manual, carregar e selecionar nos dropdowns
                 if (searchMode === 'manual') {
-                    console.log('[AUTO-SEARCH] Carregando marcas e modelos para dropdowns...');
-
                     // 1. Carregar marcas do tipo
                     const vehicleType = vehicleData.tipo || 'moto';
                     setIsLoadingBrands(prev => ({ ...prev, [vehicleId]: true }));
@@ -410,9 +387,8 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                                 b.label.toUpperCase().includes(vehicleData.marca.toUpperCase()) ||
                                 vehicleData.marca.toUpperCase().includes(b.label.toUpperCase())
                             );
-
+                            
                             if (brandMatch) {
-                                console.log('[AUTO-SEARCH] Marca encontrada:', brandMatch.label);
                                 updateVehicle(vehicleId, 'brandCode', brandMatch.value);
 
                                 // 3. Carregar modelos da marca
@@ -429,14 +405,11 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                                             m.label.toUpperCase().includes(vehicleData.modelo.toUpperCase().split(' ')[0]) ||
                                             vehicleData.modelo.toUpperCase().includes(m.label.toUpperCase())
                                         );
-
+                                        
                                         if (modelMatch) {
-                                            console.log('[AUTO-SEARCH] Modelo encontrado na lista:', modelMatch.label);
                                             updateVehicle(vehicleId, 'modelCode', modelMatch.value);
                                         } else {
                                             // Modelo não encontrado - adiciona como opção customizada
-                                            console.log('[AUTO-SEARCH] ✨ Modelo não encontrado, adicionando como opção customizada:', vehicleData.modelo);
-
                                             const customModelCode = `custom_${Date.now()}`;
                                             const customModel = {
                                                 value: customModelCode,
@@ -462,8 +435,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                                     setIsLoadingModels(prev => ({ ...prev, [vehicleId]: false }));
                                 }
                             } else {
-                                console.log('[AUTO-SEARCH] Marca não encontrada nos dropdowns, mantendo texto');
-                            }
+                                }
                         }
                     } catch (error) {
                         console.error('[AUTO-SEARCH] Erro ao carregar marcas:', error);
@@ -530,8 +502,6 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
         }
     };
 
-
-
     const toggleSearchMode = async (vehicleId) => {
         const currentMode = vehicleSearchMode[vehicleId] || 'plate';
         const newMode = currentMode === 'plate' ? 'manual' : 'plate';
@@ -570,6 +540,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                             c.cpf === formData.cpf.replace(/\D/g, '') && 
                             (!existingClient || (c.id !== existingClient.id && c.firestoreId !== existingClient.id))
                         );
+                        
                         if (isDuplicate) {
                             newErrors.cpf = 'CPF já cadastrado';
                         }
@@ -609,6 +580,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                             c.cnpj === formData.cnpj.replace(/\D/g, '') && 
                             (!existingClient || (c.id !== existingClient.id && c.firestoreId !== existingClient.id))
                         );
+
                         if (isDuplicate) {
                             newErrors.cnpj = 'CNPJ já cadastrado';
                         }
@@ -758,7 +730,6 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                 // Importar updateClient
                 const { updateClient } = await import('../../../services/clientService');
                 const clientId = existingClient.firestoreId || existingClient.id;
-                console.log('🔄 Atualizando cliente com ID:', clientId);
                 clientResult = await updateClient(clientId, clientData);
             } else {
                 clientResult = await createClient(clientData);
@@ -951,6 +922,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                                                                 c.cpf === cpfDigits && 
                                                                 (!existingClient || (c.id !== existingClient.id && c.firestoreId !== existingClient.id))
                                                             );
+
                                                             if (isDuplicate) {
                                                                 setErrors({ ...errors, cpf: 'CPF já cadastrado' });
                                                             } else {
@@ -1034,6 +1006,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                                                                 c.cnpj === cnpjDigits && 
                                                                 (!existingClient || (c.id !== existingClient.id && c.firestoreId !== existingClient.id))
                                                             );
+
                                                             if (isDuplicate) {
                                                                 setErrors({ ...errors, cnpj: 'CNPJ já cadastrado' });
                                                             } else {
@@ -1512,7 +1485,6 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
 
                                         const loadingBrands = isLoadingBrands[vehicle.id];
 
-
                                         return (
                                             <div key={vehicle.id} className="p-5 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700">
                                                 <div className="flex items-center justify-between mb-4">
@@ -1864,7 +1836,7 @@ const ModalNovoCliente = ({ isOpen, onClose, onSuccess, initialName = '', existi
                 </div>
             </div>
         </div>
-    );
+  );
 };
 
 export default ModalNovoCliente;

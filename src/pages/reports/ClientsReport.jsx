@@ -190,6 +190,7 @@ const ClientsReport = () => {
       const clientCheckins = checkins.filter(c => 
         c.clientId === client.firestoreId || c.clientName === client.name
       );
+      
       const periodCheckins = clientCheckins.filter(c => new Date(c.createdAt) >= startDate);
       const completedCheckins = clientCheckins.filter(c => c.status === 'completed');
       const totalSpent = completedCheckins.reduce((sum, c) => sum + (parseFloat(c.serviceValue) || 0), 0);

@@ -88,13 +88,10 @@ export const CreateBudgetRoute: React.FC<CreateBudgetRouteProps> = ({
         checkinId: checkinData?.checkinId || null,
       };
       
-      console.log('📋 Creating budget with data:', budgetData);
-      
       // Call store to create budget
       const result = await createBudget(budgetData);
       
       if (result.success) {
-        console.log('✅ Budget created successfully:', result.data);
         const budgetId = result.data?.id || result.data?.firestoreId;
         onSuccess?.(budgetId);
         return { success: true };

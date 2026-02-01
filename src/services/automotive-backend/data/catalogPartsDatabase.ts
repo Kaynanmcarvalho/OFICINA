@@ -59,7 +59,6 @@ const categoryMap: Record<string, PartCategory> = {
   'Óleo Motor': PartCategory.LUBRICATION,
 };
 
-
 export const CATALOG_VEHICLES: CatalogVehicle[] = [
   {
     id: 'Fiat_Strada_2024',
@@ -5155,7 +5154,6 @@ export const CATALOG_VEHICLES: CatalogVehicle[] = [
   },
 ];
 
-
 // Função para buscar peças por veículo
 export function getPartsForVehicle(brand: string, model: string, year: number): CatalogPart[] {
   const vehicle = CATALOG_VEHICLES.find(v => 
@@ -5163,6 +5161,7 @@ export function getPartsForVehicle(brand: string, model: string, year: number): 
     v.model.toLowerCase() === model.toLowerCase() &&
     v.year === year
   );
+
   return vehicle?.parts || [];
 }
 

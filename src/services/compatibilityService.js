@@ -70,8 +70,7 @@ export const getOrCreateVehicle = async (vehicleData) => {
       where('marca', '==', marca),
       where('modelo', '==', modelo),
       where('tipo', '==', tipo)
-    );
-    
+
     const snapshot = await getDocs(q);
     
     if (!snapshot.empty) {
@@ -113,8 +112,7 @@ export const findCompatibleParts = async (vehicleId, ano, vehicleData = null, in
     const q = query(
       compatRef,
       where('vehicleId', '==', vehicleId)
-    );
-    
+
     const snapshot = await getDocs(q);
     const compatibilities = [];
     
@@ -149,8 +147,7 @@ export const findCompatibleParts = async (vehicleId, ano, vehicleData = null, in
         }
         return null;
       })
-    );
-    
+
     // Buscar também nos produtos do inventário (busca inteligente)
     let inventoryMatches = [];
     if (inventoryProducts && inventoryProducts.length > 0 && vehicleData) {
@@ -168,7 +165,7 @@ export const findCompatibleParts = async (vehicleId, ano, vehicleData = null, in
       const exists = acc.find(item => 
         item.part?.id === current.part?.id || 
         item.part?.name === current.part?.name
-      );
+
       if (!exists) {
         acc.push(current);
       }
@@ -236,9 +233,9 @@ function searchInventoryProducts(products, vehicleData) {
       productName.includes(keyword) || 
       productDesc.includes(keyword) ||
       productCategory.includes(keyword)
-    );
-    
-    if (isUniversal) {
+  );
+
+  if (isUniversal) {
       score += 30;
       evidencias.push({
         tipo: 'Marketplace',
@@ -257,9 +254,9 @@ function searchInventoryProducts(products, vehicleData) {
     const tipoWords = tipoKeywords[tipo] || [];
     const matchesTipo = tipoWords.some(word => 
       productName.includes(word) || productDesc.includes(word)
-    );
-    
-    if (matchesTipo) {
+  );
+
+  if (matchesTipo) {
       score += 10;
       evidencias.push({
         tipo: 'Marketplace',
@@ -318,8 +315,7 @@ export const addCompatibilityEvidence = async (partId, vehicleId, evidenceData) 
     
     await addDoc(compatRef, newCompat);
     
-    console.log('[Compatibility] Evidência adicionada com sucesso');
-  } catch (error) {
+    } catch (error) {
     console.error('[Compatibility] Erro ao adicionar evidência:', error);
     throw error;
   }
@@ -339,8 +335,7 @@ export const registerCoPurchase = async (partId, vehicleId) => {
       compatRef,
       where('partId', '==', partId),
       where('vehicleId', '==', vehicleId)
-    );
-    
+
     const snapshot = await getDocs(q);
     
     if (snapshot.empty) {
@@ -372,8 +367,7 @@ export const registerCoPurchase = async (partId, vehicleId) => {
       });
     }
     
-    console.log('[Compatibility] Co-purchase registrado');
-  } catch (error) {
+    } catch (error) {
     console.error('[Compatibility] Erro ao registrar co-purchase:', error);
   }
 };

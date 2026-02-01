@@ -210,8 +210,6 @@ const PaymentModal = ({
         : [pagamentoAtual];
     }
 
-
-
     setLoading(true);
     
     try {
@@ -455,8 +453,8 @@ const PaymentModal = ({
                       </div>
                     </button>
                   );
-                })}
-                <div className="col-span-2">
+                  })}
+                  <div className="col-span-2">
                   <details className="rounded-lg border border-gray-200">
                     <summary className="px-4 py-2 cursor-pointer text-sm text-gray-700">Outros métodos</summary>
                     <div className="p-3 grid grid-cols-2 gap-2">

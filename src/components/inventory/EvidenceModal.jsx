@@ -201,7 +201,7 @@ const EvidenceModal = ({ isOpen, onClose, compatibility }) => {
                         </div>
                       </div>
                     </MotionDiv>
-                  );
+
                 })}
               </div>
             )}

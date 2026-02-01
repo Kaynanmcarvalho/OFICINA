@@ -257,22 +257,14 @@ export function useAutomotiveBackend(options: UseAutomotiveBackendOptions): UseA
     setSeedProgress({ phase: 'Iniciando...', current: 0, total: 100 });
     
     try {
-      console.log('[useAutomotiveBackend] 🚀 Iniciando seed com dados REAIS...');
-      
       // Mostrar estatísticas da base local
       const stats = getLocalDatabaseStats();
-      console.log('[useAutomotiveBackend] 📊 Base local:', stats.totalVehicles, 'veículos,', stats.totalParts, 'peças REAIS');
-      
       // Use forceReseedWithRealData to ensure we have the latest real data
       const result = await forceReseedWithRealData((progress) => {
         setSeedProgress(progress);
       });
       
       if (result.success) {
-        console.log('[useAutomotiveBackend] ✅ Seed com dados REAIS concluído!');
-        console.log(`[useAutomotiveBackend] Veículos: ${result.vehiclesSaved}/${result.vehiclesProcessed}`);
-        console.log(`[useAutomotiveBackend] Peças REAIS: ${result.partsSaved}/${result.partsProcessed}`);
-        console.log(`[useAutomotiveBackend] Duração: ${(result.duration / 1000).toFixed(1)}s`);
         setIsSeeded(true);
       } else {
         console.error('[useAutomotiveBackend] ⚠️ Seed com erros:', result.errors);
@@ -294,17 +286,13 @@ export function useAutomotiveBackend(options: UseAutomotiveBackendOptions): UseA
       
       // If data needs update (old fake codes detected), force reseed
       if (status.needsUpdate) {
-        console.log('[useAutomotiveBackend] ⚠️ Dados antigos detectados, forçando re-seed...');
         setIsSeeded(false);
         return;
       }
       
       setIsSeeded(status.isSeeded);
-      console.log('[useAutomotiveBackend] Seed status:', status);
-      
       if (status.isSeeded) {
-        console.log(`[useAutomotiveBackend] ✅ DB populado: ${status.vehicleCount} veículos, ${status.partCount} peças`);
-      }
+        }
     } catch (err) {
       console.error('[useAutomotiveBackend] Erro ao verificar seed:', err);
     }
@@ -323,7 +311,6 @@ export function useAutomotiveBackend(options: UseAutomotiveBackendOptions): UseA
     const platformId = findPlatformForVehicle(vehicle);
     
     if (!platformId) {
-      console.log('[useAutomotiveBackend] Veículo sem cobertura na matriz:', vehicle);
       return [];
     }
     
@@ -332,11 +319,9 @@ export function useAutomotiveBackend(options: UseAutomotiveBackendOptions): UseA
     
     const compatibleParts = ALL_REAL_PARTS.filter(part => 
       part.id.startsWith(partsPrefix)
-    );
-    
-    console.log(`[useAutomotiveBackend] Encontradas ${compatibleParts.length} peças para ${vehicle.brand} ${vehicle.model}`);
-    
-    return compatibleParts.map(part => ({
+  );
+
+  return compatibleParts.map(part => ({
       id: part.id,
       name: part.name,
       category: part.category,

@@ -85,7 +85,7 @@ export function Sidebar({
           </>
         )}
       </AnimatePresence>
-    );
+
   }
 
   // Desktop: render as fixed sidebar
@@ -119,7 +119,7 @@ export function Sidebar({
         )}
       </button>
     </motion.aside>
-  );
+
 }
 
 interface SidebarContentProps {
@@ -151,7 +151,7 @@ function SidebarContent({ sections, activeId, isCollapsed }: SidebarContentProps
         </div>
       ))}
     </nav>
-  );
+
 }
 
 interface SidebarItemProps {
@@ -182,7 +182,6 @@ function SidebarItem({ item, isActive, isCollapsed }: SidebarItemProps) {
         </>
       )}
     </>
-  );
 
   const className = cn(
     'flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200',
@@ -190,19 +189,18 @@ function SidebarItem({ item, isActive, isCollapsed }: SidebarItemProps) {
     'focus:outline-none focus:ring-2 focus:ring-primary-500',
     isActive && 'bg-primary-50 dark:bg-primary-900/20 border-r-2 border-primary-500',
     isCollapsed && 'justify-center'
-  );
 
   if (item.href) {
     return (
       <a href={item.href} className={className}>
         {content}
       </a>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <button onClick={item.onClick} className={cn(className, 'w-full')}>
       {content}
     </button>
-  );
+
 }

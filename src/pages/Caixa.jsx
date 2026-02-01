@@ -82,8 +82,6 @@ const Caixa = () => {
   const [tooltipPinned, setTooltipPinned] = useState(false);
   const [showPrinterConfig, setShowPrinterConfig] = useState(false);
 
-
-
   // Função para fixar tooltip no clique
   const handleProductClick = (product, event) => {
     event.stopPropagation();
@@ -101,8 +99,6 @@ const Caixa = () => {
     setTooltipProduct(null);
     setTooltipPinned(false);
   };
-
-
 
   // Event listener para fechar tooltip ao clicar fora
   useEffect(() => {
@@ -175,15 +171,6 @@ const Caixa = () => {
           }
         }
 
-        console.log('Produto completo:', part);
-        console.log('Produto:', part.name, 'Campos de quantidade:', {
-          quantity: part.quantity,
-          quantidade: part.quantidade,
-          currentStock: part.currentStock,
-          stock: part.stock,
-          estoque: part.estoque
-        }, 'Quantidade final:', quantidade);
-
         return {
           id: part.firestoreId || part.id,
           nome: part.name || part.nome || 'Produto sem nome',
@@ -208,7 +195,6 @@ const Caixa = () => {
         };
       });
 
-      console.log('Produtos mapeados do inventário:', mappedProducts);
       setProducts(mappedProducts);
     }
   }, [inventoryProducts]);
@@ -281,11 +267,10 @@ const Caixa = () => {
             device.vendorId === 0x0c2e || // Honeywell
             device.vendorId === 0x1a86 || // QinHeng Electronics
             device.vendorId === 0x0483    // STMicroelectronics
-          );
+
           setHasUSBScanner(!!scannerDevice);
         }
       } catch (error) {
-        console.log('USB detection not supported or failed:', error);
         setHasUSBScanner(false);
       }
     };
@@ -301,9 +286,9 @@ const Caixa = () => {
     const product = products.find(p =>
       p.codigoBarras === barcode || p.codigoBarras?.includes(barcode) ||
       p.codigo === barcode || p.codigo?.toString().includes(barcode)
-    );
+  );
 
-    if (product) {
+  if (product) {
       await addToCart(product);
       // Abrir carrinho automaticamente quando scanner adiciona produto
       setIsCartOpen(true);
@@ -322,7 +307,7 @@ const Caixa = () => {
         product.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.codigo.includes(searchTerm) ||
         (product.codigoBarras && product.codigoBarras.includes(searchTerm))
-      );
+
     }
 
     if (selectedCategory !== 'all') {
@@ -338,18 +323,6 @@ const Caixa = () => {
   };
 
   const addToCart = async (product) => {
-    console.log('� [ADDTGOCART] Função chamada!');
-    console.log('🔍 [DEBUG ADDTOCART] Produto sendo adicionado:', {
-      id: product.id,
-      nome: product.nome,
-      quantidade: product.quantidade,
-      preco: product.preco,
-      ncm: product.ncm,
-      cest: product.cest,
-      cfop: product.cfop,
-      origem: product.origem
-    });
-
     const existingItem = cartItems.find(item => item.id === product.id);
     const quantidadeDesejada = existingItem ? existingItem.quantidade + 1 : 1;
 
@@ -358,7 +331,6 @@ const Caixa = () => {
       // Ordenar lotes por data de vencimento (FIFO)
       const lotesOrdenados = [...product.lotes].sort((a, b) =>
         new Date(a.dataVencimento) - new Date(b.dataVencimento)
-      );
 
       let quantidadeDisponivel = 0;
       const hoje = new Date();
@@ -401,14 +373,6 @@ const Caixa = () => {
         preco: precoFinal
       }]);
 
-      console.log('🔍 [DEBUG ADDTOCART] Item adicionado ao carrinho:', {
-        ...product,
-        quantidade: 1,
-        preco: precoFinal,
-        ncm_preservado: product.ncm,
-        cest_preservado: product.cest
-      });
-
       showNotification(`${product.nome} adicionado ao carrinho`);
     }
   };
@@ -425,7 +389,6 @@ const Caixa = () => {
     if (product.lotes && product.lotes.length > 0) {
       const lotesOrdenados = [...product.lotes].sort((a, b) =>
         new Date(a.dataVencimento) - new Date(b.dataVencimento)
-      );
 
       let quantidadeDisponivel = 0;
       const hoje = new Date();
@@ -491,8 +454,6 @@ const Caixa = () => {
   // Função para mostrar prévia de impostos
   const handleShowTaxPreview = async (saleData) => {
     try {
-      console.log('🧮 Calculando prévia de impostos...', saleData);
-
       // Carregar configurações
       const config = await configService.getConfig(currentUser.uid);
 
@@ -551,16 +512,10 @@ const Caixa = () => {
 
   // Função para gerar Nota Fiscal usando Gyn Fiscal Online SDK
   const handleGenerateNF = async (saleData) => {
-    console.log('🔍 [GYN FISCAL] Iniciando geração de NF');
-    console.log('📊 Dados da venda:', saleData);
-    console.log('👤 Usuário atual:', currentUser);
-    console.log('📋 Tipo de NF escolhido:', saleData.nfeType);
-
     setNfLoading(true);
 
     try {
       // Buscar configurações da coleção integrations
-      console.log('⚙️ Carregando configurações da coleção integrations...');
       const orgId = currentUser.organizationId || currentUser.uid;
       const integrationsRef = doc(db, 'integrations', orgId);
       const integrationsSnap = await getDoc(integrationsRef);
@@ -609,8 +564,7 @@ const Caixa = () => {
           nfceAtivo: invoiceSettings.nfceAtivo
         };
 
-        console.log('📋 Configurações carregadas da coleção integrations:', config);
-      } else {
+        } else {
         console.error('❌ Documento de integrações não encontrado');
         showNotification('Configure as integrações em Integrações > Nota Fiscal', 'error');
         setNfLoading(false);
@@ -618,11 +572,7 @@ const Caixa = () => {
       }
 
       // Verificar credenciais do Gyn Fiscal Online
-      console.log('🔑 Verificando credenciais do Gyn Fiscal Online...');
-      console.log('📋 Autorizador:', config.nfClientId ? `${config.nfClientId.substring(0, 10)}...` : 'NÃO CONFIGURADO');
-      console.log('🔐 Senha:', config.nfClientSecret ? '***' : 'NÃO CONFIGURADO');
-      console.log('🏗️ Ambiente:', config.ambiente === 'producao' ? 'PRODUÇÃO' : 'HOMOLOGAÇÃO');
-
+      }...` : 'NÃO CONFIGURADO');
       // Validar configurações do Gyn Fiscal Online
       const validation = gynFiscalOnlineService.validateConfig(config);
       if (!validation.isValid) {
@@ -637,7 +587,7 @@ const Caixa = () => {
       const customer = selectedCustomer || saleData.cliente;
 
       if (saleData.nfeType === 'nfe') {
-        console.log('🏢 Gerando NFe (modelo 55) via Gyn Fiscal Online...');
+        via Gyn Fiscal Online...');
 
         // Validar se tem dados do cliente para NFe
         if (!customer || !customer.cpfCnpj || !customer.nome) {
@@ -647,33 +597,26 @@ const Caixa = () => {
 
         // Preparar dados para NFe
         const nfeData = await gynFiscalOnlineService.prepareDadosNFe(saleData, config, customer);
-        console.log('📄 Dados NFe preparados:', nfeData);
-
         // Emitir NFe via Gyn Fiscal Online
         result = await gynFiscalOnlineService.emitirNFe(
           config.nfClientId,
           config.nfClientSecret,
           nfeData,
           config.ambiente !== 'producao' // Usar configuração do usuário
-        );
 
       } else {
-        console.log('🛒 Gerando NFCe (modelo 65) via Gyn Fiscal Online...');
+        via Gyn Fiscal Online...');
 
         // Preparar dados para NFCe
         const nfceData = await gynFiscalOnlineService.prepareDadosNFCe(saleData, config, customer);
-        console.log('📄 Dados NFCe preparados:', nfceData);
-
         // Emitir NFCe via Gyn Fiscal Online
         result = await gynFiscalOnlineService.emitirNFCe(
           config.nfClientId,
           config.nfClientSecret,
           nfceData,
           config.ambiente !== 'producao' // Usar configuração do usuário
-        );
-      }
 
-      console.log('📄 Resultado da geração:', result);
+      }
 
       // Se tem detalhes do erro, mostrar completo
       if (!result.success && result.details) {
@@ -681,8 +624,6 @@ const Caixa = () => {
       }
 
       if (result.success) {
-        console.log('✅ NF gerada com sucesso!');
-
         // Salvar dados da NF no estado com mapeamento correto
         const nfData = {
           numero: result.data.numero,
@@ -705,30 +646,23 @@ const Caixa = () => {
         };
 
         // Baixar XML da NFe para salvamento
-        console.log('📥 Baixando XML via Gyn Fiscal Online...');
         try {
           const xmlResult = await gynFiscalOnlineService.downloadXMLNFe(
             config.nfClientId,
             config.nfClientSecret,
             result.data.id,
             config.ambiente || 'homologacao'  // ✅ Enviar ambiente correto
-          );
 
           if (xmlResult.success) {
             nfData.xml = xmlResult.data;
-            console.log('✅ XML baixado com sucesso via Gyn Fiscal Online');
-          } else {
-            console.warn('⚠️ Não foi possível baixar o XML:', xmlResult.error);
-          }
+            } else {
+            }
         } catch (xmlError) {
-          console.warn('⚠️ Erro ao baixar XML:', xmlError.message);
-        }
+          }
 
         // Iniciar backup automático em paralelo
-        console.log('🔄 Iniciando backup automático dos arquivos...');
         const backupPromise = nfBackupService.backupNFCompleta(nfData, currentUser.uid)
           .then(backupResult => {
-            console.log('🎯 Backup automático concluído:', backupResult);
             return backupResult;
           })
           .catch(backupError => {
@@ -737,7 +671,6 @@ const Caixa = () => {
           });
 
         // Salvar NFe no Firestore
-        console.log('💾 Salvando NFe no Firestore...');
         try {
           const nfeDoc = await addDoc(collection(db, 'nfes'), {
             numero: nfData.numero,
@@ -767,8 +700,6 @@ const Caixa = () => {
           });
 
           nfData.vendaId = nfeDoc.id;
-          console.log('✅ NFe salva no Firestore com ID:', nfeDoc.id);
-
           // Aguardar backup e atualizar documento com URLs
           backupPromise.then(async (backupResult) => {
             try {
@@ -783,7 +714,6 @@ const Caixa = () => {
                   backupErrors: backupResult.backup.errors || [],
                   backupTimestamp: new Date()
                 });
-                console.log('✅ URLs de backup atualizadas no Firestore');
                 showNotification('Backup dos arquivos realizado com sucesso!', 'success');
 
                 // Atualizar nfData com as URLs de backup
@@ -798,7 +728,6 @@ const Caixa = () => {
                   backupError: backupResult.error || 'Erro desconhecido no backup',
                   backupTimestamp: new Date()
                 });
-                console.warn('⚠️ Backup falhou, mas NFe foi salva');
                 showNotification('NFe salva, mas houve erro no backup dos arquivos', 'warning');
               }
             } catch (updateError) {
@@ -809,7 +738,6 @@ const Caixa = () => {
           // Atualizar venda com dados da NFe se houver vendaDoc.id disponível
           if (window.lastVendaId) {
             try {
-              console.log('🔍 [DEBUG] Atualizando venda com nuvemFiscalId:', nfData.id);
               const vendaRef = doc(db, 'vendas', window.lastVendaId);
               await updateDoc(vendaRef, {
                 nfId: nfeDoc.id,
@@ -820,10 +748,8 @@ const Caixa = () => {
                 nfDataEmissao: nfData.dataEmissao,
                 nuvemFiscalId: nfData.id // ✅ ADICIONADO: Salvar ID da Nuvem Fiscal na venda
               });
-              console.log('✅ Venda atualizada com dados da NFe, nuvemFiscalId:', nfData.id);
-            } catch (updateError) {
-              console.warn('⚠️ Erro ao atualizar venda:', updateError.message);
-            }
+              } catch (updateError) {
+              }
           }
 
         } catch (firestoreError) {
@@ -837,10 +763,8 @@ const Caixa = () => {
           const usageResult = await nfUsageService.registerNFUsage(nfData, currentUser, nfType);
 
           if (usageResult.success) {
-            console.log('✅ [NF USAGE] Uso registrado:', usageResult);
-          } else {
-            console.warn('⚠️ [NF USAGE] Erro ao registrar uso:', usageResult.error);
-          }
+            } else {
+            }
         } catch (usageError) {
           console.error('❌ [NF USAGE] Erro ao registrar uso:', usageError);
           // Não interromper o fluxo principal se o controle de uso falhar
@@ -850,8 +774,6 @@ const Caixa = () => {
         showNotification(`${saleData.nfeType === 'nfe' ? 'NFe' : 'NFCe'} gerada com sucesso!`, 'success');
         setShowPrintModal(false);
         setShowNfModal(true);
-        console.log('🎯 Modal de NF deve abrir agora');
-
         // Limpar carrinho após gerar NF com sucesso
         await clearCart();
 
@@ -904,14 +826,11 @@ const Caixa = () => {
   const [selectedNfeType, setSelectedNfeType] = useState('nfce');
 
   const handleSaleConfirm = async (confirmationData) => {
-    console.log('🛒 Confirmando venda com dados:', confirmationData);
-
     try {
       // Armazenar o tipo de NF escolhido CORRETAMENTE
       if (confirmationData.options.generateNFe) {
         setSelectedNfeType(confirmationData.options.nfeType || 'nfce');
-        console.log('🔍 Tipo de NF definido:', confirmationData.options.nfeType);
-      }
+        }
 
       setCustomerData(confirmationData.customer);
 
@@ -955,8 +874,6 @@ const Caixa = () => {
         // Tentar salvar no backend primeiro (se houver integração)
         // Por enquanto, vamos salvar direto no Firestore
         vendaDoc = await addDoc(collection(db, 'vendas'), vendaData);
-        console.log('💾 Venda salva no Firestore com ID:', vendaDoc.id);
-
         // Marcar como sincronizada se salvou com sucesso
         await updateDoc(vendaDoc, { syncStatus: 'synced' });
 
@@ -969,7 +886,7 @@ const Caixa = () => {
         vendaData.offlineTimestamp = new Date();
 
         vendaDoc = await addDoc(collection(db, 'vendas'), vendaData);
-        console.log('💾 Venda salva no Firestore (modo offline) com ID:', vendaDoc.id);
+        com ID:', vendaDoc.id);
 
         showNotification('Venda salva offline - será sincronizada quando possível', 'warning');
       }
@@ -1275,7 +1192,6 @@ const Caixa = () => {
                   onClick={(e) => {
                     e.stopPropagation();
                     e.preventDefault();
-                    console.log('🖱️ Botão clicado! Produto:', product.nome, 'Quantidade:', product.quantidade);
                     addToCart(product);
                   }}
                   disabled={product.quantidade === 0}
@@ -1331,7 +1247,7 @@ const Caixa = () => {
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
-                      console.log('🖱️ Botão clicado (lista)! Produto:', product.nome, 'Quantidade:', product.quantidade);
+                      ! Produto:', product.nome, 'Quantidade:', product.quantidade);
                       addToCart(product);
                     }}
                     disabled={product.quantidade === 0}
@@ -1515,7 +1431,6 @@ const Caixa = () => {
                               config.nfClientSecret,
                               nfData.id,
                               config.ambiente || 'homologacao'  // ✅ Enviar ambiente correto
-                            );
 
                             if (result.success) {
                               const blob = new Blob([result.data], { type: 'application/xml' });
@@ -1550,7 +1465,6 @@ const Caixa = () => {
                               config.nfClientSecret,
                               nfData.id,
                               config.ambiente || 'homologacao'  // ✅ Enviar ambiente correto
-                            );
 
                             if (result.success) {
                               const blob = new Blob([result.data], { type: 'application/xml' });
@@ -1598,7 +1512,6 @@ const Caixa = () => {
                             nfData.id,
                             opcoesDanfe,
                             config.ambiente || 'homologacao'  // ✅ Enviar ambiente correto
-                          );
 
                           if (result.success) {
                             // Converter base64 para blob
@@ -1648,7 +1561,7 @@ const Caixa = () => {
                                 await nfBackupService.downloadFromStorage(
                                   backupInfo.backup['xml_processado.xml'].url,
                                   `NFCe_Processada_Backup_${nfData.numero}_${nfData.serie}.xml`
-                                );
+
                                 showNotification('XML processado (backup) baixado!');
                               } else {
                                 showNotification('Backup do XML processado não encontrado', 'error');
@@ -1671,7 +1584,7 @@ const Caixa = () => {
                                 await nfBackupService.downloadFromStorage(
                                   backupInfo.backup['xml_nota.xml'].url,
                                   `NFCe_Nota_Backup_${nfData.numero}_${nfData.serie}.xml`
-                                );
+
                                 showNotification('XML nota (backup) baixado!');
                               } else {
                                 showNotification('Backup do XML nota não encontrado', 'error');
@@ -1694,7 +1607,7 @@ const Caixa = () => {
                                 await nfBackupService.downloadFromStorage(
                                   backupInfo.backup['danfe.pdf'].url,
                                   `DANFE_Backup_${nfData.numero}_${nfData.serie}.pdf`
-                                );
+
                                 showNotification('PDF DANFE (backup) baixado!');
                               } else {
                                 showNotification('Backup do PDF DANFE não encontrado', 'error');
@@ -1749,12 +1662,10 @@ const Caixa = () => {
                       </button>
                     )}
 
-
                     {/* Botão de Impressão ESC/POS com configuração */}
                     <div className="flex gap-2">
                       <button
                         onClick={async () => {
-                          console.log('🖨️ Iniciando impressão ESC/POS do DANFCE:', nfData);
                           try {
                             const result = await escposPrintService.printDanfce(nfData.id, currentUser?.uid);
                             if (result.success) {
@@ -1812,7 +1723,6 @@ const Caixa = () => {
         isOpen={showPrinterConfig}
         onClose={() => setShowPrinterConfig(false)}
         onSave={(settings) => {
-          console.log('✅ Configurações da impressora salvas:', settings);
           showNotification('Configurações da impressora salvas com sucesso!');
         }}
       />

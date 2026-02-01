@@ -99,8 +99,7 @@ const AccountReceiptModal = ({
         // Usar serviço de impressão padrão
         const result = await accountPrintService.printAccountReceipt(receiptData);
         if (result.success) {
-          console.log('✅ Recibo impresso com sucesso');
-        } else {
+          } else {
           console.error('❌ Erro ao imprimir recibo:', result.message);
         }
       }
@@ -126,8 +125,7 @@ const AccountReceiptModal = ({
         // Usar serviço de download padrão
         const result = await accountPrintService.downloadAccountReceipt(receiptData);
         if (result.success) {
-          console.log('✅ Recibo baixado com sucesso');
-        } else {
+          } else {
           console.error('❌ Erro ao baixar recibo:', result.message);
         }
       }

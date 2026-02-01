@@ -83,7 +83,6 @@ class InvoiceWhatsAppService {
         message.recipientPhone,
         messageContent,
         message.attachments
-      );
 
       // Atualizar status
       const newStatus: MessageStatus = sendResult.success ? 'sent' : 'failed';
@@ -121,7 +120,6 @@ class InvoiceWhatsAppService {
       const whatsappServerUrl = import.meta.env.VITE_WHATSAPP_SERVER_URL;
       
       if (!whatsappServerUrl) {
-        console.warn('[InvoiceWhatsApp] Servidor WhatsApp não configurado, simulando envio');
         // Simular envio para desenvolvimento
         await this.delay(500);
         return { success: true };
@@ -178,7 +176,6 @@ class InvoiceWhatsAppService {
       collection(db, this.messagesCollection),
       where('empresaId', '==', empresaId),
       orderBy('createdAt', 'desc')
-    );
 
     if (options?.limit) {
       q = query(q, limit(options.limit));
@@ -206,7 +203,6 @@ class InvoiceWhatsAppService {
       collection(db, this.templatesCollection),
       where('empresaId', '==', empresaId),
       where('isActive', '==', true)
-    );
 
     const snapshot = await getDocs(q);
     return snapshot.docs.map(doc => ({

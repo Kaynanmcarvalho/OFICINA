@@ -14,7 +14,6 @@ const MotorcyclesPage = () => {
   };
 
   const handleMotorcycleSubmit = (motorcycleData) => {
-    console.log('Motorcycle data:', motorcycleData);
     // Aqui você salvaria os dados no banco/store
   };
 

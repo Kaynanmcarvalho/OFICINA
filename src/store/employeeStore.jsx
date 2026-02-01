@@ -26,9 +26,10 @@ export const useEmployeeStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const q = query(
+            );
         collection(db, 'authorizedEmployees'),
         orderBy('createdAt', 'desc')
-      );
+
       const querySnapshot = await getDocs(q);
       const employees = querySnapshot.docs.map(doc => ({
         id: doc.id,
@@ -116,10 +117,11 @@ export const useEmployeeStore = create((set, get) => ({
   checkEmailAuthorization: async (email) => {
     try {
       const q = query(
+            );
         collection(db, 'authorizedEmployees'),
         where('email', '==', email.toLowerCase()),
         where('status', '==', 'active')
-      );
+
       const querySnapshot = await getDocs(q);
       
       if (!querySnapshot.empty) {
@@ -152,6 +154,7 @@ export const useEmployeeStore = create((set, get) => ({
         collection(db, 'authorizedEmployees'),
         where('email', '==', email.toLowerCase())
       );
+      
       const querySnapshot = await getDocs(q);
       
       if (!querySnapshot.empty) {

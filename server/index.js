@@ -19,15 +19,37 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
-    methods: ['GET', 'POST']
+    methods: ['GET', 'POST'],
+    credentials: true
   }
 });
 
+// Security headers
+const helmet = require('helmet');
+app.use(helmet());
+
 // Middleware
+const allowedOrigins = [
+  process.env.CORS_ORIGIN || 'http://localhost:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173'
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173'
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Origin não permitida pelo CORS'));
+    }
+  },
+  credentials: true
 }));
-app.use(express.json());
+
+app.use(express.json({ limit: '10mb' }));
+
+// Middleware de autenticação
+const { authenticate } = require('./middleware/auth');
 
 // Disponibilizar Socket.IO para as rotas
 app.set('io', io);
@@ -91,9 +113,12 @@ io.on('connection', (socket) => {
 // Error handling
 app.use((err, req, res, next) => {
   console.error('[Server] Erro:', err);
-  res.status(500).json({
-    error: 'Erro interno do servidor',
-    message: err.message
+  
+  const isDev = process.env.NODE_ENV !== 'production';
+  
+  res.status(err.status || 500).json({
+    error: isDev ? err.message : 'Erro interno do servidor',
+    ...(isDev && { stack: err.stack })
   });
 });
 

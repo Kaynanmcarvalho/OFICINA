@@ -560,7 +560,7 @@ class DamageReportService {
       if (damage.severity === 'critical' || damage.severity === 'severe') {
         urgentRepairs.push(
           `${DAMAGE_TYPE_LABELS[damage.type]} em ${DAMAGE_LOCATION_LABELS[damage.location]}`
-        );
+
       }
     });
 
@@ -569,7 +569,7 @@ class DamageReportService {
     const totalWeight = damages.reduce(
       (sum, d) => sum + severityWeights[d.severity],
       0
-    );
+
     const conditionScore = Math.max(0, 100 - totalWeight * 2);
 
     let overallCondition: DamageSummary['overallCondition'];

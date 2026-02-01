@@ -229,5 +229,5 @@ export default function WhatsAppQRConnector() {
         )}
       </AnimatePresence>
     </div>
-  );
+
 }

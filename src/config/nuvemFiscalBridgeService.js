@@ -198,11 +198,6 @@ class NuvemFiscalBridgeService {
    */
   async makeRequest(data) {
     try {
-      console.log('🚀 [BRIDGE SERVICE] Enviando dados para o backend:');
-      console.log('📍 URL:', this.bridgeUrl);
-      console.log('📦 Dados completos:', JSON.stringify(data, null, 2));
-      console.log('📊 Tamanho dos dados:', JSON.stringify(data).length, 'caracteres');
-
       const response = await fetch(this.bridgeUrl, {
         method: 'POST',
         headers: {
@@ -414,11 +409,6 @@ class NuvemFiscalBridgeService {
    */
   async emitirNFCe(clientId, clientSecret, nfceData, sandbox = true) {
     // O ambiente agora é determinado pelos dados da NFCe (campo ambiente e tpAmb)
-    console.log('🏛️ [EMITIR NFCE] Ambiente:', {
-      ambiente: nfceData?.ambiente,
-      tpAmb: nfceData?.infNFe?.ide?.tpAmb
-    });
-
     return await this.makeRequest({
       action: 'emitir_nfce',
       clientId,
@@ -476,8 +466,6 @@ class NuvemFiscalBridgeService {
       const params = new URLSearchParams();
       if (cep) params.append('cep', cep);
 
-      console.log('🚀 [BRIDGE SERVICE] Testar CEP - Enviando form-urlencoded:', params.toString());
-
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -511,8 +499,6 @@ class NuvemFiscalBridgeService {
       const url = `${this.bridgeUrl}?action=testar_cnpj`;
       const params = new URLSearchParams();
       if (cnpj) params.append('cnpj', cnpj);
-
-      console.log('🚀 [BRIDGE SERVICE] Testar CNPJ - Enviando form-urlencoded:', params.toString());
 
       const response = await fetch(url, {
         method: 'POST',
@@ -568,16 +554,6 @@ class NuvemFiscalBridgeService {
     // Priorizar configurações específicas da NF do Firestore primeiro
     const codigoMunicipio = config.nfCodigoMunicipio || config.codigoMunicipio || '5201405';
 
-    console.log('🏛️ [CONFIG AMBIENTE]:', {
-      ambiente: ambiente,
-      ambienteNumerico: ambienteNumerico,
-      ufEstado,
-      codigoUF,
-      codigoMunicipio,
-      configSandbox: config.nfSandbox,
-      configAmbiente: config.ambiente
-    });
-
     // Distribuir desconto entre os itens
     const valorDesconto = parseFloat(saleData.desconto || 0);
     const itensComDesconto = this.distribuirDescontoPorItens(saleData.items, valorDesconto);
@@ -597,18 +573,6 @@ class NuvemFiscalBridgeService {
     const totalPIS = isSimpleNacional ? 0 : parseFloat((valorTotalProdutos * (config.nfAliquotaPis || 1.65) / 100).toFixed(2));
     const totalCOFINS = isSimpleNacional ? 0 : parseFloat((valorTotalProdutos * (config.nfAliquotaCofins || 7.6) / 100).toFixed(2));
     const totalICMS = isSimpleNacional ? 0 : parseFloat((valorTotalProdutos * (config.nfAliquotaIcms || 18) / 100).toFixed(2));
-
-    console.log('💰 [TOTAL CALCULADO]:', {
-      valorTotalProdutos,
-      valorDesconto,
-      valorTotalComDesconto,
-      saleDataTotal: saleData.total,
-      itemsCount: saleData.items.length,
-      totalPIS,
-      totalCOFINS,
-      totalICMS,
-      regime: config.nfRegimeTributario
-    });
 
     // Estrutura correta conforme manual.md (PascalCase)
     return {
@@ -702,33 +666,10 @@ class NuvemFiscalBridgeService {
           indIEDest: 9
         },
         det: itensComDesconto.map((item, index) => {
-          // Debug dos dados do item
-          console.log(`🔍 [DEBUG ITEM ${index + 1}]:`, {
-            price: item.price,
-            preco: item.preco,
-            precoComDesconto: item.precoComDesconto,
-            descontoItem: item.descontoItem,
-            ncm: item.ncm,
-            cest: item.cest,
-            configNcmPadrao: config.nfNcmPadrao,
-            configCestPadrao: config.nfCestPadrao,
-            valor: item.valor,
-            quantity: item.quantity,
-            quantidade: item.quantidade
-          });
-
           // Usar preço com desconto aplicado
           const precoComDesconto = item.precoComDesconto;
           const quantidade = parseFloat(item.quantity || item.quantidade || 1);
           const valorProduto = precoComDesconto * quantidade;
-
-          console.log(`💰 [VALORES CALCULADOS]:`, {
-            precoOriginal: parseFloat(item.price || item.preco || item.valor || 0),
-            precoComDesconto,
-            quantidade,
-            valorProduto,
-            descontoItem: item.descontoItem
-          });
 
           return {
             nItem: index + 1,
@@ -765,20 +706,8 @@ class NuvemFiscalBridgeService {
 
                 const regimeTributario = config.nfRegimeTributario || config.regimeTributario || 'simples_nacional';
 
-                console.log('🔍 [DEBUG ICMS NFCe]:', {
-                  configNfRegime: config.nfRegimeTributario,
-                  configRegime: config.regimeTributario,
-                  regimeFinal: regimeTributario,
-                  isSimpleNacional: regimeTributario === 'simples_nacional',
-                  itemCsosnIcms: item.csosnIcms,
-                  configCsosnPadrao: config.nfCsosnIcmsPadrao,
-                  itemCstIcms: item.cstIcms,
-                  configCstPadrao: config.nfCstIcmsPadrao
-                });
-
                 if (regimeTributario === 'simples_nacional') {
                   const csosn = item.csosnIcms || config.nfCsosnIcmsPadrao || "102";
-                  console.log('✅ [SIMPLES NACIONAL] Gerando ICMSSN' + csosn);
                   return {
                     [`ICMSSN${csosn}`]: {
                       orig: origem,
@@ -787,7 +716,6 @@ class NuvemFiscalBridgeService {
                   };
                 } else {
                   const cst = item.cstIcms || config.nfCstIcmsPadrao || "00";
-                  console.log('💼 [LUCRO REAL/PRESUMIDO] Gerando ICMS' + cst);
                   return {
                     [`ICMS${cst}`]: {
                       orig: origem,
@@ -896,15 +824,6 @@ class NuvemFiscalBridgeService {
     // Obter código do município das configurações
     // Priorizar configurações específicas da NF do Firestore primeiro
     const codigoMunicipio = config.nfCodigoMunicipio || config.codigoMunicipio || '5201405';
-
-    console.log('🏛️ [CONFIG AMBIENTE NFE]:', {
-      ambiente,
-      ufEstado,
-      codigoUF,
-      codigoMunicipio,
-      configSandbox: config.nfSandbox,
-      configAmbiente: config.ambiente
-    });
 
     // Distribuir desconto entre os itens
     const valorDesconto = parseFloat(saleData.desconto || 0);
@@ -1402,13 +1321,7 @@ class NuvemFiscalBridgeService {
    */
   async gerarNFeParaVenda(saleData, config, customer) {
     try {
-      console.log('🎯 [GERAR NFE] Iniciando geração de NFe');
-      console.log('💰 Dados da venda:', JSON.stringify(saleData, null, 2));
-      console.log('⚙️ Configurações:', JSON.stringify(config, null, 2));
-      console.log('👤 Cliente:', JSON.stringify(customer, null, 2));
-
       // Validar configurações da empresa
-      console.log('🔍 Validando configurações da empresa...');
       const configValidation = this.validateConfig(config);
       if (!configValidation.isValid) {
         console.error('❌ Configurações inválidas:', configValidation.errors);
@@ -1416,11 +1329,9 @@ class NuvemFiscalBridgeService {
       }
 
       if (configValidation.warnings.length > 0) {
-        console.warn('⚠️ Avisos de configuração:', configValidation.warnings);
-      }
+        }
 
       // Validar dados da venda e cliente
-      console.log('🔍 Validando dados da venda e cliente...');
       const saleValidation = this.validateSaleData(saleData, customer);
       if (!saleValidation.isValid) {
         console.error('❌ Dados da venda inválidos:', saleValidation.errors);
@@ -1428,22 +1339,12 @@ class NuvemFiscalBridgeService {
       }
 
       if (saleValidation.warnings.length > 0) {
-        console.warn('⚠️ Avisos dos dados da venda:', saleValidation.warnings);
-      }
-
-      console.log('✅ Todas as validações passaram!');
-      console.log('📊 Resumo das validações:', {
-        config: configValidation.summary,
-        sale: saleValidation.summary
-      });
+        }
 
       // Preparar dados da NFe
-      console.log('🔧 Preparando dados da NFe...');
       const nfeData = this.prepareDadosNFe(saleData, config, customer);
-      console.log('📋 Dados da NFe preparados:', JSON.stringify(nfeData, null, 2));
 
       // Emitir NFe
-      console.log('🚀 Enviando NFe para emissão...');
       const result = await this.emitirNFe(
         config.nfClientId,
         config.nfClientSecret,
@@ -1451,7 +1352,6 @@ class NuvemFiscalBridgeService {
         config.nfSandbox !== false
       );
 
-      console.log('✅ Resultado da emissão:', JSON.stringify(result, null, 2));
       return result;
     } catch (error) {
       console.error('❌ [ERRO EMISSÃO COMPLETO]:', error);

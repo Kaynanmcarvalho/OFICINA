@@ -71,15 +71,7 @@ const VehicleTimeline = ({ checkinId, className = '' }) => {
   const activeStages = stageOrder || STAGES.map(s => s.id);
 
   // DEBUG: Log para ver o que está chegando
-  console.log('🔍 VehicleTimeline Debug:', {
-    checkinId,
-    hasTimeline: !!timeline,
-    timeline: timeline,
-    currentStage,
-    progress,
-    loading,
-    stages: timeline?.stages,
-    stagesKeys: timeline?.stages ? Object.keys(timeline.stages) : []
+  : []
   });
 
   const getStageStatus = (stageId) => {
@@ -115,12 +107,11 @@ const VehicleTimeline = ({ checkinId, className = '' }) => {
           </p>
         </div>
       </GlassCard>
-    );
+
   }
 
   // Se não há timeline, retornar mensagem
   if (!timeline) {
-    console.log('❌ Timeline não encontrada para checkinId:', checkinId);
     return (
       <GlassCard className={`p-6 ${className}`}>
         <div className="text-center py-8">
@@ -135,7 +126,7 @@ const VehicleTimeline = ({ checkinId, className = '' }) => {
           </p>
         </div>
       </GlassCard>
-    );
+
   }
 
   // Se o check-in não tem stages (check-in antigo), criar estrutura mínima
@@ -446,7 +437,7 @@ const VehicleTimeline = ({ checkinId, className = '' }) => {
                     )}
                   </div>
                 </motion.button>
-              );
+
             })}
           </div>
         </div>

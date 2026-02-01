@@ -273,7 +273,8 @@ export const authStore = (set, get) => ({
     });
   },
 
-  // Permission helpers
+  // Permission helpers (APENAS PARA UI - NÃO CONFIÁVEL PARA SEGURANÇA)
+  // Backend SEMPRE valida permissões reais
   hasPermission: (permission) => {
     const { permissions, userRole } = get();
     if (userRole === 'admin') return true;
@@ -316,6 +317,7 @@ export const authStore = (set, get) => ({
         where('email', '==', email.toLowerCase()),
         where('status', '==', 'active')
       );
+      
       const querySnapshot = await getDocs(q);
       
       if (!querySnapshot.empty) {

@@ -44,7 +44,7 @@ class ServiceSuggestionService {
       const mileageSuggestions = this.generateFromMileage(
         request.vehicleInfo.mileage,
         request.vehicleInfo.lastServiceDate
-      );
+
       suggestions.push(...mileageSuggestions);
     }
 

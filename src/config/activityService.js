@@ -12,7 +12,6 @@ class ActivityService {
     try {
       const currentUser = auth.currentUser;
       if (!currentUser) {
-        console.warn('Usuário não autenticado para registrar atividade');
         return null;
       }
 
@@ -57,7 +56,7 @@ class ActivityService {
         where('userId', '==', currentUser.uid),
         orderBy('createdAt', 'desc')
       );
-      
+
       const querySnapshot = await getDocs(q);
       const activities = [];
       querySnapshot.forEach((doc) => {
@@ -85,7 +84,7 @@ class ActivityService {
         orderBy('createdAt', 'desc'),
         limit(limitCount)
       );
-      
+
       const querySnapshot = await getDocs(q);
       const activities = [];
       querySnapshot.forEach((doc) => {
@@ -202,8 +201,7 @@ class ActivityService {
 
   // Limpar todas as atividades (não implementado por segurança)
   clearActivities() {
-    console.warn('Limpeza de atividades não permitida - dados mantidos no Firestore');
-  }
+    }
 
   // Obter informações do dispositivo
   getDeviceInfo() {

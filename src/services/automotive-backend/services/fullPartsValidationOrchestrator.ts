@@ -88,12 +88,10 @@ export function analyzeCoverage(): {
   
   const brandsWithCoverage = allBrands.filter(brand => 
     availableBrands.some(ab => ab.toLowerCase() === brand.toLowerCase())
-  );
-  
+
   const brandsWithoutCoverage = allBrands.filter(brand => 
     !availableBrands.some(ab => ab.toLowerCase() === brand.toLowerCase())
-  );
-  
+
   const coverageByBrand = new Map<string, { vehicles: number; partsAvailable: number }>();
   
   for (const brand of allBrands) {
@@ -108,7 +106,7 @@ export function analyzeCoverage(): {
         representative.model,
         representative.year,
         representative.engineCode
-      );
+
       partsAvailable = parts.length;
     }
     
@@ -135,7 +133,7 @@ function getVehiclesNeedingParts(): VehicleVariant[] {
       vehicle.model,
       vehicle.year,
       vehicle.engineCode
-    );
+
     return parts.length === 0;
   });
 }
@@ -184,10 +182,6 @@ export async function runFullOrchestration(
   const startTime = Date.now();
   const errors: string[] = [];
   
-  console.log('[Orchestrator] 🚀 Iniciando orquestração completa...');
-  console.log(`[Orchestrator] Total de veículos: ${DATABASE_STATS.totalVehicles}`);
-  console.log(`[Orchestrator] Total de peças na base: ${ALL_REAL_PARTS.length}`);
-  
   // Fase 1: Análise
   onProgress?.({
     phase: 'analyzing',
@@ -206,12 +200,7 @@ export async function runFullOrchestration(
   });
   
   const coverage = analyzeCoverage();
-  console.log(`[Orchestrator] Marcas com cobertura: ${coverage.brandsWithCoverage.length}`);
-  console.log(`[Orchestrator] Marcas sem cobertura: ${coverage.brandsWithoutCoverage.length}`);
-  
   const vehiclesNeedingParts = getVehiclesNeedingParts();
-  console.log(`[Orchestrator] Veículos precisando de peças: ${vehiclesNeedingParts.length}`);
-  
   const validationsByBrand = new Map<string, BrandValidationSummary>();
   let totalPartsValidated = 0;
   let totalPartsGenerated = 0;
@@ -225,13 +214,11 @@ export async function runFullOrchestration(
   if (options?.brandFilter) {
     brandsToProcess = brandsToProcess.filter(b => 
       b.toLowerCase().includes(options.brandFilter!.toLowerCase())
-    );
+
   }
   
   // Fase 2: Validar peças existentes
   if (!options?.skipExistingValidation) {
-    console.log('[Orchestrator] 📋 Fase 2: Validando peças existentes...');
-    
     for (let i = 0; i < coverage.brandsWithCoverage.length; i++) {
       const brand = coverage.brandsWithCoverage[i];
       
@@ -300,8 +287,6 @@ export async function runFullOrchestration(
   
   // Fase 3: Gerar peças para veículos sem cobertura
   if (!options?.skipGeneration && vehiclesNeedingParts.length > 0) {
-    console.log('[Orchestrator] 🔧 Fase 3: Gerando peças para veículos sem cobertura...');
-    
     const vehicleGroups = groupVehiclesByBrandModel(vehiclesNeedingParts);
     let groupsProcessed = 0;
     
@@ -342,8 +327,7 @@ export async function runFullOrchestration(
       // Usar o veículo mais recente do grupo como representativo
       const representative = vehicles.reduce((newest, v) => 
         v.year > newest.year ? v : newest
-      );
-      
+
       try {
         const generatedParts = await generatePartsForVehicle(
           representative.brand,
@@ -367,8 +351,7 @@ export async function runFullOrchestration(
               errors,
             });
           }
-        );
-        
+
         if (generatedParts.length > 0) {
           totalPartsGenerated += generatedParts.length;
           vehiclesWithGeneratedParts += vehicles.length;
@@ -423,13 +406,7 @@ export async function runFullOrchestration(
     errors,
   };
   
-  console.log('[Orchestrator] ✅ Orquestração concluída!');
-  console.log(`[Orchestrator] Duração: ${(duration / 1000 / 60).toFixed(1)} minutos`);
-  console.log(`[Orchestrator] Peças validadas: ${totalPartsValidated}`);
-  console.log(`[Orchestrator] Peças geradas: ${totalPartsGenerated}`);
-  console.log(`[Orchestrator] Peças inválidas: ${totalPartsInvalid}`);
-  console.log(`[Orchestrator] Erros: ${errors.length}`);
-  
+  .toFixed(1)} minutos`);
   onProgress?.({
     phase: 'completed',
     currentBrand: '',

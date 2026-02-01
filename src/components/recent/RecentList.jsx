@@ -212,7 +212,7 @@ const RecentList = ({
                   ))}
                 </div>
               </div>
-            );
+
           })}
         </div>
       )}

@@ -1,5 +1,6 @@
 import { doc, updateDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { db } from '../../../config/firebase';
+import { firestoreWithTimeout } from '../../../utils/timeoutWrapper';
 import { 
   getStageOrder as getStageOrderHelper,
   WORKFLOW_TYPES,
@@ -48,7 +49,11 @@ export const updateStage = async (checkinId, stageId, data = {}) => {
     const checkinRef = doc(db, 'checkins', checkinId);
     
     // Get current data to check current stage
-    const checkinDoc = await getDoc(checkinRef);
+    const checkinDoc = await firestoreWithTimeout(
+      () => getDoc(checkinRef),
+      'Get checkin for stage update'
+    );
+    
     if (!checkinDoc.exists()) {
       throw new Error('Check-in não encontrado');
     }
@@ -73,7 +78,11 @@ export const updateStage = async (checkinId, stageId, data = {}) => {
       updatedAt: serverTimestamp()
     };
 
-    await updateDoc(checkinRef, updateData);
+    await firestoreWithTimeout(
+      () => updateDoc(checkinRef, updateData),
+      'Update checkin stage'
+    );
+    
     return { success: true };
   } catch (error) {
     console.error('Erro ao atualizar estágio:', error);
@@ -88,10 +97,13 @@ export const addStageNote = async (checkinId, stageId, note) => {
 
   try {
     const checkinRef = doc(db, 'checkins', checkinId);
-    await updateDoc(checkinRef, {
-      [`stages.${stageId}.notes`]: note.trim(),
-      updatedAt: serverTimestamp()
-    });
+    await firestoreWithTimeout(
+      () => updateDoc(checkinRef, {
+        [`stages.${stageId}.notes`]: note.trim(),
+        updatedAt: serverTimestamp()
+      }),
+      'Add stage note'
+    );
     return { success: true };
   } catch (error) {
     console.error('Erro ao adicionar nota:', error);
@@ -127,7 +139,10 @@ export const onBudgetCreated = async (checkinId, budgetId) => {
 
   try {
     const checkinRef = doc(db, 'checkins', checkinId);
-    const checkinDoc = await getDoc(checkinRef);
+    const checkinDoc = await firestoreWithTimeout(
+      () => getDoc(checkinRef),
+      'Get checkin for budget creation'
+    );
     
     if (!checkinDoc.exists()) {
       throw new Error('Check-in não encontrado');
@@ -154,7 +169,11 @@ export const onBudgetCreated = async (checkinId, budgetId) => {
       updatedAt: serverTimestamp()
     };
 
-    await updateDoc(checkinRef, updateData);
+    await firestoreWithTimeout(
+      () => updateDoc(checkinRef, updateData),
+      'Update timeline with budget'
+    );
+    
     return { success: true };
   } catch (error) {
     console.error('Erro ao atualizar timeline com orçamento:', error);
@@ -202,7 +221,11 @@ export const onBudgetApproved = async (checkinId, budgetId, approvalType = 'tota
       updatedAt: serverTimestamp()
     };
 
-    await updateDoc(checkinRef, updateData);
+    await firestoreWithTimeout(
+      () => updateDoc(checkinRef, updateData),
+      'Update timeline with budget approval'
+    );
+    
     return { success: true };
   } catch (error) {
     console.error('Erro ao aprovar orçamento na timeline:', error);
@@ -260,7 +283,11 @@ export const onBudgetRejected = async (checkinId, budgetId, rejectionReason = 'c
       updatedAt: serverTimestamp()
     };
 
-    await updateDoc(checkinRef, updateData);
+    await firestoreWithTimeout(
+      () => updateDoc(checkinRef, updateData),
+      'Update timeline with budget rejection'
+    );
+    
     return { success: true };
   } catch (error) {
     console.error('Erro ao recusar orçamento na timeline:', error);
@@ -316,7 +343,11 @@ export const onBudgetExpired = async (checkinId, budgetId) => {
       updatedAt: serverTimestamp()
     };
 
-    await updateDoc(checkinRef, updateData);
+    await firestoreWithTimeout(
+      () => updateDoc(checkinRef, updateData),
+      'Update timeline with budget expiration'
+    );
+    
     return { success: true };
   } catch (error) {
     console.error('Erro ao expirar orçamento na timeline:', error);

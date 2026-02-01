@@ -240,6 +240,7 @@ const CheckinsReport = () => {
     const completedWithTime = filtered.filter(c => 
       c.status === 'completed' && c.createdAt && c.checkoutDate
     );
+    
     const avgServiceTime = completedWithTime.length > 0
       ? completedWithTime.reduce((sum, c) => {
           const start = new Date(c.createdAt);
@@ -430,7 +431,7 @@ const CheckinsReport = () => {
                     {day}
                   </span>
                 </div>
-              );
+                  );
             })}
           </div>
         </div>
@@ -669,7 +670,7 @@ const CheckinsReport = () => {
                         </span>
                       </td>
                     </tr>
-                  );
+                      );
                 })
               )}
             </tbody>

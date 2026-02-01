@@ -82,8 +82,6 @@ function convertRealPartToResult(realPart: RealPart): CompatiblePartResult {
 // ============================================================================
 
 export function findCompatiblePartsForVehicle(variant: VehicleVariant): CompatiblePartResult[] {
-  console.log(`[PartsEngine] 🔍 Buscando peças REAIS para: ${variant.brand} ${variant.model} ${variant.year}`);
-  
   // Use the real parts database
   const realParts = findPartsForVehicle(
     variant.brand,
@@ -91,15 +89,13 @@ export function findCompatiblePartsForVehicle(variant: VehicleVariant): Compatib
     variant.year,
     variant.engineCode
   );
-  
-  console.log(`[PartsEngine] ✅ Encontradas ${realParts.length} peças REAIS`);
-  
+
   // Convert to the expected format
   const results = realParts.map(convertRealPartToResult);
   
   // Log the parts found
   for (const part of results) {
-    console.log(`[PartsEngine] 📦 ${part.name}: ${part.partNumber} (${part.brand})`);
+    // Part logged
   }
   
   return results;

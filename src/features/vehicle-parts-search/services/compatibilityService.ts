@@ -74,7 +74,6 @@ export interface EvidenceData {
   requiresValidation?: boolean;
 }
 
-
 /**
  * Busca índice de compatibilidade de um veículo
  */
@@ -109,7 +108,7 @@ export function convertToCompatibleParts(
       p.partNumbers?.includes(partData.partNumber) ||
       partData.equivalents?.some((eq: string) => p.partNumbers?.includes(eq))
     );
-    
+
     const part: CompatiblePart = {
       id: `${compatibilityIndex.vehicleId}_${partData.partTypeId}`,
       productId: matchingProduct?.id || '',
@@ -258,7 +257,6 @@ export default {
   getVehiclesUsingPart,
 };
 
-
 /**
  * Busca peças compatíveis para um veículo
  * Integra com a API de compatibilidade completa (2.920 veículos, 131 peças)
@@ -276,14 +274,10 @@ export async function findCompatibleParts(
     const inventoryProducts = await getInventoryProducts(empresaId);
     
     // 2. NOVO: Tenta buscar da API de compatibilidade completa (backend)
-    console.log(`[compatibilityService] 🔍 Iniciando busca para: ${variant.brand} ${variant.model} ${variant.year}`);
-    console.log(`[compatibilityService] Variant ID original: ${variant.id}`);
-    
     let apiParts: any[] = [];
     try {
       apiParts = await fetchPartsFromFullAPI(variant);
-      console.log(`[compatibilityService] ✅ API Full encontrou ${apiParts.length} peças para ${variant.brand} ${variant.model}`);
-    } catch (apiError) {
+      } catch (apiError) {
       console.error(`[compatibilityService] ❌ Erro ao buscar API:`, apiError);
     }
     
@@ -295,7 +289,7 @@ export async function findCompatibleParts(
         p.sku === apiPart.partNumber ||
         apiPart.equivalents?.some((eq: string) => p.partNumbers?.includes(eq) || p.sku === eq)
       );
-      
+
       parts.push({
         id: `${variant.id}_${apiPart.partNumber}_api`,
         productId: matchingProduct?.id || '',
@@ -328,7 +322,6 @@ export async function findCompatibleParts(
     
     // 4. Fallback: Se API não retornou nada, usa engine local
     if (parts.length === 0) {
-      console.log('[compatibilityService] API vazia, usando engine local...');
       const { findCompatiblePartsForVehicle } = await import('./partsCompatibilityEngine');
       const engineParts = findCompatiblePartsForVehicle(variant);
       
@@ -337,7 +330,7 @@ export async function findCompatibleParts(
           p.partNumbers?.includes(enginePart.partNumber) ||
           p.sku === enginePart.partNumber
         );
-        
+
         parts.push({
           id: `${variant.id}_${enginePart.partNumber}_engine`,
           productId: matchingProduct?.id || '',
@@ -395,7 +388,6 @@ async function fetchPartsFromFullAPI(variant: VehicleVariant): Promise<any[]> {
     // PRIMEIRO: Tenta buscar da base de catálogos verificados (local)
     const catalogParts = await fetchPartsFromCatalog(variant);
     if (catalogParts.length > 0) {
-      console.log(`[compatibilityService] ✅ Catálogo local: ${catalogParts.length} peças verificadas`);
       return catalogParts;
     }
     
@@ -404,8 +396,6 @@ async function fetchPartsFromFullAPI(variant: VehicleVariant): Promise<any[]> {
     // V4 usa o ID original do veículo (marca_modelo_ano_motor_versao)
     // Tenta primeiro com o ID original do variant
     const originalId = variant.id;
-    
-    console.log(`[compatibilityService V4] 🔍 Buscando: ${originalId}`);
     
     // Tenta buscar pelo ID original
     let response: Response;
@@ -441,12 +431,10 @@ async function fetchPartsFromFullAPI(variant: VehicleVariant): Promise<any[]> {
           platform: data.data.platform,
         }));
       
-      console.log(`[compatibilityService V4] ✅ ${parts.length} peças para ${originalId}`);
       return parts;
     }
     
     // Se não encontrou pelo ID original, tenta buscar por marca/modelo/ano
-    console.log('[compatibilityService V4] Tentando search por marca/modelo/ano...');
     const searchParams = new URLSearchParams({
       brand: variant.brand,
       model: variant.model,
@@ -459,7 +447,6 @@ async function fetchPartsFromFullAPI(variant: VehicleVariant): Promise<any[]> {
     
     // Se não encontrou com ano, tenta só com marca e modelo
     if (!searchData.success || searchData.data?.length === 0) {
-      console.log('[compatibilityService V4] Tentando search só com marca/modelo...');
       const searchParams2 = new URLSearchParams({
         brand: variant.brand,
         model: variant.model,
@@ -471,7 +458,6 @@ async function fetchPartsFromFullAPI(variant: VehicleVariant): Promise<any[]> {
     
     // Se ainda não encontrou, tenta só com modelo
     if (!searchData.success || searchData.data?.length === 0) {
-      console.log('[compatibilityService V4] Tentando search só com modelo...');
       const searchParams3 = new URLSearchParams({
         model: variant.model,
         limit: '50',
@@ -489,8 +475,6 @@ async function fetchPartsFromFullAPI(variant: VehicleVariant): Promise<any[]> {
       const foundVehicle = sortedByYear[0];
       
       if (foundVehicle) {
-        console.log(`[compatibilityService V4] ✅ Encontrado similar: ${foundVehicle.vehicleId} (${foundVehicle.brand} ${foundVehicle.model} ${foundVehicle.year})`);
-        
         response = await fetch(`${API_BASE}/api/parts-full/vehicle/${encodeURIComponent(foundVehicle.vehicleId)}`);
         data = await response.json();
         
@@ -508,7 +492,6 @@ async function fetchPartsFromFullAPI(variant: VehicleVariant): Promise<any[]> {
       }
     }
     
-    console.log('[compatibilityService V4] ❌ Veículo não encontrado');
     return [];
   } catch (error) {
     console.error('[compatibilityService V4] ❌ Erro:', error);
@@ -523,7 +506,6 @@ async function getInventoryProducts(empresaId: string): Promise<any[]> {
   try {
     // Busca local não precisa de inventário - retorna vazio
     if (empresaId === '__local_search__') {
-      console.log('[compatibilityService] Busca local - sem inventário');
       return [];
     }
     
@@ -537,6 +519,7 @@ async function getInventoryProducts(empresaId: string): Promise<any[]> {
       collection(db, 'products'),
       where('empresaId', '==', empresaId)
     );
+
     const snapshot = await getDocs(q);
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (error) {
@@ -635,7 +618,7 @@ function checkLocalCompatibility(
   const matchingTags = tags.filter((tag: string) => 
     vehicleTerms.some(term => tag.toLowerCase().includes(term as string))
   );
-  
+
   if (matchingTags.length >= 2) {
     return {
       isCompatible: true,
@@ -759,8 +742,7 @@ export async function saveManualCompatibility(
       confirmedAt: new Date().toISOString(),
     });
     
-    console.log('[compatibilityService] Compatibilidade manual salva');
-  } catch (error) {
+    } catch (error) {
     console.error('[compatibilityService] Erro ao salvar compatibilidade:', error);
     throw error;
   }
@@ -778,8 +760,7 @@ export async function removeManualCompatibility(
     const docRef = doc(db, 'manualCompatibility', `${empresaId}_${productId}_${variantId}`);
     await deleteDoc(docRef);
     
-    console.log('[compatibilityService] Compatibilidade manual removida');
-  } catch (error) {
+    } catch (error) {
     console.error('[compatibilityService] Erro ao remover compatibilidade:', error);
     throw error;
   }
@@ -801,8 +782,6 @@ async function fetchPartsFromCatalog(variant: VehicleVariant): Promise<any[]> {
     if (engineCode) {
       const engineParts = getPartsByEngine(variant.brand, variant.model);
       if (engineParts.length > 0) {
-        console.log(`[compatibilityService] ✅ Motor ${engineCode}: ${engineParts.length} peças para ${variant.brand} ${variant.model}`);
-        
         return engineParts.map(part => ({
           name: part.name,
           partNumber: part.oemCode,
@@ -829,10 +808,9 @@ async function fetchPartsFromCatalog(variant: VehicleVariant): Promise<any[]> {
         v.brand.toLowerCase() === variant.brand.toLowerCase() &&
         v.model.toLowerCase().includes(variant.model.toLowerCase().split(' ')[0])
       );
-      
+
       if (similarVehicle) {
         parts = similarVehicle.parts;
-        console.log(`[compatibilityService] Usando veículo similar: ${similarVehicle.brand} ${similarVehicle.model} ${similarVehicle.year}`);
       }
     }
     

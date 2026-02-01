@@ -250,6 +250,7 @@ class MultiusePartsService {
         const months = Math.max(1, 
           (lastUsed.getTime() - firstUsed.getTime()) / (1000 * 60 * 60 * 24 * 30)
         );
+
         averageMonthlyUsage = totalUsed / months;
       }
 
@@ -299,6 +300,7 @@ class MultiusePartsService {
       (sum, v) => sum + (v.yearEnd - v.yearStart + 1),
       0
     );
+
     score += Math.min(20, totalYearsCovered);
 
     // Pontos por uso real em diferentes veículos (max 20)
@@ -334,6 +336,7 @@ class MultiusePartsService {
     const universalLowStock = parts.filter(
       (p) => p.multiuseRank === 'universal' && p.usageStats.totalUsed > 10
     );
+
     if (universalLowStock.length > 0) {
       recommendations.push({
         id: 'rec-1',
@@ -362,6 +365,7 @@ class MultiusePartsService {
     const expensiveSpecific = parts.filter(
       (p) => p.multiuseRank === 'specific' && p.pricing.unitPrice > 200
     );
+
     if (expensiveSpecific.length > 0) {
       recommendations.push({
         id: 'rec-expensive',
@@ -393,6 +397,7 @@ class MultiusePartsService {
     const lowVersatility = parts.filter(
       (p) => p.multiuseRank === 'low' || p.multiuseRank === 'specific'
     );
+
     return lowVersatility.length * 0.2;
   }
 

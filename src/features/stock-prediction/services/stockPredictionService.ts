@@ -99,7 +99,7 @@ class StockPredictionService {
       item.minStock,
       item.maxStock
     );
-    
+
     // Data recomendada para compra
     const reorderDate = this.calculateReorderDate(daysUntilStockout);
     
@@ -308,6 +308,7 @@ class StockPredictionService {
       0,
       daysUntilStockout - this.config.leadTimeDays - this.config.safetyStockDays
     );
+
     reorderDate.setDate(reorderDate.getDate() + daysBeforeStockout);
     return reorderDate;
   }

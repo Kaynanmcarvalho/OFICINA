@@ -26,8 +26,6 @@ const ClientRow = ({ client, onView, onEdit, onDelete }) => {
       .slice(0, 2);
   };
 
-
-
   const handleWhatsApp = (e) => {
     e.stopPropagation();
     const phone = client.phone?.replace(/\D/g, '');

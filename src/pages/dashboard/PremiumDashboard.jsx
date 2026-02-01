@@ -21,7 +21,6 @@ const PremiumDashboard = () => {
     carregarDadosDashboard();
 
     const unsubscribe = subscribeToAllCollections((collection) => {
-      console.log(`[Dashboard] Atualização detectada em: ${collection}`);
       carregarDadosDashboard();
     });
 
@@ -58,10 +57,10 @@ const PremiumDashboard = () => {
           ))}
         </div>
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">

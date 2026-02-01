@@ -49,5 +49,5 @@ export function ThemeToggle({ className, size = 'md' }: ThemeToggleProps) {
         )}
       </motion.div>
     </motion.button>
-  );
+
 }

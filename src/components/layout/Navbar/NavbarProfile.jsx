@@ -18,13 +18,11 @@ const NavbarProfile = () => {
   };
 
   const toggleDropdown = () => {
-    console.log('Toggle clicked, current state:', isOpen);
     setIsOpen(prev => !prev);
   };
 
   useEffect(() => {
-    console.log('Dropdown state changed:', isOpen);
-  }, [isOpen]);
+    }, [isOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

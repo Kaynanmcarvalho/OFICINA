@@ -13,7 +13,6 @@ import { useTheme } from '../../hooks/useTheme';
 // ============================================
 function ExemploBasico() {
   const handleLogout = async () => {
-    console.log('Logout realizado');
     // Implementar lógica de logout
   };
 
@@ -28,7 +27,7 @@ function ExemploBasico() {
         <h1>Conteúdo Principal</h1>
       </main>
     </div>
-  );
+
 }
 
 // ============================================
@@ -43,8 +42,7 @@ function ExemploComUsuario() {
   };
 
   const handleLogout = async () => {
-    console.log('Logout:', user.email);
-  };
+    };
 
   return (
     <div className="flex min-h-screen">
@@ -57,7 +55,7 @@ function ExemploComUsuario() {
         <h1>Bem-vindo, {user.name}!</h1>
       </main>
     </div>
-  );
+
 }
 
 // ============================================
@@ -84,7 +82,7 @@ function ExemploComControleExterno() {
         </button>
       </main>
     </div>
-  );
+
 }
 
 // ============================================
@@ -112,7 +110,7 @@ function ExemploComTema() {
         </div>
       </main>
     </div>
-  );
+
 }
 
 // ============================================
@@ -150,15 +148,14 @@ function ExemploComFirebase() {
         }}
         onLogout={async () => {
           // await auth.signOut();
-          console.log('Firebase logout');
-        }}
+          }}
       />
       
       <main className="flex-1 p-6">
         <h1>Integrado com Firebase Auth</h1>
       </main>
     </div>
-  );
+
 }
 
 // ============================================
@@ -176,8 +173,7 @@ function ExemploLayoutCompleto() {
           email: 'admin@oficina.com'
         }}
         onLogout={async () => {
-          console.log('Logout');
-        }}
+          }}
       />
       
       {/* Área de conteúdo com ajuste automático */}
@@ -209,7 +205,7 @@ function ExemploLayoutCompleto() {
         </main>
       </div>
     </div>
-  );
+
 }
 
 // ============================================
@@ -237,7 +233,7 @@ function ExemploResponsivo() {
         <p>Em mobile, a sidebar vira um drawer overlay</p>
       </main>
     </div>
-  );
+
 }
 
 // ============================================

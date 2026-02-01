@@ -26,8 +26,7 @@ export const useAutoSave = (data, key, interval = 30000) => {
       };
       localStorage.setItem(`draft_${key}`, JSON.stringify(draft));
       lastSavedRef.current = draft.timestamp;
-      console.log(`[AutoSave] Draft saved at ${draft.timestamp}`);
-    } catch (error) {
+      } catch (error) {
       console.error('[AutoSave] Error saving draft:', error);
     }
   }, [data, key]);
@@ -46,12 +45,10 @@ export const useAutoSave = (data, key, interval = 30000) => {
       const hoursDiff = (now - draftTime) / (1000 * 60 * 60);
       
       if (hoursDiff > 24) {
-        console.log('[AutoSave] Draft expired, clearing...');
         clearDraft();
         return null;
       }
       
-      console.log(`[AutoSave] Draft loaded from ${draft.timestamp}`);
       return draft.data;
     } catch (error) {
       console.error('[AutoSave] Error loading draft:', error);
@@ -64,8 +61,7 @@ export const useAutoSave = (data, key, interval = 30000) => {
     try {
       localStorage.removeItem(`draft_${key}`);
       lastSavedRef.current = null;
-      console.log('[AutoSave] Draft cleared');
-    } catch (error) {
+      } catch (error) {
       console.error('[AutoSave] Error clearing draft:', error);
     }
   }, [key]);

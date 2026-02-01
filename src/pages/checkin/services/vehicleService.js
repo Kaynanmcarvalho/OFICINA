@@ -15,7 +15,6 @@ export const getVehicleHistory = async (plate, empresaId) => {
       ...(empresaId ? [where('empresaId', '==', empresaId)] : []),
       orderBy('createdAt', 'desc'),
       limit(20)
-    );
 
     const snapshot = await getDocs(checkinQuery);
     const visits = snapshot.docs.map(doc => ({

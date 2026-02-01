@@ -53,7 +53,7 @@ const SegmentedControl = ({ options, value, onChange, className = '' }) => {
               />
             )}
           </button>
-        );
+
       })}
     </div>
   );

@@ -182,7 +182,7 @@ export const useToolStore = create((set, get) => ({
       // Search by brand - usando busca local
       
       // Buscar todos e filtrar localmente
-    const allItems = await getAllDocuments('brandResults');
+      const allItems = await getAllDocuments('brandResults');
     const searchLower = searchTerm.toLowerCase();
       
       const allResults = new Map();

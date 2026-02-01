@@ -136,8 +136,6 @@ const ClientViewModal = ({ isOpen, onClose, client }) => {
     return phone;
   };
 
-
-
   // Validação de WhatsApp
   const hasWhatsApp = (phone) => {
     if (!phone) return false;
@@ -307,7 +305,7 @@ const ClientViewModal = ({ isOpen, onClose, client }) => {
                     <Icon className="w-4 h-4" />
                     {tab.label}
                   </button>
-                );
+
               })}
             </div>
 

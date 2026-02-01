@@ -112,7 +112,6 @@ const Icon = ({ name, size = 20, className = '' }) => {
   return <span className={className}>{icons[name]}</span>;
 };
 
-
 // Skeleton Loading
 const SkeletonMetric = () => (
   <div className="inv-metric animate-pulse">
@@ -257,7 +256,6 @@ const InventoryPage = () => {
             ))
           )}
         </motion.div>
-
 
         {/* Barra de Busca e Filtros */}
         <motion.div 
@@ -445,7 +443,6 @@ const InventoryPage = () => {
         </AnimatePresence>
       </div>
 
-
       {/* Modals */}
       {isProductModalOpen && (
         <Suspense fallback={null}>
@@ -460,7 +457,7 @@ const InventoryPage = () => {
       <VehiclePartsSearchModal 
         isOpen={isCompatibilityModalOpen} 
         onClose={() => setIsCompatibilityModalOpen(false)} 
-        onPartSelect={(part) => { console.log('Peça selecionada:', part); setIsCompatibilityModalOpen(false); }} 
+        onPartSelect={(part) => { setIsCompatibilityModalOpen(false); }} 
         empresaId={sessionStorage.getItem('empresaId') || ''}
         isDarkMode={isDarkMode}
       />
@@ -493,7 +490,7 @@ const InventoryPage = () => {
                   <Icon name="x" size={18} />
                 </button>
               </div>
-              <StockPredictionDashboard empresaId={sessionStorage.getItem('empresaId') || ''} onItemClick={(id) => console.log('Item:', id)} />
+              <StockPredictionDashboard empresaId={sessionStorage.getItem('empresaId') || ''} onItemClick={(id) => setSelectedPartId(id)} />
             </motion.div>
           </motion.div>
         )}
@@ -527,7 +524,7 @@ const InventoryPage = () => {
                   <Icon name="x" size={18} />
                 </button>
               </div>
-              <MultiusePartsDashboard empresaId={sessionStorage.getItem('empresaId') || ''} onPartClick={(id) => console.log('Part:', id)} />
+              <MultiusePartsDashboard empresaId={sessionStorage.getItem('empresaId') || ''} onPartClick={(id) => setSelectedPartId(id)} />
             </motion.div>
           </motion.div>
         )}
@@ -564,7 +561,7 @@ const InventoryPage = () => {
               <div className="flex-1 overflow-y-auto p-4">
                 <PartsSearchPanel 
                   empresaId={sessionStorage.getItem('empresaId') || ''} 
-                  onPartSelect={(id) => { console.log('Peça:', id); setShowPartsSearch(false); }} 
+                  onPartSelect={(id) => { setShowPartsSearch(false); }} 
                   className="!shadow-none !rounded-none" 
                 />
               </div>

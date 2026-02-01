@@ -36,10 +36,10 @@ const GlassCard = ({
       >
         {children}
       </motion.div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <div className={cn(baseClasses, hoverClasses, className)} onClick={onClick} {...props}>
       {children}
     </div>

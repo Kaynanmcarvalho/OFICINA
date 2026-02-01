@@ -139,7 +139,7 @@ export const localDB = {
         client.phone?.includes(term) ||
         client.cpf?.includes(term) ||
         client.email?.toLowerCase().includes(term)
-    );
+
   },
 
   // Check-ins

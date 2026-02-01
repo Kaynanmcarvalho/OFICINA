@@ -61,7 +61,6 @@ export class PartsLookupService {
   private vehicleApi = vehicleApiService;
   private partsApi = partsApiService;
 
-
   /**
    * Busca peças compatíveis para um veículo
    */

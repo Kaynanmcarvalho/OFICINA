@@ -40,8 +40,6 @@ const ClientSlideOver = ({ isOpen, onClose, client, onEdit, onDelete }) => {
       .slice(0, 2);
   };
 
-
-
   const handleWhatsApp = () => {
     const phone = client.phone?.replace(/\D/g, '');
     if (phone) {

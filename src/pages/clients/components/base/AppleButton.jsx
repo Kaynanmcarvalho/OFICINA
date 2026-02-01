@@ -129,7 +129,6 @@ const AppleButton = ({
         borderRadius: '50%',
       }}
     />
-  );
 
   return (
     <motion.button

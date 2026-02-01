@@ -52,5 +52,5 @@ export default function NFeCard({ nfe, onClick }) {
         </div>
       </div>
     </div>
-  );
+
 }

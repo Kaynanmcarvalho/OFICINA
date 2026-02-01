@@ -49,7 +49,6 @@ export function useKeyboardShortcut(
       }
     },
     [key, handler, ctrl, shift, alt, meta]
-  );
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);

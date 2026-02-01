@@ -321,8 +321,7 @@ export const saveSuggestedCompatibilities = async (productId, suggestions) => {
         where('marca', '==', suggestion.marca),
         where('modelo', '==', suggestion.modelo),
         where('tipo', '==', suggestion.tipo)
-      );
-      
+
       const snapshot = await getDocs(q);
       let vehicleId;
       
@@ -348,8 +347,7 @@ export const saveSuggestedCompatibilities = async (productId, suggestions) => {
         compatRef,
         where('partId', '==', productId),
         where('vehicleId', '==', vehicleId)
-      );
-      
+
       const compatSnapshot = await getDocs(compatQuery);
       
       if (compatSnapshot.empty) {

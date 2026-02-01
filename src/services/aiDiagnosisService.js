@@ -78,7 +78,6 @@ export const getVehicleDiagnosisHistory = async (vehicleId, limitCount = 10) => 
       where('vehicleId', '==', vehicleId),
       orderBy('createdAt', 'desc'),
       limit(limitCount)
-    );
 
     const querySnapshot = await getDocs(q);
     const history = [];
@@ -105,7 +104,6 @@ export const getDiagnosisStats = async (empresaId) => {
     const q = query(
       collection(db, 'aiDiagnosis'),
       where('empresaId', '==', empresaId)
-    );
 
     const querySnapshot = await getDocs(q);
     

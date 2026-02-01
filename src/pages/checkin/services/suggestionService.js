@@ -25,7 +25,6 @@ export const getVehicleServiceHistory = async (vehiclePlate, empresaId) => {
       where('status', '==', 'completed'),
       orderBy('createdAt', 'desc'),
       limit(20)
-    );
 
     const snapshot = await getDocs(q);
     const history = [];

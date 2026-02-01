@@ -96,7 +96,6 @@ export const useVehiclePartsSearch = (options: UseVehiclePartsSearchOptions): Us
     loadFiltersData();
   }, [empresaId]);
 
-
   // Debounced search
   const setSearchQuery = useCallback((query: string) => {
     setSearchQueryState(query);
@@ -136,10 +135,6 @@ export const useVehiclePartsSearch = (options: UseVehiclePartsSearchOptions): Us
   const selectVehicle = useCallback(async (variantId: string) => {
     // REMOVIDO: Validação de empresaId - agora permite busca local sempre
     // O engine de peças funciona localmente sem precisar de Firebase/empresaId
-    console.log(`[useVehiclePartsSearch] Selecting vehicle, empresaId: ${effectiveEmpresaId}, isSuperAdmin: ${isSuperAdmin}`);
-    
-    console.log(`[useVehiclePartsSearch] Selecting vehicle, empresaId: ${effectiveEmpresaId}, isSuperAdmin: ${isSuperAdmin}`);
-    
     setError(null);
     setIsLoadingParts(true);
     setSuggestions([]);
@@ -161,8 +156,7 @@ export const useVehiclePartsSearch = (options: UseVehiclePartsSearchOptions): Us
       const parts = await findCompatibleParts(variant, effectiveEmpresaId, filters);
       setCompatibleParts(parts);
       
-      console.log(`[useVehiclePartsSearch] Selected ${variant.brand} ${variant.model} ${variant.year}, found ${parts.length} parts`);
-    } catch (err: any) {
+      } catch (err: any) {
       console.error('[useVehiclePartsSearch] Error selecting vehicle:', err);
       setError(err.message || 'Erro ao carregar peças compatíveis');
     } finally {
@@ -210,7 +204,7 @@ export const useVehiclePartsSearch = (options: UseVehiclePartsSearchOptions): Us
             ? { ...part, manuallyVerified: true, confidence: 1.0, matchType: 'manual' as MatchType }
             : part
         )
-      );
+
     } catch (err) {
       console.error('[useVehiclePartsSearch] Error confirming compatibility:', err);
       setError('Erro ao confirmar compatibilidade');

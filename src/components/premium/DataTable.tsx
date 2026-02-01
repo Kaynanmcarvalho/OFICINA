@@ -60,7 +60,7 @@ export function DataTable<T extends Record<string, any>>({
         Object.values(row).some((value) =>
           String(value).toLowerCase().includes(searchQuery.toLowerCase())
         )
-      );
+
     }
 
     // Sort
@@ -95,10 +95,10 @@ export function DataTable<T extends Record<string, any>>({
           ))}
         </div>
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <div className="space-y-4">
       {/* Header */}
       {(searchable || filterable) && (

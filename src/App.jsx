@@ -34,7 +34,7 @@ const FinancialReport = React.lazy(() => import('./pages/reports/FinancialReport
 const ClientsReport = React.lazy(() => import('./pages/reports/ClientsReport'));
 const CheckinsReport = React.lazy(() => import('./pages/reports/CheckinsReport'));
 const DevPage = React.lazy(() => import('./pages/DevPage'));
-const BudgetsPage = React.lazy(() => import('./pages/BudgetsPage'));
+const BudgetsPage = React.lazy(() => import('./pages/BudgetsPageSober'));
 const BudgetApprovalPage = React.lazy(() => import('./pages/BudgetApprovalPage'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 
@@ -152,7 +152,6 @@ function App() {
           {user && (
             <VoiceAssistantButton
               onCommand={(command) => {
-                console.log('[VoiceAssistant] Comando recebido:', command);
                 // TODO: Implementar navegação e ações baseadas no comando
               }}
               onError={(error) => {

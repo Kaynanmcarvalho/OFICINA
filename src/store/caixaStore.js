@@ -1,426 +1,287 @@
-/**
- * TORQ - Store de Controle de Caixa
- * 
- * Gerencia o estado do caixa financeiro:
- * - Abertura e fechamento de caixa
- * - Controle de saldo em tempo real
- * - Movimentações (vendas, sangrias, reforços)
- * - Persistência de estado
- */
-
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { db } from '../config/firebase';
 import { 
   collection, 
   addDoc, 
   updateDoc, 
+  deleteDoc, 
   doc, 
-  getDoc, 
-  getDocs, 
   query, 
   where, 
-  orderBy, 
-  limit,
-  Timestamp,
-  arrayUnion,
-  increment
+  getDocs,
+  orderBy,
+  Timestamp 
 } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { executeIdempotent } from '../utils/idempotency';
 
-const useCaixaStore = create(
-  persist(
-    (set, get) => ({
-      // Estado do caixa atual
-      caixaAtual: null,
-      operadorAtual: null,
-      isLoading: false,
-      error: null,
+export const useCaixaStore = create((set, get) => ({
+  // State
+  movements: [],
+  isLoading: false,
+  error: null,
+  balance: 0,
+  caixaAtual: null, // Caixa aberto atual
 
-      // ============================================================================
-      // ABERTURA DE CAIXA
-      // ============================================================================
-      abrirCaixa: async (saldoInicial, turno, observacoes, operador) => {
-        set({ isLoading: true, error: null });
+  // Carregar caixa aberto
+  carregarCaixaAberto: async (user) => {
+    if (!user?.empresaId) {
+      set({ error: 'Empresa não identificada', caixaAtual: null });
+      return;
+    }
+
+    set({ isLoading: true, error: null });
+
+    try {
+      // 🔒 SEGURANÇA: Query com validação de empresaId
+      const q = query(
+        collection(db, 'caixas'),
+        where('empresaId', '==', user.empresaId),
+        where('status', '==', 'aberto'),
+        orderBy('dataAbertura', 'desc')
+      );
+
+      const snapshot = await getDocs(q);
+      
+      if (!snapshot.empty) {
+        const caixaDoc = snapshot.docs[0];
+        const caixaData = caixaDoc.data();
         
-        try {
-          // 1. Verificar se já existe caixa aberto para este operador
-          const caixasAbertosQuery = query(
-            collection(db, 'caixas'),
-            where('status', '==', 'aberto'),
-            where('operadorAbertura.uid', '==', operador.uid),
-            where('empresaId', '==', operador.empresaId)
-          );
-          
-          const caixasAbertos = await getDocs(caixasAbertosQuery);
-          
-          if (!caixasAbertos.empty) {
-            throw new Error('Você já tem um caixa aberto. Feche-o antes de abrir outro.');
-          }
-
-          // 2. Verificar se já existe caixa aberto neste ponto de venda
-          const caixasPontoVendaQuery = query(
-            collection(db, 'caixas'),
-            where('status', '==', 'aberto'),
-            where('empresaId', '==', operador.empresaId),
-            where('pontoVenda', '==', 'PDV_01') // TODO: Tornar dinâmico
-          );
-          
-          const caixasPontoVenda = await getDocs(caixasPontoVendaQuery);
-          
-          if (!caixasPontoVenda.empty) {
-            throw new Error('Já existe um caixa aberto neste ponto de venda.');
-          }
-
-          // 3. Gerar número sequencial do caixa (baseado na data)
-          const hoje = new Date().toISOString().split('T')[0];
-          const caixasHojeQuery = query(
-            collection(db, 'caixas'),
-            where('empresaId', '==', operador.empresaId),
-            where('dataAbertura', '>=', new Date(hoje)),
-            orderBy('dataAbertura', 'desc'),
-            limit(1)
-          );
-          
-          const caixasHoje = await getDocs(caixasHojeQuery);
-          const numeroCaixa = caixasHoje.empty ? 1 : caixasHoje.docs[0].data().numero + 1;
-
-          // 4. Criar registro do caixa
-          const caixaData = {
-            // Identificação
-            numero: numeroCaixa,
-            empresaId: operador.empresaId,
-            pontoVenda: 'PDV_01', // TODO: Tornar dinâmico
-            
-            // Status e Controle
-            status: 'aberto',
-            turno: turno || 'integral',
-            
-            // Datas e Timestamps
-            dataAbertura: Timestamp.now(),
-            dataFechamento: null,
-            dataReabertura: null,
-            dataCancelamento: null,
-            
-            // Usuários Responsáveis
-            operadorAbertura: {
-              uid: operador.uid,
-              nome: operador.displayName || operador.email,
-              email: operador.email
-            },
-            operadorFechamento: null,
-            
-            // Valores Financeiros
-            saldoInicial: parseFloat(saldoInicial) || 0,
-            
-            entradas: {
-              dinheiro: 0,
-              pix: 0,
-              cartaoDebito: 0,
-              cartaoCredito: 0,
-              cheque: 0,
-              outros: 0,
-              total: 0
-            },
-            
-            saidas: {
-              sangrias: 0,
-              estornos: 0,
-              total: 0
-            },
-            
-            reforcos: {
-              troco: 0,
-              total: 0
-            },
-            
-            // Cálculos
-            saldoEsperado: parseFloat(saldoInicial) || 0,
-            saldoContado: null,
-            diferenca: null,
-            
-            // Estatísticas
-            totalVendas: 0,
-            totalItensVendidos: 0,
-            ticketMedio: 0,
-            
-            // Observações
-            observacoesAbertura: observacoes || '',
-            observacoesFechamento: '',
-            justificativaDiferenca: '',
-            
-            // Auditoria
-            movimentacoes: [
-              {
-                id: `mov_${Date.now()}`,
-                tipo: 'abertura',
-                valor: parseFloat(saldoInicial) || 0,
-                formaPagamento: null,
-                timestamp: Timestamp.now(),
-                usuario: {
-                  uid: operador.uid,
-                  nome: operador.displayName || operador.email
-                },
-                observacao: observacoes || 'Abertura de caixa',
-                vendaId: null,
-                autorizadoPor: null,
-                comprovante: null
-              }
-            ],
-            
-            // Metadados
-            createdAt: Timestamp.now(),
-            updatedAt: Timestamp.now(),
-            version: 1
-          };
-
-          // 5. Salvar no Firestore
-          const caixaRef = await addDoc(collection(db, 'caixas'), caixaData);
-          
-          // 6. Buscar o documento criado
-          const caixaDoc = await getDoc(caixaRef);
-          const caixaCriado = { id: caixaDoc.id, ...caixaDoc.data() };
-
-          // 7. Atualizar estado local
-          set({ 
-            caixaAtual: caixaCriado,
-            operadorAtual: operador,
-            isLoading: false,
-            error: null
-          });
-
-          return { success: true, data: caixaCriado };
-        } catch (error) {
-          console.error('Erro ao abrir caixa:', error);
-          set({ isLoading: false, error: error.message });
-          return { success: false, error: error.message };
+        // 🔒 VALIDAÇÃO ADICIONAL: Verificar se empresaId do documento corresponde
+        if (caixaData.empresaId !== user.empresaId) {
+          console.error('🚨 TENTATIVA DE ACESSO CROSS-TENANT BLOQUEADA');
+          set({ error: 'Acesso negado', caixaAtual: null, isLoading: false });
+          return;
         }
-      },
-
-      // ============================================================================
-      // REGISTRAR VENDA NO CAIXA
-      // ============================================================================
-      registrarVenda: async (vendaId, valorTotal, pagamentos) => {
-        const { caixaAtual } = get();
         
-        if (!caixaAtual) {
-          throw new Error('Nenhum caixa aberto');
-        }
+        const caixaAtual = {
+          id: caixaDoc.id,
+          ...caixaData,
+          dataAbertura: caixaData.dataAbertura?.toDate?.() || new Date(caixaData.dataAbertura)
+        };
+        
+        set({ caixaAtual, isLoading: false });
+        
+        // Carregar movimentações do caixa
+        await get().loadMovements(user.empresaId);
+      } else {
+        set({ caixaAtual: null, isLoading: false });
+      }
+    } catch (error) {
+      console.error('Erro ao carregar caixa aberto:', error);
+      set({ error: error.message, isLoading: false, caixaAtual: null });
+    }
+  },
 
+  // Registrar venda no caixa
+  // 🔥 IDEMPOTÊNCIA: Previne duplicação de vendas
+  registrarVenda: async (tenantId, venda) => {
+    if (!tenantId) {
+      throw new Error('TenantId não fornecido');
+    }
+
+    const caixaAtual = get().caixaAtual;
+    if (!caixaAtual) {
+      throw new Error('Nenhum caixa aberto');
+    }
+
+    // 🔥 IDEMPOTÊNCIA: Executar com proteção contra duplicação
+    const userId = sessionStorage.getItem('userId') || 'unknown';
+    const idempotencyData = {
+      vendaId: venda.id,
+      total: venda.total,
+      caixaId: caixaAtual.id,
+      timestamp: Date.now()
+    };
+
+    return await executeIdempotent(
+      'REGISTRAR_VENDA',
+      userId,
+      idempotencyData,
+      async () => {
         try {
-          // Calcular valores por forma de pagamento
-          const valoresPorForma = {
-            dinheiro: 0,
-            pix: 0,
-            cartaoDebito: 0,
-            cartaoCredito: 0,
-            cheque: 0,
-            outros: 0
+          // Adicionar movimentação de entrada
+          const movement = {
+            type: 'entrada',
+            amount: venda.total,
+            description: `Venda #${venda.id || 'N/A'}`,
+            category: 'venda',
+            paymentMethod: venda.paymentMethod,
+            date: new Date(),
+            vendaId: venda.id,
+            clienteId: venda.clienteId,
+            caixaId: caixaAtual.id
           };
 
-          let valorDinheiroFisico = 0;
-
-          pagamentos.forEach(pag => {
-            const valor = parseFloat(pag.valor) || 0;
-            const metodo = pag.metodo.toLowerCase().replace(/[_\s]/g, '');
-            
-            if (metodo === 'dinheiro') {
-              valoresPorForma.dinheiro += valor;
-              valorDinheiroFisico += valor;
-            } else if (metodo === 'pix') {
-              valoresPorForma.pix += valor;
-            } else if (metodo.includes('debito')) {
-              valoresPorForma.cartaoDebito += valor;
-            } else if (metodo.includes('credito')) {
-              valoresPorForma.cartaoCredito += valor;
-            } else if (metodo === 'cheque') {
-              valoresPorForma.cheque += valor;
-            } else {
-              valoresPorForma.outros += valor;
-            }
-          });
-
-          // Atualizar caixa no Firestore
-          const caixaRef = doc(db, 'caixas', caixaAtual.id);
+          await get().addMovement(tenantId, movement);
           
-          await updateDoc(caixaRef, {
-            'entradas.dinheiro': increment(valoresPorForma.dinheiro),
-            'entradas.pix': increment(valoresPorForma.pix),
-            'entradas.cartaoDebito': increment(valoresPorForma.cartaoDebito),
-            'entradas.cartaoCredito': increment(valoresPorForma.cartaoCredito),
-            'entradas.cheque': increment(valoresPorForma.cheque),
-            'entradas.outros': increment(valoresPorForma.outros),
-            'entradas.total': increment(valorTotal),
-            saldoEsperado: increment(valorDinheiroFisico),
-            totalVendas: increment(1),
-            updatedAt: Timestamp.now(),
-            movimentacoes: arrayUnion({
-              id: `mov_${Date.now()}`,
-              tipo: 'venda',
-              valor: valorDinheiroFisico,
-              formaPagamento: pagamentos[0]?.metodo || 'multiplo',
-              timestamp: Timestamp.now(),
-              usuario: {
-                uid: caixaAtual.operadorAbertura.uid,
-                nome: caixaAtual.operadorAbertura.nome
-              },
-              observacao: `Venda de R$ ${valorTotal.toFixed(2)}`,
-              vendaId: vendaId,
-              autorizadoPor: null,
-              comprovante: null
-            })
-          });
-
-          // Atualizar estado local
-          const caixaAtualizado = {
-            ...caixaAtual,
-            entradas: {
-              dinheiro: caixaAtual.entradas.dinheiro + valoresPorForma.dinheiro,
-              pix: caixaAtual.entradas.pix + valoresPorForma.pix,
-              cartaoDebito: caixaAtual.entradas.cartaoDebito + valoresPorForma.cartaoDebito,
-              cartaoCredito: caixaAtual.entradas.cartaoCredito + valoresPorForma.cartaoCredito,
-              cheque: caixaAtual.entradas.cheque + valoresPorForma.cheque,
-              outros: caixaAtual.entradas.outros + valoresPorForma.outros,
-              total: caixaAtual.entradas.total + valorTotal
-            },
-            saldoEsperado: caixaAtual.saldoEsperado + valorDinheiroFisico,
-            totalVendas: caixaAtual.totalVendas + 1
-          };
-
-          set({ caixaAtual: caixaAtualizado });
-
-          return { success: true, valorDinheiroFisico };
+          return movement;
         } catch (error) {
-          console.error('Erro ao registrar venda no caixa:', error);
+          console.error('Erro ao registrar venda:', error);
           throw error;
         }
-      },
-
-      // ============================================================================
-      // FECHAR CAIXA
-      // ============================================================================
-      fecharCaixa: async (saldoContado, observacoes, justificativa, autorizadoPor) => {
-        const { caixaAtual, operadorAtual } = get();
-        
-        if (!caixaAtual) {
-          throw new Error('Nenhum caixa aberto');
-        }
-
-        set({ isLoading: true, error: null });
-
-        try {
-          const diferenca = saldoContado - caixaAtual.saldoEsperado;
-
-          // Atualizar caixa no Firestore
-          const caixaRef = doc(db, 'caixas', caixaAtual.id);
-          
-          await updateDoc(caixaRef, {
-            status: 'fechado',
-            dataFechamento: Timestamp.now(),
-            operadorFechamento: {
-              uid: operadorAtual.uid,
-              nome: operadorAtual.displayName || operadorAtual.email,
-              email: operadorAtual.email
-            },
-            saldoContado: parseFloat(saldoContado),
-            diferenca: diferenca,
-            observacoesFechamento: observacoes || '',
-            justificativaDiferenca: justificativa || '',
-            updatedAt: Timestamp.now(),
-            movimentacoes: arrayUnion({
-              id: `mov_${Date.now()}`,
-              tipo: 'fechamento',
-              valor: saldoContado,
-              formaPagamento: null,
-              timestamp: Timestamp.now(),
-              usuario: {
-                uid: operadorAtual.uid,
-                nome: operadorAtual.displayName || operadorAtual.email
-              },
-              observacao: observacoes || 'Fechamento de caixa',
-              vendaId: null,
-              autorizadoPor: autorizadoPor || null,
-              comprovante: null
-            })
-          });
-
-          // Limpar estado local
-          set({ 
-            caixaAtual: null,
-            operadorAtual: null,
-            isLoading: false,
-            error: null
-          });
-
-          return { success: true, diferenca };
-        } catch (error) {
-          console.error('Erro ao fechar caixa:', error);
-          set({ isLoading: false, error: error.message });
-          return { success: false, error: error.message };
-        }
-      },
-
-      // ============================================================================
-      // CARREGAR CAIXA ABERTO
-      // ============================================================================
-      carregarCaixaAberto: async (operador) => {
-        set({ isLoading: true, error: null });
-
-        try {
-          const caixasQuery = query(
-            collection(db, 'caixas'),
-            where('status', '==', 'aberto'),
-            where('operadorAbertura.uid', '==', operador.uid),
-            where('empresaId', '==', operador.empresaId),
-            orderBy('dataAbertura', 'desc'),
-            limit(1)
-          );
-
-          const caixasSnapshot = await getDocs(caixasQuery);
-
-          if (caixasSnapshot.empty) {
-            set({ caixaAtual: null, operadorAtual: null, isLoading: false });
-            return { success: true, data: null };
-          }
-
-          const caixaDoc = caixasSnapshot.docs[0];
-          const caixaData = { id: caixaDoc.id, ...caixaDoc.data() };
-
-          set({ 
-            caixaAtual: caixaData,
-            operadorAtual: operador,
-            isLoading: false,
-            error: null
-          });
-
-          return { success: true, data: caixaData };
-        } catch (error) {
-          console.error('Erro ao carregar caixa aberto:', error);
-          set({ isLoading: false, error: error.message });
-          return { success: false, error: error.message };
-        }
-      },
-
-      // ============================================================================
-      // LIMPAR ESTADO
-      // ============================================================================
-      limparCaixa: () => {
-        set({ 
-          caixaAtual: null,
-          operadorAtual: null,
-          isLoading: false,
-          error: null
-        });
       }
-    }),
-    {
-      name: 'caixa-storage',
-      storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({
-        caixaAtual: state.caixaAtual,
-        operadorAtual: state.operadorAtual
-      })
+    );
+  },
+
+  // Carregar movimentações do Firestore
+  loadMovements: async (tenantId) => {
+    if (!tenantId) {
+      set({ error: 'TenantId não fornecido', movements: [] });
+      return;
     }
-  )
-);
+
+    set({ isLoading: true, error: null });
+
+    try {
+      // 🔒 SEGURANÇA: Query com validação de tenantId
+      const q = query(
+        collection(db, 'caixa'),
+        where('tenantId', '==', tenantId),
+        orderBy('date', 'desc')
+      );
+
+      const snapshot = await getDocs(q);
+      const movements = snapshot.docs.map(doc => {
+        const data = doc.data();
+        
+        // 🔒 VALIDAÇÃO ADICIONAL: Verificar se tenantId do documento corresponde
+        if (data.tenantId !== tenantId) {
+          console.error('🚨 TENTATIVA DE ACESSO CROSS-TENANT BLOQUEADA:', doc.id);
+          return null;
+        }
+        
+        return {
+          firestoreId: doc.id,
+          ...data,
+          date: data.date?.toDate?.() || new Date(data.date)
+        };
+      }).filter(Boolean); // Remove nulls
+
+      // Calcular saldo
+      const balance = movements.reduce((sum, m) => {
+        const amount = parseFloat(m.amount) || 0;
+        return m.type === 'entrada' ? sum + amount : sum - amount;
+      }, 0);
+
+      set({ movements, balance, isLoading: false });
+    } catch (error) {
+      console.error('Erro ao carregar movimentações:', error);
+      set({ error: error.message, isLoading: false, movements: [] });
+    }
+  },
+
+  // Adicionar movimentação
+  addMovement: async (tenantId, movement) => {
+    if (!tenantId) {
+      throw new Error('TenantId não fornecido');
+    }
+
+    set({ isLoading: true, error: null });
+
+    try {
+      // 🔒 SEGURANÇA: Garantir que tenantId está no documento
+      const docData = {
+        ...movement,
+        tenantId, // Forçar tenantId do parâmetro
+        createdAt: Timestamp.now(),
+        date: movement.date ? Timestamp.fromDate(new Date(movement.date)) : Timestamp.now()
+      };
+      
+      // 🔒 VALIDAÇÃO: Remover qualquer tentativa de sobrescrever tenantId
+      if (movement.tenantId && movement.tenantId !== tenantId) {
+        console.error('🚨 TENTATIVA DE MANIPULAÇÃO DE TENANT BLOQUEADA');
+        throw new Error('Acesso negado');
+      }
+
+      const docRef = await addDoc(collection(db, 'caixa'), docData);
+
+      const newMovement = {
+        firestoreId: docRef.id,
+        ...movement,
+        tenantId,
+        createdAt: new Date(),
+        date: movement.date ? new Date(movement.date) : new Date()
+      };
+
+      set(state => ({
+        movements: [newMovement, ...state.movements],
+        balance: movement.type === 'entrada' 
+          ? state.balance + parseFloat(movement.amount)
+          : state.balance - parseFloat(movement.amount),
+        isLoading: false
+      }));
+
+      return newMovement;
+    } catch (error) {
+      console.error('Erro ao adicionar movimentação:', error);
+      set({ error: error.message, isLoading: false });
+      throw error;
+    }
+  },
+
+  // Atualizar movimentação
+  updateMovement: async (movementId, updates) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const docRef = doc(db, 'caixa', movementId);
+      await updateDoc(docRef, {
+        ...updates,
+        updatedAt: Timestamp.now()
+      });
+
+      set(state => ({
+        movements: state.movements.map(m =>
+          m.firestoreId === movementId ? { ...m, ...updates } : m
+        ),
+        isLoading: false
+      }));
+
+      // Recalcular saldo
+      get().recalculateBalance();
+    } catch (error) {
+      console.error('Erro ao atualizar movimentação:', error);
+      set({ error: error.message, isLoading: false });
+      throw error;
+    }
+  },
+
+  // Deletar movimentação
+  deleteMovement: async (movementId) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      await deleteDoc(doc(db, 'caixa', movementId));
+
+      set(state => ({
+        movements: state.movements.filter(m => m.firestoreId !== movementId),
+        isLoading: false
+      }));
+
+      // Recalcular saldo
+      get().recalculateBalance();
+    } catch (error) {
+      console.error('Erro ao deletar movimentação:', error);
+      set({ error: error.message, isLoading: false });
+      throw error;
+    }
+  },
+
+  // Recalcular saldo
+  recalculateBalance: () => {
+    const movements = get().movements;
+    const balance = movements.reduce((sum, m) => {
+      const amount = parseFloat(m.amount) || 0;
+      return m.type === 'entrada' ? sum + amount : sum - amount;
+    }, 0);
+
+    set({ balance });
+  },
+
+  // Limpar store
+  clearStore: () => {
+    set({ movements: [], balance: 0, error: null, isLoading: false });
+  }
+}));
 
 export default useCaixaStore;

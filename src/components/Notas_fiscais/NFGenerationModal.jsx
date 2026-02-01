@@ -49,10 +49,8 @@ const NFGenerationModal = ({
           const usageResult = await nfUsageService.registerNFUsage(result.data, user, nfType);
           
           if (usageResult.success) {
-            console.log('✅ [NF USAGE] Uso registrado:', usageResult);
-          } else {
-            console.warn('⚠️ [NF USAGE] Erro ao registrar uso:', usageResult.error);
-          }
+            } else {
+            }
         } catch (usageError) {
           console.error('❌ [NF USAGE] Erro ao registrar uso:', usageError);
           // Não interromper o fluxo principal se o controle de uso falhar

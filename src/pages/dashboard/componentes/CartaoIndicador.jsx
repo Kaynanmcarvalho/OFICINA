@@ -21,7 +21,9 @@ const CartaoIndicador = ({
   tendencia, 
   percentual, 
   cor = 'blue',
-  loading = false 
+  loading = false,
+  subtitulo = '',
+  urgente = false
 }) => {
   // Configurações de cor por tipo
   const coresConfig = {
@@ -99,10 +101,11 @@ const CartaoIndicador = ({
       <div className={`
         relative overflow-hidden rounded-[1.75rem]
         bg-white dark:bg-gray-900
-        border ${config.border}
+        border ${urgente ? 'border-red-500 dark:border-red-600 border-2' : config.border}
         shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]
         transition-all duration-300
         group-hover:shadow-[0_12px_48px_rgba(0,0,0,0.12)] dark:group-hover:shadow-[0_12px_48px_rgba(0,0,0,0.6)]
+        ${urgente ? 'animate-pulse-slow' : ''}
       `}>
         
         {/* Reflexo de vidro no topo */}
@@ -192,11 +195,18 @@ const CartaoIndicador = ({
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400 tracking-wide">
                   {titulo}
                 </p>
+                
+                {/* Subtítulo (se fornecido) */}
+                {subtitulo && (
+                  <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                    {subtitulo}
+                  </p>
+                )}
               </>
             )}
           </div>
         </div>
-
+          );
         {/* Borda inferior com gradiente sutil */}
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200/50 dark:via-gray-700/50 to-transparent" />
       </div>
@@ -213,6 +223,8 @@ export default React.memo(CartaoIndicador, (prevProps, nextProps) => {
     prevProps.tendencia === nextProps.tendencia &&
     prevProps.percentual === nextProps.percentual &&
     prevProps.cor === nextProps.cor &&
-    prevProps.loading === nextProps.loading
+    prevProps.loading === nextProps.loading &&
+    prevProps.subtitulo === nextProps.subtitulo &&
+    prevProps.urgente === nextProps.urgente
   );
 });

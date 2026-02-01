@@ -57,9 +57,7 @@ const LabelPrintModal = ({ isOpen, onClose, produto }) => {
   const loadConfig = async () => {
     try {
       const configs = await configService.getConfiguracoes();
-      console.log('Configurações carregadas do configService:', configs);
-      console.log('Tipo de configs:', typeof configs);
-      console.log('Chaves disponíveis:', Object.keys(configs || {}));
+
       setConfig(configs);
       
       // Atualizar configurações temporárias com as configurações carregadas (merge)
@@ -84,7 +82,6 @@ const LabelPrintModal = ({ isOpen, onClose, produto }) => {
       try {
         await labelPrinterService.initializeQZTray();
       } catch (qzError) {
-        console.warn('QZ Tray não disponível:', qzError.message);
         showNotification('QZ Tray não está disponível. Instale e inicie o QZ Tray para impressão.', 'warning');
       }
       
@@ -105,7 +102,6 @@ const LabelPrintModal = ({ isOpen, onClose, produto }) => {
         nomeEmpresa: configs.nomeEmpresa
       };
       
-      console.log('Dados de configuração enviados para labelPrinterService:', configData);
       labelPrinterService.configure(configData);
     } catch (error) {
       console.error('Erro ao carregar configurações:', error);
@@ -198,20 +194,12 @@ const LabelPrintModal = ({ isOpen, onClose, produto }) => {
           incluirPreco: finalConfig.incluirPreco,
           incluirTamanho: finalConfig.incluirTamanho
         });
-        
-        console.log(`Comandos ${finalConfig.formatoEtiqueta} para C3Tech IT-200:`, zplCommands);
-          console.log('Produto sendo impresso:', produto);
-          console.log(`Imprimindo ${quantidade} etiquetas em layout duplo (2 por linha)`);
-          console.log('Array de produtos gerado:', produtos);
-          console.log('Configuração final usada:', finalConfig);
-        
-        // Tentar imprimir via labelPrinterService
+
+          // Tentar imprimir via labelPrinterService
           try {
             // Passar o array completo de produtos em vez de apenas 1
             const result = await labelPrinterService.printLabel(produtos, finalConfig);
-            console.log('Resultado da impressão:', result);
-          
-          if (result.success) {
+            if (result.success) {
             showNotification(`${quantidade} etiqueta(s) enviada(s) para impressão C3Tech IT-200: ${result.printer}!`);
           } else {
             showNotification(`Erro na impressão: ${result.message}`, 'error');

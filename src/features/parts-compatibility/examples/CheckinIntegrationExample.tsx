@@ -64,10 +64,10 @@ export function CheckinIntegrationExample({
           Selecione um veículo para ver as peças compatíveis
         </p>
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <div className="space-y-4">
       {/* Botão para mostrar/esconder painel de peças */}
       <button
@@ -130,7 +130,7 @@ export function CheckinIntegrationExample({
         </div>
       )}
     </div>
-  );
+
 }
 
 /**
@@ -156,7 +156,7 @@ export function FullPartsSearchExample() {
           {selectedVehicle ? (
             <PartsCompatibilityPanel
               vehicleId={selectedVehicle.vehicleId}
-              onPartSelect={(part) => console.log('Peça selecionada:', part)}
+              onPartSelect={(part) => }
             />
           ) : (
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-12 flex items-center justify-center">

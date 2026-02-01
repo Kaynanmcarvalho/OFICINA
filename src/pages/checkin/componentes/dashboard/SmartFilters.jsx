@@ -344,7 +344,7 @@ const SmartFilters = ({ filters, onChange, totalRecords, filteredRecords }) => {
         document.body
       )}
     </>
-  );
+
 };
 
 // Componente auxiliar para pills de filtro - Apple Style

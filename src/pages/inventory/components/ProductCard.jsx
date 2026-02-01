@@ -128,7 +128,6 @@ const ProductCard = ({ product, onView, onEdit }) => {
         </div>
       </div>
 
-
       {/* Status Pills */}
       <div className="flex flex-wrap gap-1.5 mb-4">
         <span className={`inv-pill ${status.type}`}>

@@ -147,8 +147,6 @@ class CNPJApiService {
     // Tenta cada API até conseguir
     for (const api of this.apis) {
       try {
-        console.log(`[CNPJService] Tentando API: ${api.name}`);
-        
         const response = await fetch(`${api.url}${normalizedCNPJ}`, {
           method: 'GET',
           headers: {
@@ -164,11 +162,9 @@ class CNPJApiService {
         const data = await response.json();
         const formattedData = api.format(data);
         
-        console.log(`[CNPJService] ✅ Sucesso com ${api.name}`);
         return formattedData;
 
       } catch (error) {
-        console.warn(`[CNPJService] ❌ Falha na API ${api.name}:`, error.message);
         continue;
       }
     }

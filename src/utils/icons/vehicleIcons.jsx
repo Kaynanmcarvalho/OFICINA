@@ -260,14 +260,6 @@ export const detectVehicleType = (vehicleModel, vehicleBrand = '') => {
   const detectedType = Object.keys(scores).find(type => scores[type] === maxScore);
   
   // Log para debug (sempre ativo para ajudar a identificar problemas)
-  console.log('[Vehicle Type Detection]', {
-    input: vehicleModel,
-    brand: vehicleBrand,
-    fullText,
-    scores,
-    detected: detectedType
-  });
-  
   return detectedType || 'car';
 };
 

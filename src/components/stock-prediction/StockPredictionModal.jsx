@@ -313,5 +313,5 @@ export default function StockPredictionModal({ prediction, onClose }) {
         </div>
       </div>
     </div>
-  );
+
 }

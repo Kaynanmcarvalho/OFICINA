@@ -1,7 +1,9 @@
 import { useState, useEffect, lazy, Suspense, memo, useCallback, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { Users, Package, Wrench, Car } from 'lucide-react';
+// eslint-disable-next-line no-unused-vars
+import { motion } from 'framer-motion'; // Usado em motion.div no JSX
+import { Car, AlertTriangle, CheckCircle, DollarSign, TrendingUp, Target, Clock } from 'lucide-react';
 import ErrorBoundary from './componentes/ErrorBoundary';
+import './estilos/dashboard.css';
 import './estilos/dashboard.css';
 import './estilos/dashboard-light-premium.css';
 import './estilos/dashboard-ultra-depth.css';
@@ -140,10 +142,10 @@ const DashboardPage = memo(() => {
           </div>
         </div>
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <ErrorBoundary>
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 overflow-x-hidden" style={{ width: '100%', maxWidth: '100vw' }}>
         <div className="w-full mx-auto space-y-4 md:space-y-6 dashboard-no-transform px-3 md:px-4 lg:px-6 py-4 md:py-6" style={{ maxWidth: '100%', boxSizing: 'border-box' }}>
@@ -168,7 +170,7 @@ const DashboardPage = memo(() => {
           </Suspense>
         </motion.div>
 
-        {/* KPIs */}
+        {/* KPIs OPERACIONAIS CRÍTICOS */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -178,45 +180,96 @@ const DashboardPage = memo(() => {
         >
           <Suspense fallback={<SkeletonCard />}>
             <CartaoIndicador
-              titulo="Clientes"
-              valor={estatisticas?.totalClientes || 0}
-              icone={Users}
-              cor="blue"
-              tendencia={tendencias?.tendenciaClientes}
-              percentual={tendencias?.percentualClientes}
-            />
-          </Suspense>
-          
-          <Suspense fallback={<SkeletonCard />}>
-            <CartaoIndicador
-              titulo="Veículos Cadastrados"
-              valor={estatisticas?.veiculosAtivos || 0}
+              titulo="Em Serviço AGORA"
+              valor={estatisticas?.veiculosEmServico || 0}
               icone={Car}
-              cor="purple"
-              tendencia={tendencias?.tendenciaVeiculos}
-              percentual={tendencias?.percentualVeiculos}
+              cor="blue"
+              subtitulo="Veículos em atendimento"
+              urgente={estatisticas?.veiculosEmServico > 10}
             />
           </Suspense>
           
           <Suspense fallback={<SkeletonCard />}>
             <CartaoIndicador
-              titulo="Ferramentas Disponíveis"
-              valor={estatisticas?.ferramentasDisponiveis || 0}
-              icone={Wrench}
-              cor="orange"
-              tendencia={tendencias?.tendenciaFerramentas}
-              percentual={tendencias?.percentualFerramentas}
+              titulo="Serviços Atrasados"
+              valor={estatisticas?.servicosAtrasados || 0}
+              icone={AlertTriangle}
+              cor="red"
+              subtitulo="Requerem atenção"
+              urgente={estatisticas?.servicosAtrasados > 0}
             />
           </Suspense>
           
           <Suspense fallback={<SkeletonCard />}>
             <CartaoIndicador
-              titulo="Produtos em Estoque"
-              valor={estatisticas?.totalProdutos || 0}
-              icone={Package}
+              titulo="Prontos p/ Retirada"
+              valor={estatisticas?.veiculosProntos || 0}
+              icone={CheckCircle}
               cor="green"
-              tendencia={tendencias?.tendenciaEstoque}
-              percentual={tendencias?.percentualEstoque}
+              subtitulo="Aguardando cliente"
+            />
+          </Suspense>
+          
+          <Suspense fallback={<SkeletonCard />}>
+            <CartaoIndicador
+              titulo="Receita do Dia"
+              valor={`R$ ${(estatisticas?.receitaDia || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+              icone={DollarSign}
+              cor="purple"
+              subtitulo="Orçamentos aprovados hoje"
+            />
+          </Suspense>
+        </motion.div>
+
+        {/* KPIs FINANCEIROS */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.15 }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4"
+          style={{ width: '100%', maxWidth: '100%' }}
+        >
+          <Suspense fallback={<SkeletonCard />}>
+            <CartaoIndicador
+              titulo="Receita do Mês"
+              valor={`R$ ${(estatisticas?.receitaMes || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+              icone={TrendingUp}
+              cor="green"
+              subtitulo={`${estatisticas?.totalOrcamentosMes || 0} orçamentos aprovados`}
+              tendencia={tendencias?.tendenciaReceita}
+              percentual={tendencias?.percentualReceita}
+            />
+          </Suspense>
+          
+          <Suspense fallback={<SkeletonCard />}>
+            <CartaoIndicador
+              titulo="Ticket Médio"
+              valor={`R$ ${(estatisticas?.ticketMedio || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+              icone={DollarSign}
+              cor="blue"
+              subtitulo="Por serviço"
+              tendencia={tendencias?.tendenciaTicket}
+              percentual={tendencias?.percentualTicket}
+            />
+          </Suspense>
+          
+          <Suspense fallback={<SkeletonCard />}>
+            <CartaoIndicador
+              titulo="Taxa de Conversão"
+              valor={`${(estatisticas?.taxaConversao || 0).toFixed(1)}%`}
+              icone={Target}
+              cor="purple"
+              subtitulo="Orçamentos aprovados"
+            />
+          </Suspense>
+          
+          <Suspense fallback={<SkeletonCard />}>
+            <CartaoIndicador
+              titulo="Tempo Médio"
+              valor={`${(estatisticas?.tempoMedioPermanencia || 0).toFixed(1)} dias`}
+              icone={Clock}
+              cor="orange"
+              subtitulo="Permanência na oficina"
             />
           </Suspense>
         </motion.div>

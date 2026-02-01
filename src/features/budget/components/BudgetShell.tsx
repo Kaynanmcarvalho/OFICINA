@@ -9,20 +9,21 @@
 import React, { useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { shellStyles, contentStyles, scrollbarStyles } from '../styles/budget.styles';
-import { getBrandAccent } from '../styles/budget.tokens';
+import { getBrandAccent, radius } from '../styles/budget.tokens';
 import { BudgetHeader } from './BudgetHeader';
 import { BudgetFooter } from './BudgetFooter';
 import { useBudgetFlow, BudgetFlowReturn } from '../hooks/useBudgetFlow';
+import '../styles/budget-theme.css';
 
 // ============================================================================
 // STEP CONTENT COMPONENTS (lazy loaded)
 // ============================================================================
 import { StepClient } from './steps/StepClient';
 import { StepVehicle } from './steps/StepVehicle';
-import { StepItems } from './steps/StepItems';
-import { StepSummary } from './steps/StepSummary';
+import { StepItemsPremium } from './steps/StepItemsPremium';
+import { StepSummaryPremium } from './steps/StepSummaryPremium';
 
-const STEP_COMPONENTS = [StepClient, StepVehicle, StepItems, StepSummary];
+const STEP_COMPONENTS = [StepClient, StepVehicle, StepItemsPremium, StepSummaryPremium];
 
 // ============================================================================
 // ANIMATIONS
@@ -166,51 +167,46 @@ export const BudgetShell: React.FC<BudgetShellProps> = ({
         {/* Inject scrollbar styles */}
         <style>{scrollbarStyles}</style>
         
-        {/* Brand glow effect */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '20%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '600px',
-            height: '400px',
-            background: `radial-gradient(ellipse, rgba(${accent.rgb}, 0.08) 0%, transparent 70%)`,
-            pointerEvents: 'none',
-          }}
-        />
-        
         <motion.div
           key="budget-container"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
           exit="exit"
-          style={shellStyles.container}
+          className="budget-modal-container"
+          style={{
+            position: 'relative',
+            width: '100%',
+            maxWidth: '960px',
+            maxHeight: '90vh',
+            borderRadius: radius.xl,
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Vignette effect */}
-          <div style={shellStyles.vignette} />
-          
           {/* Header */}
-          <BudgetHeader
-            title={isEditMode ? 'Editar Orçamento' : 'Novo Orçamento'}
-            subtitle="Sistema de orçamentos TORQ"
-            plate={flow.data.vehicle?.plate}
-            brand={flow.effectiveBrand}
-            model={flow.data.vehicle?.model}
-            year={flow.data.vehicle?.year}
-            isEditMode={isEditMode}
-            currentStep={flow.currentStep}
-            onStepClick={flow.goToStep}
-            isStepValid={flow.isStepValid}
-            onClose={onClose}
-          />
+          <div className="budget-modal-header relative p-4 px-8 border-b z-10">
+            <BudgetHeader
+              title={isEditMode ? 'Editar Orçamento' : 'Novo Orçamento'}
+              subtitle="Sistema de orçamentos TORQ"
+              plate={flow.data.vehicle?.plate}
+              brand={flow.effectiveBrand}
+              model={flow.data.vehicle?.model}
+              year={flow.data.vehicle?.year}
+              isEditMode={isEditMode}
+              currentStep={flow.currentStep}
+              onStepClick={flow.goToStep}
+              isStepValid={flow.isStepValid}
+              onClose={onClose}
+            />
+          </div>
           
           {/* Content Area */}
-          <div style={contentStyles.container}>
-            <div style={contentStyles.innerVignette} />
-            
+          <div 
+            className="budget-modal-content flex-1 overflow-y-auto overflow-x-hidden p-8"
+          >
             <AnimatePresence mode="wait" custom={flow.direction}>
               <motion.div
                 key={flow.currentStep}
@@ -227,19 +223,21 @@ export const BudgetShell: React.FC<BudgetShellProps> = ({
           </div>
           
           {/* Footer */}
-          <BudgetFooter
-            currentStep={flow.currentStep}
-            totalSteps={flow.steps.length}
-            total={flow.total}
-            subtotal={flow.subtotal}
-            discount={flow.data.discount}
-            canProceed={flow.canProceed}
-            isLoading={flow.isLoading}
-            brand={flow.effectiveBrand}
-            onPrev={flow.prevStep}
-            onNext={flow.nextStep}
-            onSubmit={handleSubmit}
-          />
+          <div className="budget-modal-footer relative p-4 px-8 border-t z-10">
+            <BudgetFooter
+              currentStep={flow.currentStep}
+              totalSteps={flow.steps.length}
+              total={flow.total}
+              subtotal={flow.subtotal}
+              discount={flow.data.discount}
+              canProceed={flow.canProceed}
+              isLoading={flow.isLoading}
+              brand={flow.effectiveBrand}
+              onPrev={flow.prevStep}
+              onNext={flow.nextStep}
+              onSubmit={handleSubmit}
+            />
+          </div>
         </motion.div>
       </motion.div>
     </AnimatePresence>

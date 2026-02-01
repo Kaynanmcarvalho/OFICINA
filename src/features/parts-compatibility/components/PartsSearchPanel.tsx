@@ -106,6 +106,7 @@ export const PartsSearchPanel: React.FC<PartsSearchPanelProps> = ({
         setShowModelDropdown(false);
       }
     };
+    
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);

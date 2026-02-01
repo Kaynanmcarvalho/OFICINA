@@ -98,10 +98,10 @@ const GlassmorphismCard = ({
       >
         {children}
       </motion.div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <div
       className={combinedClassName}
       style={combinedStyle}

@@ -83,8 +83,6 @@ class CEPApiService {
     // Tenta cada API até conseguir
     for (const api of this.apis) {
       try {
-        console.log(`[CEPService] Tentando API: ${api.name}`);
-        
         const url = api.name === 'ViaCEP' 
           ? `${api.url}${normalizedCEP}/json/`
           : `${api.url}${normalizedCEP}`;
@@ -103,11 +101,9 @@ class CEPApiService {
         const data = await response.json();
         const formattedData = api.format(data);
         
-        console.log(`[CEPService] ✅ Sucesso com ${api.name}`);
         return formattedData;
 
       } catch (error) {
-        console.warn(`[CEPService] ❌ Falha na API ${api.name}:`, error.message);
         lastError = error;
         continue;
       }

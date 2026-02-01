@@ -52,7 +52,6 @@ const VehicleVisual = ({ vehicleData }) => {
         {marca}
       </text>
     </svg>
-  );
 
   // SVG da moto
   const MotorcycleSVG = () => (
@@ -98,7 +97,6 @@ const VehicleVisual = ({ vehicleData }) => {
         {marca}
       </text>
     </svg>
-  );
 
   // SVG do caminhão
   const TruckSVG = () => (
@@ -131,7 +129,6 @@ const VehicleVisual = ({ vehicleData }) => {
         {marca}
       </text>
     </svg>
-  );
 
   const getSVGComponent = () => {
     switch (vehicleType) {

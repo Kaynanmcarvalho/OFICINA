@@ -123,6 +123,7 @@ export function useMultiuseParts(
           request,
           empresaId
         );
+
         setParts(result);
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Erro ao buscar peças';

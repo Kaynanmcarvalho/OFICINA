@@ -135,8 +135,7 @@ export async function startValidation(
             },
           });
         }
-      );
-      
+
       result = {
         success: massiveResult.errors.length === 0,
         summary: {
@@ -158,8 +157,7 @@ export async function startValidation(
       result = await runBrandOrchestration(
         options.brand,
         (progress) => updateState({ progress })
-      );
-      
+
     } else {
       // Validação completa
       result = await runFullOrchestration(
@@ -169,7 +167,7 @@ export async function startValidation(
           skipGeneration: options?.skipGeneration,
           maxVehiclesPerBrand: options?.maxVehiclesPerBrand,
         }
-      );
+
     }
     
     updateState({

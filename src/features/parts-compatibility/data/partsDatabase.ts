@@ -303,7 +303,6 @@ export const MOTORCYCLE_OIL_FILTERS: Record<string, VehiclePartCompatibility> = 
     ],
   },
 
-
   // ============================================================================
   // HONDA - VERIFICADO
   // ============================================================================
@@ -530,7 +529,6 @@ export const MOTORCYCLE_OIL_FILTERS: Record<string, VehiclePartCompatibility> = 
     ],
   },
 
-
   // ============================================================================
   // BMW MOTOS - VERIFICADO
   // ============================================================================
@@ -736,7 +734,6 @@ export const MOTORCYCLE_OIL_FILTERS: Record<string, VehiclePartCompatibility> = 
       },
     ],
   },
-
 
   // ============================================================================
   // KAWASAKI - VERIFICADO
@@ -1011,7 +1008,6 @@ export const MOTORCYCLE_OIL_FILTERS: Record<string, VehiclePartCompatibility> = 
     ],
   },
 
-
   // ============================================================================
   // DUCATI - VERIFICADO
   // ============================================================================
@@ -1281,7 +1277,6 @@ export const MOTORCYCLE_OIL_FILTERS: Record<string, VehiclePartCompatibility> = 
     ],
   },
 };
-
 
 // ============================================================================
 // FILTROS DE ÓLEO - CARROS (VERIFICADO)
@@ -2661,7 +2656,6 @@ export const CAR_OIL_FILTERS: Record<string, VehiclePartCompatibility> = {
     ],
   },
 };
-
 
 // ============================================================================
 // FUNÇÕES DE BUSCA

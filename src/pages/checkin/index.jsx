@@ -65,8 +65,6 @@ const CheckinPage = () => {
       const checkinsRef = collection(db, 'checkins');
       await addDoc(checkinsRef, checkinData);
 
-      console.log('Check-in salvo com sucesso!');
-      
       // Aguarda um pouco para o usuário ver o PIN
       await new Promise(resolve => setTimeout(resolve, 2000));
       

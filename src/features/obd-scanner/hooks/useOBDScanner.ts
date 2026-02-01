@@ -27,7 +27,7 @@ interface UseOBDScannerReturn {
 export function useOBDScanner(): UseOBDScannerReturn {
   const [connectionState, setConnectionState] = useState<OBDConnectionState>(
     obdScannerService.getConnectionState()
-  );
+
   const [scanResults, setScanResults] = useState<OBDScanResult[]>([]);
   const [currentScan, setCurrentScan] = useState<OBDScanResult | null>(null);
   const [error, setError] = useState<string | null>(null);

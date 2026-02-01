@@ -18,9 +18,13 @@ import {
   Percent,
   Target,
   Zap,
-  RefreshCw
+  RefreshCw,
+  AlertTriangle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useReportsStore } from '../../store';
+import AlertsPanel from './components/AlertsPanel';
+import DataQualityIndicator from './components/DataQualityIndicator';
 
 // Componente de gráfico de rosca animado
 const DonutChart = ({ data, size = 160, strokeWidth = 20 }) => {
@@ -167,6 +171,17 @@ const FinancialReport = () => {
   const { checkins = [], dateRange = 'month', setDateRange } = context || {};
 
   const [activeView, setActiveView] = useState('overview');
+  const [useRealData, setUseRealData] = useState(true);
+
+  // Store de relatórios
+  const {
+    calculateRealRevenue,
+    calculateRealCosts,
+    calculateRealExpenses,
+    calculateRealProfit,
+    generateAlerts,
+    validateDataIntegrity
+  } = useReportsStore();
 
   // Cálculos financeiros avançados
   const financialData = useMemo(() => {
@@ -216,14 +231,45 @@ const FinancialReport = () => {
     const completed = filtered.filter(c => c.status === 'completed' && c.serviceValue);
     const previousCompleted = previousFiltered.filter(c => c.status === 'completed' && c.serviceValue);
     
-    const receita = completed.reduce((sum, c) => sum + (parseFloat(c.serviceValue) || 0), 0);
-    const previousReceita = previousCompleted.reduce((sum, c) => sum + (parseFloat(c.serviceValue) || 0), 0);
+    // DADOS REAIS DO STORE (quando disponível)
+    let receita, custoEstimado, despesasFixas, lucro, margemLucro, dataQuality, warnings, alerts;
     
-    // Estimativas de custos (30% da receita como exemplo)
-    const custoEstimado = receita * 0.30;
-    const despesasFixas = receita * 0.15;
+    if (useRealData) {
+      try {
+        const realProfit = calculateRealProfit(startDate, new Date());
+        const realRevenue = calculateRealRevenue(startDate, new Date());
+        const realCosts = calculateRealCosts(startDate, new Date());
+        const realExpenses = calculateRealExpenses(startDate, new Date());
+        const systemAlerts = generateAlerts(startDate, new Date());
+        
+        receita = realProfit.revenue;
+        custoEstimado = realProfit.costs;
+        despesasFixas = realProfit.expenses;
+        lucro = realProfit.profit;
+        margemLucro = realProfit.margin;
+        dataQuality = realProfit.dataQuality;
+        warnings = realProfit.warnings || [];
+        alerts = systemAlerts;
+      } catch (error) {
+        console.error('Erro ao calcular dados reais:', error);
+        setUseRealData(false);
+      }
+    }
+    
+    // FALLBACK: Dados estimados (antigo método)
+    if (!useRealData) {
+      receita = completed.reduce((sum, c) => sum + (parseFloat(c.serviceValue) || 0), 0);
+      custoEstimado = receita * 0.30;
+      despesasFixas = receita * 0.15;
+      lucro = receita - custoEstimado - despesasFixas - (receita * 0.06);
+      margemLucro = receita > 0 ? (lucro / receita) * 100 : 0;
+      dataQuality = 'low';
+      warnings = ['Usando estimativas (30% custos, 15% despesas, 6% impostos)'];
+      alerts = { alerts: [], count: 0, critical: 0, high: 0, medium: 0 };
+    }
+    
+    const previousReceita = previousCompleted.reduce((sum, c) => sum + (parseFloat(c.serviceValue) || 0), 0);
     const impostos = receita * 0.06;
-    const lucro = receita - custoEstimado - despesasFixas - impostos;
 
     // Variação percentual
     const receitaChange = previousReceita > 0 ? ((receita - previousReceita) / previousReceita) * 100 : 0;
@@ -284,7 +330,7 @@ const FinancialReport = () => {
       despesasFixas,
       impostos,
       lucro,
-      margemLucro: receita > 0 ? (lucro / receita) * 100 : 0,
+      margemLucro,
       ticketMedio: completed.length > 0 ? receita / completed.length : 0,
       totalServicos: completed.length,
       byPayment,
@@ -292,9 +338,13 @@ const FinancialReport = () => {
       last14Days,
       sparkData,
       fluxoCaixa,
-      transactions: completed.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      transactions: completed.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
+      dataQuality: dataQuality || 'low',
+      warnings: warnings || [],
+      alerts: alerts || { alerts: [], count: 0, critical: 0, high: 0, medium: 0 },
+      useRealData
     };
-  }, [checkins, dateRange]);
+  }, [checkins, dateRange, useRealData, calculateRealRevenue, calculateRealCosts, calculateRealExpenses, calculateRealProfit, generateAlerts]);
 
   const exportReport = () => {
     toast.success('Exportando relatório financeiro...');
@@ -344,6 +394,26 @@ const FinancialReport = () => {
           </button>
         </div>
       </div>
+
+      {/* Alertas e Qualidade de Dados */}
+      {financialData.alerts && financialData.alerts.count > 0 && (
+        <AlertsPanel alerts={financialData.alerts} />
+      )}
+
+      {financialData.dataQuality && financialData.dataQuality !== 'high' && (
+        <DataQualityIndicator
+          quality={financialData.dataQuality}
+          warnings={financialData.warnings}
+          onValidate={() => {
+            const integrity = validateDataIntegrity();
+            if (integrity.isValid) {
+              toast.success('Dados validados com sucesso!');
+            } else {
+              toast.error(`${integrity.issues.length} problema(s) encontrado(s)`);
+            }
+          }}
+        />
+      )}
 
       {/* KPIs Principais */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
@@ -415,7 +485,7 @@ const FinancialReport = () => {
                     {day.date}
                   </span>
                 </div>
-              );
+                  );
             })}
           </div>
         </div>
@@ -524,11 +594,19 @@ const FinancialReport = () => {
 
         {/* DRE Simplificado */}
         <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg">
-          <div className="flex items-center gap-2 mb-6">
-            <Receipt className="w-5 h-5 text-purple-500" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              DRE Simplificado
-            </h2>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <Receipt className="w-5 h-5 text-purple-500" />
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                DRE Simplificado
+              </h2>
+            </div>
+            {!financialData.useRealData && (
+              <span className="px-2.5 py-1 text-xs font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 rounded-full flex items-center gap-1">
+                <AlertTriangle className="w-3 h-3" />
+                Estimado
+              </span>
+            )}
           </div>
           
           <div className="space-y-4">

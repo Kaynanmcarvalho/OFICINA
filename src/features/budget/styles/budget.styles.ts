@@ -22,8 +22,8 @@ export const shellStyles = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: spacing.lg,
-    background: 'rgba(0, 0, 0, 0.85)',
-    backdropFilter: 'blur(8px)',
+    background: 'rgba(0, 0, 0, 0.5)',
+    backdropFilter: 'blur(4px)',
   },
   
   container: {
@@ -31,7 +31,8 @@ export const shellStyles = {
     width: '100%',
     maxWidth: '960px',
     maxHeight: '90vh',
-    background: colors.base.primary,
+    // TEMA ADAPTATIVO: branco no light, preto no dark
+    background: 'var(--bg-modal, #FFFFFF)',
     borderRadius: radius.xl,
     overflow: 'hidden',
     display: 'flex',
@@ -53,9 +54,12 @@ export const shellStyles = {
 export const headerStyles = {
   container: {
     position: 'relative' as const,
-    padding: `${spacing.sm} ${spacing.xl}`,
+    padding: `${spacing.lg} ${spacing.xl}`,
+    paddingBottom: spacing.lg,
+    minHeight: '140px',
     background: colors.base.secondary,
-    borderBottom: `1px solid ${colors.border.subtle}`,
+    borderBottom: `1px solid ${colors.border.default}`,
+    boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
     zIndex: 2,
   },
   
@@ -73,7 +77,7 @@ export const headerStyles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: spacing.sm,
+    marginBottom: spacing.lg,
   },
   
   brandInfo: {
@@ -86,21 +90,30 @@ export const headerStyles = {
     ...typography.title,
     color: colors.text.primary,
     margin: 0,
+    fontSize: '18px',
+    fontWeight: 600,
+    letterSpacing: '-0.01em',
   },
   
   subtitle: {
     ...typography.subtitle,
-    color: colors.text.muted,
+    color: colors.text.secondary,
     marginTop: spacing.xs,
+    fontSize: '13px',
+    fontWeight: 500,
   },
   
   badge: (accentHex: string) => ({
     ...typography.caption,
     padding: `${spacing.xs} ${spacing.sm}`,
-    background: `${accentHex}20`,
+    background: accentHex,
     color: '#FFFFFF',
     borderRadius: radius.full,
-    fontWeight: 500,
+    fontWeight: 600,
+    fontSize: '11px',
+    letterSpacing: '0.02em',
+    textTransform: 'uppercase' as const,
+    boxShadow: `0 2px 8px ${accentHex}40`,
   }),
   
   closeButton: {
@@ -120,9 +133,9 @@ export const headerStyles = {
 
 export const sectionStyles = {
   container: {
-    background: `linear-gradient(to bottom, ${colors.surface.medium} 0%, ${colors.surface.soft} 100%)`,
+    background: colors.surface.soft,
     border: `1px solid ${colors.border.subtle}`,
-    borderRadius: radius.lg,
+    borderRadius: radius.md,
     boxShadow: shadows.section,
     padding: spacing.lg,
     marginBottom: spacing.lg,
@@ -142,7 +155,7 @@ export const sectionStyles = {
   
   description: {
     ...typography.caption,
-    color: colors.text.muted,
+    color: 'var(--text-secondary, #6B7280)',
     margin: 0,
   },
   
@@ -162,9 +175,11 @@ export const sectionStyles = {
 export const footerStyles = {
   container: {
     position: 'relative' as const,
-    padding: `${spacing.sm} ${spacing.xl}`,
+    padding: `${spacing.md} ${spacing.xl}`,
+    minHeight: '80px',
     background: colors.base.secondary,
-    borderTop: `1px solid ${colors.border.subtle}`,
+    borderTop: `1px solid ${colors.border.default}`,
+    boxShadow: '0 -1px 3px rgba(0,0,0,0.08)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -174,18 +189,21 @@ export const footerStyles = {
   summary: {
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: spacing.xs,
+    gap: spacing.lg,
   },
   
   totalLabel: {
     ...typography.caption,
     color: colors.text.muted,
+    fontWeight: 500,
+    opacity: 0.7,
   },
   
   totalValue: {
     ...typography.title,
     color: colors.text.primary,
-    fontSize: '20px',
+    fontSize: '22px',
+    fontWeight: 700,
   },
   
   actions: {
@@ -272,12 +290,13 @@ export const inputStyles = {
 export const buttonStyles = {
   // Botão primário (CTA)
   primary: (accentHex: string, accentRgb: string) => ({
-    padding: `${spacing.md} ${spacing.xl}`,
+    height: '44px',
+    padding: `0 ${spacing.xl}`,
     background: accentHex,
     color: '#FFFFFF',
     border: 'none',
-    borderRadius: radius.md,
-    boxShadow: shadows.cta(accentRgb),
+    borderRadius: radius.sm,
+    boxShadow: `0 2px 8px rgba(${accentRgb}, 0.3)`,
     ...typography.body,
     fontWeight: 600,
     cursor: 'pointer',
@@ -289,25 +308,22 @@ export const buttonStyles = {
   }),
   
   primaryHover: (accentRgb: string) => ({
-    transform: 'translateY(-2px)',
-    boxShadow: `
-      0 6px 24px rgba(${accentRgb}, 0.45),
-      0 4px 12px rgba(0, 0, 0, 0.35),
-      inset 0 1px 0 rgba(255, 255, 255, 0.25)
-    `,
+    transform: 'translateY(-1px)',
+    boxShadow: `0 4px 16px rgba(${accentRgb}, 0.4)`,
   }),
   
   // Botão secundário
   secondary: {
-    padding: `${spacing.md} ${spacing.lg}`,
+    height: '44px',
+    padding: `0 ${spacing.xl}`,
     background: colors.surface.soft,
     color: colors.text.secondary,
     borderWidth: '1px',
     borderStyle: 'solid',
     borderColor: colors.border.default,
-    borderRadius: radius.md,
+    borderRadius: radius.sm,
     ...typography.body,
-    fontWeight: 500,
+    fontWeight: 600,
     cursor: 'pointer',
     transition: transitions.fast,
     display: 'flex',
@@ -347,62 +363,71 @@ export const buttonStyles = {
 export const stepperStyles = {
   container: {
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
     width: '100%',
     position: 'relative' as const,
+    paddingTop: spacing.lg,
+    gap: spacing.xs,
   },
   
   step: {
     display: 'flex',
     flexDirection: 'column' as const,
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: spacing.md,
     flex: 1,
     position: 'relative' as const,
     cursor: 'pointer',
     transition: transitions.fast,
+    padding: spacing.sm,
   },
   
   stepDisabled: {
     cursor: 'not-allowed',
-    opacity: 0.4,
+    opacity: 0.5,
   },
   
   indicator: {
-    width: '40px',
-    height: '40px',
+    width: '48px',
+    height: '48px',
     borderRadius: radius.md,
     background: colors.surface.soft,
-    borderWidth: '1px',
+    borderWidth: '2px',
     borderStyle: 'solid',
-    borderColor: colors.border.subtle,
+    borderColor: colors.border.default,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    color: colors.text.muted,
+    color: colors.text.secondary,
     transition: transitions.fast,
-    boxShadow: shadows.interactive,
+    boxShadow: 'var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05))',
   },
   
   indicatorActive: (accentHex: string, accentRgb: string) => ({
+    width: '52px',
+    height: '52px',
     background: accentHex,
-    borderWidth: '1px',
+    borderWidth: '2px',
     borderStyle: 'solid',
-    borderColor: 'transparent',
+    borderColor: accentHex,
     color: '#FFFFFF',
-    boxShadow: `
-      0 4px 12px rgba(${accentRgb}, 0.35),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2)
-    `,
+    boxShadow: `0 2px 12px rgba(${accentRgb}, 0.25)`,
+    transform: 'scale(1.0)',
   }),
   
   indicatorComplete: {
-    background: `${colors.state.success}20`,
-    borderWidth: '1px',
+    background: colors.surface.medium,
+    borderWidth: '2px',
     borderStyle: 'solid',
     borderColor: colors.state.success,
     color: colors.state.success,
+    boxShadow: 'none',
+  },
+  
+  indicatorFinal: {
+    borderWidth: '2.5px',
+    fontWeight: 700,
   },
   
   label: {
@@ -410,25 +435,36 @@ export const stepperStyles = {
     color: colors.text.muted,
     textAlign: 'center' as const,
     transition: transitions.fast,
+    fontSize: '13px',
+    fontWeight: 500,
+    lineHeight: 1.3,
   },
   
   labelActive: {
     color: colors.text.primary,
-    fontWeight: 500,
+    fontWeight: 600,
+    fontSize: '13px',
+  },
+  
+  labelFinal: {
+    fontWeight: 700,
   },
   
   connector: {
     position: 'absolute' as const,
-    top: '20px',
+    top: '24px',
     left: '60%',
     width: '80%',
     height: '2px',
-    background: colors.border.subtle,
+    background: colors.border.default,
+    opacity: 0.15,
     zIndex: -1,
   },
   
   connectorComplete: (accentHex: string) => ({
+    height: '2px',
     background: accentHex,
+    opacity: 0.4,
   }),
 };
 
@@ -441,15 +477,8 @@ export const contentStyles = {
     overflowY: 'auto' as const,
     overflowX: 'hidden' as const,
     padding: spacing.xl,
-    background: `linear-gradient(180deg, ${colors.base.tertiary} 0%, ${colors.base.primary} 100%)`,
+    background: colors.base.tertiary,
     position: 'relative' as const,
-  },
-  
-  innerVignette: {
-    position: 'absolute' as const,
-    inset: 0,
-    background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.2) 100%)',
-    pointerEvents: 'none' as const,
   },
 };
 

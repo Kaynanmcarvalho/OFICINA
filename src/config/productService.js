@@ -128,6 +128,7 @@ class ProductService {
         collection(db, this.collectionName),
         where('codigoBarras', '==', barcode)
       );
+
       const querySnapshot = await getDocs(q);
       
       if (querySnapshot.empty) {

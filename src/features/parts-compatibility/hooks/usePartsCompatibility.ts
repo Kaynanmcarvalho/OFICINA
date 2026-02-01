@@ -88,6 +88,7 @@ export function usePartsCompatibility(
           request,
           empresaId
         );
+
         setSearchResult(result);
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Erro ao buscar peças';
@@ -162,6 +163,7 @@ export function usePartsCompatibility(
             partId,
             empresaId
           );
+
           setAlternatives(alts);
         }
       } catch (err) {
@@ -184,6 +186,7 @@ export function usePartsCompatibility(
           partId,
           empresaId
         );
+
         setAlternatives(alts);
       } catch (err) {
         console.error('Erro ao carregar alternativas:', err);
@@ -210,7 +213,9 @@ export function usePartsCompatibility(
           plate,
           info,
           empresaId
+
         );
+
         setVehicleProfile(profile);
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Erro ao carregar perfil';

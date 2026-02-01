@@ -57,10 +57,10 @@ const CostVariationBadge = ({ scan, compact = false }) => {
         <span>{getStatusLabel()}</span>
         {analysis.severity === 'high' && <AlertTriangle size={12} className="alert-icon" />}
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <div className="cost-badge-full">
       <div className="cost-badge-header" style={{ backgroundColor: `${getStatusColor()}15` }}>
         <div className="badge-title">

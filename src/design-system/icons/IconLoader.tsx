@@ -27,14 +27,13 @@ export function Icon({ name, size = 24, className, fallback }: IconProps) {
   const IconComponent = iconRegistry.get(name);
 
   if (!IconComponent) {
-    console.warn(`Icon "${name}" not found in registry`);
     return fallback ? <>{fallback}</> : (
       <div 
         className={cn('inline-block bg-neutral-200 dark:bg-neutral-700 rounded', className)}
         style={{ width: size, height: size }}
         aria-label={`Icon: ${name}`}
       />
-    );
+
   }
 
   return (
@@ -50,7 +49,7 @@ export function Icon({ name, size = 24, className, fallback }: IconProps) {
         aria-hidden="true"
       />
     </Suspense>
-  );
+
 }
 
 // Pre-register common icons from lucide-react

@@ -116,7 +116,7 @@ const WizardProgress = ({ currentStep, onStepClick }) => {
                 {step.title}
               </span>
             </div>
-          );
+
         })}
       </div>
     </div>

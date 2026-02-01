@@ -3,6 +3,7 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { storage, db } from '../config/firebase';
 import { firestoreService } from '../services/firestoreService';
+import { checkOperationalLimit, recordOperation } from '../utils/operationalLimits';
 
 export const useCheckinStore = create((set, get) => ({
   // State
@@ -40,6 +41,133 @@ export const useCheckinStore = create((set, get) => ({
     }
   },
 
+  // Validação robusta de placa (Mercosul e formato antigo)
+  validatePlate: (plate) => {
+    if (!plate) return { valid: false, error: 'Placa é obrigatória' };
+    
+    const cleaned = plate.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    
+    // Formato Mercosul: ABC1D23
+    const mercosulPattern = /^[A-Z]{3}[0-9][A-Z][0-9]{2}$/;
+    // Formato antigo: ABC1234
+    const oldPattern = /^[A-Z]{3}[0-9]{4}$/;
+    
+    if (cleaned.length !== 7) {
+      return { valid: false, error: 'Placa deve ter 7 caracteres' };
+    }
+    
+    if (!mercosulPattern.test(cleaned) && !oldPattern.test(cleaned)) {
+      return { valid: false, error: 'Formato de placa inválido. Use ABC1234 ou ABC1D23' };
+    }
+    
+    return { valid: true, normalized: cleaned };
+  },
+
+  // Validação de CPF
+  validateCPF: (cpf) => {
+    if (!cpf) return { valid: false, error: 'CPF é obrigatório' };
+    
+    const cleaned = cpf.replace(/\D/g, '');
+    
+    if (cleaned.length !== 11) {
+      return { valid: false, error: 'CPF deve ter 11 dígitos' };
+    }
+    
+    // Validação básica de CPF
+    if (/^(\d)\1{10}$/.test(cleaned)) {
+      return { valid: false, error: 'CPF inválido' };
+    }
+    
+    return { valid: true, normalized: cleaned };
+  },
+
+  // Validação de telefone
+  validatePhone: (phone) => {
+    if (!phone) return { valid: false, error: 'Telefone é obrigatório' };
+    
+    const cleaned = phone.replace(/\D/g, '');
+    
+    if (cleaned.length < 10 || cleaned.length > 11) {
+      return { valid: false, error: 'Telefone inválido. Use (00) 0000-0000 ou (00) 00000-0000' };
+    }
+    
+    return { valid: true, normalized: cleaned };
+  },
+
+  // Validação de quilometragem
+  validateMileage: (mileage) => {
+    if (!mileage && mileage !== 0) return { valid: false, error: 'Quilometragem é obrigatória' };
+    
+    const km = parseInt(mileage, 10);
+    
+    if (isNaN(km) || km < 0) {
+      return { valid: false, error: 'Quilometragem inválida' };
+    }
+    
+    if (km > 999999) {
+      return { valid: false, error: 'Quilometragem muito alta (máximo 999.999 km)' };
+    }
+    
+    return { valid: true, normalized: km };
+  },
+
+  // Validação completa de dados obrigatórios
+  validateCheckinData: (data) => {
+    const errors = [];
+    
+    // Validar placa
+    const plateValidation = get().validatePlate(data.vehiclePlate);
+    if (!plateValidation.valid) errors.push(plateValidation.error);
+    
+    // Validar nome do cliente
+    if (!data.clientName || data.clientName.trim().length < 3) {
+      errors.push('Nome do cliente é obrigatório (mínimo 3 caracteres)');
+    }
+    
+    // Validar telefone
+    const phoneValidation = get().validatePhone(data.clientPhone);
+    if (!phoneValidation.valid) errors.push(phoneValidation.error);
+    
+    // Validar CPF
+    const cpfValidation = get().validateCPF(data.clientCPF);
+    if (!cpfValidation.valid) errors.push(cpfValidation.error);
+    
+    // Validar quilometragem
+    const mileageValidation = get().validateMileage(data.mileage);
+    if (!mileageValidation.valid) errors.push(mileageValidation.error);
+    
+    // Validar nível de combustível
+    if (!data.fuelLevel || !['empty', 'quarter', 'half', 'three-quarters', 'full'].includes(data.fuelLevel)) {
+      errors.push('Nível de combustível é obrigatório');
+    }
+    
+    // Validar descrição do problema
+    if (!data.problemDescription || data.problemDescription.trim().length < 10) {
+      errors.push('Descrição do problema é obrigatória (mínimo 10 caracteres)');
+    }
+    
+    // Validar fotos (mínimo 3)
+    if (!data.photos || data.photos.length < 3) {
+      errors.push('Mínimo 3 fotos obrigatórias (frente, traseira, painel)');
+    }
+    
+    // Validar valor máximo autorizado
+    if (!data.maxAuthorizedValue || parseFloat(data.maxAuthorizedValue) <= 0) {
+      errors.push('Valor máximo autorizado é obrigatório');
+    }
+    
+    return {
+      valid: errors.length === 0,
+      errors,
+      normalized: errors.length === 0 ? {
+        vehiclePlate: plateValidation.normalized,
+        clientPhone: phoneValidation.normalized,
+        clientCPF: cpfValidation.normalized,
+        mileage: mileageValidation.normalized,
+      } : null
+    };
+  },
+
   // Create new check-in with validation and transaction
   createCheckin: async (checkinData) => {
     set({ isLoading: true, error: null });
@@ -48,49 +176,117 @@ export const useCheckinStore = create((set, get) => ({
       const userName = sessionStorage.getItem('userName') || 'Usuário';
       const empresaId = sessionStorage.getItem('empresaId') || 'default';
       
-      // Validar placa
-      const normalizedPlate = checkinData.vehiclePlate?.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-      if (!normalizedPlate || normalizedPlate.length !== 7) {
-        throw new Error('Placa inválida');
+      // 🔥 BLAST RADIUS: Verificar limite operacional
+      const limitCheck = checkOperationalLimit(userId, 'CREATE_CHECKIN');
+      if (!limitCheck.allowed) {
+        throw new Error(limitCheck.error);
       }
       
+      // VALIDAÇÃO ROBUSTA
+      const validation = get().validateCheckinData(checkinData);
+      if (!validation.valid) {
+        throw new Error(`Validação falhou:\n${validation.errors.join('\n')}`);
+      }
+      
+      const normalizedData = validation.normalized;
+      
       // Verificar duplicidade
-      const duplicate = await get().checkDuplicateCheckin(normalizedPlate);
+      const duplicate = await get().checkDuplicateCheckin(normalizedData.vehiclePlate);
       if (duplicate) {
-        throw new Error(`Veículo ${normalizedPlate} já possui check-in ativo (ID: ${duplicate.id})`);
+        throw new Error(`Veículo ${normalizedData.vehiclePlate} já possui check-in ativo (ID: ${duplicate.id})`);
       }
       
       const now = new Date().toISOString();
+      const protocolNumber = `CHK-${Date.now()}`;
       
       const newCheckin = {
-        ...checkinData,
-        vehiclePlate: normalizedPlate,
-        id: `CHK-${Date.now()}`,
+        // Dados normalizados
+        vehiclePlate: normalizedData.vehiclePlate,
+        clientName: checkinData.clientName.trim(),
+        clientPhone: normalizedData.clientPhone,
+        clientCPF: normalizedData.clientCPF,
+        clientEmail: checkinData.clientEmail?.trim() || '',
+        
+        // Dados do veículo
+        vehicleBrand: checkinData.vehicleBrand || '',
+        vehicleModel: checkinData.vehicleModel || '',
+        vehicleYear: checkinData.vehicleYear || '',
+        vehicleColor: checkinData.vehicleColor || '',
+        mileage: normalizedData.mileage,
+        fuelLevel: checkinData.fuelLevel,
+        
+        // Problema e serviços
+        problemDescription: checkinData.problemDescription.trim(),
+        urgency: checkinData.urgency || 'normal', // low, normal, high, emergency
+        requestedServices: checkinData.requestedServices || [],
+        
+        // Autorização e valores
+        maxAuthorizedValue: parseFloat(checkinData.maxAuthorizedValue),
+        estimatedValue: parseFloat(checkinData.estimatedValue) || 0,
+        estimatedDeliveryDate: checkinData.estimatedDeliveryDate || null,
+        
+        // Fotos e evidências
+        photos: checkinData.photos || [],
+        vehicleCondition: checkinData.vehicleCondition || {}, // arranhões, amassados, etc
+        itemsInVehicle: checkinData.itemsInVehicle || [], // objetos deixados no carro
+        
+        // Checklist
+        checklist: checkinData.checklist || [],
+        
+        // Termo de aceite
+        termsAccepted: true,
+        termsAcceptedAt: now,
+        termsAcceptedBy: checkinData.clientName.trim(),
+        digitalSignature: checkinData.digitalSignature || null,
+        
+        // Protocolo e controle
+        id: protocolNumber,
+        protocolNumber,
         checkinDate: now,
         createdAt: now,
         updatedAt: now,
-        status: 'in-progress',
+        status: 'pending-budget', // pending-budget, budget-approved, in-progress, waiting-parts, ready, completed
         currentStage: 'checkin',
         empresaId,
         createdBy: userId,
         createdByName: userName,
+        
+        // Auditoria
         stages: {
           checkin: {
             completed: true,
             timestamp: now,
             userId,
-            userName
+            userName,
+            ip: checkinData.clientIP || null,
+            userAgent: navigator?.userAgent || null
           }
+        },
+        
+        // Notificações
+        notificationsSent: {
+          clientConfirmation: false,
+          mechanicAssignment: false
         }
       };
 
       const docId = await firestoreService.create('checkins', newCheckin);
-      const checkinWithId = { ...newCheckin, firestoreId: docId, id: docId };
+      const checkinWithId = { ...newCheckin, firestoreId: docId };
 
       set((state) => ({
         checkins: [checkinWithId, ...state.checkins],
         isLoading: false,
       }));
+
+      // 🔥 AUDITORIA: Registrar operação
+      recordOperation(userId, 'CREATE_CHECKIN', {
+        checkinId: docId,
+        remaining: limitCheck.remaining
+      });
+
+      // TODO: Enviar confirmação automática por email/WhatsApp
+      // TODO: Criar orçamento inicial automaticamente
+      // TODO: Notificar mecânico
 
       return { success: true, data: checkinWithId };
     } catch (error) {

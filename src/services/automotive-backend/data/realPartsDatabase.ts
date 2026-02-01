@@ -251,7 +251,6 @@ export const VW_EA211_PARTS: RealPart[] = [
 ];
 // Total VW EA211: ~45 peças
 
-
 // ============================================================================
 // CHEVROLET ONIX/TRACKER/SPIN (Motor Turbo 1.0/1.2 B12D1) - ~40 PEÇAS
 // ============================================================================
@@ -303,7 +302,6 @@ export const CHEVROLET_TURBO_PARTS: RealPart[] = [
 ];
 // Total Chevrolet Turbo: ~40 peças
 
-
 // ============================================================================
 // TOYOTA COROLLA/YARIS (Motor 2ZR-FE/1NR-FE) - ~35 PEÇAS
 // ============================================================================
@@ -352,7 +350,6 @@ export const TOYOTA_PARTS: RealPart[] = [
 ];
 // Total Toyota: ~35 peças
 
-
 // ============================================================================
 // HONDA CIVIC/HR-V/CITY (Motor L15B/R18A) - ~35 PEÇAS
 // ============================================================================
@@ -400,7 +397,6 @@ export const HONDA_PARTS: RealPart[] = [
   { id: 'HONDA_BATTERY', name: 'Bateria', category: PartCategory.BATTERY, oemCode: '31500-TBA-A01', manufacturer: 'HONDA', origin: PartOrigin.OEM, equivalents: [{ brand: 'MOURA', code: 'M60GD', quality: 'premium' }, { brand: 'HELIAR', code: 'HF60DD', quality: 'premium' }, { brand: 'BOSCH', code: 'S5X 60D', quality: 'premium' }], compatibility: [{ brand: 'Honda', model: 'Civic', yearStart: 2017, yearEnd: 2024 }, { brand: 'Honda', model: 'HR-V', yearStart: 2015, yearEnd: 2024 }], specs: { capacidade: '60Ah', cca: '500A', tipo: 'chumbo-ácido' }, validationSources: ['Honda Parts Catalog', 'MOURA Catalog'], confidenceScore: 100 },
 ];
 // Total Honda: ~35 peças
-
 
 // ============================================================================
 // RENAULT KWID/SANDERO/LOGAN (Motor SCe 1.0/1.6) - ~30 PEÇAS
@@ -451,7 +447,6 @@ export const RENAULT_PARTS: RealPart[] = [
 ];
 // Total Renault: ~30 peças
 
-
 // ============================================================================
 // HONDA MOTOS (CB 300R, CG 160) - ~20 PEÇAS
 // ============================================================================
@@ -480,7 +475,6 @@ export const HONDA_MOTO_PARTS: RealPart[] = [
 ];
 // Total Honda Motos: ~15 peças
 
-
 // ============================================================================
 // YAMAHA MOTOS (MT-03, Fazer 250) - ~15 PEÇAS
 // ============================================================================
@@ -508,7 +502,6 @@ export const YAMAHA_MOTO_PARTS: RealPart[] = [
   { id: 'YAMAHA_MOTO_FUEL_INJECTOR', name: 'Bico Injetor', category: PartCategory.FUEL_SYSTEM, oemCode: 'B74-E3770-00', manufacturer: 'YAMAHA', origin: PartOrigin.OEM, equivalents: [{ brand: 'BOSCH', code: '0 280 158 252', quality: 'premium' }], compatibility: [{ brand: 'Yamaha', model: 'MT-03', yearStart: 2016, yearEnd: 2024 }], specs: { vazao: '130cc/min', impedancia: 'alta' }, validationSources: ['Yamaha Parts Catalog', 'BOSCH Catalog'], confidenceScore: 100 },
 ];
 // Total Yamaha Motos: ~15 peças
-
 
 // ============================================================================
 // CONSOLIDAÇÃO - TODAS AS PEÇAS REAIS
@@ -583,7 +576,6 @@ export function findPartsByEquivalentCode(code: string): RealPart[] {
     )
   );
 }
-
 
 /**
  * Retorna estatísticas da base de dados

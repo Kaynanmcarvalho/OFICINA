@@ -139,7 +139,7 @@ const Icons = {
         {level > 0 && <rect x="6" y={6 + (14 - h)} width="8" height={h} rx="1" fill="currentColor" opacity="0.4" />}
         <path d="M16 10h2a2 2 0 012 2v2a2 2 0 01-2 2h-2" strokeLinecap="round" />
       </svg>
-    );
+
   },
   Gauge: () => (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
@@ -357,7 +357,7 @@ const ModalCheckinPremium = ({ isOpen, onClose, onSuccess }) => {
         where('empresaId', '==', empresaId),
         where('vehiclePlate', '==', plate.toUpperCase()),
         where('status', '==', 'in-progress')
-      );
+
       const snap = await getDocs(q);
       return snap.empty ? null : { id: snap.docs[0].id, ...snap.docs[0].data() };
     } catch {

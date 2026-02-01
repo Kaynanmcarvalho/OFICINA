@@ -68,6 +68,7 @@ export const notificationStore = (set, get) => ({
       const notifications = state.notifications.filter(
         (notification) => notification.id !== notificationId
       );
+      
       const unreadCount = notifications.filter((n) => !n.read).length;
       
       return { notifications, unreadCount };

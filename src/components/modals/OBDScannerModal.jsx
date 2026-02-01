@@ -232,7 +232,6 @@ const OBDScannerModal = ({ isOpen, onClose, vehicleInfo, onScanComplete }) => {
   // Save scan to Firebase - saves ALL scans (standalone and vehicle-linked)
   const saveScanToHistory = async (scanData) => {
     if (!empresaId) {
-      console.log('[OBD] Sem empresaId - scan não será salvo');
       return;
     }
     try {
@@ -252,10 +251,8 @@ const OBDScannerModal = ({ isOpen, onClose, vehicleInfo, onScanComplete }) => {
       });
       
       if (isLinkedToVehicle) {
-        console.log('[OBD] Scan salvo - vinculado ao veículo:', vehicleInfo.plate);
-      } else {
-        console.log('[OBD] Scan salvo - diagnóstico avulso');
-      }
+        } else {
+        }
     } catch (err) {
       console.error('[OBD] Erro ao salvar scan:', err);
     }
@@ -287,8 +284,7 @@ const OBDScannerModal = ({ isOpen, onClose, vehicleInfo, onScanComplete }) => {
         setDeviceInfo(response.data.device);
       }
     } catch {
-      console.log('[OBD] Modo demonstração ativo');
-    }
+      }
   };
 
   const loadPorts = async () => {
@@ -665,7 +661,7 @@ const OBDScannerModal = ({ isOpen, onClose, vehicleInfo, onScanComplete }) => {
         </motion.div>
       </motion.div>
     </AnimatePresence>
-  );
+      );
 };
 
 // ============ RESULTS VIEW ============
@@ -737,7 +733,7 @@ const ResultsView = ({ results }) => {
                   {item.value}<span className="text-xs font-normal text-white/30 ml-1">{item.unit}</span>
                 </p>
               </div>
-            );
+                );
           })}
         </div>
       </div>

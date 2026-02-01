@@ -62,8 +62,6 @@ const RecentRecordsDemo: React.FC = () => {
   const [items, setItems] = useState<RecordItem[]>(sampleItems);
 
   const handleItemAction = (action: ItemAction) => {
-    console.log('Action:', action);
-    
     switch (action.type) {
       case 'complete':
         setItems(prev => prev.map(item => 
@@ -146,8 +144,8 @@ const RecentRecordsDemo: React.FC = () => {
             <RecentSkeleton count={3} />
           ) : items.length === 0 ? (
             <EmptyState
-              onCreateNew={() => console.log('Create new clicked')}
-              onClearFilters={() => console.log('Clear filters clicked')}
+              onCreateNew={() => }
+              onClearFilters={() => }
             />
           ) : (
             <div className="space-y-3">
@@ -157,7 +155,7 @@ const RecentRecordsDemo: React.FC = () => {
                   item={item}
                   isSelected={selectedItems.has(item.id)}
                   onSelect={handleItemSelect}
-                  onClick={() => console.log('Item clicked:', item.id)}
+                  onClick={() => }
                   onAction={handleItemAction}
                   showCheckbox={selectedItems.size > 0}
                   delay={index}

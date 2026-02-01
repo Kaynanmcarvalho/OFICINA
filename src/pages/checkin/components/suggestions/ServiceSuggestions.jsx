@@ -49,10 +49,10 @@ const ServiceSuggestions = ({ vehiclePlate, empresaId, checkinId, onClose, onAcc
           <LoadingSpinner text="Analisando histórico..." />
         </GlassCard>
       </motion.div>
-    );
-  }
+  );
+}
 
-  if (error) {
+if (error) {
     return (
       <motion.div
         initial={{ opacity: 0 }}
@@ -72,10 +72,10 @@ const ServiceSuggestions = ({ vehiclePlate, empresaId, checkinId, onClose, onAcc
           </button>
         </GlassCard>
       </motion.div>
-    );
-  }
+  );
+}
 
-  if (suggestions.length === 0) {
+if (suggestions.length === 0) {
     return (
       <motion.div
         initial={{ opacity: 0 }}
@@ -110,10 +110,10 @@ const ServiceSuggestions = ({ vehiclePlate, empresaId, checkinId, onClose, onAcc
           </GlassCard>
         </motion.div>
       </motion.div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}

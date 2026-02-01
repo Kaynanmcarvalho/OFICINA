@@ -63,8 +63,7 @@ const MotorcycleForm = ({ onClose, onSubmit, motorcycle = null }) => {
           client.vehicles && client.vehicles.some(vehicle => 
             vehicle.plate && vehicle.plate.toLowerCase().includes(searchTerm.toLowerCase())
           )
-        );
-        
+
         // Combinar resultados e remover duplicatas
         const combinedResults = [...clientResults];
         vehicleResults.forEach(client => {
@@ -118,30 +117,21 @@ const MotorcycleForm = ({ onClose, onSubmit, motorcycle = null }) => {
   };
 
   const handleConsultarPlaca = async () => {
-    console.log('[VehicleForm] handleConsultarPlaca called');
-    console.log('[VehicleForm] Placa:', formData.plate);
-    
     if (!formData.plate) {
-      console.log('[VehicleForm] Placa vazia');
       toast.error('Digite uma placa para consultar');
       return;
     }
 
     if (!isValidPlate(formData.plate)) {
-      console.log('[VehicleForm] Placa inválida:', formData.plate);
       toast.error('Placa inválida. Use o formato ABC-1234 ou ABC1D23');
       return;
     }
 
-    console.log('[VehicleForm] Iniciando consulta...');
     setIsConsultingPlate(true);
     const loadingToast = toast.loading('Consultando placa...');
 
     try {
-      console.log('[VehicleForm] Chamando consultarPlaca...');
       const result = await consultarPlaca(formData.plate);
-      console.log('[VehicleForm] Resultado:', result);
-
       if (result.success) {
         // Preencher formulário com dados da API
         setFormData(prev => ({
@@ -278,7 +268,6 @@ const MotorcycleForm = ({ onClose, onSubmit, motorcycle = null }) => {
             <button
               type="button"
               onClick={() => {
-                console.log('[VehicleForm] Botão clicado!');
                 handleConsultarPlaca();
               }}
               disabled={isConsultingPlate || !formData.plate}

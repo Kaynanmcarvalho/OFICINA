@@ -114,5 +114,5 @@ export function SidebarHeader({ isExpanded, user }) {
         </motion.div>
       )}
     </motion.div>
-  );
+
 }

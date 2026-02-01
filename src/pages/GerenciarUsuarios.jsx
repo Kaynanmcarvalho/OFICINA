@@ -40,7 +40,6 @@ const GerenciarUsuarios = () => {
       setIsLoading(true);
       const snapshot = await getDocs(
         collection(db, `empresas/${empresaData.empresaId}/usuarios`)
-      );
 
       const usuariosData = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -70,7 +69,6 @@ const GerenciarUsuarios = () => {
         auth,
         novoUsuario.email,
         novoUsuario.senha
-      );
 
       const userId = userCredential.user.uid;
 
@@ -206,7 +204,7 @@ const GerenciarUsuarios = () => {
         />
       )}
     </div>
-  );
+
 };
 
 // Card de Usuário
@@ -272,7 +270,7 @@ const UsuarioCard = ({ usuario, onDelete }) => {
         </button>
       </div>
     </motion.div>
-  );
+
 };
 
 // Modal Novo Usuário

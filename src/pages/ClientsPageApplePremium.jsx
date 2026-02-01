@@ -59,7 +59,7 @@ const ClientsPageApplePremium = () => {
       client.email?.toLowerCase().includes(search) ||
       client.phone?.includes(searchTerm) ||
       client.cpf?.includes(searchTerm)
-    );
+
   }, [clients, searchTerm]);
 
   const handleWhatsApp = (phone) => {
@@ -256,7 +256,7 @@ const ClientsPageApplePremium = () => {
         )}
       </div>
     </div>
-  );
+
 };
 
 // Stat Card Component
@@ -295,7 +295,7 @@ const StatCard = ({ icon: Icon, label, value, color, delay }) => {
         </div>
       </div>
     </motion.div>
-  );
+
 };
 
 // Client Card Component
@@ -395,7 +395,7 @@ const ClientCard = ({ client, index, onWhatsApp }) => {
         )}
       </div>
     </motion.div>
-  );
+
 };
 
 // Skeleton Card

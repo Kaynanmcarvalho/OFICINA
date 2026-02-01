@@ -72,7 +72,7 @@ export const Step2Contact = ({ formData, updateFormData, updateAddress, errors, 
         </div>
       </div>
     </FormSection>
-  );
+
 };
 
 // Step 3: Additional Info
@@ -116,7 +116,7 @@ export const Step3Additional = ({ formData, updateFormData }) => {
           rows={4} maxLength={500} />
       </div>
     </FormSection>
-  );
+
 };
 
 // Step 4: Vehicles
@@ -179,7 +179,7 @@ export const Step4Vehicles = ({ formData, addVehicle, removeVehicle }) => {
         )}
       </div>
     </FormSection>
-  );
+
 };
 
 // Step 5: Review
@@ -228,5 +228,5 @@ export const Step5Review = ({ formData, goToStep }) => {
         )}
       </div>
     </FormSection>
-  );
+
 };

@@ -178,5 +178,5 @@ export function SidebarAppleLike({
       />
       </motion.aside>
     </>
-  );
+
 }

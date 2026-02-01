@@ -652,7 +652,6 @@ const scrollbarCSS = `
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 `;
 
-
 // ═══════════════════════════════════════════════════════════════════════════
 // STEPPER COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1056,9 +1055,8 @@ const StepCliente = ({ form, updateForm, clients, accent, isLoadingClients }) =>
         </div>
       </div>
     </div>
-  );
+      );
 };
-
 
 // ═══════════════════════════════════════════════════════════════════════════
 // STEP 2: VEÍCULO
@@ -1208,12 +1206,12 @@ const StepVeiculo = ({ form, updateForm, onSearchPlate, searchingPlate, vehicleF
                 <Icons.Fuel level={level.percent} />
                 <span style={{ fontSize: '12px', fontWeight: isSelected ? 600 : 500 }}>{level.label}</span>
               </button>
-            );
+                );
           })}
         </div>
       </div>
     </div>
-  );
+      );
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1253,7 +1251,7 @@ const StepServico = ({ form, toggleService, toggleCondition, updateForm, accent 
               {isSelected && <Icons.Check />}
               {service}
             </button>
-          );
+              );
         })}
       </div>
       
@@ -1292,7 +1290,7 @@ const StepServico = ({ form, toggleService, toggleCondition, updateForm, accent 
             >
               {condition.label}
             </button>
-          );
+              );
         })}
       </div>
     </div>
@@ -1325,7 +1323,7 @@ const StepServico = ({ form, toggleService, toggleCondition, updateForm, accent 
             >
               {priority.label}
             </button>
-          );
+              );
         })}
       </div>
     </div>
@@ -1348,7 +1346,6 @@ const StepServico = ({ form, toggleService, toggleCondition, updateForm, accent 
     </div>
   </div>
 );
-
 
 // ═══════════════════════════════════════════════════════════════════════════
 // STEP 4: FOTOS
@@ -1452,7 +1449,7 @@ const StepFotos = ({ form, updateForm, accent }) => {
         </div>
       </div>
     </div>
-  );
+      );
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1508,7 +1505,6 @@ const NovoCheckinModal = ({ isOpen, onClose, onSuccess }) => {
     if (isOpen && hasDraft()) {
       const draft = loadDraft();
       if (draft) {
-        console.log('[NovoCheckinModal] 💾 Rascunho recuperado');
         setForm(draft);
         toast.success('Rascunho recuperado!', { duration: 2000 });
       }
@@ -1528,7 +1524,6 @@ const NovoCheckinModal = ({ isOpen, onClose, onSuccess }) => {
   // Preencher dados automaticamente quando encontrar veículo
   useEffect(() => {
     if (autoVehicleData && autoHasSearched) {
-      console.log('[NovoCheckinModal] 🚗 Preenchendo dados automáticos:', autoVehicleData);
       setForm(prev => ({
         ...prev,
         brand: autoVehicleData.brand || autoVehicleData.marca || prev.brand,
@@ -1595,15 +1590,9 @@ const NovoCheckinModal = ({ isOpen, onClose, onSuccess }) => {
   // Fetch clients on mount - fetchClients uses sessionStorage empresaId internally
   useEffect(() => {
     if (isOpen) {
-      console.log('[NovoCheckinModal] Modal opened, fetching clients...');
-      console.log('[NovoCheckinModal] empresaId from context:', empresaId);
-      console.log('[NovoCheckinModal] empresaId from sessionStorage:', sessionStorage.getItem('empresaId'));
-      
       fetchClients().then((result) => {
         if (result?.success) {
-          console.log('[NovoCheckinModal] Clients loaded successfully:', result.data?.length || 0);
         } else {
-          console.warn('[NovoCheckinModal] Failed to load clients:', result?.error);
         }
       }).catch((err) => {
         console.error('[NovoCheckinModal] Error fetching clients:', err);
@@ -1613,9 +1602,8 @@ const NovoCheckinModal = ({ isOpen, onClose, onSuccess }) => {
   
   // Log clients when they change
   useEffect(() => {
-    console.log('[NovoCheckinModal] Clients state updated:', clients.length);
     if (clients.length > 0) {
-      console.log('[NovoCheckinModal] Sample clients:', clients.slice(0, 3).map(c => ({ name: c.name, id: c.id })));
+      // Clients loaded successfully
     }
   }, [clients]);
   
@@ -1676,14 +1664,9 @@ const NovoCheckinModal = ({ isOpen, onClose, onSuccess }) => {
     
     setSearchingPlate(true);
     try {
-      console.log('[NovoCheckinModal] 🔍 Consultando placa:', form.plate);
       const result = await consultarPlaca(form.plate);
-      console.log('[NovoCheckinModal] 📦 Resultado da consulta:', result);
-      
       if (result && result.success && result.data) {
         const vehicleData = result.data;
-        console.log('[NovoCheckinModal] ✅ Dados do veículo:', vehicleData);
-        
         // Atualiza o formulário com os dados do veículo
         // A API retorna: { brand, model, year, color, ... }
         setForm(prev => ({
@@ -1696,11 +1679,9 @@ const NovoCheckinModal = ({ isOpen, onClose, onSuccess }) => {
         setVehicleFound(true);
         toast.success(`Veículo encontrado: ${vehicleData.brand || vehicleData.marca} ${vehicleData.model || vehicleData.modelo}`);
       } else if (result && !result.success) {
-        console.warn('[NovoCheckinModal] ⚠️ Consulta sem sucesso:', result.error);
         toast.error(result.error || 'Veículo não encontrado');
         setVehicleFound(false);
       } else {
-        console.warn('[NovoCheckinModal] ⚠️ Resultado inesperado:', result);
         toast.error('Não foi possível consultar a placa');
         setVehicleFound(false);
       }
@@ -1749,6 +1730,7 @@ const NovoCheckinModal = ({ isOpen, onClose, onSuccess }) => {
           `Já existe um check-in ativo para esta placa!\nCheck-in ID: ${duplicate.id}\nStatus: ${duplicate.status}`,
           { duration: 5000 }
         );
+
         return;
       }
     }
@@ -1944,7 +1926,7 @@ const NovoCheckinModal = ({ isOpen, onClose, onSuccess }) => {
                   </motion.div>
                 </AnimatePresence>
               </div>
-            );
+                );
           })()}
           
           <CheckinFooter

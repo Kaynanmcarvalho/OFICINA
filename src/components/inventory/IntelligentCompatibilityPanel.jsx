@@ -290,7 +290,7 @@ const IntelligentCompatibilityPanel = ({ isOpen, onClose }) => {
                               </div>
                             </div>
                           </div>
-                        );
+
                       })}
                     </div>
                   </div>

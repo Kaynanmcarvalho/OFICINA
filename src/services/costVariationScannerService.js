@@ -61,7 +61,6 @@ class CostVariationScannerService {
         where('date', '>=', Timestamp.fromDate(startDate)),
         where('date', '<=', Timestamp.fromDate(endDate)),
         orderBy('date', 'desc')
-      );
 
       const snapshot = await getDocs(costQuery);
       
@@ -308,7 +307,6 @@ class CostVariationScannerService {
     try {
       const scans = await Promise.all(
         productIds.map(id => this.scanProductCostVariation(id, empresaId, period))
-      );
 
       // Ordenar por severidade e variação
       return scans.sort((a, b) => {

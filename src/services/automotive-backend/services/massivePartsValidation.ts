@@ -273,8 +273,7 @@ async function validateVehicleParts(
     vehicle.model,
     vehicle.year,
     vehicle.engineCode
-  );
-  
+
   const validatedParts: ValidatedPart[] = [];
   const invalidParts: InvalidPart[] = [];
   
@@ -333,23 +332,19 @@ export async function runMassiveValidation(
   const startTime = Date.now();
   const errors: string[] = [];
   
-  console.log('[MassiveValidation] 🚀 Iniciando validação massiva...');
-  console.log(`[MassiveValidation] Total de veículos na base: ${DATABASE_STATS.totalVehicles}`);
-  console.log(`[MassiveValidation] Total de peças na base: ${ALL_REAL_PARTS.length}`);
-  
   // Filtrar veículos conforme opções
   let vehiclesToValidate = [...BRAZILIAN_VEHICLES_COMPLETE];
   
   if (options?.brandFilter) {
     vehiclesToValidate = vehiclesToValidate.filter(
       v => v.brand.toLowerCase().includes(options.brandFilter!.toLowerCase())
-    );
+
   }
   
   if (options?.modelFilter) {
     vehiclesToValidate = vehiclesToValidate.filter(
       v => v.model.toLowerCase().includes(options.modelFilter!.toLowerCase())
-    );
+
   }
   
   if (options?.yearStart) {
@@ -368,12 +363,8 @@ export async function runMassiveValidation(
     vehiclesToValidate = vehiclesToValidate.filter(v => !validationCache.has(v.id));
   }
   
-  console.log(`[MassiveValidation] Veículos a validar: ${vehiclesToValidate.length}`);
-  
   // Agrupar por modelo para otimizar (peças são compartilhadas entre anos)
   const vehicleGroups = groupVehiclesByModel(vehiclesToValidate);
-  console.log(`[MassiveValidation] Grupos de modelos: ${vehicleGroups.size}`);
-  
   const validationsByVehicle = new Map<string, VehiclePartsValidation>();
   let vehiclesProcessed = 0;
   let totalPartsValidated = 0;
@@ -398,9 +389,7 @@ export async function runMassiveValidation(
     // Pegar o primeiro veículo do grupo para validar peças
     // (peças são as mesmas para todos os anos do mesmo modelo)
     const representativeVehicle = vehicles[0];
-    
-    console.log(`[MassiveValidation] Validando: ${groupKey} (${vehicles.length} variantes)`);
-    
+
     try {
       const validation = await validateVehicleParts(
         representativeVehicle,
@@ -418,8 +407,7 @@ export async function runMassiveValidation(
             errors,
           });
         }
-      );
-      
+
       // Aplicar validação a todas as variantes do grupo
       for (const vehicle of vehicles) {
         const vehicleValidation: VehiclePartsValidation = {
@@ -468,14 +456,7 @@ export async function runMassiveValidation(
   
   const duration = Date.now() - startTime;
   
-  console.log('[MassiveValidation] ✅ Validação massiva concluída!');
-  console.log(`[MassiveValidation] Veículos processados: ${vehiclesProcessed}`);
-  console.log(`[MassiveValidation] Veículos com peças: ${vehiclesWithParts}`);
-  console.log(`[MassiveValidation] Peças validadas: ${totalPartsValidated}`);
-  console.log(`[MassiveValidation] Peças inválidas: ${totalPartsInvalid}`);
-  console.log(`[MassiveValidation] Duração: ${(duration / 1000 / 60).toFixed(1)} minutos`);
-  console.log(`[MassiveValidation] Erros: ${errors.length}`);
-  
+  .toFixed(1)} minutos`);
   onProgress?.({
     phase: 'completed',
     currentVehicle: '',

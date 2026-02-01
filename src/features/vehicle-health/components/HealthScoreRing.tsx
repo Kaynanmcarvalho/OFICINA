@@ -93,5 +93,5 @@ export const HealthScoreRing: React.FC<HealthScoreRingProps> = ({
         </span>
       </div>
     </div>
-  );
+
 };

@@ -163,8 +163,8 @@ const ActionsTab = ({ client, onClose }) => {
               </div>
             </Motion.button>
           );
-        })}
-      </div>
+          })}
+        </div>
     </Motion.div>
   );
 };

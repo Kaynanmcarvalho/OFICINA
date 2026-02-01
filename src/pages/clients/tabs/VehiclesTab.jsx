@@ -60,6 +60,7 @@ const VehiclesTab = ({ client }) => {
             ? { ...v, ...formData, updatedAt: new Date().toISOString() }
             : v
         );
+
         toast.success('Veículo atualizado!');
       } else {
         // Adiciona novo veículo
@@ -109,10 +110,10 @@ const VehiclesTab = ({ client }) => {
           isDarkMode ? 'text-gray-400' : 'text-gray-600'
         }`} />
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <Motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}

@@ -13,8 +13,6 @@ class NFSeService {
    */
   async emitirNFSe(clientId, clientSecret, nfseData, ambiente = 'homologacao') {
     try {
-      console.log('📝 Emitindo NFS-e...', { clientId, ambiente });
-
       const response = await fetch(`${API_BASE_URL}/emitir`, {
         method: 'POST',
         headers: {
@@ -31,7 +29,6 @@ class NFSeService {
       const result = await response.json();
 
       if (result.success) {
-        console.log('✅ NFS-e emitida com sucesso:', result.data);
         return {
           success: true,
           data: {
@@ -68,8 +65,6 @@ class NFSeService {
    */
   async emitirLoteNFSe(clientId, clientSecret, loteData, ambiente = 'homologacao') {
     try {
-      console.log('📦 Emitindo lote de NFS-e...', { clientId, ambiente });
-
       const response = await fetch(`${API_BASE_URL}/emitir-lote`, {
         method: 'POST',
         headers: {
@@ -86,7 +81,6 @@ class NFSeService {
       const result = await response.json();
 
       if (result.success) {
-        console.log('✅ Lote de NFS-e emitido com sucesso:', result.data);
         return {
           success: true,
           data: result.data
@@ -113,8 +107,6 @@ class NFSeService {
    */
   async consultarNFSe(clientId, clientSecret, nfseId, ambiente = 'homologacao') {
     try {
-      console.log('🔍 Consultando NFS-e...', { nfseId, ambiente });
-
       const response = await fetch(`${API_BASE_URL}/consultar`, {
         method: 'POST',
         headers: {
@@ -131,7 +123,6 @@ class NFSeService {
       const result = await response.json();
 
       if (result.success) {
-        console.log('✅ NFS-e consultada com sucesso:', result.data);
         return {
           success: true,
           data: result.data
@@ -157,8 +148,6 @@ class NFSeService {
    */
   async listarLotesNFSe(clientId, clientSecret, filters = {}, ambiente = 'homologacao') {
     try {
-      console.log('📋 Listando lotes de NFS-e...', { filters, ambiente });
-
       const response = await fetch(`${API_BASE_URL}/listar-lotes`, {
         method: 'POST',
         headers: {
@@ -175,7 +164,6 @@ class NFSeService {
       const result = await response.json();
 
       if (result.success) {
-        console.log('✅ Lotes de NFS-e listados com sucesso:', result.data);
         return {
           success: true,
           data: result.data

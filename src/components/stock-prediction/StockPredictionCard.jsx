@@ -109,5 +109,5 @@ export default function StockPredictionCard({ prediction, onClick }) {
         </button>
       </div>
     </div>
-  );
+
 }

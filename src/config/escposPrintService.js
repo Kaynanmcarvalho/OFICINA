@@ -26,7 +26,6 @@ class EscposPrintService {
       }
       return this.defaultSettings;
     } catch (error) {
-      console.warn('Erro ao carregar configurações da impressora:', error);
       return this.defaultSettings;
     }
   }
@@ -63,18 +62,11 @@ class EscposPrintService {
       const printerSettings = await this.getPrinterSettings();
       const settings = { ...printerSettings, ...customSettings };
 
-      console.log('🖨️ Gerando comandos ESC/POS:', {
-        nfceId,
-        settings
-      });
-
       // Determinar URL do backend baseado no ambiente
       const isDevelopment = window.location.hostname === 'localhost';
       const backendUrl = isDevelopment 
         ? '/api'
         : 'https://backendplayfitsdkphpnuvem-fiscal-production.up.railway.app/nuvem-fiscal-bridge.php';
-
-      console.log('🌐 Backend URL:', backendUrl);
 
       // Fazer requisição para o backend
       const response = await fetch(backendUrl, {
@@ -114,11 +106,6 @@ class EscposPrintService {
       }
       const escposData = bytes.buffer;
       
-      console.log('✅ Comandos ESC/POS gerados com sucesso:', {
-        size: escposData.byteLength,
-        settings
-      });
-
       return {
         success: true,
         data: escposData,
@@ -251,8 +238,6 @@ class EscposPrintService {
    */
   async printDanfce(nfceId, userId, customSettings = {}) {
     try {
-      console.log('🖨️ Iniciando impressão ESC/POS do DANFCE:', nfceId);
-
       // Gerar comandos ESC/POS
       const escposResult = await this.generateEscposCommands(nfceId, userId, customSettings);
       

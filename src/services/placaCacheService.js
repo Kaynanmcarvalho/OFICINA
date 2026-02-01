@@ -14,8 +14,7 @@ class PlacaCacheService {
     this.localCache = new Map();
     this.MAX_CACHE_SIZE = 500; // Limite de 500 placas em memória
     this.CACHE_TTL = 24 * 60 * 60 * 1000; // 24 horas em ms
-    console.log('[PlacaCacheService] Initialized with max size:', this.MAX_CACHE_SIZE);
-  }
+    }
 
   /**
    * Consulta placa com estratégia de cache em 3 níveis:
@@ -31,18 +30,14 @@ class PlacaCacheService {
     try {
       const placaNormalizada = this.normalizarPlaca(placa);
       
-      console.log(`[PlacaCacheService] Consulting plate: ${placaNormalizada}`);
-
       // 1. Verificar cache local (memória)
       if (this.localCache.has(placaNormalizada)) {
         const cached = this.localCache.get(placaNormalizada);
         
         // Verificar se cache expirou
         if (this.isCacheExpired(cached)) {
-          console.log(`[PlacaCacheService] ⏰ EXPIRED - Local cache for ${placaNormalizada}`);
           this.localCache.delete(placaNormalizada);
         } else {
-          console.log(`[PlacaCacheService] ✅ HIT - Local cache for ${placaNormalizada}`);
           return cached.data;
         }
       }
@@ -52,8 +47,6 @@ class PlacaCacheService {
       
       if (cacheDoc.exists()) {
         const data = cacheDoc.data();
-        console.log(`[PlacaCacheService] ✅ HIT - Global cache for ${placaNormalizada}`);
-        
         // Salvar no cache local com timestamp
         this.addToLocalCache(placaNormalizada, data);
         
@@ -61,10 +54,7 @@ class PlacaCacheService {
       }
 
       // 3. Chamar API externa
-      console.log(`[PlacaCacheService] ❌ MISS - Calling external API for ${placaNormalizada}`);
-      
       if (!apiCallback || typeof apiCallback !== 'function') {
-        console.warn('[PlacaCacheService] No API callback provided');
         return null;
       }
 
@@ -77,12 +67,9 @@ class PlacaCacheService {
         // Salvar no cache local com timestamp
         this.addToLocalCache(placaNormalizada, apiData);
         
-        console.log(`[PlacaCacheService] ✅ Saved to cache: ${placaNormalizada}`);
-        
         return apiData;
       }
 
-      console.warn(`[PlacaCacheService] Invalid data from API for ${placaNormalizada}`);
       return null;
 
     } catch (error) {
@@ -115,8 +102,7 @@ class PlacaCacheService {
 
       await setDoc(doc(db, 'cache_placas', placa), cacheData);
       
-      console.log(`[PlacaCacheService] Saved to Firebase cache: ${placa}`);
-    } catch (error) {
+      } catch (error) {
       console.error('[PlacaCacheService] Error saving to cache:', error);
       // Não propagar erro - cache é opcional
     }
@@ -162,8 +148,7 @@ class PlacaCacheService {
     
     // Validar formato brasileiro (ABC1234 ou ABC1D23)
     if (placaStr.length !== 7) {
-      console.warn(`[PlacaCacheService] Invalid plate format: ${placaStr}`);
-    }
+      }
     
     return placaStr;
   }
@@ -178,8 +163,7 @@ class PlacaCacheService {
     if (this.localCache.size >= this.MAX_CACHE_SIZE) {
       const firstKey = this.localCache.keys().next().value;
       this.localCache.delete(firstKey);
-      console.log(`[PlacaCacheService] Cache full, removed oldest: ${firstKey}`);
-    }
+      }
     
     // Adicionar com timestamp
     this.localCache.set(placa, {
@@ -205,8 +189,7 @@ class PlacaCacheService {
    */
   clearLocalCache() {
     this.localCache.clear();
-    console.log('[PlacaCacheService] Local cache cleared');
-  }
+    }
 
   /**
    * Obtém estatísticas do cache local

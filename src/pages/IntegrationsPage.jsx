@@ -116,8 +116,6 @@ const IntegrationsPage = () => {
   };
 
   const handleSave = async () => {
-    console.log('User data:', user);
-
     if (!user) {
       toast.error('Usuário não autenticado');
       return;
@@ -285,11 +283,7 @@ const IntegrationsPage = () => {
         invoiceSettings.apiCodigoAutorizador,
         invoiceSettings.apiSenhaAutorizada
       );
-
-      console.log('🔍 [DEBUG] Resultado da validação:', result);
-      console.log('🔍 [DEBUG] result.valid =', result.valid);
-      console.log('🔍 [DEBUG] result.success =', result.success);
-
+      
       setCredentialsStatus(result);
 
       if (result.success && result.valid) {
@@ -318,10 +312,10 @@ const IntegrationsPage = () => {
           <p className="mt-4 text-gray-600 dark:text-gray-400">Carregando integrações...</p>
         </div>
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <div className="p-6">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">

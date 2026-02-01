@@ -95,7 +95,7 @@ const CompactTimeline = ({ currentStage = 'checkin', stages = {}, className = ''
                 </span>
               )}
             </div>
-          );
+
         })}
       </div>
 

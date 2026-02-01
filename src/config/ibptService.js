@@ -35,8 +35,6 @@ class IBPTService {
         throw new Error('NCM inválido. Deve ter pelo menos 8 dígitos');
       }
 
-      console.log('🔍 Buscando informações tributárias no IBPT:', { ncm, uf, valor });
-
       const response = await fetch(
         `${this.baseURL}/produtos?token=${this.token}&codigo=${ncm}&uf=${uf}&valor=${valor}`,
         {
@@ -55,8 +53,6 @@ class IBPTService {
       }
 
       const data = await response.json();
-      console.log('📊 Dados recebidos do IBPT:', data);
-
       return this._formatTaxData(data);
 
     } catch (error) {
@@ -76,8 +72,6 @@ class IBPTService {
       if (!this.token) {
         throw new Error('Token da API IBPT não configurado');
       }
-
-      console.log('🔍 Buscando informações de serviço no IBPT:', { codigo, uf, valor });
 
       const response = await fetch(
         `${this.baseURL}/servicos?token=${this.token}&codigo=${codigo}&uf=${uf}&valor=${valor}`,

@@ -19,8 +19,7 @@ export const useThemeTransition = () => {
       const userPreference = localStorage.getItem('theme-preference');
       if (!userPreference) {
         // This will be handled by the theme store
-        console.log('System theme changed:', e.matches ? 'dark' : 'light');
-      }
+        }
     };
 
     mediaQuery.addEventListener('change', handleChange);

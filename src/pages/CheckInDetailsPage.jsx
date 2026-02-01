@@ -112,10 +112,7 @@ const CheckInDetailsPage = () => {
 
   // Selecionar serviço do autocomplete
   const handleSelectService = (tool) => {
-    console.log('Ferramenta selecionada:', tool);
     const serviceValue = tool.dailyRate || tool.value || tool.price || '';
-    console.log('Valor encontrado:', serviceValue);
-    
     setNewService({ 
       description: tool.name,
       value: serviceValue
@@ -173,10 +170,7 @@ const CheckInDetailsPage = () => {
 
   // Selecionar peça do autocomplete
   const handleSelectPart = (part) => {
-    console.log('Peça selecionada:', part);
     const partValue = part.unitPrice || part.price || part.value || '';
-    console.log('Valor encontrado:', partValue);
-    
     setNewPart({ 
       name: part.name,
       quantity: 1,
@@ -259,18 +253,18 @@ const CheckInDetailsPage = () => {
       <div className="flex items-center justify-center h-96">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
-    );
-  }
+  );
+}
 
-  if (!currentCheckin) {
+if (!currentCheckin) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500 dark:text-gray-400">Check-in não encontrado</p>
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">

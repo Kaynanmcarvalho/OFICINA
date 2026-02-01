@@ -72,7 +72,7 @@ const SaaSDashboard = () => {
       const empresasSnapshot = await getDocs(
         query(collection(db, 'empresas'), orderBy('dataCriacao', 'desc'))
       );
-
+      
       const empresasData = empresasSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -146,6 +146,7 @@ const SaaSDashboard = () => {
       const usuariosSnapshot = await getDocs(
         collection(db, `empresas/${empresaId}/usuarios`)
       );
+      
       const usuariosData = usuariosSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -231,10 +232,10 @@ const SaaSDashboard = () => {
           <p className="text-gray-600 dark:text-gray-400">Carregando dashboard...</p>
         </div>
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-black dark:to-gray-800 p-8">
       {/* Header */}
       <div className="mb-8 animate-fade-in">
@@ -344,9 +345,8 @@ const SaaSDashboard = () => {
         />
       )}
     </div>
-  );
+      );
 };
-
 
 // Componente de Card de Estatística
 const StatCard = ({ icon: Icon, title, value, subtitle, color }) => {
@@ -370,7 +370,7 @@ const StatCard = ({ icon: Icon, title, value, subtitle, color }) => {
       <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{value}</p>
       <p className="text-xs text-gray-500 dark:text-gray-500">{subtitle}</p>
     </div>
-  );
+      );
 };
 
 // Componente de Card de Empresa
@@ -491,9 +491,8 @@ const EmpresaCard = ({ empresa, onImpersonate, onOpenModal }) => {
         </div>
       </div>
     </div>
-  );
+      );
 };
-
 
 // Modal Visualizar Detalhes
 const ModalVisualizarDetalhes = ({ empresa, onClose }) => {
@@ -595,7 +594,7 @@ const ModalVisualizarDetalhes = ({ empresa, onClose }) => {
         </div>
       </div>
     </div>
-  );
+      );
 };
 
 // Componente auxiliar para exibir informações
@@ -619,7 +618,6 @@ const InfoItem = ({ label, value, icon: Icon, mono, status }) => (
     </div>
   </div>
 );
-
 
 // Modal Editar Empresa
 const ModalEditarEmpresa = ({ empresa, onClose, onSave }) => {
@@ -796,7 +794,7 @@ const ModalEditarEmpresa = ({ empresa, onClose, onSave }) => {
         </div>
       </div>
     </div>
-  );
+      );
 };
 
 // Componente de Input
@@ -815,7 +813,6 @@ const InputField = ({ label, value, onChange, type = 'text', required, maxLength
     />
   </div>
 );
-
 
 // Modal Gerenciar Usuários
 const ModalGerenciarUsuarios = ({ empresa, usuarios, loading, onClose, onToggleStatus, onToggleRole }) => {

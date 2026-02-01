@@ -8,7 +8,7 @@
 
 import React from 'react';
 import { headerStyles } from '../styles/budget.styles';
-import { getBrandAccent } from '../styles/budget.tokens';
+import { getBrandAccent, colors } from '../styles/budget.tokens';
 import { BudgetStepper } from './BudgetStepper';
 
 // ============================================================================
@@ -60,27 +60,69 @@ export const BudgetHeader: React.FC<BudgetHeaderProps> = ({
   
   // Get effective brand and logo URL
   const effectiveBrand = getEffectiveBrand(brand || '', model || '');
-  // Use light theme logo (white) for dark modal background
-  const logoUrl = getBrandLogoUrl(effectiveBrand, model || '', false);
+  // Use dark theme logo (colored) for better visibility
+  const logoUrl = getBrandLogoUrl(effectiveBrand, model || '', true);
   
-  // Brands that should NOT have filter applied (already have colors)
-  const coloredLogoBrands = [
-    'bmw', 'fiat', 'ferrari', 'lamborghini', 'land rover', 'land-rover', 
-    'chevrolet', 'ford', 'renault', 'mini', 'dodge', 'ram', 'volvo', 
-    'porsche', 'chery', 'jac', 'jac motors'
+  // ============================================================================
+  // DARK MODE LOGO MEMORY SYSTEM
+  // Sistema de memória para logos de marcas no tema escuro
+  // ============================================================================
+  
+  // Marcas que devem ter filtro BRANCO no dark mode (logos escuras/azuis)
+  const darkModeWhiteFilterBrands = [
+    'ford',                        // Ford - logo azul → branca
+    'hyundai',                     // Hyundai - logo azul → branca
+    'subaru',                      // Subaru - logo azul → branca
+    'mazda',                       // Mazda - logo preta → branca
+    'mitsubishi',                  // Mitsubishi - logo vermelha → branca
+    'suzuki',                      // Suzuki - logo azul → branca
+    'nissan',                      // Nissan - logo preta → branca
+    'honda',                       // Honda - logo preta → branca
+    'toyota',                      // Toyota - logo preta → branca
   ];
-  const shouldApplyFilter = !coloredLogoBrands.includes(effectiveBrand?.toLowerCase() || '');
+  
+  // Marcas que já têm cores e NÃO devem ter filtro (mantém cores originais)
+  const darkModeColoredBrands = [
+    'bmw', 'fiat', 'ferrari', 'lamborghini', 'land rover', 'land-rover', 
+    'chevrolet', 'renault', 'mini', 'dodge', 'ram', 'volvo', 
+    'porsche', 'chery', 'jac', 'jac motors', 'audi', 'yamaha',
+    'mercedes', 'mercedes-benz', 'kia', 'peugeot', 'citroen', 'jeep',
+    'volkswagen', 'vw' // VW mantém cores originais
+  ];
+  
+  // Detectar se está no dark mode
+  const isDarkMode = document.documentElement.classList.contains('dark');
+  
+  // Decidir se aplica filtro branco
+  const shouldApplyWhiteFilter = isDarkMode && 
+    darkModeWhiteFilterBrands.includes(effectiveBrand?.toLowerCase() || '');
+  
+  // Decidir se mantém cores (não aplica filtro)
+  const shouldKeepColors = darkModeColoredBrands.includes(effectiveBrand?.toLowerCase() || '');
   
   // Special sizing for certain brands
   const brandLower = effectiveBrand?.toLowerCase() || '';
   const isJac = brandLower === 'jac' || brandLower === 'jac motors';
   const isDodge = brandLower === 'dodge';
-  const isSmallLogo = ['byd', 'yamaha', 'kawasaki'].includes(brandLower);
+  const isVW = brandLower === 'volkswagen' || brandLower === 'vw';
+  const isYamaha = brandLower === 'yamaha';
+  const isFiat = brandLower === 'fiat';
+  const isSmallLogo = ['byd', 'kawasaki'].includes(brandLower);
   
   // Calculate logo dimensions
   const getLogoStyle = () => {
+    if (isVW) {
+      // VW logo aumentada em 100%
+      return { height: '72px', maxWidth: '200px' }; // 36px * 2 = 72px
+    }
     if (isJac) {
-      return { height: '50px', maxWidth: '150px' };
+      return { height: '100px', maxWidth: '300px' }; // Aumentado em 100%: 50px * 2 = 100px
+    }
+    if (isYamaha) {
+      return { height: '51px', maxWidth: '128px' }; // Diminuído em 20%: 64px * 0.8 = 51px
+    }
+    if (isFiat) {
+      return { height: '80px', maxWidth: '240px' }; // Aumentado em 100%: 40px * 2 = 80px
     }
     if (isDodge) {
       return { height: '48px', maxWidth: '140px' };
@@ -95,9 +137,6 @@ export const BudgetHeader: React.FC<BudgetHeaderProps> = ({
   
   return (
     <header style={headerStyles.container}>
-      {/* Brand accent line */}
-      <div style={headerStyles.brandLine(accent.hex)} />
-      
       {/* Title Row */}
       <div style={headerStyles.titleRow}>
         <div style={headerStyles.brandInfo}>
@@ -111,16 +150,26 @@ export const BudgetHeader: React.FC<BudgetHeaderProps> = ({
                 width: 'auto',
                 maxWidth: logoStyle.maxWidth,
                 objectFit: 'contain',
-                filter: shouldApplyFilter ? 'brightness(0) invert(1)' : 'none',
+                filter: shouldApplyWhiteFilter 
+                  ? 'brightness(0) invert(1)' 
+                  : shouldKeepColors 
+                    ? 'none' 
+                    : 'brightness(0) invert(1)',
+                opacity: 1, // Opacidade 100% para garantir visibilidade
+              }}
+              onError={(e) => {
+                console.error('Erro ao carregar logo:', effectiveBrand);
+                e.target.style.display = 'none';
               }}
             />
           ) : (
             // Fallback: Nome da marca em texto se não tiver logo
             <div style={{
-              fontSize: '28px',
+              fontSize: '24px',
               fontWeight: 700,
               color: '#FFFFFF',
               letterSpacing: '-0.02em',
+              opacity: 0.9,
             }}>
               {(effectiveBrand || brand || 'TORQ').toUpperCase()}
             </div>
@@ -129,8 +178,8 @@ export const BudgetHeader: React.FC<BudgetHeaderProps> = ({
           {/* Separator */}
           <div style={{
             width: '1px',
-            height: '36px',
-            background: 'rgba(255, 255, 255, 0.12)',
+            height: '32px',
+            background: 'rgba(255, 255, 255, 0.08)',
             marginLeft: '8px',
             marginRight: '8px',
           }} />
@@ -143,17 +192,17 @@ export const BudgetHeader: React.FC<BudgetHeaderProps> = ({
                 <div style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  padding: '6px 14px',
+                  padding: '5px 12px',
                   background: 'linear-gradient(180deg, #FFFFFF 0%, #F0F0F0 100%)',
                   borderRadius: '6px',
                   border: '2px solid #1a1a1a',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                  boxShadow: '0 2px 12px rgba(0, 0, 0, 0.15)',
                 }}>
                   <span style={{
                     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-                    fontSize: '16px',
+                    fontSize: '15px',
                     fontWeight: 700,
-                    letterSpacing: '0.1em',
+                    letterSpacing: '0.08em',
                     color: '#1a1a1a',
                     textTransform: 'uppercase',
                   }}>
@@ -169,7 +218,13 @@ export const BudgetHeader: React.FC<BudgetHeaderProps> = ({
               </span>
             </div>
             <p style={headerStyles.subtitle}>
-              {model ? `${brand || ''} ${model}${year ? ` • ${year}` : ''}`.trim() : subtitle}
+              {model ? (
+                <span style={{ color: colors.text.primary, fontWeight: 600 }}>
+                  {brand || ''} {model}{year ? ` • ${year}` : ''}
+                </span>
+              ) : (
+                subtitle
+              )}
             </p>
           </div>
         </div>

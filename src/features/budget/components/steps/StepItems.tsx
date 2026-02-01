@@ -91,8 +91,7 @@ export const StepItems: React.FC<StepItemsProps> = ({ flow }) => {
   const items = activeTab === 'products' ? mockProducts : mockServices;
   const filteredItems = items.filter(item =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-  
+
   // Handle click outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -140,7 +139,8 @@ export const StepItems: React.FC<StepItemsProps> = ({ flow }) => {
           marginBottom: '16px',
           padding: '4px',
           background: colors.surface.soft,
-          borderRadius: '10px',
+          border: `1px solid ${colors.border.subtle}`,
+          borderRadius: '8px',
         }}>
           <button
             onClick={() => setActiveTab('products')}
@@ -277,10 +277,9 @@ export const StepItems: React.FC<StepItemsProps> = ({ flow }) => {
                 <div style={{
                   width: '44px',
                   height: '44px',
-                  borderRadius: '11px',
-                  background: item.type === 'product' 
-                    ? 'rgba(10, 132, 255, 0.15)' 
-                    : 'rgba(255, 159, 10, 0.15)',
+                  borderRadius: '8px',
+                  background: colors.surface.medium,
+                  border: `1px solid ${item.type === 'product' ? colors.state.info : colors.state.warning}`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -331,9 +330,9 @@ export const StepItems: React.FC<StepItemsProps> = ({ flow }) => {
                   style={{
                     width: '36px',
                     height: '36px',
-                    borderRadius: '8px',
-                    background: 'rgba(255, 69, 58, 0.1)',
-                    border: 'none',
+                    borderRadius: '6px',
+                    background: colors.surface.soft,
+                    border: `1px solid ${colors.state.error}`,
                     color: colors.state.error,
                     cursor: 'pointer',
                     display: 'flex',
@@ -354,8 +353,8 @@ export const StepItems: React.FC<StepItemsProps> = ({ flow }) => {
             textAlign: 'center',
             color: colors.text.muted,
             background: colors.surface.soft,
-            borderRadius: '12px',
             border: `1px dashed ${colors.border.default}`,
+            borderRadius: '8px',
           }}>
             <div style={{ marginBottom: '8px', opacity: 0.5 }}>
               <PackageIcon />
@@ -371,9 +370,9 @@ export const StepItems: React.FC<StepItemsProps> = ({ flow }) => {
           <div style={{
             marginTop: '12px',
             padding: '12px 16px',
-            background: 'rgba(255, 69, 58, 0.1)',
-            border: '1px solid rgba(255, 69, 58, 0.2)',
-            borderRadius: '10px',
+            background: colors.surface.soft,
+            border: `1px solid ${colors.state.error}`,
+            borderRadius: '6px',
             color: colors.state.error,
             fontSize: '13px',
             display: 'flex',

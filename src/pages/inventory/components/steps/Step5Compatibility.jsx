@@ -23,6 +23,7 @@ const Step5Compatibility = ({ formData, updateFormData }) => {
         formData.category,
         formData.tags || []
       );
+
       setSuggestedVehicles(suggestions);
     }
   }, [formData.name, formData.category, formData.tags]);
@@ -57,8 +58,9 @@ const Step5Compatibility = ({ formData, updateFormData }) => {
   const handleApplySelectedSuggestions = () => {
     const selectedVehicles = suggestedVehicles.filter((_, index) => 
       selectedSuggestions.includes(index)
-    );
-    const newCompatibilities = selectedVehicles.map(vehicle => ({
+  );
+
+  const newCompatibilities = selectedVehicles.map(vehicle => ({
       ...vehicle,
       id: Date.now().toString() + Math.random()
     }));
@@ -395,6 +397,4 @@ const Step5Compatibility = ({ formData, updateFormData }) => {
 };
 
 export default Step5Compatibility;
-
-
 

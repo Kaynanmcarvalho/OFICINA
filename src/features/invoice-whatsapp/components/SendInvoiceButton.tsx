@@ -68,7 +68,6 @@ export function SendInvoiceButton({
       invoice,
       empresaId,
       userId
-    );
 
     if (result.success) {
       setSendResult('success');
@@ -339,7 +338,7 @@ export function SendInvoiceButton({
         )}
       </AnimatePresence>
     </>
-  );
+
 }
 
 export default SendInvoiceButton;

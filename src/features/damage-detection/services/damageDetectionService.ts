@@ -33,7 +33,6 @@ export async function analyzeImage(
   try {
     // Se não tiver API key, usar análise simulada para desenvolvimento
     if (!API_CONFIG.apiKey) {
-      console.warn('[DamageDetection] API key não configurada, usando análise simulada');
       return simulateAnalysis(request, startTime);
     }
 

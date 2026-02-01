@@ -75,7 +75,7 @@ const ModalSelecaoVeiculo = ({ isOpen, onClose, vehicles, onSelectVehicle, onAdd
                 </div>
             </div>
         </div>
-    );
+  );
 };
 
 export default ModalSelecaoVeiculo;

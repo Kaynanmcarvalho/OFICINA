@@ -684,11 +684,11 @@ const CaixaPremium = () => {
     cartItems.reduce((sum, item) => sum + (item.preco * item.quantidade), 0), 
     [cartItems]
   );
+  
   const cartItemsCount = useMemo(() => 
     cartItems.reduce((sum, item) => sum + item.quantidade, 0), 
     [cartItems]
   );
-
   // ============================================================================
   // EFFECTS
   // ============================================================================
@@ -1071,7 +1071,7 @@ const CaixaPremium = () => {
                   <Icon size={18} />
                   <span>{cat.label}</span>
                 </button>
-              );
+                  );
             })}
           </div>
           

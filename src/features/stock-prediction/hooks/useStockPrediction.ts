@@ -115,6 +115,7 @@ export function useStockPrediction(
           startDate,
           endDate
         );
+
         setAnalytics(result);
       } catch (err) {
         console.error('Erro ao carregar analytics:', err);

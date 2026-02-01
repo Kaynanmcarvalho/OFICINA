@@ -143,7 +143,7 @@ const Navbar = ({ onMenuClick, onLogout }) => {
                             strokeLinecap="round"
                             className="transition-colors duration-300"
                           />
-                        );
+
                       })}
                       <circle 
                         cx="0" 

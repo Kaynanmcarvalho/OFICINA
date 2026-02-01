@@ -34,7 +34,7 @@ export function DashboardExample() {
           name: 'João Silva',
           email: 'joao@oficina.com',
         }}
-        onSearch={(query) => console.log('Search:', query)}
+        onSearch={(query) => }
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         notificationCount={3}
       />
@@ -131,5 +131,5 @@ export function DashboardExample() {
         </div>
       </main>
     </div>
-  );
+
 }

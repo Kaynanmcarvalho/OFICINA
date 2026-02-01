@@ -111,7 +111,6 @@ const CampoBuscaCliente = ({ value, onSelect, error, hasBrandTheme = false }) =>
     accentBg: useDarkTheme ? 'bg-emerald-500/15' : 'bg-emerald-50',
   };
 
-
   useEffect(() => {
     if (clients.length === 0) {
       fetchClients();
@@ -195,7 +194,6 @@ const CampoBuscaCliente = ({ value, onSelect, error, hasBrandTheme = false }) =>
     setIsOpen(false);
   };
 
-
   return (
     <div ref={wrapperRef} className="relative">
       {/* Input Field */}
@@ -268,7 +266,6 @@ const CampoBuscaCliente = ({ value, onSelect, error, hasBrandTheme = false }) =>
                         <Icons.Sparkles className={`w-4 h-4 ${theme.textTertiary}`} />
                       </div>
                     </div>
-
 
                     {/* Results List */}
                     <div className="py-2">
@@ -358,7 +355,7 @@ const CampoBuscaCliente = ({ value, onSelect, error, hasBrandTheme = false }) =>
                               </div>
                             </div>
                           </motion.div>
-                        );
+
                       })}
                     </div>
                   </>
@@ -379,7 +376,6 @@ const CampoBuscaCliente = ({ value, onSelect, error, hasBrandTheme = false }) =>
                     <p className={`text-sm ${theme.textSecondary} mt-1`}>Mínimo 2 caracteres</p>
                   </div>
                 )}
-
 
                 {/* New Client Button */}
                 {query.length >= 2 && (

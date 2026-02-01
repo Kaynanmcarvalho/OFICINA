@@ -260,8 +260,6 @@ export async function generatePartsForVehicle(
 ): Promise<GeneratedPart[]> {
   const generatedParts: GeneratedPart[] = [];
   
-  console.log(`[PartsGenerator] Gerando peças para ${vehicleBrand} ${vehicleModel} ${vehicleYear}`);
-  
   for (let i = 0; i < PART_TEMPLATES.length; i++) {
     const template = PART_TEMPLATES[i];
     
@@ -280,7 +278,6 @@ export async function generatePartsForVehicle(
     const oemResult = await searchOemCode(vehicleBrand, vehicleModel, vehicleYear, template.name);
     
     if (!oemResult) {
-      console.log(`[PartsGenerator] Código OEM não encontrado para ${template.name}`);
       continue;
     }
     
@@ -297,8 +294,7 @@ export async function generatePartsForVehicle(
       oemResult.oemCode,
       template.name,
       template.commonBrands
-    );
-    
+
     // Validar a peça encontrada
     const validationRequest: PartValidationRequest = {
       vehicleBrand,
@@ -345,10 +341,8 @@ export async function generatePartsForVehicle(
         },
       });
       
-      console.log(`[PartsGenerator] ✅ ${template.name}: ${oemResult.oemCode}`);
-    } else {
-      console.log(`[PartsGenerator] ❌ ${template.name}: Validação falhou`);
-    }
+      } else {
+      }
   }
   
   onProgress?.({
@@ -358,8 +352,6 @@ export async function generatePartsForVehicle(
     partsValidated: PART_TEMPLATES.length,
     totalTemplates: PART_TEMPLATES.length,
   });
-  
-  console.log(`[PartsGenerator] Geradas ${generatedParts.length} peças validadas`);
   
   return generatedParts;
 }

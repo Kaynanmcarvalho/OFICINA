@@ -336,7 +336,7 @@ const AIVehicleInspector = ({ onDetectionComplete, vehicleId }) => {
                           </div>
                         </div>
                       </div>
-                    );
+
                   })}
                 </div>
               ) : (

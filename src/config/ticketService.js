@@ -102,8 +102,7 @@ class TicketService {
       const q = query(
         collection(db, this.collectionName),
         orderBy('createdAt', 'desc')
-      );
-      
+
       const querySnapshot = await getDocs(q);
       const tickets = [];
       
@@ -128,8 +127,7 @@ class TicketService {
         collection(db, this.collectionName),
         where('createdBy', '==', userId),
         orderBy('createdAt', 'desc')
-      );
-      
+
       const querySnapshot = await getDocs(q);
       const tickets = [];
       
@@ -154,8 +152,7 @@ class TicketService {
         collection(db, this.collectionName),
         where('status', '==', status),
         orderBy('createdAt', 'desc')
-      );
-      
+
       const querySnapshot = await getDocs(q);
       const tickets = [];
       
@@ -311,8 +308,7 @@ class TicketService {
         updatedAt: new Date()
       });
       
-      console.log('Resposta atualizada com sucesso');
-    } catch (error) {
+      } catch (error) {
       console.error('Erro ao atualizar resposta:', error);
       throw new Error('Falha ao atualizar resposta');
     }
@@ -324,7 +320,6 @@ class TicketService {
       const ticketRef = doc(db, this.collectionName, ticketId);
       await deleteDoc(ticketRef);
       
-      console.log('✅ Ticket deletado com sucesso:', ticketId);
       return true;
     } catch (error) {
       console.error('Erro ao deletar ticket:', error);

@@ -155,8 +155,9 @@ const ClientForm = ({ onClose, onSubmit, client = null }) => {
           // Verificar duplicata
           const isDuplicate = clients.some(c => 
             c.cpf === formData.cpf && (!client || c.firestoreId !== client.firestoreId)
-          );
-          if (isDuplicate) {
+  );
+
+  if (isDuplicate) {
             newErrors.cpf = 'CPF já cadastrado';
           }
         }
@@ -188,8 +189,9 @@ const ClientForm = ({ onClose, onSubmit, client = null }) => {
           // Verificar duplicata
           const isDuplicate = clients.some(c => 
             c.cnpj === formData.cnpj && (!client || c.firestoreId !== client.firestoreId)
-          );
-          if (isDuplicate) {
+  );
+
+  if (isDuplicate) {
             newErrors.cnpj = 'CNPJ já cadastrado';
           }
         }
@@ -423,10 +425,9 @@ const ClientForm = ({ onClose, onSubmit, client = null }) => {
               }`} />
             )}
           </div>
-        );
+
       })}
     </div>
-  );
 
   const renderStep1 = () => (
     <div className="space-y-6">
@@ -630,7 +631,6 @@ const ClientForm = ({ onClose, onSubmit, client = null }) => {
         </>
       )}
     </div>
-  );
 
   const renderStep2 = () => (
     <div className="space-y-6">
@@ -677,7 +677,6 @@ const ClientForm = ({ onClose, onSubmit, client = null }) => {
         )}
       </div>
     </div>
-  );
 
   const renderStep3 = () => (
     <div className="space-y-6">
@@ -854,7 +853,6 @@ const ClientForm = ({ onClose, onSubmit, client = null }) => {
         </div>
       </div>
     </div>
-  );
 
   const renderStep4 = () => (
     <div className="space-y-6">
@@ -1001,7 +999,6 @@ const ClientForm = ({ onClose, onSubmit, client = null }) => {
         </div>
       )}
     </div>
-  );
 
   const renderStep5 = () => (
     <div className="space-y-6">
@@ -1032,7 +1029,6 @@ const ClientForm = ({ onClose, onSubmit, client = null }) => {
         </div>
       </div>
     </div>
-  );
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">

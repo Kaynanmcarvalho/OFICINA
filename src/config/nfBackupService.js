@@ -22,8 +22,6 @@ class NFBackupService {
    */
   async backupNFCompleta(nfData, userId) {
     try {
-      console.log('🔄 [NF BACKUP] Iniciando backup automático para:', nfData.id);
-      
       // Obter configurações para determinar credenciais e ambiente
       const config = await configService.getConfig(userId);
       
@@ -45,41 +43,34 @@ class NFBackupService {
       
       // 1. Backup XML Processado (com protocolo)
       try {
-        console.log('📄 [NF BACKUP] Baixando XML processado...');
         const xmlProcessadoUrl = await this.backupXMLProcessado(
           config.nfClientId,
           config.nfClientSecret, 
           nfData.id,
           ambiente,
           basePath
-        );
+
         backupResults.xmlProcessado = xmlProcessadoUrl;
-        console.log('✅ [NF BACKUP] XML processado salvo:', xmlProcessadoUrl);
-      } catch (error) {
-        console.warn('⚠️ [NF BACKUP] Erro ao salvar XML processado:', error.message);
+        } catch (error) {
         backupResults.errors.push(`XML Processado: ${error.message}`);
       }
       
       // 2. Backup XML Nota (sem protocolo)
       try {
-        console.log('📄 [NF BACKUP] Baixando XML nota...');
         const xmlNotaUrl = await this.backupXMLNota(
           config.nfClientId,
           config.nfClientSecret,
           nfData.id,
           ambiente,
           basePath
-        );
+
         backupResults.xmlNota = xmlNotaUrl;
-        console.log('✅ [NF BACKUP] XML nota salvo:', xmlNotaUrl);
-      } catch (error) {
-        console.warn('⚠️ [NF BACKUP] Erro ao salvar XML nota:', error.message);
+        } catch (error) {
         backupResults.errors.push(`XML Nota: ${error.message}`);
       }
       
       // 3. Backup PDF DANFE
       try {
-        console.log('🎨 [NF BACKUP] Baixando PDF DANFE...');
         const pdfUrl = await this.backupPDFDanfe(
           config.nfClientId,
           config.nfClientSecret,
@@ -93,15 +84,11 @@ class NFBackupService {
             largura: 80,
             margem: '2'
           }
-        );
+
         backupResults.pdfDanfe = pdfUrl;
-        console.log('✅ [NF BACKUP] PDF DANFE salvo:', pdfUrl);
-      } catch (error) {
-        console.warn('⚠️ [NF BACKUP] Erro ao salvar PDF DANFE:', error.message);
+        } catch (error) {
         backupResults.errors.push(`PDF DANFE: ${error.message}`);
       }
-      
-      console.log('🎯 [NF BACKUP] Backup concluído:', backupResults);
       
       return {
         success: true,
@@ -128,8 +115,7 @@ class NFBackupService {
       clientSecret,
       nfeId,
       ambiente
-    );
-    
+
     if (!result.success) {
       throw new Error(result.error || 'Erro ao baixar XML processado');
     }
@@ -156,8 +142,7 @@ class NFBackupService {
       clientSecret,
       nfeId,
       ambiente
-    );
-    
+
     if (!result.success) {
       throw new Error(result.error || 'Erro ao baixar XML da nota');
     }
@@ -185,8 +170,7 @@ class NFBackupService {
       nfeId,
       opcoes,
       ambiente
-    );
-    
+
     if (!result.success) {
       throw new Error(result.error || 'Erro ao baixar PDF DANFE');
     }

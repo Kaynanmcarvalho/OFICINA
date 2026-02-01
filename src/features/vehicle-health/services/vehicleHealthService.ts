@@ -141,7 +141,6 @@ class VehicleHealthService {
       // Manutenções do sistema
       const systemMaintenance = maintenance.filter((m) =>
         this.maintenanceAffectsSystem(m.type, system)
-      );
 
       // Calcular penalidades
       let penalty = 0;
@@ -294,7 +293,6 @@ class VehicleHealthService {
         where('vehicleId', '==', vehicleId),
         where('empresaId', '==', empresaId),
         where('dismissed', '==', false)
-      );
 
       const snapshot = await getDocs(q);
       return snapshot.docs.map((doc) => ({
@@ -323,7 +321,6 @@ class VehicleHealthService {
         ref,
         where('vehicleId', '==', vehicleId),
         where('empresaId', '==', empresaId)
-      );
 
       const snapshot = await getDocs(q);
       return snapshot.docs.map((doc) => {
@@ -498,7 +495,7 @@ class VehicleHealthService {
           priority: currentMileage >= nextDue ? 'high' : 'medium',
         },
         empresaId
-      );
+
     }
   }
 }

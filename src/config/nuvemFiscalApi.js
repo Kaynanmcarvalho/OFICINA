@@ -57,7 +57,7 @@ class NuvemFiscalService {
         }
         return Promise.reject(error);
       }
-    );
+
   }
 
   // Configurar usuário e ambiente baseado no role
@@ -80,7 +80,6 @@ class NuvemFiscalService {
        this._isConfigured = !!(this.clientId && this.clientSecret);
       
       if (!this._isConfigured) {
-         console.warn('⚠️ Credenciais da Nuvem Fiscal não configuradas');
          return;
        }
       
@@ -102,8 +101,7 @@ class NuvemFiscalService {
       this.accessToken = null;
       this.tokenExpiry = null;
       
-      console.log(`✅ Nuvem Fiscal configurado para ${user?.role || 'guest'}: ${this.isSandbox ? 'Sandbox' : 'Produção'}`);
-    } catch (error) {
+      } catch (error) {
        console.error('❌ Erro ao configurar Nuvem Fiscal:', error);
        this._isConfigured = false;
      }

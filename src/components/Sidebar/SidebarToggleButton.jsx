@@ -81,5 +81,5 @@ export function SidebarToggleButton({ isExpanded, onClick }) {
         )}
       </motion.div>
     </motion.button>
-  );
+
 }

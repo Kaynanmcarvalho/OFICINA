@@ -68,10 +68,10 @@ const Step6History = ({ formData, product }) => {
           O histórico estará disponível após salvar o produto
         </p>
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <div className="space-y-6">
       {/* Movimentações de Estoque */}
       <div>
@@ -227,5 +227,4 @@ const Step6History = ({ formData, product }) => {
 };
 
 export default Step6History;
-
 

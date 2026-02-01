@@ -39,10 +39,10 @@ const VehicleCacheStats = () => {
                     <div className="h-20 bg-neutral-200 dark:bg-neutral-700 rounded"></div>
                 </div>
             </div>
-        );
-    }
+  );
+}
 
-    return (
+return (
         <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 shadow-lg border border-neutral-200 dark:border-neutral-700">
             <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
@@ -153,7 +153,7 @@ const VehicleCacheStats = () => {
                 </div>
             </div>
         </div>
-    );
+  );
 };
 
 export default VehicleCacheStats;

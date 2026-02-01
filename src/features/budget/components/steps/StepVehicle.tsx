@@ -44,31 +44,27 @@ export const StepVehicle: React.FC<StepVehicleProps> = ({ flow }) => {
       {/* Vehicle Hero Card */}
       {hasVehicleData && (
         <div style={{
-          padding: '32px',
-          background: `linear-gradient(135deg, rgba(${accent.rgb}, 0.12) 0%, rgba(${accent.rgb}, 0.04) 100%)`,
-          border: `1px solid rgba(${accent.rgb}, 0.25)`,
-          borderRadius: '20px',
+          padding: '28px',
+          background: colors.surface.soft,
+          border: `1px solid ${colors.border.subtle}`,
+          borderRadius: '16px',
           textAlign: 'center',
         }}>
           {/* Plate - DESTAQUE MÁXIMO */}
           <div style={{
             display: 'inline-block',
-            padding: '16px 40px',
+            padding: '12px 32px',
             background: 'linear-gradient(180deg, #FFFFFF 0%, #F0F0F0 100%)',
             borderRadius: '8px',
-            border: '3px solid #1a1a1a',
-            boxShadow: `
-              0 4px 20px rgba(0, 0, 0, 0.3),
-              inset 0 2px 0 rgba(255, 255, 255, 0.8),
-              0 0 40px rgba(${accent.rgb}, 0.2)
-            `,
-            marginBottom: '24px',
+            border: '2px solid #1a1a1a',
+            boxShadow: '0 2px 12px rgba(0, 0, 0, 0.15)',
+            marginBottom: '20px',
           }}>
             <div style={{
               fontFamily: 'ui-monospace, SFMono-Regular, "FE-Schrift", Menlo, Monaco, Consolas, monospace',
-              fontSize: '36px',
+              fontSize: '28px',
               fontWeight: 700,
-              letterSpacing: '0.12em',
+              letterSpacing: '0.10em',
               color: '#1a1a1a',
               textTransform: 'uppercase',
             }}>
@@ -80,7 +76,7 @@ export const StepVehicle: React.FC<StepVehicleProps> = ({ flow }) => {
           <div style={{ marginBottom: '8px' }}>
             <span style={{
               color: colors.text.primary,
-              fontSize: '20px',
+              fontSize: '18px',
               fontWeight: 600,
             }}>
               {flow.data.vehicle?.brand} {flow.data.vehicle?.model}
@@ -92,14 +88,15 @@ export const StepVehicle: React.FC<StepVehicleProps> = ({ flow }) => {
             alignItems: 'center',
             justifyContent: 'center',
             gap: '16px',
-            color: colors.text.muted,
-            fontSize: '14px',
+            color: colors.text.secondary,
+            fontSize: '13px',
+            fontWeight: 500,
           }}>
             {flow.data.vehicle?.year && (
               <span>Ano {flow.data.vehicle.year}</span>
             )}
             {flow.data.vehicle?.year && flow.data.vehicle?.color && (
-              <span style={{ opacity: 0.4 }}>•</span>
+              <span style={{ opacity: 0.5 }}>•</span>
             )}
             {flow.data.vehicle?.color && (
               <span>{flow.data.vehicle.color}</span>
@@ -121,14 +118,14 @@ export const StepVehicle: React.FC<StepVehicleProps> = ({ flow }) => {
         }}>
           {/* Marca */}
           <div style={{
-            padding: '16px 20px',
+            padding: '14px 18px',
             background: colors.surface.soft,
-            borderRadius: '12px',
+            borderRadius: '10px',
             border: `1px solid ${colors.border.subtle}`,
           }}>
             <div style={{
-              color: colors.text.muted,
-              fontSize: '12px',
+              color: colors.text.secondary,
+              fontSize: '11px',
               fontWeight: 500,
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
@@ -138,7 +135,7 @@ export const StepVehicle: React.FC<StepVehicleProps> = ({ flow }) => {
             </div>
             <div style={{
               color: colors.text.primary,
-              fontSize: '16px',
+              fontSize: '15px',
               fontWeight: 600,
             }}>
               {flow.data.vehicle?.brand || '—'}
@@ -147,14 +144,14 @@ export const StepVehicle: React.FC<StepVehicleProps> = ({ flow }) => {
           
           {/* Modelo */}
           <div style={{
-            padding: '16px 20px',
+            padding: '14px 18px',
             background: colors.surface.soft,
-            borderRadius: '12px',
+            borderRadius: '10px',
             border: `1px solid ${colors.border.subtle}`,
           }}>
             <div style={{
-              color: colors.text.muted,
-              fontSize: '12px',
+              color: colors.text.secondary,
+              fontSize: '11px',
               fontWeight: 500,
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
@@ -164,7 +161,7 @@ export const StepVehicle: React.FC<StepVehicleProps> = ({ flow }) => {
             </div>
             <div style={{
               color: colors.text.primary,
-              fontSize: '16px',
+              fontSize: '15px',
               fontWeight: 600,
             }}>
               {flow.data.vehicle?.model || '—'}
@@ -173,14 +170,14 @@ export const StepVehicle: React.FC<StepVehicleProps> = ({ flow }) => {
           
           {/* Ano */}
           <div style={{
-            padding: '16px 20px',
+            padding: '14px 18px',
             background: colors.surface.soft,
-            borderRadius: '12px',
+            borderRadius: '10px',
             border: `1px solid ${colors.border.subtle}`,
           }}>
             <div style={{
-              color: colors.text.muted,
-              fontSize: '12px',
+              color: colors.text.secondary,
+              fontSize: '11px',
               fontWeight: 500,
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
@@ -190,7 +187,7 @@ export const StepVehicle: React.FC<StepVehicleProps> = ({ flow }) => {
             </div>
             <div style={{
               color: colors.text.primary,
-              fontSize: '16px',
+              fontSize: '15px',
               fontWeight: 600,
             }}>
               {flow.data.vehicle?.year || '—'}
@@ -199,14 +196,14 @@ export const StepVehicle: React.FC<StepVehicleProps> = ({ flow }) => {
           
           {/* Cor */}
           <div style={{
-            padding: '16px 20px',
+            padding: '14px 18px',
             background: colors.surface.soft,
-            borderRadius: '12px',
+            borderRadius: '10px',
             border: `1px solid ${colors.border.subtle}`,
           }}>
             <div style={{
-              color: colors.text.muted,
-              fontSize: '12px',
+              color: colors.text.secondary,
+              fontSize: '11px',
               fontWeight: 500,
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
@@ -216,7 +213,7 @@ export const StepVehicle: React.FC<StepVehicleProps> = ({ flow }) => {
             </div>
             <div style={{
               color: colors.text.primary,
-              fontSize: '16px',
+              fontSize: '15px',
               fontWeight: 600,
             }}>
               {flow.data.vehicle?.color || '—'}
@@ -230,20 +227,20 @@ export const StepVehicle: React.FC<StepVehicleProps> = ({ flow }) => {
         display: 'flex',
         alignItems: 'center',
         gap: '14px',
-        padding: '16px 20px',
-        background: 'rgba(48, 209, 88, 0.08)',
-        border: '1px solid rgba(48, 209, 88, 0.15)',
+        padding: '14px 18px',
+        background: `${accent.hex}08`,
+        border: `1px solid ${accent.hex}15`,
         borderRadius: '12px',
       }}>
         <div style={{
           width: '40px',
           height: '40px',
           borderRadius: '10px',
-          background: 'rgba(48, 209, 88, 0.15)',
+          background: `${accent.hex}15`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: colors.state.success,
+          color: colors.text.primary,
         }}>
           <CheckIcon />
         </div>
@@ -251,7 +248,7 @@ export const StepVehicle: React.FC<StepVehicleProps> = ({ flow }) => {
           <div style={{ color: colors.text.primary, fontSize: '14px', fontWeight: 600 }}>
             Veículo confirmado
           </div>
-          <div style={{ color: colors.text.muted, fontSize: '13px' }}>
+          <div style={{ color: colors.text.secondary, fontSize: '13px', fontWeight: 500 }}>
             Dados importados do check-in
           </div>
         </div>

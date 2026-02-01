@@ -94,8 +94,9 @@ export const StepSummary: React.FC<StepSummaryProps> = ({ flow }) => {
             <div style={{
               width: '44px',
               height: '44px',
-              borderRadius: '12px',
-              background: 'rgba(48, 209, 88, 0.15)',
+              borderRadius: '8px',
+              background: colors.surface.medium,
+              border: `2px solid ${colors.state.success}`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -136,8 +137,9 @@ export const StepSummary: React.FC<StepSummaryProps> = ({ flow }) => {
             <div style={{
               width: '44px',
               height: '44px',
-              borderRadius: '12px',
-              background: `rgba(${accent.rgb}, 0.15)`,
+              borderRadius: '8px',
+              background: colors.surface.medium,
+              border: `2px solid ${accent.hex}`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -202,10 +204,9 @@ export const StepSummary: React.FC<StepSummaryProps> = ({ flow }) => {
                 <div style={{
                   width: '32px',
                   height: '32px',
-                  borderRadius: '8px',
-                  background: item.type === 'product' 
-                    ? 'rgba(10, 132, 255, 0.15)' 
-                    : 'rgba(255, 159, 10, 0.15)',
+                  borderRadius: '6px',
+                  background: colors.surface.medium,
+                  border: `1px solid ${item.type === 'product' ? colors.state.info : colors.state.warning}`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -233,9 +234,9 @@ export const StepSummary: React.FC<StepSummaryProps> = ({ flow }) => {
         <div style={{
           marginTop: '16px',
           padding: '16px',
-          background: colors.surface.medium,
-          borderRadius: '12px',
+          background: colors.surface.soft,
           border: `1px solid ${colors.border.subtle}`,
+          borderRadius: '8px',
         }}>
           <div style={{ 
             display: 'flex', 
@@ -321,9 +322,9 @@ export const StepSummary: React.FC<StepSummaryProps> = ({ flow }) => {
       {flow.errors.submit && (
         <div style={{
           padding: '16px 20px',
-          background: 'rgba(255, 69, 58, 0.1)',
-          border: '1px solid rgba(255, 69, 58, 0.2)',
-          borderRadius: '12px',
+          background: colors.surface.soft,
+          border: `1px solid ${colors.state.error}`,
+          borderRadius: '6px',
           color: colors.state.error,
           fontSize: '14px',
           display: 'flex',

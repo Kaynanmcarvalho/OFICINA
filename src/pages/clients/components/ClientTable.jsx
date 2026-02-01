@@ -3,7 +3,6 @@
  * Tabela responsiva com hover effects e microinterações
  */
 
-
 import GlassmorphismCard from './base/GlassmorphismCard';
 import ClientRow from './ClientRow';
 import ClientTableSkeleton from './ClientTableSkeleton';

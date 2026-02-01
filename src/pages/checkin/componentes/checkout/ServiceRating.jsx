@@ -57,8 +57,7 @@ const ServiceRating = ({ onRate, optional = true }) => {
    */
   const triggerConfetti = () => {
     // Aqui você pode integrar uma biblioteca de confetti
-    console.log('🎉 Confetti!');
-  };
+    };
 
   /**
    * Pular avaliação
@@ -116,10 +115,10 @@ const ServiceRating = ({ onRate, optional = true }) => {
           </motion.div>
         )}
       </motion.div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center">

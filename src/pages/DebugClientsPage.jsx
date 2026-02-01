@@ -8,5 +8,5 @@ export default function DebugClientsPage() {
         Debug page for client management
       </p>
     </div>
-  );
+
 }

@@ -87,5 +87,5 @@ export function SidebarFooter({ isExpanded, onLogout }) {
         )}
       </motion.button>
     </div>
-  );
+
 }

@@ -166,13 +166,13 @@ const ClientTableSkeleton = ({ rows = 5 }) => {
             var(--apple-bg-tertiary) 0px,
             var(--apple-overlay-light) 40px,
             var(--apple-bg-tertiary) 80px
-          );
+
           background-size: 200px 100%;
           animation: shimmer 1.5s infinite;
         }
       `}</style>
     </>
-  );
+
 };
 
 export default ClientTableSkeleton;

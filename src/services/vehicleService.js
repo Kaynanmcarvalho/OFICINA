@@ -51,7 +51,7 @@ export const getDetalhesVeiculo = async (marcaCodigo, modeloCodigo, anoCodigo) =
   try {
     const response = await fetch(
       `${FIPE_API}/motos/marcas/${marcaCodigo}/modelos/${modeloCodigo}/anos/${anoCodigo}`
-    );
+
     const data = await response.json();
     return {
       marca: data.Marca,

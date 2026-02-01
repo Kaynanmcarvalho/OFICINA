@@ -169,8 +169,7 @@ export const useMotorcycleStore = create((set, get) => ({
         where('motorcycleId', '>=', searchTerm),
         where('motorcycleId', '<=', searchTerm + '\uf8ff'),
         limit(20)
-      );
-      
+
       // Search by brand - usando busca local
       
       // Search by model - usando busca local
@@ -181,8 +180,7 @@ export const useMotorcycleStore = create((set, get) => ({
         where('clientId', '>=', searchTerm),
         where('clientId', '<=', searchTerm + '\uf8ff'),
         limit(20)
-      );
-      
+
       // Buscar todos e filtrar localmente
     const allItems = await getAllDocuments('modelResults');
     const searchLower = searchTerm.toLowerCase();

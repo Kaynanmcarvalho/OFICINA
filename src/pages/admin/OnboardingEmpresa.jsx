@@ -251,7 +251,7 @@ const OnboardingEmpresa = () => {
         adminData.email,
         adminData.senha
       );
-
+      
       const userId = userCredential.user.uid;
 
       // 4. Criar documento do usuário em /usuarios (global)
@@ -398,7 +398,7 @@ const OnboardingEmpresa = () => {
         </form>
       </div>
     </div>
-  );
+      );
 };
 
 // Step 1: Dados da Empresa
@@ -849,7 +849,7 @@ const Step1DadosEmpresa = ({
         </button>
       </div>
     </div>
-  );
+      );
 };
 
 // Step 2: Primeiro Usuário (Admin)

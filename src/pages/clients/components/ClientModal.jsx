@@ -80,7 +80,7 @@ const ClientModal = ({
       // Passar o cliente adaptado como prop adicional se necessário
       existingClient={adaptedClient}
     />
-  );
+
 };
 
 export default ClientModal;

@@ -62,10 +62,10 @@ const EmptyState = ({ hasClients, hasFilters, onNewClient, onClearFilters }) => 
           Limpar Filtros
         </motion.button>
       </motion.div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}

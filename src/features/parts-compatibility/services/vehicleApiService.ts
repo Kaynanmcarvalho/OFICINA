@@ -165,7 +165,6 @@ export async function getFipeMakes(tipo: FipeTipoVeiculo): Promise<VehicleMake[]
     apiCache.set(cacheKey, makes);
     return makes;
   } catch (error) {
-    console.warn('FIPE API unavailable, using fallback:', error);
     return getFallbackMakes(tipo === 'carros' ? 'car' : tipo === 'motos' ? 'motorcycle' : 'truck');
   }
 }
@@ -203,7 +202,6 @@ export async function getFipeModels(tipo: FipeTipoVeiculo, marcaId: string): Pro
     apiCache.set(cacheKey, models);
     return models;
   } catch (error) {
-    console.warn('FIPE API unavailable for models:', error);
     return [];
   }
 }
@@ -230,7 +228,6 @@ export async function getFipeYears(tipo: FipeTipoVeiculo, marcaId: string, model
     apiCache.set(cacheKey, years);
     return years;
   } catch (error) {
-    console.warn('FIPE API unavailable for years:', error);
     return [];
   }
 }
@@ -252,6 +249,7 @@ export async function getFipeVehicleDetails(
     const response = await fetch(
       `${FIPE_BASE_URL}/${tipo}/marcas/${marcaId}/modelos/${modeloId}/anos/${anoId}`
     );
+
     if (!response.ok) throw new Error('FIPE API error');
     
     const data: FipeVeiculo = await response.json();
@@ -273,7 +271,6 @@ export async function getFipeVehicleDetails(
     apiCache.set(cacheKey, details);
     return details;
   } catch (error) {
-    console.warn('FIPE API unavailable for details:', error);
     return null;
   }
 }
@@ -325,7 +322,6 @@ export async function getNHTSAMakes(vehicleType?: string): Promise<VehicleMake[]
     apiCache.set(cacheKey, makes);
     return makes;
   } catch (error) {
-    console.warn('NHTSA API unavailable:', error);
     return [];
   }
 }
@@ -342,6 +338,7 @@ export async function getNHTSAModels(makeName: string): Promise<VehicleModel[]> 
     const response = await fetch(
       `${NHTSA_BASE_URL}/GetModelsForMake/${encodeURIComponent(makeName)}?format=json`
     );
+
     if (!response.ok) throw new Error('NHTSA API error');
     
     const data = await response.json();
@@ -357,7 +354,6 @@ export async function getNHTSAModels(makeName: string): Promise<VehicleModel[]> 
     apiCache.set(cacheKey, models);
     return models;
   } catch (error) {
-    console.warn('NHTSA API unavailable for models:', error);
     return [];
   }
 }
@@ -374,6 +370,7 @@ export async function decodeVIN(vin: string): Promise<VehicleDetails | null> {
     const response = await fetch(
       `${NHTSA_BASE_URL}/DecodeVin/${vin}?format=json`
     );
+
     if (!response.ok) throw new Error('NHTSA API error');
     
     const data = await response.json();
@@ -402,7 +399,6 @@ export async function decodeVIN(vin: string): Promise<VehicleDetails | null> {
     
     return null;
   } catch (error) {
-    console.warn('NHTSA VIN decode failed:', error);
     return null;
   }
 }

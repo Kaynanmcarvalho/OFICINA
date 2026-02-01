@@ -50,8 +50,7 @@ export function useTheme() {
     try {
       localStorage.setItem(THEME_STORAGE_KEY, theme);
     } catch (error) {
-      console.warn('Failed to save theme preference:', error);
-    }
+      }
   }, [theme]);
 
   // Observar mudanças na preferência do sistema

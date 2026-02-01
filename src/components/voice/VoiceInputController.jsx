@@ -86,8 +86,7 @@ const VoiceInputController = ({
         recognitionRef.current.start();
       } catch (err) {
         // Already started
-        console.log('Recognition already started');
-      }
+        }
     } else {
       recognitionRef.current.stop();
     }
@@ -99,10 +98,10 @@ const VoiceInputController = ({
         Reconhecimento de voz não suportado neste navegador.
         Use Chrome, Edge ou Safari.
       </div>
-    );
-  }
+  );
+}
 
-  return null; // This is a controller component, no UI
+return null; // This is a controller component, no UI
 };
 
 export default VoiceInputController;

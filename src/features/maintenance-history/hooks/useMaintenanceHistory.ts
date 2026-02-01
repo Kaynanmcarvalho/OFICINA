@@ -76,7 +76,7 @@ export function useMaintenanceHistory(): UseMaintenanceHistoryReturn {
         vehiclePlate,
         empresaId,
         options
-      );
+
       setRecords(history);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar histórico';
@@ -99,7 +99,7 @@ export function useMaintenanceHistory(): UseMaintenanceHistoryReturn {
         vehiclePlate,
         empresaId,
         vehicleInfo
-      );
+
       setProfile(vehicleProfile);
       setRecords(vehicleProfile.lastMaintenance ? [vehicleProfile.lastMaintenance] : []);
     } catch (err) {

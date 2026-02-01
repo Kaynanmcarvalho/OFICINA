@@ -155,7 +155,7 @@ const Sidebar = memo(({ menuItems, footerItems, isCollapsed, toggleSidebar }) =>
         )}
       </AnimatePresence>
     </>
-  );
+      );
 });
 
 Sidebar.displayName = 'Sidebar';

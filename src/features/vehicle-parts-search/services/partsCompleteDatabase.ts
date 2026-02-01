@@ -139,8 +139,6 @@ const DUCATI_MOTOS = ['Ducati Monster', 'Ducati Panigale', 'Ducati Multistrada',
 // MOTOS - Harley-Davidson
 const HARLEY_MOTOS = ['Harley-Davidson Sportster', 'Harley-Davidson Softail', 'Harley-Davidson Touring', 'Harley-Davidson Street', 'Harley-Davidson Fat Boy', 'Harley-Davidson Iron 883'];
 
-
-
 // ============================================================================
 // FILTROS DE ÓLEO - Por Plataforma
 // ============================================================================
@@ -218,7 +216,6 @@ const OIL_FILTERS: Record<string, PartNumberData> = {
   'HF170': { partNumber: 'HF170', brand: 'HIFLOFILTRO', category: 'Filtros', categoryKey: 'oil_filter', name: 'Filtro de Óleo Moto', specs: { height: 100, diameter: 76 }, equivalents: ['K&N KN-170', 'HARLEY 63731-99A'], applications: HARLEY_MOTOS },
 };
 
-
 // ============================================================================
 // FILTROS DE AR - Por Plataforma
 // ============================================================================
@@ -288,7 +285,6 @@ const AIR_FILTERS: Record<string, PartNumberData> = {
   // MOTOS BMW
   'HFA7912': { partNumber: 'HFA7912', brand: 'HIFLOFILTRO', category: 'Filtros', categoryKey: 'air_filter', name: 'Filtro de Ar Moto', specs: null, equivalents: ['K&N BM-1204', 'BMW 13727726799'], applications: BMW_MOTOS },
 };
-
 
 // ============================================================================
 // FILTROS DE COMBUSTÍVEL - Por Plataforma
@@ -362,7 +358,6 @@ const CABIN_FILTERS: Record<string, PartNumberData> = {
   'CUK29005': { partNumber: 'CUK29005', brand: 'MANN-FILTER', category: 'Filtros', categoryKey: 'cabin_filter', name: 'Filtro de Cabine Carvão Ativado', specs: { type: 'activated_carbon' }, equivalents: ['MERCEDES A2058350147', 'MAHLE LAK875M', 'BOSCH 1987435604'], applications: MERCEDES_ALL },
 };
 
-
 // ============================================================================
 // PASTILHAS DE FREIO - Por Plataforma
 // ============================================================================
@@ -431,7 +426,6 @@ const BRAKE_PADS: Record<string, PartNumberData> = {
   // MOTOS Suzuki
   'FA231': { partNumber: 'FA231', brand: 'EBC', category: 'Freios', categoryKey: 'brake_pads', name: 'Pastilhas de Freio Moto', specs: { position: 'front', material: 'sintered' }, equivalents: ['VESRAH VD-355S', 'SUZUKI 59100-29830'], applications: SUZUKI_MOTOS },
 };
-
 
 // ============================================================================
 // DISCOS DE FREIO - Por Plataforma
@@ -516,7 +510,6 @@ const SPARK_PLUGS: Record<string, PartNumberData> = {
   // MOTOS Suzuki
   'CR9EB': { partNumber: 'CR9EB', brand: 'NGK', category: 'Ignição', categoryKey: 'spark_plugs', name: 'Vela de Ignição Moto', specs: { gap: 0.8, thread: 10, reach: 19 }, equivalents: ['DENSO U27ESR-N', 'SUZUKI 09482-00508'], applications: SUZUKI_MOTOS },
 };
-
 
 // ============================================================================
 // CORREIAS DENTADAS E KITS - Por Plataforma
@@ -604,7 +597,6 @@ const BATTERIES: Record<string, PartNumberData> = {
   'MOURA 12AH': { partNumber: 'MOURA 12AH', brand: 'MOURA', category: 'Elétrica', categoryKey: 'battery', name: 'Bateria Moto 12Ah', specs: { capacity: 12, cca: 180, voltage: 12 }, equivalents: ['HELIAR 12AH', 'YUASA YTX14-BS'], applications: [...HONDA_MOTOS_GRANDES, ...YAMAHA_MOTOS_GRANDES, ...SUZUKI_MOTOS, ...BMW_MOTOS, ...TRIUMPH_MOTOS, ...DUCATI_MOTOS, ...HARLEY_MOTOS] },
 };
 
-
 // ============================================================================
 // ÓLEOS DE MOTOR - Por Tipo de Motor
 // ============================================================================
@@ -679,7 +671,6 @@ const BULBS: Record<string, PartNumberData> = {
   // Lâmpada Moto H4
   'H4 MOTO': { partNumber: 'H4 MOTO', brand: 'PHILIPS', category: 'Iluminação', categoryKey: 'bulb', name: 'Lâmpada Moto H4 35/35W', specs: { type: 'H4', power: 35, voltage: 12 }, equivalents: ['OSRAM H4 MOTO', 'NARVA H4 MOTO'], applications: [...HONDA_MOTOS_PEQUENAS, ...HONDA_MOTOS_MEDIAS, ...YAMAHA_MOTOS_PEQUENAS, ...YAMAHA_MOTOS_MEDIAS] },
 };
-
 
 // ============================================================================
 // EMBREAGEM - Por Plataforma
@@ -802,7 +793,6 @@ const WATER_PUMPS: Record<string, PartNumberData> = {
   // MERCEDES (EXCLUSIVO)
   'BA-MB01': { partNumber: 'BA-MB01', brand: 'HEPU', category: 'Arrefecimento', categoryKey: 'water_pump', name: 'Bomba D\'Água', specs: { type: 'mechanical' }, equivalents: ['MERCEDES A2742000107', 'DOLZ M001'], applications: MERCEDES_ALL },
 };
-
 
 // ============================================================================
 // ALTERNADORES - Por Plataforma

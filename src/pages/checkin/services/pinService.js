@@ -1,6 +1,7 @@
 import { doc, updateDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../../config/firebase';
 import CryptoJS from 'crypto-js';
+import { firestoreWithTimeout } from '../../../utils/timeoutWrapper';
 
 const SECRET_KEY = 'torq-pin-secret-2024'; // Em produção, usar variável de ambiente
 
@@ -26,13 +27,16 @@ export const savePinToCheckin = async (checkinId, pin) => {
     const encryptedPin = encryptPin(pin);
     const checkinRef = doc(db, 'checkins', checkinId);
     
-    await updateDoc(checkinRef, {
-      pin: encryptedPin,
-      pinAttempts: 0,
-      pinValidated: false,
-      pinGeneratedAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    });
+    await firestoreWithTimeout(
+      () => updateDoc(checkinRef, {
+        pin: encryptedPin,
+        pinAttempts: 0,
+        pinValidated: false,
+        pinGeneratedAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      }),
+      'Save PIN to checkin'
+    );
     
     return { success: true, pin };
   } catch (error) {
@@ -45,7 +49,10 @@ export const savePinToCheckin = async (checkinId, pin) => {
 export const validatePin = async (checkinId, inputPin) => {
   try {
     const checkinRef = doc(db, 'checkins', checkinId);
-    const checkinSnap = await getDoc(checkinRef);
+    const checkinSnap = await firestoreWithTimeout(
+      () => getDoc(checkinRef),
+      'Get checkin for PIN validation'
+    );
     
     if (!checkinSnap.exists()) {
       return { success: false, error: 'Check-in não encontrado' };
@@ -66,19 +73,25 @@ export const validatePin = async (checkinId, inputPin) => {
     
     // Validar PIN
     if (inputPin === storedPin) {
-      await updateDoc(checkinRef, {
-        pinValidated: true,
-        pinValidatedAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      });
+      await firestoreWithTimeout(
+        () => updateDoc(checkinRef, {
+          pinValidated: true,
+          pinValidatedAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        }),
+        'Update PIN validated'
+      );
       
       return { success: true, message: 'PIN validado com sucesso!' };
     } else {
       // Incrementar tentativas
-      await updateDoc(checkinRef, {
-        pinAttempts: attempts + 1,
-        updatedAt: serverTimestamp()
-      });
+      await firestoreWithTimeout(
+        () => updateDoc(checkinRef, {
+          pinAttempts: attempts + 1,
+          updatedAt: serverTimestamp()
+        }),
+        'Increment PIN attempts'
+      );
       
       return { 
         success: false, 
@@ -88,7 +101,7 @@ export const validatePin = async (checkinId, inputPin) => {
     }
   } catch (error) {
     console.error('Error validating PIN:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: 'Erro ao validar PIN. Tente novamente.' };
   }
 };
 
@@ -99,18 +112,21 @@ export const resetPin = async (checkinId) => {
     const encryptedPin = encryptPin(newPin);
     const checkinRef = doc(db, 'checkins', checkinId);
     
-    await updateDoc(checkinRef, {
-      pin: encryptedPin,
-      pinAttempts: 0,
-      pinValidated: false,
-      pinResetAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    });
+    await firestoreWithTimeout(
+      () => updateDoc(checkinRef, {
+        pin: encryptedPin,
+        pinAttempts: 0,
+        pinValidated: false,
+        pinResetAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      }),
+      'Reset PIN'
+    );
     
     return { success: true, pin: newPin };
   } catch (error) {
     console.error('Error resetting PIN:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: 'Erro ao resetar PIN. Tente novamente.' };
   }
 };
 
@@ -118,7 +134,10 @@ export const resetPin = async (checkinId) => {
 export const isPinValidated = async (checkinId) => {
   try {
     const checkinRef = doc(db, 'checkins', checkinId);
-    const checkinSnap = await getDoc(checkinRef);
+    const checkinSnap = await firestoreWithTimeout(
+      () => getDoc(checkinRef),
+      'Check PIN validation status'
+    );
     
     if (!checkinSnap.exists()) {
       return false;
@@ -127,6 +146,7 @@ export const isPinValidated = async (checkinId) => {
     return checkinSnap.data().pinValidated || false;
   } catch (error) {
     console.error('Error checking PIN validation:', error);
+    // 🔥 FAIL SAFE: Retornar false em caso de erro
     return false;
   }
 };

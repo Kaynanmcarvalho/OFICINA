@@ -11,87 +11,69 @@
  */
 
 // ============================================================================
-// CORES BASE
+// CORES BASE - Tema Adaptativo
 // ============================================================================
 export const colors = {
   // Fundos
   base: {
-    primary: '#08080A',
-    secondary: '#0C0C0E',
-    tertiary: '#101012',
-    elevated: '#141416',
+    primary: 'var(--bg-modal, #FFFFFF)',
+    secondary: 'var(--bg-modal-header, #F9FAFB)',
+    tertiary: 'var(--bg-modal-content, #FFFFFF)',
+    elevated: 'var(--bg-modal, #FFFFFF)',
   },
   
   // Superfícies
   surface: {
-    soft: 'rgba(255, 255, 255, 0.03)',
-    medium: 'rgba(255, 255, 255, 0.05)',
-    strong: 'rgba(255, 255, 255, 0.08)',
+    soft: 'var(--bg-section, #FFFFFF)',
+    medium: 'var(--bg-input, #FFFFFF)',
+    strong: 'var(--bg-section, #FFFFFF)',
   },
   
   // Texto
   text: {
-    primary: '#FFFFFF',
-    secondary: 'rgba(255, 255, 255, 0.7)',
-    muted: 'rgba(255, 255, 255, 0.45)',
-    disabled: 'rgba(255, 255, 255, 0.25)',
+    primary: 'var(--text-primary, #111827)',
+    secondary: 'var(--text-secondary, #6B7280)',
+    muted: 'var(--text-muted, #9CA3AF)',
+    disabled: 'var(--text-disabled, #D1D5DB)',
   },
   
   // Bordas
   border: {
-    subtle: 'rgba(255, 255, 255, 0.04)',
-    default: 'rgba(255, 255, 255, 0.08)',
-    strong: 'rgba(255, 255, 255, 0.12)',
+    subtle: 'var(--border-subtle, #D1D5DB)',
+    default: 'var(--border-default, #9CA3AF)',
+    strong: 'var(--border-strong, #6B7280)',
   },
   
-  // Estados
+  // Estados (fixos)
   state: {
-    success: '#30D158',
-    warning: '#FF9F0A',
-    error: '#FF453A',
-    info: '#0A84FF',
+    success: '#10B981',
+    warning: '#F59E0B',
+    error: '#EF4444',
+    info: '#3B82F6',
   },
 } as const;
 
 // ============================================================================
-// SOMBRAS (Z-AXIS)
+// SOMBRAS - Funcionais e Leves
 // ============================================================================
 export const shadows = {
-  // Z0 - Plano Base
+  // Sem sombra
   base: 'none',
   
-  // Z1 - Plano Estrutural (seções)
-  section: `
-    0 2px 4px rgba(0, 0, 0, 0.3),
-    0 8px 24px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04)
-  `,
+  // Separação leve
+  section: 'var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05))',
   
-  // Z2 - Plano Interativo (inputs, botões)
-  interactive: `
-    inset 0 2px 4px rgba(0, 0, 0, 0.25),
-    inset 0 1px 2px rgba(0, 0, 0, 0.15)
-  `,
+  // Input normal
+  interactive: 'none',
   
-  // CTA flutuante
-  cta: (accentRgb: string) => `
-    0 4px 16px rgba(${accentRgb}, 0.35),
-    0 2px 6px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2)
-  `,
+  // Botão primário
+  cta: (accentRgb: string) => `0 1px 3px rgba(${accentRgb}, 0.3)`,
   
-  // Focus glow
-  focus: (accentRgb: string) => `
-    0 0 0 3px rgba(${accentRgb}, 0.15),
-    0 0 20px rgba(${accentRgb}, 0.1)
-  `,
+  // Focus ring
+  focus: (accentRgb: string) => `0 0 0 3px rgba(${accentRgb}, 0.1)`,
   
-  // Dropdown elevado
-  dropdown: `
-    0 8px 32px rgba(0, 0, 0, 0.5),
-    0 4px 16px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05)
-  `,
+  // Dropdown
+  dropdown: 'var(--shadow-md, 0 1px 3px rgba(0, 0, 0, 0.1))',
 } as const;
 
 // ============================================================================
@@ -196,31 +178,66 @@ export const breakpoints = {
 // ============================================================================
 export const getBrandAccent = (brand?: string) => {
   const brandColors: Record<string, { hex: string; rgb: string }> = {
+    // Marcas Premium Alemãs
     bmw: { hex: '#0066B1', rgb: '0, 102, 177' },
     mercedes: { hex: '#00ADEF', rgb: '0, 173, 239' },
+    'mercedes-benz': { hex: '#00ADEF', rgb: '0, 173, 239' },
     audi: { hex: '#BB0A30', rgb: '187, 10, 48' },
     porsche: { hex: '#D5001C', rgb: '213, 0, 28' },
     volkswagen: { hex: '#001E50', rgb: '0, 30, 80' },
+    vw: { hex: '#001E50', rgb: '0, 30, 80' },
+    
+    // Marcas Japonesas
     toyota: { hex: '#EB0A1E', rgb: '235, 10, 30' },
     honda: { hex: '#E40521', rgb: '228, 5, 33' },
+    nissan: { hex: '#C3002F', rgb: '195, 0, 47' },
+    mazda: { hex: '#C8102E', rgb: '200, 16, 46' },
+    mitsubishi: { hex: '#E60012', rgb: '230, 0, 18' },
+    suzuki: { hex: '#0066B2', rgb: '0, 102, 178' },
+    subaru: { hex: '#003DA5', rgb: '0, 61, 165' },
+    yamaha: { hex: '#E60012', rgb: '230, 0, 18' }, // Vermelho Yamaha Racing (vibrante para UI)
+    kawasaki: { hex: '#00A651', rgb: '0, 166, 81' },
+    
+    // Marcas Americanas
     ford: { hex: '#003478', rgb: '0, 52, 120' },
     chevrolet: { hex: '#D4AF37', rgb: '212, 175, 55' },
+    jeep: { hex: '#3D5C3D', rgb: '61, 92, 61' },
+    dodge: { hex: '#C8102E', rgb: '200, 16, 46' },
+    ram: { hex: '#C8102E', rgb: '200, 16, 46' },
+    
+    // Marcas Coreanas
     hyundai: { hex: '#002C5F', rgb: '0, 44, 95' },
     kia: { hex: '#05141F', rgb: '5, 20, 31' },
-    nissan: { hex: '#C3002F', rgb: '195, 0, 47' },
+    
+    // Marcas Europeias
     fiat: { hex: '#9A0F21', rgb: '154, 15, 33' },
-    jeep: { hex: '#3D5C3D', rgb: '61, 92, 61' },
     renault: { hex: '#FFCC00', rgb: '255, 204, 0' },
     peugeot: { hex: '#003DA5', rgb: '0, 61, 165' },
     citroen: { hex: '#AC1926', rgb: '172, 25, 38' },
+    volvo: { hex: '#003057', rgb: '0, 48, 87' },
+    'land-rover': { hex: '#005A2B', rgb: '0, 90, 43' },
+    'landrover': { hex: '#005A2B', rgb: '0, 90, 43' },
+    mini: { hex: '#000000', rgb: '0, 0, 0' },
+    
+    // Marcas Chinesas
+    jac: { hex: '#6B7280', rgb: '107, 114, 128' }, // Cinza neutro para UI (logo já é cinza)
+    'jacmotors': { hex: '#6B7280', rgb: '107, 114, 128' },
+    chery: { hex: '#003DA5', rgb: '0, 61, 165' },
+    byd: { hex: '#0066B2', rgb: '0, 102, 178' },
+    
+    // Marcas Italianas Premium
     ferrari: { hex: '#DC0000', rgb: '220, 0, 0' },
     lamborghini: { hex: '#DDB321', rgb: '221, 179, 33' },
     maserati: { hex: '#0C2340', rgb: '12, 35, 64' },
+    
+    // Default
     default: { hex: '#6B7280', rgb: '107, 114, 128' },
   };
   
-  const key = brand?.toLowerCase().replace(/\s+/g, '') || 'default';
-  return brandColors[key] || brandColors.default;
+  const key = brand?.toLowerCase().trim().replace(/\s+/g, '').replace(/-/g, '') || 'default';
+  const result = brandColors[key] || brandColors.default;
+  
+  return result;
 };
 
 export type BudgetTokens = {

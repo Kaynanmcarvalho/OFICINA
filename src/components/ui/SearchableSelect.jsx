@@ -104,7 +104,7 @@ const SearchableSelect = ({ options = [], value, onChange, placeholder = 'Seleci
                 </div>
             )}
         </div>
-    );
+  );
 };
 
 export default SearchableSelect;

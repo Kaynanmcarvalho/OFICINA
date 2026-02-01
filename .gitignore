@@ -1,3 +1,10 @@
+# Environment variables (CRITICAL - NEVER COMMIT)
+.env
+.env.local
+.env.*.local
+*.env
+!.env.example
+
 # Logs
 logs
 *.log
@@ -25,6 +32,16 @@ dist-ssr
 
 # WhatsApp Web auth session (ephemeral)
 /.wwebjs_auth/
+
+# Firebase service account keys (CRITICAL - NEVER COMMIT)
+**/serviceAccountKey.json
+serviceAccountKey*.json
+
+# Backend environment files
+backend/.env
+backend/.env.local
+server/.env
+server/.env.local
 
 # Large JSON files (parts compatibility database)
 scripts/parts-compatibility-engine/output/*.json

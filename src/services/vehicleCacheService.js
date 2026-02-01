@@ -17,15 +17,12 @@ export const getVehicleFromCache = async (plate) => {
     try {
         const cleanPlate = plate.replace(/[^A-Z0-9]/g, '').toUpperCase();
         
-        console.log(`[CACHE] 🔍 Buscando placa ${cleanPlate} no cache...`);
-        
         const docRef = doc(db, VEHICLES_CACHE_COLLECTION, cleanPlate);
         const docSnap = await getDoc(docRef);
         
         if (docSnap.exists()) {
             const data = docSnap.data();
-            console.log(`[CACHE] ✅ Placa encontrada no cache!`);
-            console.log(`[CACHE] 📦 Última atualização: ${data.lastUpdated?.toDate?.()}`);
+            }`);
             
             return {
                 success: true,
@@ -36,7 +33,6 @@ export const getVehicleFromCache = async (plate) => {
             };
         }
         
-        console.log(`[CACHE] ❌ Placa não encontrada no cache`);
         return null;
         
     } catch (error) {
@@ -56,20 +52,14 @@ export const saveVehicleToCache = async (plate, vehicleData) => {
     try {
         const cleanPlate = plate.replace(/[^A-Z0-9]/g, '').toUpperCase();
         
-        console.log(`[CACHE] 💾 Validando dados antes de salvar placa ${cleanPlate}...`);
-        
         // ✅ VALIDAÇÃO: Só salva se TODOS os campos obrigatórios estiverem preenchidos
         const requiredFields = ['marca', 'modelo', 'ano', 'cor'];
         const missingFields = requiredFields.filter(field => !vehicleData[field] || vehicleData[field].trim() === '');
         
         if (missingFields.length > 0) {
-            console.log(`[CACHE] ⚠️  Dados incompletos! Campos faltando: ${missingFields.join(', ')}`);
-            console.log(`[CACHE] ❌ NÃO salvando no cache - dados incompletos`);
+            }`);
             return false;
         }
-        
-        console.log(`[CACHE] ✅ Validação OK! Todos os campos obrigatórios preenchidos`);
-        console.log(`[CACHE] 📦 Marca: ${vehicleData.marca} | Modelo: ${vehicleData.modelo} | Ano: ${vehicleData.ano} | Cor: ${vehicleData.cor}`);
         
         const docRef = doc(db, VEHICLES_CACHE_COLLECTION, cleanPlate);
         
@@ -96,8 +86,7 @@ export const saveVehicleToCache = async (plate, vehicleData) => {
             source: 'keplaca', // Origem dos dados
             isComplete: true // Flag indicando que tem todos os campos
         });
-        
-        console.log(`[CACHE] ✅ Placa salva no cache com sucesso! (Hit count: ${hitCount})`);
+
         return true;
         
     } catch (error) {
@@ -123,8 +112,7 @@ export const incrementCacheHit = async (plate) => {
                 hitCount: currentHitCount + 1,
                 lastAccessed: serverTimestamp()
             });
-            console.log(`[CACHE] 📊 Hit count atualizado: ${currentHitCount + 1}`);
-        }
+            }
     } catch (error) {
         console.error('[CACHE] ❌ Erro ao incrementar hit count:', error);
     }
@@ -140,8 +128,7 @@ export const getMostSearchedPlates = async (limit = 10) => {
         const q = query(
             collection(db, VEHICLES_CACHE_COLLECTION),
             where('hitCount', '>', 1)
-        );
-        
+
         const querySnapshot = await getDocs(q);
         const plates = [];
         
@@ -234,18 +221,14 @@ export const deletePlateFromCache = async (plate) => {
     try {
         const cleanPlate = plate.replace(/[^A-Z0-9]/g, '').toUpperCase();
         
-        console.log(`[CACHE] 🗑️  Deletando placa ${cleanPlate} do cache...`);
-        
         const docRef = doc(db, VEHICLES_CACHE_COLLECTION, cleanPlate);
         const docSnap = await getDoc(docRef);
         
         if (!docSnap.exists()) {
-            console.log(`[CACHE] ⚠️  Placa ${cleanPlate} não existe no cache`);
             return false;
         }
         
         await deleteDoc(docRef);
-        console.log(`[CACHE] ✅ Placa ${cleanPlate} deletada do cache com sucesso!`);
         return true;
         
     } catch (error) {

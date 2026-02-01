@@ -66,7 +66,6 @@ export function useDamageDetection(): UseDamageDetectionReturn {
       }
     },
     []
-  );
 
   // Analisar múltiplas fotos
   const analyzePhotos = useCallback(
@@ -87,7 +86,6 @@ export function useDamageDetection(): UseDamageDetectionReturn {
       }
     },
     []
-  );
 
   // Limpar todos os resultados
   const clearResults = useCallback(() => {

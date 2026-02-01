@@ -1,15 +1,22 @@
 /**
  * Rotas da API WhatsApp
  * Gerencia endpoints para conexão, envio de mensagens e status
+ * PROTEGIDO: Requer autenticação e validação de tenant
  */
 
 const express = require('express');
 const router = express.Router();
 const whatsappService = require('../services/whatsappMultiSessionService');
+const { authenticate, validateTenant } = require('../middleware/auth');
+
+// Aplicar autenticação em todas as rotas
+router.use(authenticate);
+router.use(validateTenant);
 
 /**
  * POST /api/whatsapp/:empresaId/start
  * Inicia ou restaura uma sessão do WhatsApp para uma empresa
+ * PROTEGIDO: Apenas empresa própria
  */
 router.post('/:empresaId/start', async (req, res) => {
   try {

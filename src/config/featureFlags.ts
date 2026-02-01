@@ -47,8 +47,7 @@ export const getEnabledFeatures = (): string[] => {
 export const logFeatureFlags = () => {
   console.group('🚩 Feature Flags Status');
   Object.entries(featureFlags).forEach(([feature, enabled]) => {
-    console.log(`${enabled ? '✅' : '❌'} ${feature}`);
-  });
+    });
   console.groupEnd();
 };
 

@@ -47,10 +47,10 @@ const FerramentasEmUso = ({ ferramentas, isLoading = false }) => {
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
         <LoaderAnimado tipo="list" />
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}

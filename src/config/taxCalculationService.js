@@ -17,13 +17,10 @@ class TaxCalculationService {
   async loadConfig(userId) {
     try {
       this.config = await configService.getConfig(userId);
-      console.log('📊 Configurações tributárias carregadas:', this.config);
-      
       // Configurar IBPT se ativo
       if (this.config.ibptAtivo && this.config.ibptToken) {
         ibptService.setToken(this.config.ibptToken);
-        console.log('🔗 IBPT configurado e ativo');
-      }
+        }
     } catch (error) {
       console.error('❌ Erro ao carregar configurações tributárias:', error);
       // Usar configurações padrão
@@ -57,8 +54,6 @@ class TaxCalculationService {
       await this.loadConfig();
     }
 
-    console.log('🧮 Calculando impostos para produto:', { produto, quantidade, preco, ufDestino });
-
     const valorTotal = preco * quantidade;
     const uf = ufDestino || this.config.uf || 'SP';
     
@@ -67,12 +62,9 @@ class TaxCalculationService {
     // Tentar buscar no IBPT se ativo e NCM disponível
     if (this.config.ibptAtivo && produto.ncm && this.config.ibptToken) {
       try {
-        console.log('🔍 Buscando impostos no IBPT para NCM:', produto.ncm);
         impostoData = await ibptService.getTaxInfoByNCM(produto.ncm, uf, valorTotal);
-        console.log('📊 Dados do IBPT recebidos:', impostoData);
-      } catch (error) {
-        console.warn('⚠️ Erro ao buscar no IBPT, usando configurações manuais:', error.message);
-      }
+        } catch (error) {
+        }
     }
 
     // Usar configurações manuais se IBPT não disponível
@@ -108,8 +100,6 @@ class TaxCalculationService {
       await this.loadConfig(userId);
     }
 
-    console.log('🧮 Calculando impostos para venda:', { itens, cliente });
-
     let totalProdutos = 0;
     let totalIcms = 0;
     let totalPis = 0;
@@ -126,7 +116,6 @@ class TaxCalculationService {
         item.preco,
         cliente.uf
       );
-
       totalProdutos += calculoItem.valorTotal;
       totalIcms += calculoItem.impostos.icms.valor;
       totalPis += calculoItem.impostos.pis.valor;
@@ -166,7 +155,6 @@ class TaxCalculationService {
       observacoes: this.getObservacoesGerais()
     };
 
-    console.log('📊 Resultado do cálculo de impostos:', resultado);
     return resultado;
   }
 
@@ -329,8 +317,6 @@ class TaxCalculationService {
    * @returns {Object} Cálculo detalhado dos impostos
    */
   calculateTaxes(saleData, config, products = []) {
-    console.log('🧮 Calculando impostos...', { saleData, config });
-    
     const regimeTributario = config.nfRegimeTributario || config.regimeTributario || 'simples_nacional';
     const isSimpleNacional = regimeTributario === 'simples_nacional';
     const subtotal = saleData.total || 0;
@@ -438,7 +424,6 @@ class TaxCalculationService {
       observacoes: this._getObservacoes(config)
     };
     
-    console.log('📊 Cálculo de impostos concluído:', calculation);
     return calculation;
   }
   

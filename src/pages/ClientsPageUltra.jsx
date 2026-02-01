@@ -63,7 +63,7 @@ const ClientsPageUltra = () => {
     if (filterStatus !== 'all') {
       filtered = filtered.filter(c => 
         filterStatus === 'active' ? c.status !== 'inactive' : c.status === 'inactive'
-      );
+
     }
     
     if (searchTerm) {
@@ -73,7 +73,7 @@ const ClientsPageUltra = () => {
         c.email?.toLowerCase().includes(search) ||
         c.phone?.includes(searchTerm) ||
         c.cpf?.includes(searchTerm)
-      );
+
     }
     
     return filtered;
@@ -129,7 +129,6 @@ const ClientsPageUltra = () => {
 };
 
 export default ClientsPageUltra;
-
 
 // Hero Section Component
 const HeroSection = ({ stats, isDarkMode }) => (
@@ -195,9 +194,8 @@ const StatCard = ({ icon: Icon, label, value, color, delay }) => {
         </div>
       </div>
     </motion.div>
-  );
-};
 
+};
 
 // Command Bar Component
 const CommandBar = ({ searchTerm, setSearchTerm, viewMode, setViewMode, showFilters, setShowFilters, filterStatus, setFilterStatus }) => {
@@ -293,9 +291,8 @@ const CommandBar = ({ searchTerm, setSearchTerm, viewMode, setViewMode, showFilt
         </AnimatePresence>
       </div>
     </motion.div>
-  );
-};
 
+};
 
 // Clients View Component
 const ClientsView = ({ clients, viewMode, isLoading, onSelectClient }) => {
@@ -310,10 +307,10 @@ const ClientsView = ({ clients, viewMode, isLoading, onSelectClient }) => {
           </div>
         </div>
       </div>
-    );
-  }
+  );
+}
 
-  if (clients.length === 0) {
+if (clients.length === 0) {
     return <EmptyState />;
   }
 
@@ -338,7 +335,7 @@ const ClientsView = ({ clients, viewMode, isLoading, onSelectClient }) => {
         </div>
       </div>
     </motion.div>
-  );
+
 };
 
 // Client Card Component
@@ -410,9 +407,8 @@ const ClientCard = ({ client, index, viewMode, onClick }) => {
         </div>
       </div>
     </motion.div>
-  );
-};
 
+};
 
 // Skeleton Card
 const SkeletonCard = ({ delay }) => (
@@ -567,5 +563,5 @@ const ClientDetailSidebar = ({ client, onClose }) => {
         </motion.div>
       </motion.div>
     </AnimatePresence>
-  );
+
 };

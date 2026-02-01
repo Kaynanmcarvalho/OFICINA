@@ -47,17 +47,13 @@ export const useAutoPlateSearch = (plate, debounceMs = 500) => {
     lastSearchedPlateRef.current = cleaned;
     
     try {
-      console.log(`[AutoPlateSearch] Searching for plate: ${cleaned}`);
-      
       const result = await consultarPlaca(cleaned);
       
       if (result.success && result.data) {
-        console.log('[AutoPlateSearch] Vehicle found:', result.data);
         setVehicleData(result.data);
         setError(null);
         setHasSearched(true);
       } else {
-        console.log('[AutoPlateSearch] Vehicle not found');
         setVehicleData(null);
         setError('Veículo não encontrado. Preencha os dados manualmente.');
         setHasSearched(true);

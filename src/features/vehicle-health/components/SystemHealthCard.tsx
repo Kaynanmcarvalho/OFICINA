@@ -90,10 +90,10 @@ export const SystemHealthCard: React.FC<SystemHealthCardProps> = ({
           </span>
         </div>
       </button>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <div
       onClick={onClick}
       className={`
@@ -173,5 +173,5 @@ export const SystemHealthCard: React.FC<SystemHealthCardProps> = ({
         )}
       </div>
     </div>
-  );
+
 };

@@ -255,5 +255,5 @@ export const DamageReportGenerator: React.FC<DamageReportGeneratorProps> = ({
         )}
       </div>
     </div>
-  );
+
 };

@@ -45,13 +45,10 @@ class CertificateStorageService {
       const certRef = ref(storage, `${this.basePath}/${fileName}`);
 
       // Fazer upload
-      console.log('📤 Fazendo upload do certificado:', fileName);
       const snapshot = await uploadBytes(certRef, file);
       
       // Obter URL de download
       const downloadURL = await getDownloadURL(snapshot.ref);
-      
-      console.log('✅ Upload do certificado concluído:', downloadURL);
       
       return {
         url: downloadURL,
@@ -74,8 +71,7 @@ class CertificateStorageService {
     try {
       const certRef = ref(storage, `${this.basePath}/${fileName}`);
       await deleteObject(certRef);
-      console.log('🗑️ Certificado removido:', fileName);
-    } catch (error) {
+      } catch (error) {
       console.error('❌ Erro ao remover certificado:', error);
       throw error;
     }

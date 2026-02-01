@@ -117,7 +117,6 @@ const analyzeInvoiceCommand = async (intentResult, context) => {
       },
       context.empresaId,
       context.userId
-    );
 
     if (result.success) {
       return {

@@ -67,13 +67,10 @@ const Example: React.FC = () => {
   ];
 
   const handleItemClick = (item: RecordItem) => {
-    console.log('Item clicado:', item);
     alert(`Abrindo detalhes de: ${item.primaryText}`);
   };
 
   const handleItemAction = (action: string, item: RecordItem) => {
-    console.log('Ação:', action, 'Item:', item);
-    
     switch (action) {
       case 'open':
         alert(`Abrindo: ${item.primaryText}`);
@@ -88,8 +85,6 @@ const Example: React.FC = () => {
   };
 
   const handleBulkAction = (action: string, items: RecordItem[]) => {
-    console.log('Ação em lote:', action, 'Itens:', items);
-    
     const itemNames = items.map(i => i.primaryText).join(', ');
     
     switch (action) {
@@ -105,12 +100,10 @@ const Example: React.FC = () => {
   };
 
   const handleSearch = (query: string) => {
-    console.log('Buscando:', query);
-  };
+    };
 
   const handleFilterChange = (filters: any) => {
-    console.log('Filtros alterados:', filters);
-  };
+    };
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 p-6">

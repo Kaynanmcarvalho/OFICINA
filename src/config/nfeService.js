@@ -17,8 +17,6 @@ class NFEService {
    */
   async makeRequest(data) {
     try {
-      console.log('🚀 [NFE SERVICE] Enviando dados para o backend:', data);
-      
       const response = await fetch(this.bridgeUrl, {
         method: 'POST',
         headers: {
@@ -199,7 +197,6 @@ class NFEService {
       });
 
       if (response.success) {
-        console.log('✅ [NFE SERVICE] NFe emitida com sucesso:', response.data);
         return {
           success: true,
           data: response.data,

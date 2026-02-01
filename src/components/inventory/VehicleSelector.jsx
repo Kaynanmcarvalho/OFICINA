@@ -147,11 +147,9 @@ const VehicleSelector = ({ onVehicleSelect, initialValue, disabled = false }) =>
 
   const filteredBrands = brands.filter(b => 
     b.nome.toLowerCase().includes(brandSearch.toLowerCase())
-  );
 
   const filteredModels = models.filter(m => 
     m.nome.toLowerCase().includes(modelSearch.toLowerCase())
-  );
 
   return (
     <div className="space-y-4">

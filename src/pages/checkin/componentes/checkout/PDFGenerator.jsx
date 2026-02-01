@@ -183,7 +183,7 @@ export const generateServicePDF = async ({
     const splitObservations = doc.splitTextToSize(
       checkoutData.observations,
       pageWidth - (margin * 2)
-    );
+
     doc.text(splitObservations, margin, yPosition);
     yPosition += (splitObservations.length * 5) + 10;
   }
@@ -241,13 +241,12 @@ export const generateServicePDF = async ({
     pageWidth / 2,
     footerY,
     { align: 'center' }
-  );
+
   doc.text(
     `Gerado em: ${new Date().toLocaleString('pt-BR')}`,
     pageWidth / 2,
     footerY + 4,
     { align: 'center' }
-  );
 
   // Retornar PDF como Blob
   return doc.output('blob');

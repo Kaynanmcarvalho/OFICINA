@@ -1,14 +1,17 @@
 /**
  * TORQ OBD-II API Routes
  * Endpoints para comunicação com scanner OBD-II
+ * PROTEGIDO: Requer autenticação
  */
 
 const express = require('express');
 const router = express.Router();
 const obdService = require('../services/obdService');
+const { authenticate } = require('../middleware/auth');
+const { obdLimiter } = require('../middleware/rateLimiter');
 
-// Estado das conexões ativas por sessão
-const activeSessions = new Map();
+// Aplicar autenticação em todas as rotas
+router.use(authenticate);
 
 /**
  * GET /api/obd/status
@@ -99,8 +102,9 @@ router.post('/disconnect', async (req, res) => {
 /**
  * GET /api/obd/scan/quick
  * Executa scan rápido (dados básicos + MIL)
+ * PROTEGIDO: Rate limited
  */
-router.get('/scan/quick', async (req, res) => {
+router.get('/scan/quick', obdLimiter, async (req, res) => {
   try {
     console.log('[OBD API] Iniciando scan rápido...');
 
@@ -137,8 +141,9 @@ router.get('/scan/quick', async (req, res) => {
 /**
  * GET /api/obd/scan/full
  * Executa scan completo (DTCs + dados ao vivo + sensores)
+ * PROTEGIDO: Rate limited
  */
-router.get('/scan/full', async (req, res) => {
+router.get('/scan/full', obdLimiter, async (req, res) => {
   try {
     console.log('[OBD API] Iniciando scan completo...');
 

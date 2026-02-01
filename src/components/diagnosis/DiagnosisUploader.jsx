@@ -50,7 +50,6 @@ const DiagnosisUploader = ({ vehicleId, clientId, onComplete, onError }) => {
           return file;
         }
       })
-    );
 
     // Generate previews
     const newPreviews = await Promise.all(
@@ -61,7 +60,6 @@ const DiagnosisUploader = ({ vehicleId, clientId, onComplete, onError }) => {
           reader.readAsDataURL(file);
         });
       })
-    );
 
     setFiles((prev) => [...prev, ...compressedFiles]);
     setPreviews((prev) => [...prev, ...newPreviews]);

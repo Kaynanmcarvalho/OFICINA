@@ -33,8 +33,6 @@ export const logAction = async (action, data = {}, metadata = {}) => {
     
     const docRef = await addDoc(collection(db, 'audit_logs'), logEntry);
     
-    console.log(`[Audit] ${action} logged:`, logEntry);
-    
     return docRef.id;
   } catch (error) {
     console.error('[Audit] Error logging action:', error);
@@ -142,7 +140,7 @@ export const getAuditLogs = async (filters = {}) => {
       collection(db, 'audit_logs'),
       where('empresaId', '==', empresaId)
     );
-    
+
     // Aplicar filtros
     if (filters.action) {
       q = query(q, where('action', '==', filters.action));

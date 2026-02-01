@@ -61,10 +61,10 @@ const MarginAnalysisCard = ({ empresaId, period = 30 }) => {
           <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
         </div>
       </div>
-    );
-  }
+  );
+}
 
-  if (!stats || stats.count === 0) {
+if (!stats || stats.count === 0) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
         <div className="flex items-center space-x-3 mb-4">
@@ -79,10 +79,10 @@ const MarginAnalysisCard = ({ empresaId, period = 30 }) => {
           Nenhum orçamento analisado nos últimos {period} dias
         </p>
       </div>
-    );
-  }
+  );
+}
 
-  const getMarginColor = (margin) => {
+const getMarginColor = (margin) => {
     if (margin >= 35) return 'text-green-600 dark:text-green-400';
     if (margin >= 20) return 'text-yellow-600 dark:text-yellow-400';
     return 'text-red-600 dark:text-red-400';

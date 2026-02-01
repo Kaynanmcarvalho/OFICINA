@@ -72,7 +72,7 @@ const PinGenerator = ({ pin, checkinId, vehicleInfo, onClose }) => {
           ">Imprimir</button>
         </body>
       </html>
-    `);
+
     printWindow.document.close();
   };
 
@@ -86,8 +86,7 @@ const PinGenerator = ({ pin, checkinId, vehicleInfo, onClose }) => {
           text: text
         });
       } catch (err) {
-        console.log('Share cancelled');
-      }
+        }
     } else {
       handleCopy();
     }

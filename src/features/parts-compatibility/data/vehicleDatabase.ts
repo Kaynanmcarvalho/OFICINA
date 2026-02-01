@@ -539,7 +539,6 @@ export const TRUCK_MODELS: Record<string, string[]> = {
   ],
 };
 
-
 // ============================================================================
 // MODELOS POR MARCA - VANS E FURGÕES
 // ============================================================================
@@ -729,7 +728,6 @@ export const MOTORCYCLE_MODELS: Record<string, string[]> = {
     'YZ 250', 'YZ 250F', 'YZ 450F', 'YZF-R1', 'YZF-R3', 'YZF-R6', 'YZF-R7',
   ],
 };
-
 
 // ============================================================================
 // MODELOS POR MARCA - TRATORES E MÁQUINAS AGRÍCOLAS
@@ -1018,7 +1016,6 @@ export const COMPLETE_PART_CATEGORIES = {
     ],
   },
 };
-
 
 // ============================================================================
 // MARCAS DE PEÇAS COMPLETAS

@@ -58,10 +58,10 @@ export const DashboardCard = ({
           <div className="h-3 bg-neutral-200 dark:bg-neutral-700 rounded w-1/2" />
         </div>
       </motion.div>
-    );
-  }
+  );
+}
 
-  if (isEmpty) {
+if (isEmpty) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -73,10 +73,10 @@ export const DashboardCard = ({
           <p className="text-sm">Sem dados disponíveis</p>
         </div>
       </motion.div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}

@@ -138,8 +138,7 @@ export function useVoiceRecognition(
       recognitionRef.current.start();
     } catch (err) {
       // Já está rodando
-      console.warn('Recognition already started');
-    }
+      }
   }, [isListening]);
 
   const stopListening = useCallback(() => {
@@ -148,8 +147,7 @@ export function useVoiceRecognition(
     try {
       recognitionRef.current.stop();
     } catch (err) {
-      console.warn('Recognition already stopped');
-    }
+      }
   }, [isListening]);
 
   const resetTranscript = useCallback(() => {

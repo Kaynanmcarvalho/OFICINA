@@ -190,7 +190,7 @@ export function OBDResultsPanel({ result, onClose }: OBDResultsPanelProps) {
         </button>
       </div>
     </div>
-  );
+
 }
 
 // Card de código de diagnóstico
@@ -240,7 +240,7 @@ function DTCCard({ code }: { code: DiagnosticTroubleCode }) {
         </div>
       )}
     </div>
-  );
+
 }
 
 // Card de dados ao vivo

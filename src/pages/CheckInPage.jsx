@@ -186,6 +186,7 @@ const CheckInPage = () => {
         b.checkinId === checkinId || 
         (b.vehiclePlate === c.vehiclePlate && b.clientName === c.clientName)
       );
+
       // Só conta se não tem orçamento E não está completo/entregue
       return !hasBudget && c.status !== 'completed';
     }).length;
@@ -269,9 +270,9 @@ const CheckInPage = () => {
     const foundBudget = budgets.find(b => 
       b.checkinId === checkinId || 
       (b.vehiclePlate === checkin.vehiclePlate && b.clientName === checkin.clientName)
-    );
-    
-    if (foundBudget) {
+  );
+
+  if (foundBudget) {
       // Já existe orçamento - abrir em modo edição
       setExistingBudget(foundBudget);
       setCheckinForBudget(checkin);
@@ -651,7 +652,6 @@ const getBrandColors = (brand) => {
     energyLine: theme.brandAccent
   };
 };
-
 
 // === RECORD ROW (List Mode) ===
 const RecordRow = ({ checkin, index, isSelected, onSelect, onView, onEdit, onBudget, formatDate, formatTimeAgo, getStatusConfig, isDarkMode, hasBudget }) => {

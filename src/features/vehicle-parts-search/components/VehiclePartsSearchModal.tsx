@@ -278,7 +278,6 @@ interface VehiclePartsSearchModalProps {
   isDarkMode?: boolean;
 }
 
-
 // ============================================================================
 // MAIN COMPONENT
 // ============================================================================
@@ -514,7 +513,6 @@ export const VehiclePartsSearchModal: React.FC<VehiclePartsSearchModalProps> = (
   const groupedSuggestions = groupSuggestionsByBrand(suggestions);
 
   if (!isOpen) return null;
-
 
   return (
     <AnimatePresence>

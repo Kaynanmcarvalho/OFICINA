@@ -171,7 +171,6 @@ const TRUCK_PARTS_CHECKLIST = [
   { categoryKey: 'radiator_hose', name: 'Mangueira do Radiador', category: 'Arrefecimento' },
 ];
 
-
 // ============================================================================
 // MARCAS DE PEÇAS POR CATEGORIA
 // ============================================================================

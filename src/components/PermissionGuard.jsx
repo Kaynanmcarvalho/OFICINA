@@ -7,7 +7,6 @@
 
 import { useEmpresa } from '../contexts/EmpresaContext';
 
-
 /**
  * PermissionGuard Component
  * 

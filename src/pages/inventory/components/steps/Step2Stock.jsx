@@ -278,6 +278,3 @@ const Step2Stock = ({ formData, updateFormData }) => {
 
 export default Step2Stock;
 
-
-
-

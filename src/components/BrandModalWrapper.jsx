@@ -118,7 +118,7 @@ const BrandModalWrapper = ({
       )}
     </AnimatePresence>,
     document.body
-  );
+
 };
 
 export default BrandModalWrapper;

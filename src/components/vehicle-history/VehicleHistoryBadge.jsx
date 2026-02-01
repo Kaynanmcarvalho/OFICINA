@@ -84,4 +84,4 @@ export function VehicleHistoryBadge({ placa, onClick }) {
       <span>{style.label}</span>
     </button>
   );
-}
+};

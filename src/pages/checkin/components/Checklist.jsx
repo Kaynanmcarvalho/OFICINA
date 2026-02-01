@@ -232,7 +232,7 @@ const Checklist = ({ vehicleData, onChecklistChange }) => {
                               >
                                 {statusLabels[status]}
                               </button>
-                            );
+
                           })}
                         </div>
                         
@@ -256,7 +256,7 @@ const Checklist = ({ vehicleData, onChecklistChange }) => {
                       </div>
                     </div>
                   </motion.div>
-                );
+
               })}
             </div>
           </motion.div>

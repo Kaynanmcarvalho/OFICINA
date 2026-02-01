@@ -50,7 +50,6 @@ export const createCheckin = async (checkinData, empresaId) => {
     };
     
     const docRef = await addDoc(collection(db, 'checkins'), docData);
-    console.log('Check-in criado:', docRef.id);
     return docRef.id;
   } catch (error) {
     console.error('Erro ao criar check-in:', error);
@@ -73,7 +72,7 @@ export const getCheckinHistory = async (placa, empresaId) => {
       orderBy('criadoEm', 'desc'),
       limit(5)
     );
-    
+
     const snapshot = await getDocs(q);
     return snapshot.docs.map(doc => ({ 
       id: doc.id, 
@@ -99,8 +98,7 @@ export const updateCheckin = async (checkinId, updates) => {
       ...updates,
       atualizadoEm: serverTimestamp()
     });
-    console.log('Check-in atualizado:', checkinId);
-  } catch (error) {
+    } catch (error) {
     console.error('Erro ao atualizar check-in:', error);
     throw error;
   }
@@ -164,8 +162,6 @@ export const checkoutCheckin = async (checkinId, checkoutData, photoFiles = []) 
     };
 
     await updateDoc(docRef, updateData);
-    
-    console.log('Checkout realizado:', checkinId);
     
     return {
       id: checkinId,

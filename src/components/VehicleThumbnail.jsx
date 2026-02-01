@@ -89,7 +89,7 @@ const VehicleThumbnail = ({
       <div className={`${sizes[size]} bg-neutral-100 dark:bg-neutral-800 rounded-lg flex items-center justify-center border border-neutral-200 dark:border-neutral-700`}>
         <VehicleTypeIcon type={vehicleType} size={iconSize} className="text-neutral-500 dark:text-white" />
       </div>
-    );
+
   };
 
   // Renderizar loading
@@ -97,14 +97,12 @@ const VehicleThumbnail = ({
     <div className={`${sizes[size]} bg-neutral-100 dark:bg-neutral-800 rounded-lg flex items-center justify-center border border-neutral-200 dark:border-neutral-700`}>
       <Loader2 className="w-1/2 h-1/2 text-neutral-500 dark:text-white animate-spin" />
     </div>
-  );
 
   // Renderizar erro
   const renderError = () => (
     <div className={`${sizes[size]} bg-neutral-100 dark:bg-neutral-800 rounded-lg flex items-center justify-center border border-neutral-200 dark:border-neutral-700`}>
       <AlertCircle className="w-1/2 h-1/2 text-neutral-400 dark:text-white" />
     </div>
-  );
 
   // Renderizar imagem
   const renderImage = () => (
@@ -120,7 +118,6 @@ const VehicleThumbnail = ({
              title="Imagem em cache" />
       )}
     </div>
-  );
 
   // Conteúdo principal
   const renderContent = () => {
@@ -152,7 +149,6 @@ const VehicleThumbnail = ({
         </div>
       )}
     </div>
-  );
 
   // Se for modo hover, envolve com AnimatePresence
   if (showOnHover) {
@@ -202,10 +198,10 @@ const VehicleThumbnail = ({
           )}
         </AnimatePresence>
       </div>
-    );
-  }
+  );
+}
 
-  return content;
+return content;
 };
 
 export default VehicleThumbnail;

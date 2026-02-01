@@ -39,10 +39,8 @@ export const initializeMessaging = async () => {
       messaging = getMessaging(app);
       return messaging;
     }
-    console.warn('Firebase Messaging is not supported in this browser');
     return null;
   } catch (error) {
-    console.warn('Error checking messaging support:', error);
     return null;
   }
 };

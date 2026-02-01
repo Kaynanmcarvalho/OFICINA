@@ -25,8 +25,6 @@ class ReportService {
    */
   async generateSalesReport(startDate, endDate, filters = {}) {
     try {
-      console.log('📊 Gerando relatório de vendas:', { startDate, endDate, filters });
-
       // Função helper para criar data local sem problemas de fuso horário
       const createLocalDate = (dateInput) => {
         if (typeof dateInput === 'string') {
@@ -112,8 +110,6 @@ class ReportService {
    */
   async generateStockReport(filters = {}) {
     try {
-      console.log('📦 Gerando relatório de estoque:', filters);
-
       const products = await this.getProductsFromFirestore();
       
       // Filtrar produtos
@@ -202,15 +198,6 @@ class ReportService {
         geradoEm: new Date()
       };
 
-      console.log('📊 Relatório de estoque gerado:', {
-        totalProdutos: filteredProducts.length,
-        estoqueBaixo: lowStockProducts.length,
-        semEstoque: produtosSemEstoque.length,
-        valorTotal: stockValue,
-        valorCustoTotal: valorCustoTotal,
-        margemMedia: margemMedia
-      });
-
       return reportData;
     } catch (error) {
       console.error('❌ Erro ao gerar relatório de estoque:', error);
@@ -226,8 +213,6 @@ class ReportService {
    */
   async generateFinancialReport(startDate, endDate) {
     try {
-      console.log('💰 Gerando relatório financeiro:', { startDate, endDate });
-
       // Função helper para criar data local sem problemas de fuso horário
       const createLocalDate = (dateInput) => {
         if (typeof dateInput === 'string') {
@@ -252,12 +237,11 @@ class ReportService {
           collection(db, this.contasCollection),
           where('dataVencimento', '>=', Timestamp.fromDate(startDateObj)),
           where('dataVencimento', '<=', Timestamp.fromDate(endDateObj))
-        );
+
         const accountsSnapshot = await getDocs(accountsQuery);
         accounts = accountsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       } catch (error) {
-        console.warn('⚠️ Contas não encontradas, continuando sem elas');
-      }
+        }
 
       // Calcular receitas
       const receitas = this.calculateRevenues(sales);
@@ -311,8 +295,6 @@ class ReportService {
    */
   async generateTaxReport(startDate, endDate) {
     try {
-      console.log('🧾 Gerando relatório fiscal:', { startDate, endDate });
-
       // Função helper para criar data local sem problemas de fuso horário
       const createLocalDate = (dateInput) => {
         if (typeof dateInput === 'string') {
@@ -538,7 +520,6 @@ class ReportService {
       const products = await productService.getBatchesNearExpiration(days);
       return products || [];
     } catch (error) {
-      console.warn('⚠️ Erro ao buscar produtos vencendo:', error);
       return [];
     }
   }
@@ -886,8 +867,7 @@ class ReportService {
       const endTimestamp = createLocalDate(endDate);
       endTimestamp.setHours(23, 59, 59, 999);
 
-      console.log('🗓️ Buscando vendas entre:', {
-        inicio: startTimestamp.toLocaleDateString('pt-BR'),
+      ,
         fim: endTimestamp.toLocaleDateString('pt-BR'),
         startTimestamp,
         endTimestamp
@@ -898,7 +878,6 @@ class ReportService {
         where('timestamp', '>=', startTimestamp),
         where('timestamp', '<=', endTimestamp),
         orderBy('timestamp', 'desc')
-      );
 
       const salesSnapshot = await getDocs(salesQuery);
       const sales = salesSnapshot.docs.map(doc => ({
@@ -906,8 +885,6 @@ class ReportService {
         ...doc.data()
       }));
 
-      console.log(`📊 Encontradas ${sales.length} vendas no período`);
-      
       return sales;
     } catch (error) {
       console.error('❌ Erro ao buscar vendas do Firestore:', error);
@@ -1296,8 +1273,6 @@ class ReportService {
    */
   async calculateProductSalesRanking(products) {
     try {
-      console.log('📊 Calculando ranking de produtos vendidos...');
-      
       // Buscar todas as vendas (últimos 6 meses para ter uma amostra significativa)
       const sixMonthsAgo = new Date();
       sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
@@ -1306,7 +1281,6 @@ class ReportService {
         collection(db, this.vendasCollection),
         where('timestamp', '>=', sixMonthsAgo),
         orderBy('timestamp', 'desc')
-      );
 
       const salesSnapshot = await getDocs(salesQuery);
       const sales = salesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -1370,12 +1344,6 @@ class ReportService {
         .sort((a, b) => b.estoque - a.estoque) // Ordenar por estoque (maior problema)
         .slice(0, 20);
 
-      console.log('📊 Ranking calculado:', {
-        maisVendidos: maisVendidos.length,
-        menosVendidos: menosVendidos.length,
-        nuncaVendidos: nuncaVendidos.length
-      });
-
       return {
         maisVendidos,
         menosVendidos,
@@ -1404,7 +1372,6 @@ class ReportService {
    */
   async deleteVenda(saleId) {
     try {
-      console.log('🗑️ ReportService: Deletando venda:', saleId);
       return await salesService.deleteSale(saleId);
     } catch (error) {
       console.error('❌ ReportService: Erro ao deletar venda:', error);

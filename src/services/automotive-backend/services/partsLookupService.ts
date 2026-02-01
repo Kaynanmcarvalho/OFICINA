@@ -129,8 +129,6 @@ export class PartsLookupService {
    * Busca veículos por texto livre
    */
   async searchVehicles(query: string): Promise<VehicleSearchResult[]> {
-    console.log('[PartsLookup] Searching vehicles:', query);
-    
     // Parse da query para extrair marca, modelo, ano
     const parsed = this.parseVehicleQuery(query);
     
@@ -138,13 +136,11 @@ export class PartsLookupService {
     const firebaseResults = await firebaseService.searchVehicles(parsed);
     
     if (firebaseResults.length > 0) {
-      console.log('[PartsLookup] Found in Firebase:', firebaseResults.length);
       return firebaseResults.map(v => this.mapFirebaseVehicle(v));
     }
     
     // Se não encontrou, retornar lista vazia
     // (a busca externa seria feita aqui se tivéssemos APIs)
-    console.log('[PartsLookup] No results in Firebase');
     return [];
   }
   
@@ -152,19 +148,13 @@ export class PartsLookupService {
    * Busca peças compatíveis com um veículo
    */
   async getCompatibleParts(vehicleId: string): Promise<PartSearchResult[]> {
-    console.log('[PartsLookup] Getting compatible parts for:', vehicleId);
-    
     // Verificar se veículo existe e tem dados completos
     const completion = await firebaseService.isVehicleComplete(vehicleId);
     
     if (completion.isComplete) {
-      console.log('[PartsLookup] Vehicle data is complete, fetching from Firebase');
       const parts = await firebaseService.getPartsForVehicle(vehicleId);
       return parts.map(p => this.mapFirebasePart(p, vehicleId));
     }
-    
-    console.log('[PartsLookup] Vehicle data incomplete:', completion.completionPercentage + '%');
-    console.log('[PartsLookup] Missing categories:', completion.missingCategories);
     
     // Buscar peças existentes
     const existingParts = await firebaseService.getPartsForVehicle(vehicleId);
@@ -184,35 +174,25 @@ export class PartsLookupService {
     year: number;
     engine?: string;
   }): Promise<PartSearchResult[]> {
-    console.log('[PartsLookup] Getting parts from compatibility matrix for:', vehicle);
-    
     // Encontrar a plataforma do veículo
     const platformId = findPlatformForVehicle(vehicle);
     
     if (!platformId) {
-      console.log('[PartsLookup] No platform found for vehicle');
       return [];
     }
-    
-    console.log('[PartsLookup] Found platform:', platformId);
     
     // Obter o prefixo de peças para esta plataforma
     const partsPrefix = getPartsPrefix(platformId);
     
     if (!partsPrefix) {
-      console.log('[PartsLookup] No parts prefix for platform');
       return [];
     }
-    
-    console.log('[PartsLookup] Parts prefix:', partsPrefix);
     
     // Filtrar peças do banco de dados local que correspondem ao prefixo
     const compatibleParts = ALL_REAL_PARTS.filter(part => 
       part.id.startsWith(partsPrefix)
     );
-    
-    console.log('[PartsLookup] Found', compatibleParts.length, 'compatible parts');
-    
+
     // Mapear para o formato de resultado
     return compatibleParts.map(part => ({
       id: part.id,
@@ -250,8 +230,6 @@ export class PartsLookupService {
    * Busca peças por categoria
    */
   async getPartsByCategory(vehicleId: string, category: PartCategory): Promise<PartSearchResult[]> {
-    console.log('[PartsLookup] Getting parts by category:', category);
-    
     const parts = await firebaseService.getPartsByCategory(vehicleId, category);
     return parts.map(p => this.mapFirebasePart(p, vehicleId));
   }
@@ -260,11 +238,8 @@ export class PartsLookupService {
    * Obtém o status do checklist de um veículo
    */
   async getChecklistStatus(vehicleId: string): Promise<ChecklistStatus | null> {
-    console.log('[PartsLookup] Getting checklist status for:', vehicleId);
-    
     const vehicle = await firebaseService.getVehicleById(vehicleId);
     if (!vehicle) {
-      console.log('[PartsLookup] Vehicle not found');
       return null;
     }
     

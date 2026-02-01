@@ -39,17 +39,12 @@ export const EditBudgetRoute: React.FC<EditBudgetRouteProps> = ({
     const loadBudget = async () => {
       if (!budgetId || !isOpen) return;
       
-      console.log('🔄 Loading budget with ID:', budgetId);
       setLoading(true);
       try {
         const result = await getBudgetById(budgetId);
         
-        console.log('🔄 getBudgetById result:', result);
-        
         if (result.success && result.data) {
           const budget = result.data;
-          
-          console.log('🔄 Budget data from store:', budget);
           
           // Transform store data to flow data format
           const transformedData = {
@@ -80,8 +75,6 @@ export const EditBudgetRoute: React.FC<EditBudgetRouteProps> = ({
             validUntil: budget.validUntil || '',
           };
           
-          console.log('🔄 Transformed data for flow:', transformedData);
-          
           setInitialData(transformedData);
         } else {
           console.error('❌ Failed to load budget:', result.error);
@@ -98,9 +91,6 @@ export const EditBudgetRoute: React.FC<EditBudgetRouteProps> = ({
   
   const handleSubmit = useCallback(async (data: BudgetFlowReturn['data']) => {
     try {
-      console.log('🔄 handleSubmit called with budgetId:', budgetId);
-      console.log('🔄 Data received:', JSON.stringify(data, null, 2));
-      
       // Calculate totals
       const subtotal = data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
       const total = Math.max(0, subtotal - data.discount);
@@ -140,16 +130,10 @@ export const EditBudgetRoute: React.FC<EditBudgetRouteProps> = ({
         internalNotes: data.internalNotes,
       };
       
-      console.log('📋 Updating budget:', budgetId);
-      console.log('📋 Update data:', JSON.stringify(updateData, null, 2));
-      
       // Call store to update budget
       const result = await updateBudget(budgetId, updateData);
       
-      console.log('📋 Update result:', result);
-      
       if (result.success) {
-        console.log('✅ Budget updated successfully');
         onSuccess?.();
         return { success: true };
       } else {

@@ -28,8 +28,15 @@ export interface BudgetItem {
   type: 'product' | 'service';
   name: string;
   description?: string;
+  simpleDescription?: string; // Explicação em linguagem simples
   quantity: number;
+  cost: number; // NOVO: Custo do item
   price: number;
+  priority: 'required' | 'recommended' | 'optional'; // NOVO: Prioridade
+  deliveryDays: number; // NOVO: Prazo de entrega em dias
+  warranty?: string; // NOVO: Garantia (ex: "90 dias", "1 ano")
+  photoUrl?: string; // NOVO: Foto do item
+  dependsOn?: string; // ID de outro item (dependência)
 }
 
 export interface BudgetData {
@@ -37,9 +44,12 @@ export interface BudgetData {
   vehicle: BudgetVehicle | null;
   items: BudgetItem[];
   discount: number;
+  discountReason: string; // NOVO: Motivo do desconto (obrigatório se > 5%)
   notes: string;
   internalNotes: string;
   validUntil: string;
+  paymentTerms?: string; // NOVO: Condições de pagamento
+  paymentMethod?: string; // NOVO: Forma de pagamento preferida
 }
 
 export interface BudgetStep {
@@ -63,9 +73,12 @@ const initialBudgetData: BudgetData = {
   vehicle: null,
   items: [],
   discount: 0,
+  discountReason: '',
   notes: '',
   internalNotes: '',
   validUntil: '',
+  paymentTerms: '',
+  paymentMethod: '',
 };
 
 // ============================================================================
@@ -325,6 +338,18 @@ export function useBudgetFlow(options: UseBudgetFlowOptions = {}) {
     setData(prev => ({ ...prev, discount: Math.max(0, discount) }));
   }, []);
   
+  const updateDiscountReason = useCallback((discountReason: string) => {
+    setData(prev => ({ ...prev, discountReason }));
+  }, []);
+  
+  const updatePaymentTerms = useCallback((paymentTerms: string) => {
+    setData(prev => ({ ...prev, paymentTerms }));
+  }, []);
+  
+  const updatePaymentMethod = useCallback((paymentMethod: string) => {
+    setData(prev => ({ ...prev, paymentMethod }));
+  }, []);
+  
   const updateNotes = useCallback((notes: string) => {
     setData(prev => ({ ...prev, notes }));
   }, []);
@@ -380,6 +405,9 @@ export function useBudgetFlow(options: UseBudgetFlowOptions = {}) {
     removeItem,
     updateItemQuantity,
     updateDiscount,
+    updateDiscountReason,
+    updatePaymentTerms,
+    updatePaymentMethod,
     updateNotes,
     updateInternalNotes,
     setData,

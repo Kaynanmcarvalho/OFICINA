@@ -127,10 +127,10 @@ export function PartsCompatibilityPanel({
           <span className="ml-3 text-gray-600 dark:text-gray-300">Carregando peças compatíveis...</span>
         </div>
       </div>
-    );
-  }
+  );
+}
 
-  if (error) {
+if (error) {
     return (
       <div className={`bg-white dark:bg-gray-800 rounded-2xl p-6 ${className}`}>
         <div className="flex items-center justify-center py-12 text-red-500">
@@ -141,10 +141,10 @@ export function PartsCompatibilityPanel({
           </button>
         </div>
       </div>
-    );
-  }
+  );
+}
 
-  if (!vehicleData) {
+if (!vehicleData) {
     return (
       <div className={`bg-white dark:bg-gray-800 rounded-2xl p-6 ${className}`}>
         <div className="text-center py-12 text-gray-500 dark:text-gray-400">
@@ -152,10 +152,10 @@ export function PartsCompatibilityPanel({
           <p>Selecione um veículo para ver as peças compatíveis</p>
         </div>
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <div className={`bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden ${className}`}>
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white">
@@ -256,8 +256,7 @@ export function PartsCompatibilityPanel({
       </div>
     </div>
   );
-}
-
+};
 
 // Part Card Component
 interface PartCardProps {

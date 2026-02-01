@@ -29,7 +29,6 @@ export const useInventoryIntegration = () => {
         quantity,
         budgetId,
         'Reserva para orçamento'
-      );
 
       if (result.success) {
         return { success: true };
@@ -54,7 +53,6 @@ export const useInventoryIntegration = () => {
         quantity,
         budgetId,
         'Remoção do orçamento'
-      );
 
       if (result.success) {
         return { success: true };
@@ -83,7 +81,7 @@ export const useInventoryIntegration = () => {
           'budget',
           budgetId,
           `Orçamento aprovado #${budgetId}`
-        );
+
         results.push(result);
       }
 
@@ -125,7 +123,7 @@ export const useInventoryIntegration = () => {
           item.quantity,
           budgetId,
           `Orçamento cancelado/expirado #${budgetId}`
-        );
+
         results.push(result);
       }
 
@@ -155,7 +153,7 @@ export const useInventoryIntegration = () => {
           'sale',
           saleId,
           `Venda direta #${saleId}`
-        );
+
         results.push(result);
       }
 

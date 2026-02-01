@@ -42,13 +42,10 @@ class ImageStorageService {
       const logoRef = ref(storage, `${this.logoPath}/${fileName}`);
 
       // Fazer upload
-      console.log('📤 Fazendo upload do logo da empresa:', fileName);
       const snapshot = await uploadBytes(logoRef, file);
       
       // Obter URL de download
       const downloadURL = await getDownloadURL(snapshot.ref);
-      console.log('✅ Logo da empresa enviado com sucesso:', downloadURL);
-      
       return downloadURL;
     } catch (error) {
       console.error('❌ Erro ao fazer upload do logo:', error);
@@ -90,13 +87,11 @@ class ImageStorageService {
       const imageRef = ref(storage, `${this.basePath}/${fileName}`);
 
       // Fazer upload
-      console.log('📤 Fazendo upload da imagem:', fileName);
       const snapshot = await uploadBytes(imageRef, file);
       
       // Obter URL de download
       const downloadURL = await getDownloadURL(snapshot.ref);
       
-      console.log('✅ Upload concluído:', downloadURL);
       return downloadURL;
     } catch (error) {
       console.error('❌ Erro no upload da imagem:', error);
@@ -112,7 +107,6 @@ class ImageStorageService {
   async deleteProductImage(imageUrl) {
     try {
       if (!imageUrl || !imageUrl.includes('firebase')) {
-        console.log('URL não é do Firebase Storage, ignorando exclusão');
         return true;
       }
 
@@ -127,16 +121,13 @@ class ImageStorageService {
       const imagePath = decodeURIComponent(pathMatch[1]);
       const imageRef = ref(storage, imagePath);
 
-      console.log('🗑️ Deletando imagem:', imagePath);
       await deleteObject(imageRef);
       
-      console.log('✅ Imagem deletada com sucesso');
       return true;
     } catch (error) {
       console.error('❌ Erro ao deletar imagem:', error);
       // Não falhar se a imagem não existir
       if (error.code === 'storage/object-not-found') {
-        console.log('Imagem já foi deletada ou não existe');
         return true;
       }
       throw new Error(`Erro ao deletar imagem: ${error.message}`);
@@ -195,7 +186,7 @@ class ImageStorageService {
           },
           file.type,
           quality
-        );
+
       };
 
       img.onerror = () => reject(new Error('Erro ao carregar imagem'));
@@ -223,10 +214,8 @@ class ImageStorageService {
 
       // Redimensionar se necessário
       if (autoResize && (file.size > 1024 * 1024 || file.width > maxWidth || file.height > maxHeight)) {
-        console.log('🔄 Redimensionando imagem...');
         fileToUpload = await this.resizeImage(file, maxWidth, maxHeight, quality);
-        console.log(`📏 Imagem redimensionada: ${file.size} → ${fileToUpload.size} bytes`);
-      }
+        }
 
       return await this.uploadProductImage(fileToUpload, productId);
     } catch (error) {

@@ -23,8 +23,6 @@ const TaxPreviewModal = ({ isOpen, onClose, onConfirm, saleData, clearCart }) =>
     setIbptStatus(null);
     
     try {
-      console.log('🧮 Iniciando cálculo de impostos para:', saleData);
-      
       // Preparar dados dos itens
       const itens = saleData.items?.map(item => ({
         nome: item.name || item.nome,
@@ -53,8 +51,7 @@ const TaxPreviewModal = ({ isOpen, onClose, onConfirm, saleData, clearCart }) =>
         totalItens: resultado.itens.length
       });
       
-      console.log('✅ Cálculo de impostos concluído:', resultado);
-    } catch (err) {
+      } catch (err) {
       console.error('❌ Erro ao calcular impostos:', err);
       setError('Erro ao calcular impostos: ' + err.message);
     } finally {

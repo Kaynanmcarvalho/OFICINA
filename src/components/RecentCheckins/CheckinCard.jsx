@@ -29,8 +29,7 @@ const CheckinCard = memo(({ checkin, isSelected, onSelect, onViewDetails }) => {
   const vehicleType = checkin.vehicleType || detectVehicleType(
     checkin.vehicleBrand, 
     checkin.vehicleModel
-  );
-  
+
   // Status helpers
   const isCompleted = status === 'completed';
   const isPending = status === 'pending';
@@ -47,7 +46,6 @@ const CheckinCard = memo(({ checkin, isSelected, onSelect, onViewDetails }) => {
         minute: '2-digit'
       });
     } catch (error) {
-      console.warn('Invalid date format:', date);
       return 'Data inválida';
     }
   };
@@ -334,7 +332,7 @@ const CheckinCard = memo(({ checkin, isSelected, onSelect, onViewDetails }) => {
         </div>
       </div>
     </motion.article>
-  );
+
 }, (prevProps, nextProps) => {
   // Custom comparison function for React.memo
   // Only re-render if checkin.id or isSelected changes

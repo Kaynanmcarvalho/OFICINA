@@ -224,6 +224,7 @@ export async function getPartByNumber(partNumber: string): Promise<FirebasePart 
       collection(db, COLLECTIONS.PARTS),
       where('oemPartNumber', '==', partNumber.toUpperCase())
     );
+
     const snapshot = await getDocs(q);
     
     if (!snapshot.empty) {
@@ -236,6 +237,7 @@ export async function getPartByNumber(partNumber: string): Promise<FirebasePart 
       collection(db, COLLECTIONS.PARTS),
       where('alternativePartNumbers', 'array-contains', partNumber.toUpperCase())
     );
+
     const snapshotAlt = await getDocs(qAlt);
     
     if (!snapshotAlt.empty) {
@@ -259,6 +261,7 @@ export async function getPartsForVehicle(vehicleId: string): Promise<FirebasePar
       collection(db, COLLECTIONS.PARTS),
       where('compatibleVehicleIds', 'array-contains', vehicleId)
     );
+
     const snapshot = await getDocs(q);
     
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as FirebasePart));
@@ -281,6 +284,7 @@ export async function getPartsByCategory(
       where('compatibleVehicleIds', 'array-contains', vehicleId),
       where('category', '==', category)
     );
+
     const snapshot = await getDocs(q);
     
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as FirebasePart));
@@ -395,6 +399,7 @@ export async function getSharedPartsByNumber(partNumber: string): Promise<Shared
       collection(db, COLLECTIONS.SHARED_PARTS),
       where('partNumber', '==', partNumber.toUpperCase())
     );
+
     const snapshot = await getDocs(q);
     
     if (!snapshot.empty) {

@@ -58,8 +58,7 @@ for (const part of ALL_REAL_PARTS) {
   }
 }
 
-console.log('[PartsExtended] ✅ Dados migrados do realPartsDatabase:', {
-  total: Object.keys(EXTENDED_PARTS_DATABASE).length,
+.length,
   thermostats: Object.keys(THERMOSTATS_DATABASE).length,
   waterPumps: Object.keys(WATER_PUMPS_DATABASE).length,
 });

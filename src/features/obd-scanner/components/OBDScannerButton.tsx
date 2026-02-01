@@ -101,10 +101,10 @@ export function OBDScannerButton({
         <AlertTriangle className="w-4 h-4" />
         <span className="text-sm">Bluetooth não suportado</span>
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <>
       {/* Botão principal */}
       <motion.button
@@ -397,7 +397,7 @@ export function OBDScannerButton({
         )}
       </AnimatePresence>
     </>
-  );
+
 }
 
 export default OBDScannerButton;

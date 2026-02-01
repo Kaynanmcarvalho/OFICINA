@@ -61,7 +61,6 @@ const PrintReceiptModal = ({
       
       // Verificar se a data é válida
       if (isNaN(dateObj.getTime())) {
-        console.warn('Data inválida fornecida para formatDate:', date);
         return new Date().toLocaleDateString('pt-BR');
       }
       
@@ -73,7 +72,6 @@ const PrintReceiptModal = ({
         minute: '2-digit'
       }).format(dateObj);
     } catch (error) {
-      console.warn('Erro ao formatar data:', error, date);
       return new Date().toLocaleDateString('pt-BR');
     }
   };

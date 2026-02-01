@@ -282,7 +282,6 @@ const RecentSectionThemeAware: React.FC<RecentSectionThemeAwareProps> = ({
             </AnimatePresence>
           </div>
 
-
         </div>
       </motion.div>
     </div>

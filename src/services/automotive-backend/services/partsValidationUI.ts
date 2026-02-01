@@ -176,8 +176,7 @@ export async function startBrandValidation(
   
   const brandParts = ALL_REAL_PARTS.filter(part =>
     part.compatibility.some(c => c.brand.toUpperCase() === brand.toUpperCase())
-  );
-  
+
   currentProgress = {
     phase: 'validating',
     currentPart: '',

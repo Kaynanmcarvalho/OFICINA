@@ -349,7 +349,6 @@ const ClientFormHorizontal = ({
         )}
       </AnimatePresence>
     </motion.div>
-  );
 
   return (
     <div className="space-y-8">

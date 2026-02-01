@@ -161,7 +161,7 @@ const TorqAIFeatures = () => {
                 </svg>
               </div>
             </motion.button>
-          );
+
         })}
       </div>
     </motion.div>

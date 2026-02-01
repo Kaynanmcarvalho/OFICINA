@@ -54,7 +54,6 @@ const QRCodeScanner = ({ onScan, onClose, isOpen = false }) => {
         config,
         onScanSuccess,
         onScanFailure
-      );
 
       setIsScanning(true);
     } catch (err) {
@@ -113,8 +112,7 @@ const QRCodeScanner = ({ onScan, onClose, isOpen = false }) => {
   const onScanFailure = (error) => {
     // Ignorar erros de "not found" (normais durante scan)
     if (!error.includes('NotFoundException')) {
-      console.warn('Scan error:', error);
-    }
+      }
   };
 
   /**

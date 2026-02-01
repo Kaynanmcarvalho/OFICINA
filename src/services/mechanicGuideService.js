@@ -186,7 +186,7 @@ export class MechanicGuideService {
           guide.title.toLowerCase().includes(searchLower) ||
           guide.description?.toLowerCase().includes(searchLower) ||
           guide.tags?.some(tag => tag.toLowerCase().includes(searchLower))
-        );
+
       }
 
       return guides;
@@ -208,7 +208,6 @@ export class MechanicGuideService {
         where('category', '==', category),
         orderBy('views', 'desc'),
         limit(limitCount)
-      );
 
       const snapshot = await getDocs(q);
       return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -230,7 +229,6 @@ export class MechanicGuideService {
         where('difficulty', '==', difficulty),
         orderBy('views', 'desc'),
         limit(limitCount)
-      );
 
       const snapshot = await getDocs(q);
       return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -256,7 +254,6 @@ export class MechanicGuideService {
         where('empresaId', '==', guide.empresaId),
         orderBy('views', 'desc'),
         limit(limitCount + 1)
-      );
 
       const snapshot = await getDocs(q);
       const guides = snapshot.docs
@@ -281,7 +278,6 @@ export class MechanicGuideService {
         where('empresaId', '==', empresaId),
         orderBy('views', 'desc'),
         limit(limitCount)
-      );
 
       const snapshot = await getDocs(q);
       return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -302,7 +298,6 @@ export class MechanicGuideService {
         where('empresaId', '==', empresaId),
         orderBy('createdAt', 'desc'),
         limit(limitCount)
-      );
 
       const snapshot = await getDocs(q);
       return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -442,7 +437,6 @@ export class MechanicGuideService {
       const q = query(
         guidesRef,
         where('empresaId', '==', empresaId)
-      );
 
       const snapshot = await getDocs(q);
       const categories = new Set();
@@ -470,7 +464,6 @@ export class MechanicGuideService {
       const q = query(
         guidesRef,
         where('empresaId', '==', empresaId)
-      );
 
       const snapshot = await getDocs(q);
       const tags = new Set();

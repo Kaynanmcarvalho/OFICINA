@@ -182,8 +182,8 @@ const InventoryListView = ({ products, onViewProduct, onEditProduct }) => {
                   </td>
                 </motion.tr>
               );
-            })}
-          </tbody>
+              })}
+            </tbody>
         </table>
       </div>
     </motion.div>

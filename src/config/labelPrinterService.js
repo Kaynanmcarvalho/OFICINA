@@ -50,7 +50,6 @@ class LabelPrinterService {
         await window.qz.websocket.connect();
       }
 
-      console.log('QZ Tray conectado com sucesso');
       return true;
     } catch (error) {
       console.error('Erro ao conectar com QZ Tray:', error);
@@ -137,7 +136,7 @@ class LabelPrinterService {
       supportedSizes.includes(config.tamanhoEtiqueta) &&
       config.densidadeEtiqueta >= 1 && config.densidadeEtiqueta <= 15 &&
       config.velocidadeEtiqueta >= 1 && config.velocidadeEtiqueta <= 10
-    );
+
   }
 
   // Gerar comandos para impressoras baseado no formato escolhido
@@ -145,10 +144,6 @@ class LabelPrinterService {
     // Se for um único produto, converter para array
     const produtos = Array.isArray(produto) ? produto : [produto];
     const finalConfig = { ...this.currentConfig, ...config };
-    
-    console.log('Gerando comandos para formato:', finalConfig.formatoEtiqueta);
-    console.log('Layout:', finalConfig.layoutEtiqueta);
-    console.log('Tamanho:', finalConfig.tamanhoEtiqueta);
     
     // Determinar qual função usar baseado no formato e layout
     switch (finalConfig.formatoEtiqueta) {
@@ -313,8 +308,7 @@ class LabelPrinterService {
           const printers = await window.qz.printers.find();
           const printerFound = printers.some(p => 
             p.toLowerCase().includes(printerName?.toLowerCase() || 'zebra')
-          );
-          
+
           return {
             online: printerFound,
             paperLoaded: true,
@@ -352,10 +346,6 @@ class LabelPrinterService {
     try {
       const finalConfig = { ...this.currentConfig, ...config };
       
-      console.log('Configuração final para impressão:', finalConfig);
-      console.log('Dados da etiqueta:', labelData);
-      console.log('Formato de impressão:', finalConfig.formatoEtiqueta);
-      
       // Se for impressão via navegador (HTML)
       if (finalConfig.formatoEtiqueta === 'HTML' || finalConfig.impressoraEtiquetas === 'Browser') {
         const htmlContent = this.generateLabelHTML(labelData, finalConfig);
@@ -377,37 +367,29 @@ class LabelPrinterService {
       // Verificar se QZ Tray está disponível para impressão térmica
       if (window.qz && window.qz.websocket) {
         const isConnected = await window.qz.websocket.isActive();
-        console.log('QZ Tray conectado:', isConnected);
-        
         if (!isConnected) {
           throw new Error('QZ Tray não está conectado. Por favor, inicie o QZ Tray.');
         }
 
         // Gerar comandos baseado no formato escolhido
         const printCommands = this.generatePrintCommands(labelData, finalConfig);
-        console.log(`Comandos ${finalConfig.formatoEtiqueta} gerados:`, printCommands);
-        
         // Encontrar impressora térmica
         const printers = await window.qz.printers.find();
-        console.log('Impressoras encontradas:', printers);
-        
         let targetPrinter = printers.find(p => 
           p.toLowerCase().includes('4barcode') ||
           p.toLowerCase().includes('it-200') ||
           p.toLowerCase().includes('c3tech') ||
           p.toLowerCase().includes('catech') ||
           p.toLowerCase().includes('zebra')
-        );
-        
-        if (!targetPrinter && printers.length > 0) {
+  );
+
+  if (!targetPrinter && printers.length > 0) {
           targetPrinter = printers[0]; // Usar primeira impressora disponível
         }
         
         if (!targetPrinter) {
           throw new Error('Nenhuma impressora térmica encontrada');
         }
-
-        console.log('Impressora selecionada:', targetPrinter);
 
         // Configurar impressão com forceRaw para impressoras térmicas
         const config_qz = window.qz.configs.create(targetPrinter, {
@@ -417,8 +399,6 @@ class LabelPrinterService {
         
         // Converter comandos para array de strings (formato correto para QZ Tray)
         const commandLines = printCommands.split('\n').filter(line => line.trim() !== '');
-        console.log(`Dados ${finalConfig.formatoEtiqueta} formatados para QZ Tray:`, commandLines);
-        
         // Imprimir
         await window.qz.print(config_qz, commandLines);
         
@@ -432,8 +412,6 @@ class LabelPrinterService {
       } else {
         // Fallback - mostrar comandos ZPL no console
         const zplCommands = this.generateZPLCommands(labelData, finalConfig);
-        console.log('QZ Tray não disponível. Comandos ZPL gerados:', zplCommands);
-        
         return {
           success: false,
           message: 'QZ Tray não está disponível. Comandos ZPL foram gerados no console.',
@@ -489,7 +467,6 @@ class LabelPrinterService {
       // Salvar no localStorage para persistência
       localStorage.setItem('labelPrinterConfig', JSON.stringify(this.currentConfig));
       
-      console.log('Impressora de etiquetas configurada:', this.currentConfig);
       return true;
     } catch (error) {
       console.error('Erro ao configurar impressora de etiquetas:', error);

@@ -154,7 +154,6 @@ export function PremiumLayout() {
           avatar: user?.photoURL,
         }}
         onSearch={(query) => {
-          console.log('Search:', query);
           // TODO: Implement search functionality
         }}
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
@@ -176,5 +175,5 @@ export function PremiumLayout() {
         </div>
       </main>
     </div>
-  );
+
 }

@@ -123,7 +123,7 @@ class FiscalIntegrationService {
       config.nfseConfig &&
       config.nfseConfig.codigoMunicipio &&
       config.nfseConfig.inscricaoMunicipal
-    );
+
   }
 
   /**

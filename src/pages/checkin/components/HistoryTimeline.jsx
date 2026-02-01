@@ -33,8 +33,7 @@ const HistoryTimeline = ({ placa }) => {
         where('placa', '==', placa.toUpperCase()),
         orderBy('dataHora', 'desc'),
         limit(5)
-      );
-      
+
       const snapshot = await getDocs(q);
       const records = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -83,10 +82,10 @@ const HistoryTimeline = ({ placa }) => {
           <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
         </div>
       </motion.div>
-    );
-  }
+  );
+}
 
-  if (history.length === 0) {
+if (history.length === 0) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -115,10 +114,10 @@ const HistoryTimeline = ({ placa }) => {
           </p>
         </div>
       </motion.div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -241,7 +240,7 @@ const HistoryTimeline = ({ placa }) => {
                   )}
                 </div>
               </motion.div>
-            );
+
           })}
         </div>
       </div>

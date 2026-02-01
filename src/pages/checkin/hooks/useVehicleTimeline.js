@@ -24,27 +24,11 @@ export const useVehicleTimeline = (checkinId) => {
       return;
     }
 
-    console.log('🔍 useVehicleTimeline: Buscando checkinId:', checkinId);
-    
     const unsubscribe = onSnapshot(
       doc(db, 'checkins', checkinId),
       (doc) => {
-        console.log('📄 Documento recebido:', {
-          exists: doc.exists(),
-          id: doc.id,
-          data: doc.exists() ? doc.data() : null
-        });
-        
         if (doc.exists()) {
           const data = doc.data();
-          console.log('✅ Dados do check-in:', {
-            hasStages: !!data.stages,
-            currentStage: data.currentStage,
-            stages: data.stages,
-            workflowType: data.workflowType,
-            stageOrder: data.stageOrder
-          });
-          
           // Determinar ordem das etapas
           const order = data.stageOrder || getStageOrder(data.workflowType || 'checkin-first');
           setStageOrder(order);
@@ -54,7 +38,6 @@ export const useVehicleTimeline = (checkinId) => {
           setProgress(calculateProgress(data.currentStage || 'checkin'));
           setError(null);
         } else {
-          console.log('❌ Documento não existe no Firebase');
           setError('Check-in não encontrado');
         }
         setLoading(false);
@@ -64,7 +47,6 @@ export const useVehicleTimeline = (checkinId) => {
         setError(error.message);
         setLoading(false);
       }
-    );
 
     return () => unsubscribe();
   }, [checkinId]);

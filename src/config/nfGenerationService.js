@@ -17,22 +17,15 @@ class NFGenerationService {
    * @returns {Promise<Object>} Resultado da emissão da NF
    */
   async generateNF(saleData, user, products = []) {
-    console.log('🔧 NFGenerationService: Iniciando geração de NF');
-    console.log('📊 Dados recebidos:', { saleData, user: user?.uid, productsCount: products.length });
-    
     try {
       // 1. Configurar usuário no serviço Nuvem Fiscal
-      console.log('⚙️ Configurando serviço Nuvem Fiscal...');
       await nuvemFiscalService.setUser(user);
       
       if (!nuvemFiscalService.isConfigured()) {
         console.error('❌ Serviço Nuvem Fiscal não configurado');
         throw new Error('Configure as credenciais da Nuvem Fiscal nas configurações');
       }
-      console.log('✅ Serviço Nuvem Fiscal configurado');
-
       // 2. Carregar configurações tributárias do usuário da coleção integrations
-      console.log('📋 Carregando configurações tributárias...');
       const { doc, getDoc } = await import('firebase/firestore');
       const { db } = await import('./firebase');
       
@@ -81,44 +74,30 @@ class NFGenerationService {
         };
       }
       
-      console.log('🔍 Configurações carregadas:', {
-        nfCnpj: config.nfCnpj ? '***configurado***' : 'NÃO CONFIGURADO',
-        nfRazaoSocial: config.nfRazaoSocial ? '***configurado***' : 'NÃO CONFIGURADO'
-      });
-      
       if (!config.nfCnpj || !config.nfRazaoSocial) {
         console.error('❌ Configurações de NF incompletas');
         throw new Error('Configure os dados da empresa em Integrações > Nota Fiscal');
       }
 
       // 3. Preparar dados da NF
-      console.log('📄 Preparando dados da NF...');
       const nfData = this._prepareNFData(saleData, config, products);
       
-      console.log('📋 Dados da NF preparados:', nfData);
-      
       // 4. Emitir NF 
-      console.log('🚀 Emitindo NF via API...');
       const result = await nuvemFiscalService.emitirNotaFiscal(nfData);
-      console.log('📄 Resultado da API:', result);
-      
       if (!result || !result.id) {
         console.error('❌ Erro na resposta da API - NF não foi gerada');
         throw new Error('Erro na resposta da API - NF não foi gerada');
       }
 
       // 5. Salvar dados da NF no Firestore
-      console.log('💾 Salvando registro da NF no Firestore...');
       const nfRecord = this._createNFRecord(result, saleData, user);
       await addDoc(collection(db, 'notas_fiscais'), nfRecord);
       
       // 6. Atualizar venda com dados da NF (se tiver ID da venda)
       if (saleData.id) {
-        console.log('🔄 Atualizando venda com dados da NF...');
         await this._updateSaleWithNF(saleData.id, result);
       }
       
-      console.log('🎉 Processo de geração de NF concluído com sucesso!');
       return {
         success: true,
         data: result,

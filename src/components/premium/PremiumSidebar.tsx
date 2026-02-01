@@ -108,10 +108,10 @@ export const PremiumSidebar = ({
           </AnimatePresence>
         )}
       </div>
-    );
-  };
+  );
+};
 
-  return (
+return (
     <motion.aside
       initial={false}
       animate={{

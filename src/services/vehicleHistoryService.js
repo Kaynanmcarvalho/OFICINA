@@ -37,7 +37,6 @@ class VehicleHistoryService {
       if (!forceRefresh) {
         const cached = await this.getCachedHistory(historyId);
         if (cached && !this.isCacheExpired(cached)) {
-          console.log('✅ Histórico encontrado no cache');
           return {
             success: true,
             data: cached,
@@ -47,7 +46,6 @@ class VehicleHistoryService {
       }
 
       // Buscar dados frescos
-      console.log('🔄 Buscando histórico atualizado...');
       const freshData = await this.fetchFreshHistory(placa, empresaId);
       
       // Salvar no cache
@@ -125,8 +123,7 @@ class VehicleHistoryService {
         ...data,
         updatedAt: Timestamp.now()
       });
-      console.log('✅ Histórico salvo no cache');
-    } catch (error) {
+      } catch (error) {
       console.error('Erro ao salvar cache:', error);
     }
   }
@@ -168,7 +165,7 @@ class VehicleHistoryService {
         collection(db, this.collectionName),
         where('empresaId', '==', empresaId)
       );
-      
+
       const snapshot = await getDocs(q);
       return snapshot.docs.map(doc => ({
         id: doc.id,

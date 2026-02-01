@@ -26,14 +26,14 @@ class PrintService {
       
       const { formatoRecibo, logoRecibo } = config;
       
-      console.log('Configuração de logo no recibo:', logoRecibo); // Debug
+      // Debug
       
       // Definir estilos baseados no formato
       const styles = this.getReceiptStyles(formatoRecibo);
       
       // Verificar explicitamente se deve incluir logo (false = não incluir, true ou undefined = incluir)
       const shouldIncludeLogo = logoRecibo !== false;
-      console.log('Deve incluir logo?', shouldIncludeLogo, 'Valor original:', logoRecibo); // Debug
+      // Debug
       
       const logoSection = shouldIncludeLogo ? `
         <div class="logo-section">
@@ -522,7 +522,6 @@ class PrintService {
 
       // Verificar se a data é válida
       if (isNaN(dateObj.getTime())) {
-        console.warn('Data inválida detectada:', dateSource);
         return new Date().toLocaleDateString('pt-BR');
       }
 
@@ -536,8 +535,6 @@ class PrintService {
   // Imprimir recibo
   async printReceipt(receiptData, userId = null) {
     try {
-      console.log('🖨️ Dados recebidos para impressão:', receiptData);
-      
       // Carregar configurações para determinar tipo de impressão
       let config = this.defaultConfig;
       if (userId) {
@@ -554,8 +551,6 @@ class PrintService {
         paymentMethod: this.formatMultiplePayments(receiptData.payment?.pagamentos) || receiptData.paymentMethod || 'Não informado',
         paymentData: receiptData.payment // Manter dados completos de pagamento
       };
-      
-      console.log('🖨️ Dados preparados para impressão:', saleData);
       
       // Verificar se deve usar impressão térmica
       const useThermalPrinter = config.formatoRecibo === '80mm' || config.formatoRecibo === '58mm';
@@ -703,8 +698,6 @@ class PrintService {
   // Baixar recibo como PDF
   async downloadReceipt(receiptData, userId = null) {
     try {
-      console.log('📥 Baixando recibo:', receiptData);
-      
       // Preparar dados da venda para o PDF
       const saleData = {
         numero: receiptData.sale?.id || receiptData.sale?.numero || '000001',
@@ -729,44 +722,33 @@ class PrintService {
   // Imprimir Nota Fiscal (NFCe/NFe)
   async printNF(nfData, userId = null) {
     try {
-      console.log('🖨️ Iniciando impressão da NF:', nfData);
-      
       // Carregar configurações do usuário
       let config = this.defaultConfig;
       if (userId) {
         config = await configService.getConfig(userId);
       }
       
-      console.log('🔧 Configurações carregadas para NF:', config);
-      
       // Tentar buscar XML do Firebase Storage se não estiver presente
       let xmlContent = nfData.xml;
       
       if (!xmlContent && nfData.backupUrls?.xmlNota) {
-        console.log('📥 Buscando XML do Firebase Storage:', nfData.backupUrls.xmlNota);
         try {
           const response = await fetch(nfData.backupUrls.xmlNota);
           xmlContent = await response.text();
-          console.log('✅ XML carregado do Firebase Storage');
-        } catch (error) {
-          console.warn('⚠️ Erro ao carregar XML do Storage:', error);
-        }
+          } catch (error) {
+          }
       }
       
       if (!xmlContent && nfData.backupUrls?.xmlProcessado) {
-        console.log('📥 Tentando XML processado do Firebase Storage:', nfData.backupUrls.xmlProcessado);
         try {
           const response = await fetch(nfData.backupUrls.xmlProcessado);
           xmlContent = await response.text();
-          console.log('✅ XML processado carregado do Firebase Storage');
-        } catch (error) {
-          console.warn('⚠️ Erro ao carregar XML processado do Storage:', error);
-        }
+          } catch (error) {
+          }
       }
       
       // SEMPRE usar impressão térmica para NFCe (forçar)
       if (xmlContent) {
-        console.log('📄 XML encontrado, usando impressão térmica...');
         // Forçar configurações térmicas para NFCe
         const thermalConfig = {
           ...config,
@@ -788,7 +770,6 @@ class PrintService {
         return await this.printNFCeThermal(nfDataWithXml, thermalConfig);
       } else {
         // Fallback para impressão tradicional (sem XML)
-        console.log('⚠️ Sem XML, usando impressão tradicional...');
         const nfHTML = await this.generateNFHTML(nfData, config);
         
         const printWindow = window.open('', '_blank');
@@ -812,8 +793,6 @@ class PrintService {
   // Imprimir NFCe em impressora térmica usando XML
   async printNFCeThermal(nfData, config) {
     try {
-      console.log('🔥 Imprimindo NFCe na impressora térmica:', nfData);
-      
       // Parse do XML para extrair dados
       const xmlData = await this.parseNFCeXML(nfData.xml);
       

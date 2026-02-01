@@ -39,7 +39,7 @@ const ClientsPageApple = () => {
         client.email?.toLowerCase().includes(query) ||
         client.phone?.includes(query) ||
         client.cpf?.includes(query)
-      );
+
       setFilteredClients(filtered);
     }
   }, [clients, searchQuery]);

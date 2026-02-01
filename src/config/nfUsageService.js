@@ -80,14 +80,6 @@ class NFUsageService {
       // Adicionar documento na subcoleção do mês
       const docRef = await addDoc(monthCollectionRef, usageData);
       
-      console.log('✅ [NF USAGE] Registro salvo:', {
-        docId: docRef.id,
-        monthKey,
-        nfType,
-        nfNumber: nfData.numero,
-        userName: usageData.userName
-      });
-
       return docRef.id;
 
     } catch (error) {
@@ -122,9 +114,7 @@ class NFUsageService {
       // Usar merge para não sobrescrever dados existentes
       await setDoc(statsDocRef, statsData, { merge: true });
 
-      console.log('📊 [NF USAGE] Estatísticas mensais atualizadas:', monthKey);
-
-    } catch (error) {
+      } catch (error) {
       console.error('❌ [NF USAGE] Erro ao atualizar estatísticas:', error);
       // Não lançar erro aqui para não interromper o fluxo principal
     }

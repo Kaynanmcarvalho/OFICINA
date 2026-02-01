@@ -151,8 +151,7 @@ const VehicleCompatibilityModal = ({ isOpen, onClose }) => {
         const hasUniversal = universalKeywords.some(keyword => 
           productName.includes(keyword) || 
           (product.description && product.description.toLowerCase().includes(keyword))
-        );
-        
+
         if (hasUniversal) return true;
         
         return false;

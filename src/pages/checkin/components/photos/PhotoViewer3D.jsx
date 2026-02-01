@@ -65,7 +65,7 @@ const PhotoViewer3D = ({
         onClose={() => setShowComparison(false)}
         onBack={() => setShowComparison(false)}
       />
-    );
+
   }
 
   return (

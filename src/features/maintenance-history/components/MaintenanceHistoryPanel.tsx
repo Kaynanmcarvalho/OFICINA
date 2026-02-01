@@ -271,7 +271,7 @@ export function MaintenanceHistoryPanel({
         )}
       </AnimatePresence>
     </div>
-  );
+
 }
 
 // Card de registro
@@ -390,7 +390,7 @@ function RecordCard({
         )}
       </AnimatePresence>
     </div>
-  );
+
 }
 
 // Card de próxima manutenção
@@ -446,7 +446,7 @@ function UpcomingCard({
         )}
       </div>
     </div>
-  );
+
 }
 
 // Card de alerta

@@ -131,10 +131,10 @@ const VoiceObservations = ({ value = '', onChange }) => {
           ⚠️ Reconhecimento de voz não disponível neste navegador
         </p>
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <div className="space-y-3">
       {/* Botão de microfone */}
       <div className="flex items-center gap-3">

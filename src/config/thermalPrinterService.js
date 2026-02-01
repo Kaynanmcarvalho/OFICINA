@@ -27,16 +27,13 @@ class ThermalPrinterService {
       }
 
       if (!window.qz.websocket.isActive()) {
-        console.log('🔌 Conectando ao QZ Tray...');
-        
         // Configurar certificado
         window.qz.security.setCertificatePromise(function(resolve, reject) {
           resolve();
         });
         
         await window.qz.websocket.connect();
-        console.log('✅ QZ Tray conectado com sucesso');
-      }
+        }
 
       return { success: true, message: 'QZ Tray conectado com sucesso' };
     } catch (error) {
@@ -48,8 +45,6 @@ class ThermalPrinterService {
   // Imprimir recibo usando configurações térmicas
   async printThermal(saleData, config = {}) {
     try {
-      console.log('🔥 Iniciando impressão térmica:', saleData);
-      
       // Tentar usar QZ Tray primeiro
       try {
         await this.initializeQZTray();
@@ -59,7 +54,6 @@ class ThermalPrinterService {
         
         // Se logo está habilitado, adicionar imagem primeiro
         if (config.logoRecibo !== false) {
-          console.log('🖼️ Logo habilitado...');
           try {
             const logoUrl = config.logoEmpresaUrl || 'https://loja-play-fit.vercel.app/PlayFit-logo-sem-fundo.png';
             printData.push({
@@ -73,8 +67,7 @@ class ThermalPrinterService {
               }
             });
           } catch (logoError) {
-            console.warn('⚠️ Erro ao carregar logo:', logoError);
-          }
+            }
         }
         
         // Gerar comandos ESC/POS
@@ -99,7 +92,6 @@ class ThermalPrinterService {
         };
         
       } catch (qzError) {
-        console.warn('⚠️ QZ Tray não disponível:', qzError.message);
         return {
           success: true,
           message: '⚠️ QZ Tray não disponível. Para impressão térmica direta, instale o QZ Tray.',
@@ -206,8 +198,6 @@ class ThermalPrinterService {
   // Imprimir NFCe na impressora térmica
   async printNFCeThermal(xmlData, config = {}) {
     try {
-      console.log('🔥 Iniciando impressão NFCe térmica:', xmlData);
-      
       // Tentar usar QZ Tray primeiro
       try {
         await this.initializeQZTray();
@@ -217,7 +207,6 @@ class ThermalPrinterService {
         
         // Se logo está habilitado, adicionar imagem primeiro
         if (config.logoRecibo !== false) {
-          console.log('🖼️ Logo habilitado para NFCe...');
           try {
             const logoUrl = config.logoEmpresaUrl || 'https://loja-play-fit.vercel.app/PlayFit-logo-sem-fundo.png';
             printData.push({
@@ -231,8 +220,7 @@ class ThermalPrinterService {
               }
             });
           } catch (logoError) {
-            console.warn('⚠️ Erro ao carregar logo NFCe:', logoError);
-          }
+            }
         }
         
         // Gerar comandos ESC/POS para NFCe
@@ -257,7 +245,6 @@ class ThermalPrinterService {
         };
         
       } catch (qzError) {
-        console.warn('⚠️ QZ Tray não disponível para NFCe:', qzError.message);
         return {
           success: true,
           message: '⚠️ QZ Tray não disponível. NFCe impressa via navegador.',

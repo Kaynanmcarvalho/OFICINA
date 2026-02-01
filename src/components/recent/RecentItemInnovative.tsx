@@ -99,7 +99,6 @@ const RecentItemInnovative: React.FC<RecentItemInnovativeProps> = ({
         onDelete={() => onAction?.({ type: 'delete', itemId: item.id })}
       />
     </div>
-  );
 
   // Expanded Layout (Motorcycles)
   const ExpandedLayout = () => (
@@ -128,7 +127,6 @@ const RecentItemInnovative: React.FC<RecentItemInnovativeProps> = ({
         </div>
       </div>
     </div>
-  );
 
   // Minimal Layout (Trucks)
   const MinimalLayout = () => (
@@ -150,7 +148,6 @@ const RecentItemInnovative: React.FC<RecentItemInnovativeProps> = ({
         onDelete={() => onAction?.({ type: 'delete', itemId: item.id })}
       />
     </div>
-  );
 
   // Detailed Layout (Vans)
   const DetailedLayout = () => (
@@ -181,7 +178,6 @@ const RecentItemInnovative: React.FC<RecentItemInnovativeProps> = ({
         />
       </div>
     </div>
-  );
 
   const renderLayout = () => {
     switch (layoutVariant) {

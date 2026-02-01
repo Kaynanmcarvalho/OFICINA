@@ -59,7 +59,6 @@ export const VEHICLE_TYPE_LABELS: Record<VehicleType, string> = {
   agricultural: 'Máquina Agrícola',
 };
 
-
 // ============================================================================
 // MARCAS DE VEÍCULOS - COMPLETO
 // ============================================================================
@@ -135,7 +134,6 @@ export const VEHICLE_MAKES: Record<string, VehicleMakeInfo> = {
   'Piaggio': { name: 'Piaggio', country: 'Itália', types: ['utility', 'motorcycle'] },
   'Troller': { name: 'Troller', country: 'Brasil', types: ['suv'] },
 };
-
 
 // ============================================================================
 // MODELOS POR MARCA - MOTOS (VERIFICADO)
@@ -547,7 +545,6 @@ export const MOTORCYCLE_MODELS: Record<string, VehicleModelInfo[]> = {
     { name: 'Springfield', make: 'Indian', type: 'motorcycle', years: { start: 2016, end: 2024 }, engine: '1890cc V-Twin', displacement: '1890cc' },
   ],
 };
-
 
 // ============================================================================
 // FUNÇÕES DE UTILIDADE

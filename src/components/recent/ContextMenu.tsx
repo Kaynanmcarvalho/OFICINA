@@ -53,13 +53,13 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
           event.preventDefault();
           setFocusedIndex(prev => 
             prev < items.length - 1 ? prev + 1 : 0
-          );
+
           break;
         case 'ArrowUp':
           event.preventDefault();
           setFocusedIndex(prev => 
             prev > 0 ? prev - 1 : items.length - 1
-          );
+
           break;
         case 'Enter':
         case ' ':
@@ -109,7 +109,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
               key={item.id} 
               className="my-1 border-t border-gray-200 dark:border-gray-600"
             />
-          );
+
         }
 
         return (
@@ -165,7 +165,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
             )}
             <span className="flex-1">{item.label}</span>
           </button>
-        );
+
       })}
     </div>
   );

@@ -63,5 +63,5 @@ export default function WhatsAppButton({ className = '' }) {
         onClose={() => setIsModalOpen(false)}
       />
     </>
-  );
+
 }

@@ -59,7 +59,6 @@ export type PartCategory =
   | 'coolant'
   | 'transmission_fluid';
 
-
 // ============================================================================
 // CACHE INTELIGENTE
 // ============================================================================
@@ -469,7 +468,6 @@ const HIFLO_VERIFIED_DATABASE: Record<string, HiFLoMapping> = {
   'Indian_Roadmaster': { filter: 'HF199', years: '2015-2024', url: 'https://www.hiflofiltro.com/catalogue/filter/HF199' },
   'Indian_Springfield': { filter: 'HF199', years: '2016-2024', url: 'https://www.hiflofiltro.com/catalogue/filter/HF199' },
 };
-
 
 // ============================================================================
 // CROSS-REFERENCE K&N

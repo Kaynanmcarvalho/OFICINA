@@ -62,7 +62,7 @@ const BudgetStats = ({ stats }) => {
               {stat.label}
             </div>
           </motion.div>
-        );
+
       })}
     </div>
   );

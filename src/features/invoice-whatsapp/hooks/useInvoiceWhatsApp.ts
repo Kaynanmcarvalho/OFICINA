@@ -74,7 +74,6 @@ export function useInvoiceWhatsApp(): UseInvoiceWhatsAppReturn {
         invoice,
         empresaId,
         userId
-      );
 
       if (!result.success) {
         setError(result.error || 'Erro ao enviar mensagem');
@@ -172,8 +171,7 @@ export function useInvoiceWhatsApp(): UseInvoiceWhatsAppReturn {
       await invoiceWhatsAppService.initializeDefaultTemplates(empresaId);
       await loadTemplates(empresaId);
     } catch (err) {
-      console.warn('Erro ao inicializar templates:', err);
-    }
+      }
   }, [loadTemplates]);
 
   const clearData = useCallback(() => {

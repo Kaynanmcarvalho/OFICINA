@@ -19,8 +19,6 @@ class InvoiceVoiceService {
    */
   async processInvoiceCommand(command, empresaId, userId) {
     try {
-      console.log('🎤 Processando comando de faturamento:', command);
-
       // 1. Validar configurações fiscais
       const fiscalConfig = await fiscalIntegrationService.getFiscalConfig(empresaId);
 
@@ -99,7 +97,6 @@ class InvoiceVoiceService {
           where('empresaId', '==', empresaId),
           where('name', '>=', item.name),
           where('name', '<=', item.name + '\uf8ff')
-        );
 
         const snapshot = await getDocs(q);
 
@@ -159,7 +156,6 @@ class InvoiceVoiceService {
         where('empresaId', '==', empresaId),
         where('name', '>=', customerName),
         where('name', '<=', customerName + '\uf8ff')
-      );
 
       const snapshot = await getDocs(q);
 
@@ -171,7 +167,7 @@ class InvoiceVoiceService {
         if (similar.length > 0) {
           throw new Error(
             `Cliente "${customerName}" não encontrado. Você quis dizer: ${similar.slice(0, 3).map(c => c.name).join(', ')}?`
-          );
+
         }
 
         throw new Error(`Cliente "${customerName}" não encontrado. Cadastre o cliente primeiro.`);
@@ -364,7 +360,6 @@ class InvoiceVoiceService {
     const nfeNumber = await fiscalIntegrationService.getNextNFeNumber(
       data.empresaId,
       data.fiscalConfig.nfeConfig.serie
-    );
 
     const nfe = {
       type: 'nfe',
@@ -394,7 +389,6 @@ class InvoiceVoiceService {
       data.empresaId,
       data.fiscalConfig.nfeConfig.serie,
       nfeNumber
-    );
 
     return nfe;
   }
@@ -441,11 +435,9 @@ class InvoiceVoiceService {
   async sendInvoicesViaWhatsApp(data) {
     try {
       // TODO: Integrar com serviço WhatsApp existente
-      console.log('📱 Enviando notas via WhatsApp para:', data.customer.phone);
-      
       // Simula envio
       for (const invoice of data.invoices) {
-        console.log(`✅ ${invoice.type.toUpperCase()} Nº ${invoice.number} enviada`);
+        } Nº ${invoice.number} enviada`);
       }
 
     } catch (error) {
@@ -540,7 +532,7 @@ class InvoiceVoiceService {
             matrix[i - 1][j - 1] + 1,
             matrix[i][j - 1] + 1,
             matrix[i - 1][j] + 1
-          );
+
         }
       }
     }

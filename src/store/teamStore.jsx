@@ -37,12 +37,15 @@ export const useTeamStore = create((set, get) => ({
     'Noite',
     'Integral'
   ],
-  memberStatuses: [
-    'Ativo',
-    'Inativo',
-    'Férias',
-    'Licença',
-    'Afastado'
+  scheduleStatuses: [
+    'Agendado',
+    'Confirmado',
+    'Em Andamento',
+    'Pausado',
+    'Atrasado',
+    'Concluído',
+    'Cancelado',
+    'Não Compareceu'
   ],
 
   // Actions
@@ -174,16 +177,202 @@ export const useTeamStore = create((set, get) => ({
 
   // Schedule Management
   
-  // Create new schedule
+  // Validate schedule data
+  validateScheduleData: (scheduleData) => {
+    const errors = [];
+    
+    // 1. Validar campos obrigatórios
+    if (!scheduleData.date) errors.push('Data é obrigatória');
+    if (!scheduleData.startTime) errors.push('Horário de início é obrigatório');
+    if (!scheduleData.endTime) errors.push('Horário de término é obrigatório');
+    if (!scheduleData.serviceType) errors.push('Tipo de serviço é obrigatório');
+    
+    // 2. Validar formato de horários
+    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    if (scheduleData.startTime && !timeRegex.test(scheduleData.startTime)) {
+      errors.push('Horário de início inválido (use HH:MM)');
+    }
+    if (scheduleData.endTime && !timeRegex.test(scheduleData.endTime)) {
+      errors.push('Horário de término inválido (use HH:MM)');
+    }
+    
+    // 3. Validar se startTime < endTime
+    if (scheduleData.startTime && scheduleData.endTime) {
+      const [startH, startM] = scheduleData.startTime.split(':').map(Number);
+      const [endH, endM] = scheduleData.endTime.split(':').map(Number);
+      const startMinutes = startH * 60 + startM;
+      const endMinutes = endH * 60 + endM;
+      
+      if (startMinutes >= endMinutes) {
+        errors.push('Horário de término deve ser após o horário de início');
+      }
+      
+      // Validar duração mínima (15 min) e máxima (8 horas)
+      const duration = endMinutes - startMinutes;
+      if (duration < 15) errors.push('Duração mínima: 15 minutos');
+      if (duration > 480) errors.push('Duração máxima: 8 horas');
+    }
+    
+    // 4. Validar se data não está no passado
+    if (scheduleData.date) {
+      const today = new Date().toISOString().split('T')[0];
+      if (scheduleData.date < today) {
+        errors.push('Não é possível agendar em datas passadas');
+      }
+    }
+    
+    // 5. Validar horário de expediente (07:00 - 19:00)
+    if (scheduleData.startTime) {
+      const [startH] = scheduleData.startTime.split(':').map(Number);
+      if (startH < 7 || startH >= 19) {
+        errors.push('Horário de início deve estar entre 07:00 e 19:00');
+      }
+    }
+    if (scheduleData.endTime) {
+      const [endH] = scheduleData.endTime.split(':').map(Number);
+      if (endH < 7 || endH > 19) {
+        errors.push('Horário de término deve estar entre 07:00 e 19:00');
+      }
+    }
+    
+    // 6. Validar prioridade
+    const validPriorities = ['urgent', 'high', 'normal', 'low'];
+    if (scheduleData.priority && !validPriorities.includes(scheduleData.priority)) {
+      errors.push('Prioridade inválida');
+    }
+    
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  },
+
+  // Check for scheduling conflicts
+  checkScheduleConflicts: (scheduleData, excludeScheduleId = null) => {
+    const { schedules } = get();
+    const conflicts = [];
+    
+    // Converter horários para minutos para facilitar comparação
+    const [newStartH, newStartM] = scheduleData.startTime.split(':').map(Number);
+    const [newEndH, newEndM] = scheduleData.endTime.split(':').map(Number);
+    const newStart = newStartH * 60 + newStartM;
+    const newEnd = newEndH * 60 + newEndM;
+    
+    // Filtrar agendamentos do mesmo dia (excluindo cancelados e o próprio se for edição)
+    const sameDaySchedules = schedules.filter(s =>
+      s.date === scheduleData.date && 
+      s.status !== 'Cancelado' &&
+      s.status !== 'Concluído' &&
+      s.firestoreId !== excludeScheduleId
+    );
+    
+    sameDaySchedules.forEach(existing => {
+      const [existStartH, existStartM] = existing.startTime.split(':').map(Number);
+      const [existEndH, existEndM] = existing.endTime.split(':').map(Number);
+      const existStart = existStartH * 60 + existStartM;
+      const existEnd = existEndH * 60 + existEndM;
+      
+      // Verificar sobreposição de horários
+      const hasTimeOverlap = (newStart < existEnd && newEnd > existStart);
+      
+      if (hasTimeOverlap) {
+        // 1. Conflito de técnico
+        if (scheduleData.memberId && existing.memberId === scheduleData.memberId) {
+          conflicts.push({
+            type: 'technician',
+            message: `Técnico já alocado das ${existing.startTime} às ${existing.endTime}`,
+            schedule: existing
+          });
+        }
+        
+        // 2. Conflito de box (se especificado)
+        if (scheduleData.boxId && existing.boxId === scheduleData.boxId) {
+          conflicts.push({
+            type: 'box',
+            message: `Box ${scheduleData.boxId} já ocupado das ${existing.startTime} às ${existing.endTime}`,
+            schedule: existing
+          });
+        }
+        
+        // 3. Conflito de veículo (mesmo veículo não pode estar em dois lugares)
+        if (scheduleData.vehicleId && existing.vehicleId === scheduleData.vehicleId) {
+          conflicts.push({
+            type: 'vehicle',
+            message: `Veículo já agendado das ${existing.startTime} às ${existing.endTime}`,
+            schedule: existing
+          });
+        }
+      }
+    });
+    
+    // 4. Verificar capacidade de boxes (máximo 3 boxes simultâneos)
+    const MAX_BOXES = 3;
+    const overlappingSchedules = sameDaySchedules.filter(existing => {
+      const [existStartH, existStartM] = existing.startTime.split(':').map(Number);
+      const [existEndH, existEndM] = existing.endTime.split(':').map(Number);
+      const existStart = existStartH * 60 + existStartM;
+      const existEnd = existEndH * 60 + existEndM;
+      return (newStart < existEnd && newEnd > existStart);
+    });
+    
+    if (overlappingSchedules.length >= MAX_BOXES) {
+      conflicts.push({
+        type: 'capacity',
+        message: `Capacidade máxima atingida (${MAX_BOXES} boxes). ${overlappingSchedules.length} agendamentos simultâneos.`,
+        count: overlappingSchedules.length
+      });
+    }
+    
+    return {
+      hasConflicts: conflicts.length > 0,
+      conflicts
+    };
+  },
+
+  // Create new schedule with validations
   createSchedule: async (scheduleData) => {
     set({ isLoading: true, error: null });
     try {
+      // 1. Validar dados básicos
+      const validation = get().validateScheduleData(scheduleData);
+      if (!validation.isValid) {
+        set({ isLoading: false });
+        return { 
+          success: false, 
+          error: validation.errors.join('; '),
+          validationErrors: validation.errors
+        };
+      }
+      
+      // 2. Verificar conflitos
+      const conflictCheck = get().checkScheduleConflicts(scheduleData);
+      if (conflictCheck.hasConflicts) {
+        // Permitir apenas se for prioridade urgente
+        if (scheduleData.priority !== 'urgent') {
+          set({ isLoading: false });
+          return { 
+            success: false, 
+            error: 'Conflito de agendamento detectado',
+            conflicts: conflictCheck.conflicts
+          };
+        }
+      }
+      
+      // 3. Calcular duração
+      const [startH, startM] = scheduleData.startTime.split(':').map(Number);
+      const [endH, endM] = scheduleData.endTime.split(':').map(Number);
+      const durationMinutes = (endH * 60 + endM) - (startH * 60 + startM);
+      
       const newSchedule = {
         ...scheduleData,
         scheduleId: `SCH-${Date.now()}`,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         status: 'Agendado',
+        durationMinutes,
+        priority: scheduleData.priority || 'normal',
+        // Adicionar flag se foi criado com conflito (urgente)
+        hasConflictOverride: conflictCheck.hasConflicts && scheduleData.priority === 'urgent',
       };
 
       const scheduleWithId = await addDocument('schedules', newSchedule);
@@ -193,17 +382,59 @@ export const useTeamStore = create((set, get) => ({
         isLoading: false,
       }));
 
-      return { success: true, data: scheduleWithId };
+      return { 
+        success: true, 
+        data: scheduleWithId,
+        warnings: conflictCheck.hasConflicts ? conflictCheck.conflicts : []
+      };
     } catch (error) {
       set({ error: error.message, isLoading: false });
       return { success: false, error: error.message };
     }
   },
 
-  // Update schedule
+  // Update schedule with validations
   updateSchedule: async (scheduleId, updates) => {
     set({ isLoading: true, error: null });
     try {
+      // 1. Validar dados básicos (se houver mudanças relevantes)
+      if (updates.date || updates.startTime || updates.endTime || updates.serviceType) {
+        const currentSchedule = get().schedules.find(s => s.firestoreId === scheduleId);
+        const dataToValidate = { ...currentSchedule, ...updates };
+        
+        const validation = get().validateScheduleData(dataToValidate);
+        if (!validation.isValid) {
+          set({ isLoading: false });
+          return { 
+            success: false, 
+            error: validation.errors.join('; '),
+            validationErrors: validation.errors
+          };
+        }
+        
+        // 2. Verificar conflitos (excluindo o próprio agendamento)
+        const conflictCheck = get().checkScheduleConflicts(dataToValidate, scheduleId);
+        if (conflictCheck.hasConflicts) {
+          if (updates.priority !== 'urgent') {
+            set({ isLoading: false });
+            return { 
+              success: false, 
+              error: 'Conflito de agendamento detectado',
+              conflicts: conflictCheck.conflicts
+            };
+          }
+        }
+        
+        // Recalcular duração se horários mudaram
+        if (updates.startTime || updates.endTime) {
+          const startTime = updates.startTime || currentSchedule.startTime;
+          const endTime = updates.endTime || currentSchedule.endTime;
+          const [startH, startM] = startTime.split(':').map(Number);
+          const [endH, endM] = endTime.split(':').map(Number);
+          updates.durationMinutes = (endH * 60 + endM) - (startH * 60 + startM);
+        }
+      }
+      
       const updatedData = {
         ...updates,
         updatedAt: new Date().toISOString(),
@@ -254,10 +485,10 @@ export const useTeamStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       let q = query(
+            );
         collection(db, 'schedules'),
         orderBy('date', 'desc')
-      );
-      
+
       if (startDate) {
         q = query(q, where('date', '>=', startDate));
       }
@@ -427,6 +658,130 @@ export const useTeamStore = create((set, get) => ({
       
       return true;
     });
+  },
+
+  // Get capacity statistics for a specific date
+  getCapacityStats: (date) => {
+    const { schedules } = get();
+    const MAX_BOXES = 3;
+    const WORK_HOURS = 12; // 07:00 - 19:00
+    const TOTAL_CAPACITY_MINUTES = MAX_BOXES * WORK_HOURS * 60; // 2160 minutos
+    
+    // Filtrar agendamentos do dia (excluindo cancelados)
+    const daySchedules = schedules.filter(s =>
+      s.date === date && 
+      s.status !== 'Cancelado' &&
+      s.status !== 'Concluído'
+    );
+    
+    // Calcular minutos agendados
+    const scheduledMinutes = daySchedules.reduce((total, schedule) => {
+      return total + (schedule.durationMinutes || 60);
+    }, 0);
+    
+    // Calcular taxa de ocupação
+    const utilizationRate = (scheduledMinutes / TOTAL_CAPACITY_MINUTES) * 100;
+    
+    // Identificar horários de pico (agrupar por hora)
+    const hourlyLoad = {};
+    for (let h = 7; h < 19; h++) {
+      hourlyLoad[h] = 0;
+    }
+    
+    daySchedules.forEach(schedule => {
+      const [startH] = schedule.startTime.split(':').map(Number);
+      const [endH] = schedule.endTime.split(':').map(Number);
+      for (let h = startH; h < endH; h++) {
+        if (hourlyLoad[h] !== undefined) {
+          hourlyLoad[h]++;
+        }
+      }
+    });
+    
+    // Encontrar horários disponíveis
+    const availableSlots = [];
+    for (let h = 7; h < 19; h++) {
+      if (hourlyLoad[h] < MAX_BOXES) {
+        const slotsAvailable = MAX_BOXES - hourlyLoad[h];
+        availableSlots.push({
+          hour: `${h.toString().padStart(2, '0')}:00`,
+          slotsAvailable
+        });
+      }
+    }
+    
+    return {
+      date,
+      totalSchedules: daySchedules.length,
+      scheduledMinutes,
+      totalCapacityMinutes: TOTAL_CAPACITY_MINUTES,
+      utilizationRate: Math.round(utilizationRate * 100) / 100,
+      isNearFull: utilizationRate > 80,
+      isFull: utilizationRate >= 100,
+      availableSlots,
+      hourlyLoad,
+      peakHours: Object.entries(hourlyLoad)
+        .filter(([_, count]) => count >= MAX_BOXES)
+        .map(([hour]) => `${hour}:00`),
+    };
+  },
+
+  // Get schedule statistics with capacity insights
+  getScheduleStatistics: (startDate, endDate) => {
+    const { schedules } = get();
+    
+    // Filtrar agendamentos no período
+    const periodSchedules = schedules.filter(s => {
+      if (!startDate || !endDate) return true;
+      return s.date >= startDate && s.date <= endDate;
+    });
+    
+    // Estatísticas por status
+    const byStatus = {
+      Agendado: periodSchedules.filter(s => s.status === 'Agendado').length,
+      'Em Andamento': periodSchedules.filter(s => s.status === 'Em Andamento').length,
+      Concluído: periodSchedules.filter(s => s.status === 'Concluído').length,
+      Cancelado: periodSchedules.filter(s => s.status === 'Cancelado').length,
+      'Não Compareceu': periodSchedules.filter(s => s.status === 'Não Compareceu').length,
+    };
+    
+    // Taxa de no-show
+    const totalCompleted = byStatus.Concluído + byStatus['Não Compareceu'];
+    const noShowRate = totalCompleted > 0 
+      ? (byStatus['Não Compareceu'] / totalCompleted) * 100 
+      : 0;
+    
+    // Taxa de cancelamento
+    const totalScheduled = periodSchedules.length;
+    const cancellationRate = totalScheduled > 0
+      ? (byStatus.Cancelado / totalScheduled) * 100
+      : 0;
+    
+    // Estatísticas por prioridade
+    const byPriority = {
+      urgent: periodSchedules.filter(s => s.priority === 'urgent').length,
+      high: periodSchedules.filter(s => s.priority === 'high').length,
+      normal: periodSchedules.filter(s => s.priority === 'normal').length,
+      low: periodSchedules.filter(s => s.priority === 'low').length,
+    };
+    
+    // Duração média
+    const totalDuration = periodSchedules.reduce((sum, s) => sum + (s.durationMinutes || 60), 0);
+    const avgDuration = periodSchedules.length > 0 
+      ? totalDuration / periodSchedules.length 
+      : 0;
+    
+    return {
+      total: periodSchedules.length,
+      byStatus,
+      byPriority,
+      noShowRate: Math.round(noShowRate * 100) / 100,
+      cancellationRate: Math.round(cancellationRate * 100) / 100,
+      avgDuration: Math.round(avgDuration),
+      completionRate: totalScheduled > 0 
+        ? Math.round((byStatus.Concluído / totalScheduled) * 100 * 100) / 100
+        : 0,
+    };
   },
 
   // Get team statistics

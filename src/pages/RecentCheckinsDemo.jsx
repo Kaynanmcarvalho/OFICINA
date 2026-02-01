@@ -70,11 +70,9 @@ const RecentCheckinsDemo = () => {
   
   const handleSelectCheckin = (checkin) => {
     setSelectedCheckin(checkin);
-    console.log('Checkin selecionado:', checkin);
-  };
+    };
   
   const handleViewDetails = (checkin) => {
-    console.log('Ver detalhes:', checkin);
     alert(`Detalhes do check-in:\n\nCliente: ${checkin.clientName}\nVeículo: ${checkin.vehicleModel}\nPlaca: ${checkin.vehiclePlate}\nStatus: ${checkin.status}`);
   };
   

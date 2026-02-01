@@ -71,7 +71,6 @@ export function useMultiplePageData(stores, options = {}) {
               throw { name, error: err };
             })
           )
-        );
 
         const newErrors = {};
         results.forEach((result, index) => {

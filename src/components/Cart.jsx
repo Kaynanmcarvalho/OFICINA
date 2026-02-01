@@ -35,8 +35,6 @@ const Cart = ({
     onCheckout(saleData);
   };
 
-
-
   const canCheckout = items.length > 0 && !isLoading;
 
   if (!isOpen) return null;
@@ -195,7 +193,7 @@ const Cart = ({
         )}
       </motion.div>
     </>
-  );
+
 };
 
 export default Cart;

@@ -241,15 +241,12 @@ function validateLocally(request: PartValidationRequest): ScraperValidationResul
 export async function validatePartWithScraper(
   request: PartValidationRequest
 ): Promise<ScraperValidationResult> {
-  console.log(`[GoogleScraper] Validando: ${request.partName} (${request.oemCode})`);
-  
+
   try {
     // Tentar validação via backend
     const result = await validateViaBackend(request);
-    console.log(`[GoogleScraper] ✅ Validação via backend: ${result.isValid ? 'VÁLIDO' : 'INVÁLIDO'}`);
     return result;
   } catch (error) {
-    console.warn('[GoogleScraper] Backend indisponível, usando validação local');
     return validateLocally(request);
   }
 }

@@ -4,8 +4,6 @@ import { useTheme } from '../../hooks/useTheme';
 const TestThemeCard = () => {
   const { isDark } = useTheme();
   
-  console.log('🧪 TestThemeCard - isDark:', isDark);
-  
   return (
     <div
       style={{

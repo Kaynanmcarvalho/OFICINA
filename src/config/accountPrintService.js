@@ -341,13 +341,11 @@ class AccountPrintService {
         dateObj = new Date(date);
       }
       else {
-        console.warn('Tipo de data não reconhecido:', typeof date, date);
         return String(date);
       }
       
       // Verificar se a data é válida
       if (isNaN(dateObj.getTime())) {
-        console.warn('Data inválida:', date);
         return String(date);
       }
       
@@ -374,8 +372,6 @@ class AccountPrintService {
   // Imprimir recibo de conta
   async printAccountReceipt(receiptData, userId = null) {
     try {
-      console.log('🖨️ Imprimindo recibo de conta:', receiptData);
-      
       // Carregar configurações para determinar tipo de impressão
       let config = this.defaultConfig;
       if (userId) {
@@ -430,8 +426,6 @@ class AccountPrintService {
   // Impressão térmica específica para contas com comandos POS
   async printAccountThermal(receiptData, config = {}) {
     try {
-      console.log('🔥 Iniciando impressão térmica de conta:', receiptData);
-      
       // Tentar usar QZ Tray primeiro
       try {
         await this.initializeQZTray();
@@ -441,7 +435,6 @@ class AccountPrintService {
         
         // Se logo está habilitado, adicionar imagem primeiro
         if (config.logoRecibo !== false) {
-          console.log('🖼️ Logo habilitado...');
           try {
             const logoUrl = config.logoEmpresaUrl || 'https://loja-play-fit.vercel.app/PlayFit-logo-sem-fundo.png';
             printData.push({
@@ -455,8 +448,7 @@ class AccountPrintService {
               }
             });
           } catch (logoError) {
-            console.warn('⚠️ Erro ao carregar logo:', logoError);
-          }
+            }
         }
         
         // Gerar comandos ESC/POS para conta
@@ -481,8 +473,6 @@ class AccountPrintService {
         };
         
       } catch (qzError) {
-        console.warn('⚠️ QZ Tray não disponível, tentando método alternativo:', qzError);
-        
         // Fallback: usar window.print com CSS otimizado para térmica
         const html = await this.generateAccountReceiptHTML(receiptData);
         const printWindow = window.open('', '_blank');
@@ -627,16 +617,13 @@ class AccountPrintService {
       }
 
       if (!window.qz.websocket.isActive()) {
-        console.log('🔌 Conectando ao QZ Tray...');
-        
         // Configurar certificado
         window.qz.security.setCertificatePromise(function(resolve, reject) {
           resolve();
         });
         
         await window.qz.websocket.connect();
-        console.log('✅ QZ Tray conectado com sucesso');
-      }
+        }
 
       return { success: true, message: 'QZ Tray conectado com sucesso' };
     } catch (error) {
@@ -648,8 +635,6 @@ class AccountPrintService {
   // Gerar PDF do recibo de conta
   async generateAccountReceiptPDF(accountData, userId = null) {
     try {
-      console.log('📄 Gerando PDF do recibo de conta:', accountData);
-      
       // Carregar configurações
       let config = this.defaultConfig;
       if (userId) {
@@ -782,8 +767,6 @@ class AccountPrintService {
   // Baixar recibo de conta como PDF
   async downloadAccountReceipt(receiptData, userId = null) {
     try {
-      console.log('📥 Baixando recibo de conta:', receiptData);
-      
       // Gerar PDF
       return await this.generateAccountReceiptPDF(receiptData, userId);
       

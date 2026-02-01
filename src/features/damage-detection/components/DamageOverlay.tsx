@@ -123,7 +123,7 @@ export function DamageOverlay({
                 </motion.div>
               )}
             </motion.div>
-          );
+
         })}
       </div>
 

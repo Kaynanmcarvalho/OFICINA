@@ -166,8 +166,9 @@ export function findPlatformForVehicle(vehicle: VehicleInfo): string | null {
       const modelMatch = vehicleConfig.models.some(m => 
         normalizedModel.includes(m.toLowerCase()) || 
         m.toLowerCase().includes(normalizedModel)
-      );
-      if (!modelMatch) continue;
+  );
+
+  if (!modelMatch) continue;
       
       // Verificar ano
       if (year < vehicleConfig.yearStart || year > vehicleConfig.yearEnd) continue;

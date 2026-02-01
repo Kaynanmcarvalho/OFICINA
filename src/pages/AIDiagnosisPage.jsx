@@ -49,8 +49,7 @@ const AIDiagnosisPage = () => {
   const calculateStats = (historyData) => {
     const totalDamages = historyData.reduce((sum, item) => 
       sum + (item.detections?.length || 0), 0
-    );
-    
+
     const avgProcessingTime = historyData.reduce((sum, item) => 
       sum + (item.processing_time_ms || 0), 0
     ) / historyData.length;
@@ -63,8 +62,6 @@ const AIDiagnosisPage = () => {
   };
 
   const handleDetectionComplete = (result) => {
-    console.log('Detection complete:', result);
-    
     // Reload history if vehicleId exists
     if (vehicleId) {
       loadHistory();

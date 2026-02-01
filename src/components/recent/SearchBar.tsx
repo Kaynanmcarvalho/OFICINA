@@ -58,7 +58,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
         })()
       : onChange,
     [onChange, debounceMs]
-  );
 
   // Update local value when prop value changes
   useEffect(() => {

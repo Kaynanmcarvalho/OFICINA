@@ -152,4 +152,4 @@ export default function ConfirmDialog({
       </motion.div>
     </AnimatePresence>
   );
-}
+};

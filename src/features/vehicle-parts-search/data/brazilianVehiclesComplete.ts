@@ -87,7 +87,6 @@ const VW: VehicleVariant[] = [
   ...gen({ brand: 'Volkswagen', model: 'Volksbus 17.230', trim: 'Diesel', engineCode: 'MWM', engineName: '6.9 Diesel', displacementCc: 6900, fuel: 'diesel', transmission: 'manual', bodyType: 'bus', vehicleType: 'bus', power: '230cv', sources: ['fipe'] }, 2010, 2024),
 ];
 
-
 // ============================================================================
 // CHEVROLET/GM
 // ============================================================================
@@ -123,7 +122,6 @@ const CHEVROLET: VehicleVariant[] = [
   ...gen({ brand: 'Chevrolet', model: 'Monza', trim: '2.0', engineCode: 'OHC', engineName: '2.0 8V', displacementCc: 1998, fuel: 'gasoline', transmission: 'manual', bodyType: 'sedan', vehicleType: 'car', power: '110cv', sources: ['fipe'] }, 1982, 1996),
   ...gen({ brand: 'Chevrolet', model: 'Kadett', trim: '2.0', engineCode: 'OHC', engineName: '2.0 8V', displacementCc: 1998, fuel: 'gasoline', transmission: 'manual', bodyType: 'hatch', vehicleType: 'car', power: '110cv', sources: ['fipe'] }, 1989, 1998),
 ];
-
 
 // ============================================================================
 // FIAT
@@ -165,7 +163,6 @@ const FIAT: VehicleVariant[] = [
   ...gen({ brand: 'Fiat', model: 'Idea', trim: '1.4', engineCode: 'Fire', engineName: '1.4 8V', displacementCc: 1368, fuel: 'flex', transmission: 'manual', bodyType: 'hatch', vehicleType: 'car', power: '88cv', sources: ['fipe'] }, 2005, 2016),
 ];
 
-
 // ============================================================================
 // FORD
 // ============================================================================
@@ -201,7 +198,6 @@ const FORD: VehicleVariant[] = [
   ...gen({ brand: 'Ford', model: 'Cargo 816', trim: 'Diesel', engineCode: 'Cummins', engineName: '3.8 Diesel', displacementCc: 3800, fuel: 'diesel', transmission: 'manual', bodyType: 'truck', vehicleType: 'truck', power: '160cv', sources: ['fipe'] }, 2012, 2024),
 ];
 
-
 // ============================================================================
 // TOYOTA
 // ============================================================================
@@ -228,7 +224,6 @@ const TOYOTA: VehicleVariant[] = [
   ...gen({ brand: 'Toyota', model: 'Bandeirante', trim: '3.7 Diesel', engineCode: '14B', engineName: '3.7 Diesel', displacementCc: 3661, fuel: 'diesel', transmission: 'manual', bodyType: 'suv', vehicleType: 'suv', power: '96cv', sources: ['fipe'] }, 1958, 2001),
 ];
 
-
 // ============================================================================
 // HONDA
 // ============================================================================
@@ -249,7 +244,6 @@ const HONDA: VehicleVariant[] = [
   ...gen({ brand: 'Honda', model: 'Accord', trim: '2.0 Turbo', engineCode: 'K20C4', engineName: '2.0 Turbo', displacementCc: 1996, fuel: 'gasoline', transmission: 'automatic', bodyType: 'sedan', vehicleType: 'car', power: '252cv', sources: ['fipe'] }, 2018, 2024),
   ...gen({ brand: 'Honda', model: 'ZR-V', trim: '2.0 Hybrid', engineCode: 'LFB', engineName: '2.0 Hybrid', displacementCc: 1993, fuel: 'hybrid', transmission: 'cvt', bodyType: 'suv', vehicleType: 'suv', power: '204cv', sources: ['fipe'] }, 2023, 2024),
 ];
-
 
 // ============================================================================
 // HYUNDAI
@@ -272,7 +266,6 @@ const HYUNDAI: VehicleVariant[] = [
   ...gen({ brand: 'Hyundai', model: 'Veloster', trim: '1.6', engineCode: 'Gamma', engineName: '1.6 16V', displacementCc: 1591, fuel: 'flex', transmission: 'automatic', bodyType: 'coupe', vehicleType: 'car', power: '140cv', sources: ['fipe'] }, 2011, 2019),
   ...gen({ brand: 'Hyundai', model: 'HR', trim: '2.5 Diesel', engineCode: 'D4CB', engineName: '2.5 Diesel', displacementCc: 2497, fuel: 'diesel', transmission: 'manual', bodyType: 'van', vehicleType: 'van', power: '130cv', sources: ['fipe'] }, 2006, 2024),
 ];
-
 
 // ============================================================================
 // RENAULT
@@ -298,7 +291,6 @@ const RENAULT: VehicleVariant[] = [
   ...gen({ brand: 'Renault', model: 'Master', trim: '2.3 Diesel', engineCode: 'M9T', engineName: '2.3 Diesel', displacementCc: 2298, fuel: 'diesel', transmission: 'manual', bodyType: 'van', vehicleType: 'van', power: '130cv', sources: ['fipe'] }, 2002, 2024),
 ];
 
-
 // ============================================================================
 // NISSAN
 // ============================================================================
@@ -316,7 +308,6 @@ const NISSAN: VehicleVariant[] = [
   ...gen({ brand: 'Nissan', model: 'Livina', trim: '1.6', engineCode: 'HR16DE', engineName: '1.6 16V', displacementCc: 1598, fuel: 'flex', transmission: 'manual', bodyType: 'van', vehicleType: 'van', power: '111cv', sources: ['fipe'] }, 2009, 2014),
   ...gen({ brand: 'Nissan', model: 'Tiida', trim: '1.8', engineCode: 'MR18DE', engineName: '1.8 16V', displacementCc: 1798, fuel: 'flex', transmission: 'automatic', bodyType: 'hatch', vehicleType: 'car', power: '126cv', sources: ['fipe'] }, 2007, 2013),
 ];
-
 
 // ============================================================================
 // PEUGEOT
@@ -338,7 +329,6 @@ const PEUGEOT: VehicleVariant[] = [
   ...gen({ brand: 'Peugeot', model: 'Expert', trim: '1.6 Diesel', engineCode: 'DV6', engineName: '1.6 Diesel', displacementCc: 1560, fuel: 'diesel', transmission: 'manual', bodyType: 'van', vehicleType: 'van', power: '115cv', sources: ['fipe'] }, 2010, 2024),
 ];
 
-
 // ============================================================================
 // CITROËN
 // ============================================================================
@@ -354,7 +344,6 @@ const CITROEN: VehicleVariant[] = [
   ...gen({ brand: 'Citroën', model: 'C4 Picasso', trim: '2.0', engineCode: 'EW10', engineName: '2.0 16V', displacementCc: 1997, fuel: 'flex', transmission: 'automatic', bodyType: 'van', vehicleType: 'van', power: '143cv', sources: ['fipe'] }, 2007, 2015),
   ...gen({ brand: 'Citroën', model: 'Jumpy', trim: '1.6 Diesel', engineCode: 'DV6', engineName: '1.6 Diesel', displacementCc: 1560, fuel: 'diesel', transmission: 'manual', bodyType: 'van', vehicleType: 'van', power: '115cv', sources: ['fipe'] }, 2010, 2024),
 ];
-
 
 // ============================================================================
 // MITSUBISHI
@@ -372,7 +361,6 @@ const MITSUBISHI: VehicleVariant[] = [
   ...gen({ brand: 'Mitsubishi', model: 'Lancer', trim: '2.0', engineCode: '4B11', engineName: '2.0 16V', displacementCc: 1998, fuel: 'gasoline', transmission: 'cvt', bodyType: 'sedan', vehicleType: 'car', power: '160cv', sources: ['fipe'] }, 2007, 2019),
 ];
 
-
 // ============================================================================
 // JEEP
 // ============================================================================
@@ -389,7 +377,6 @@ const JEEP: VehicleVariant[] = [
   ...gen({ brand: 'Jeep', model: 'Grand Cherokee', trim: '3.6 V6', engineCode: 'Pentastar', engineName: '3.6 V6', displacementCc: 3604, fuel: 'gasoline', transmission: 'automatic', bodyType: 'suv', vehicleType: 'suv', power: '286cv', sources: ['fipe'] }, 2011, 2024),
   ...gen({ brand: 'Jeep', model: 'Grand Cherokee', trim: '3.0 Diesel', engineCode: 'EcoDiesel', engineName: '3.0 Diesel', displacementCc: 2987, fuel: 'diesel', transmission: 'automatic', bodyType: 'suv', vehicleType: 'suv', power: '250cv', sources: ['fipe'] }, 2014, 2024),
 ];
-
 
 // ============================================================================
 // KIA
@@ -409,7 +396,6 @@ const KIA: VehicleVariant[] = [
   ...gen({ brand: 'Kia', model: 'Soul', trim: '1.6', engineCode: 'Gamma', engineName: '1.6 16V', displacementCc: 1591, fuel: 'flex', transmission: 'automatic', bodyType: 'hatch', vehicleType: 'car', power: '130cv', sources: ['fipe'] }, 2009, 2020),
   ...gen({ brand: 'Kia', model: 'Bongo', trim: '2.5 Diesel', engineCode: 'D4CB', engineName: '2.5 Diesel', displacementCc: 2497, fuel: 'diesel', transmission: 'manual', bodyType: 'truck', vehicleType: 'truck', power: '130cv', sources: ['fipe'] }, 2005, 2024),
 ];
-
 
 // ============================================================================
 // MOTOS - HONDA
@@ -443,7 +429,6 @@ const HONDA_MOTOS: VehicleVariant[] = [
   ...gen({ brand: 'Honda', model: 'Gold Wing', trim: 'Tour', engineCode: 'SOHC', engineName: '1833cc', displacementCc: 1833, fuel: 'gasoline', transmission: 'dct', bodyType: 'touring', vehicleType: 'motorcycle', power: '126cv', sources: ['fipe'] }, 2001, 2024),
 ];
 
-
 // ============================================================================
 // MOTOS - YAMAHA
 // ============================================================================
@@ -470,7 +455,6 @@ const YAMAHA_MOTOS: VehicleVariant[] = [
   ...gen({ brand: 'Yamaha', model: 'XTZ 125', trim: 'Trail', engineCode: 'SOHC', engineName: '124cc', displacementCc: 124, fuel: 'flex', transmission: 'manual', bodyType: 'trail', vehicleType: 'motorcycle', power: '11.3cv', sources: ['fipe'] }, 2003, 2024),
   ...gen({ brand: 'Yamaha', model: 'Fluo 125', trim: 'UBS', engineCode: 'SOHC', engineName: '125cc', displacementCc: 125, fuel: 'gasoline', transmission: 'automatic', bodyType: 'scooter', vehicleType: 'motorcycle', power: '10.3cv', sources: ['fipe'] }, 2022, 2024),
 ];
-
 
 // ============================================================================
 // MOTOS - OUTRAS MARCAS
@@ -525,7 +509,6 @@ const OTHER_MOTOS: VehicleVariant[] = [
   ...gen({ brand: 'Haojue', model: 'DK 150', trim: 'S Fi', engineCode: 'SOHC', engineName: '149cc', displacementCc: 149, fuel: 'flex', transmission: 'manual', bodyType: 'street', vehicleType: 'motorcycle', power: '14cv', sources: ['fipe'] }, 2019, 2024),
 ];
 
-
 // ============================================================================
 // CAMINHÕES
 // ============================================================================
@@ -561,7 +544,6 @@ const TRUCKS: VehicleVariant[] = [
   ...gen({ brand: 'Volvo', model: 'B270F', trim: 'Diesel', engineCode: 'D8K', engineName: '7.7 Diesel', displacementCc: 7700, fuel: 'diesel', transmission: 'automatic', bodyType: 'bus', vehicleType: 'bus', power: '270cv', sources: ['fipe'] }, 2010, 2024),
   ...gen({ brand: 'Scania', model: 'K310', trim: 'Diesel', engineCode: 'DC09', engineName: '9.3 Diesel', displacementCc: 9300, fuel: 'diesel', transmission: 'automatic', bodyType: 'bus', vehicleType: 'bus', power: '310cv', sources: ['fipe'] }, 2010, 2024),
 ];
-
 
 // ============================================================================
 // PREMIUM / IMPORTADOS
@@ -609,7 +591,6 @@ const PREMIUM: VehicleVariant[] = [
   ...gen({ brand: 'RAM', model: '2500', trim: 'Laramie', engineCode: 'Cummins', engineName: '6.7 Diesel', displacementCc: 6700, fuel: 'diesel', transmission: 'automatic', bodyType: 'pickup', vehicleType: 'pickup', power: '365cv', sources: ['fipe'] }, 2012, 2024),
   ...gen({ brand: 'RAM', model: '3500', trim: 'Laramie', engineCode: 'Cummins', engineName: '6.7 Diesel', displacementCc: 6700, fuel: 'diesel', transmission: 'automatic', bodyType: 'pickup', vehicleType: 'pickup', power: '365cv', sources: ['fipe'] }, 2019, 2024),
 ];
-
 
 // ============================================================================
 // CHINESES E ELÉTRICOS

@@ -78,7 +78,7 @@ const VehicleCard = ({ vehicle, onClick, showCheckInTime = false }) => {
                 </div>
             </div>
         </button>
-    );
+  );
 };
 
 export default VehicleCard;

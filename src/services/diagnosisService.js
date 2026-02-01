@@ -134,7 +134,7 @@ class DiagnosisService {
             reject(error);
           }
         }
-      );
+
     });
   }
 
@@ -181,7 +181,6 @@ class DiagnosisService {
         where('empresaId', '==', empresaId),
         orderBy('createdAt', 'desc'),
         limit(limitCount)
-      );
 
       const querySnapshot = await getDocs(q);
       const diagnoses = [];
@@ -257,7 +256,7 @@ class DiagnosisService {
           onError(error);
         }
       }
-    );
+
   }
 
   /**
@@ -320,7 +319,6 @@ class DiagnosisService {
       const diagnosisRef = await addDoc(
         collection(db, 'empresas', data.empresaId, 'diagnostics'),
         diagnosisData
-      );
 
       return diagnosisRef.id;
     } catch (error) {

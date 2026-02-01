@@ -147,7 +147,6 @@ class VoiceInputController {
     }
 
     if (this.isListening) {
-      console.warn('Already listening');
       return false;
     }
 

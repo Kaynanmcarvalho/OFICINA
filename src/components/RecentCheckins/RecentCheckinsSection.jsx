@@ -61,10 +61,10 @@ const RecentCheckinsSection = ({
           <EmptyState />
         </div>
       </ErrorBoundary>
-    );
-  }
-  
-  return (
+  );
+}
+
+return (
     <ErrorBoundary>
       <div className={`w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${className}`}>
         {/* Section Header */}
@@ -95,7 +95,7 @@ const RecentCheckinsSection = ({
         </motion.div>
       </div>
     </ErrorBoundary>
-  );
+
 };
 
 /**
@@ -120,7 +120,7 @@ const SectionHeader = ({ count }) => {
         </p>
       )}
     </div>
-  );
+
 };
 
 /**

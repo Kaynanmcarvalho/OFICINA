@@ -134,7 +134,7 @@ export function VehicleHistoryModal({ placa, isOpen, onClose }) {
       </div>
     </div>
   );
-}
+};
 
 // Tab de Recalls
 function RecallsTab({ recalls }) {
@@ -199,7 +199,7 @@ function RecallsTab({ recalls }) {
       ))}
     </div>
   );
-}
+};
 
 // Tab de Leilões
 function LeiloesTab({ leiloes }) {
@@ -251,7 +251,7 @@ function LeiloesTab({ leiloes }) {
       ))}
     </div>
   );
-}
+};
 
 // Tab de Sinistros
 function SinistrosTab({ sinistros }) {
@@ -296,4 +296,4 @@ function SinistrosTab({ sinistros }) {
       ))}
     </div>
   );
-}
+};

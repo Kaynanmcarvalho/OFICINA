@@ -82,7 +82,6 @@ const RecentItemVaried: React.FC<RecentItemVariedProps> = ({
         onDelete={() => onAction?.({ type: 'delete', itemId: item.id })}
       />
     </div>
-  );
 
   // Expanded Layout
   const ExpandedLayout = () => (
@@ -111,7 +110,6 @@ const RecentItemVaried: React.FC<RecentItemVariedProps> = ({
         </div>
       </div>
     </div>
-  );
 
   // Minimal Layout
   const MinimalLayout = () => (
@@ -133,7 +131,6 @@ const RecentItemVaried: React.FC<RecentItemVariedProps> = ({
         onDelete={() => onAction?.({ type: 'delete', itemId: item.id })}
       />
     </div>
-  );
 
   // Detailed Layout
   const DetailedLayout = () => (
@@ -164,7 +161,6 @@ const RecentItemVaried: React.FC<RecentItemVariedProps> = ({
         />
       </div>
     </div>
-  );
 
   const renderLayout = () => {
     switch (layoutVariant) {

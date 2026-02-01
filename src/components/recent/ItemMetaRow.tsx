@@ -69,7 +69,6 @@ const ItemMetaRow: React.FC<ItemMetaRowProps> = ({
 }) => {
   // Validate date
   if (!isValidDate(date)) {
-    console.warn('ItemMetaRow: Invalid date provided', date);
     return (
       <div className="flex items-center gap-3 text-xs font-bold text-gray-700 dark:text-neutral-400">
         {plate && (
@@ -78,7 +77,7 @@ const ItemMetaRow: React.FC<ItemMetaRowProps> = ({
         {model && <span>{model}</span>}
         <span className="text-red-500">Data inválida</span>
       </div>
-    );
+
   }
 
   // Format date

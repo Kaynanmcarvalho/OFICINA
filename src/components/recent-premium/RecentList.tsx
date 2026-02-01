@@ -83,17 +83,17 @@ const RecentList: React.FC<RecentListProps> = ({
           <RecentSkeleton key={i} />
         ))}
       </div>
-    );
-  }
+  );
+}
 
-  if (items.length === 0) {
+if (items.length === 0) {
     return (
       <EmptyState
         searchQuery={searchQuery}
         hasFilters={hasFilters}
         onClearFilters={onClearFilters}
       />
-    );
+
   }
 
   return (
@@ -126,7 +126,7 @@ const RecentList: React.FC<RecentListProps> = ({
               ))}
             </AnimatePresence>
           </div>
-        );
+
       })}
     </div>
   );

@@ -110,10 +110,10 @@ const GraficoFinanceiro = () => {
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
         <LoaderAnimado tipo="chart" />
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}

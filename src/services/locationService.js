@@ -31,7 +31,7 @@ export const getCurrentLocation = () => {
         enableHighAccuracy: true,
         maximumAge: 0
       }
-    );
+
   });
 };
 
@@ -50,8 +50,7 @@ export const reverseGeocode = async (latitude, longitude) => {
           'User-Agent': 'TorqApp/1.0'
         }
       }
-    );
-    
+
     if (!response.ok) {
       throw new Error('Erro no reverse geocoding');
     }

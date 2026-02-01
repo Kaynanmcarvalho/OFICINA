@@ -6,83 +6,245 @@ import { getAllDocuments, subscribeToCollection } from '../../../services/storeH
  */
 
 /**
- * Busca estatísticas gerais do sistema em tempo real
+ * Estados padronizados do sistema
+ */
+const CHECKIN_STATUS = {
+  IN_SERVICE: 'in-progress',
+  WAITING_PARTS: 'waiting-parts',
+  READY: 'ready',
+  COMPLETED: 'completed',
+  CANCELLED: 'cancelled'
+};
+
+const BUDGET_STATUS = {
+  PENDING: 'pending',
+  APPROVED: 'approved',
+  REJECTED: 'rejected',
+  EXPIRED: 'expired'
+};
+
+/**
+ * Busca estatísticas OPERACIONAIS em tempo real
+ * Foco: O que está acontecendo AGORA na oficina
+ * 🔒 SEGURANÇA: Valida empresaId antes de qualquer operação
  */
 export const buscarEstatisticasGerais = async () => {
   try {
-    const [clientesData, ferramentasData, estoqueData, orcamentosData, checkinsData] = await Promise.all([
-      getAllDocuments('clients'),
-      getAllDocuments('tools'),
-      getAllDocuments('inventory'),
-      getAllDocuments('budgets'),
-      getAllDocuments('checkins')
-    ]);
-
-    // Calcular total de veículos cadastrados (veículos estão dentro dos clientes)
-    const totalVeiculosCadastrados = clientesData.reduce((total, cliente) => {
-      return total + (cliente.vehicles?.length || 0);
-    }, 0);
-
-    // Calcular veículos em atendimento (checkins ativos)
-    const statusAtivos = ['Em Montagem', 'Aguardando Peças', 'Teste', 'em_servico', 'in_service', 'aguardando_pecas', 'waiting_parts', 'teste', 'testing', 'Em Serviço', 'em_atendimento'];
-    const veiculosEmAtendimento = checkinsData.filter(checkin => 
-      checkin.status && statusAtivos.includes(checkin.status)
-    ).length;
-
-    // Calcular ferramentas em uso
-    const ferramentasEmUso = ferramentasData.filter(f => 
-      f.status === 'Em Uso' || f.status === 'em_uso' || f.status === 'in_use'
-    ).length;
-
-    // Calcular ferramentas em manutenção
-    const ferramentasManutencao = ferramentasData.filter(f => 
-      f.status === 'Manutenção' || f.status === 'manutencao' || f.status === 'maintenance'
-    ).length;
-
-    // Calcular estoque total (soma de quantidades)
-    const estoqueTotal = estoqueData.reduce((sum, item) => sum + (item.quantity || item.currentStock || 0), 0);
-
-    // Calcular produtos com estoque baixo
-    const produtosBaixoEstoque = estoqueData.filter(item => 
-      (item.quantity || item.currentStock || 0) <= (item.minQuantity || item.minStock || 5)
-    ).length;
-
-    // Calcular receita mensal (orçamentos aprovados do mês atual)
+    // 🔒 VALIDAÇÃO DE TENANT
+    const empresaId = sessionStorage.getItem('empresaId');
+    if (!empresaId) {
+      console.error('🚨 ERRO DE SEGURANÇA: empresaId não encontrado');
+      throw new Error('Sessão inválida. Faça login novamente.');
+    }
+    
     const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    
     const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    const orcamentosMesAtual = orcamentosData.filter(orc => {
-      if (!orc.createdAt) return false;
-      const dataOrc = orc.createdAt.seconds ? new Date(orc.createdAt.seconds * 1000) : new Date(orc.createdAt);
-      return dataOrc >= inicioMes && (orc.status === 'approved' || orc.status === 'aprovado');
-    });
-    const receitaMensal = orcamentosMesAtual.reduce((sum, orc) => sum + (orc.total || 0), 0);
+    
+    // 🔒 SEGURANÇA: Buscar apenas dados da empresa do usuário
+    // storeHelpers já filtra por empresaId automaticamente
+    const [checkinsData, orcamentosData, clientesData] = await Promise.all([
+      getAllDocuments('checkins'),
+      getAllDocuments('budgets'),
+      getAllDocuments('clients')
+    ]);
+    
+    // 🔒 VALIDAÇÃO ADICIONAL: Filtrar dados que possam ter vazado
+    const checkinsValidados = checkinsData.filter(c => c.empresaId === empresaId);
+    const orcamentosValidados = orcamentosData.filter(o => o.empresaId === empresaId);
+    const clientesValidados = clientesData.filter(c => c.empresaId === empresaId);
 
-    // Calcular serviços hoje
-    const servicosHoje = checkinsData.filter(checkin => {
-      if (!checkin.createdAt) return false;
-      const dataCheckin = checkin.createdAt.seconds ? new Date(checkin.createdAt.seconds * 1000) : new Date(checkin.createdAt);
-      return dataCheckin.toDateString() === hoje.toDateString();
+    // === MÉTRICAS OPERACIONAIS CRÍTICAS ===
+    
+    // 1. Veículos EM SERVIÇO AGORA (status ativo)
+    const veiculosEmServicoArray = checkinsValidados.filter(c => 
+      c.status === CHECKIN_STATUS.IN_SERVICE || 
+      c.status === CHECKIN_STATUS.WAITING_PARTS
+    );
+    const veiculosEmServico = veiculosEmServicoArray.length;
+    
+    // 2. Serviços ATRASADOS (prometidos para antes de hoje e não concluídos)
+    const servicosAtrasados = checkinsValidados.filter(c => {
+      if (c.status === CHECKIN_STATUS.COMPLETED) return false;
+      if (!c.expectedDeliveryDate) return false;
+      
+      const dataPromessa = c.expectedDeliveryDate.seconds 
+        ? new Date(c.expectedDeliveryDate.seconds * 1000) 
+        : new Date(c.expectedDeliveryDate);
+      
+      return dataPromessa < hoje;
+    });
+    
+    // 3. Veículos PRONTOS aguardando retirada
+    const veiculosProntos = checkinsValidados.filter(c => 
+      c.status === CHECKIN_STATUS.READY
+    ).length;
+    
+    // 4. Veículos PARADOS (em serviço há mais de 3 dias sem atualização)
+    const tresDiasAtras = new Date();
+    tresDiasAtras.setDate(tresDiasAtras.getDate() - 3);
+    
+    const veiculosParados = veiculosEmServicoArray.filter(c => {
+      const ultimaAtualizacao = c.updatedAt?.seconds 
+        ? new Date(c.updatedAt.seconds * 1000)
+        : c.createdAt?.seconds 
+          ? new Date(c.createdAt.seconds * 1000)
+          : new Date();
+      
+      return ultimaAtualizacao < tresDiasAtras;
+    });
+
+    
+    // === MÉTRICAS FINANCEIRAS CRÍTICAS ===
+    
+    // 5. Receita do DIA (orçamentos aprovados hoje)
+    const orcamentosHoje = orcamentosValidados.filter(orc => {
+      if (orc.status !== BUDGET_STATUS.APPROVED) return false;
+      if (!orc.approvedAt && !orc.createdAt) return false;
+      
+      const dataAprovacao = orc.approvedAt?.seconds 
+        ? new Date(orc.approvedAt.seconds * 1000)
+        : orc.createdAt?.seconds 
+          ? new Date(orc.createdAt.seconds * 1000)
+          : new Date(orc.createdAt);
+      
+      return dataAprovacao.toDateString() === new Date().toDateString();
+    });
+    
+    const receitaDia = orcamentosHoje.reduce((sum, orc) => {
+      const valor = parseFloat(orc.total || orc.totalValue || 0);
+      return sum + (isNaN(valor) ? 0 : valor);
+    }, 0);
+    
+    // 6. Receita do MÊS (orçamentos aprovados no mês)
+    const orcamentosMes = orcamentosValidados.filter(orc => {
+      if (orc.status !== BUDGET_STATUS.APPROVED) return false;
+      if (!orc.approvedAt && !orc.createdAt) return false;
+      
+      const dataAprovacao = orc.approvedAt?.seconds 
+        ? new Date(orc.approvedAt.seconds * 1000)
+        : orc.createdAt?.seconds 
+          ? new Date(orc.createdAt.seconds * 1000)
+          : new Date(orc.createdAt);
+      
+      return dataAprovacao >= inicioMes;
+    });
+    
+    const receitaMes = orcamentosMes.reduce((sum, orc) => {
+      const valor = parseFloat(orc.total || orc.totalValue || 0);
+      return sum + (isNaN(valor) ? 0 : valor);
+    }, 0);
+    
+    // 7. Ticket médio do mês
+    const ticketMedio = orcamentosMes.length > 0 
+      ? receitaMes / orcamentosMes.length 
+      : 0;
+    
+    // 8. Taxa de conversão (orçamentos aprovados / total)
+    const totalOrcamentos = orcamentosValidados.filter(orc => {
+      if (!orc.createdAt) return false;
+      const data = orc.createdAt.seconds 
+        ? new Date(orc.createdAt.seconds * 1000)
+        : new Date(orc.createdAt);
+      return data >= inicioMes;
     }).length;
+    
+    const taxaConversao = totalOrcamentos > 0 
+      ? (orcamentosMes.length / totalOrcamentos) * 100 
+      : 0;
+    
+    // 9. Tempo médio de permanência (veículos concluídos no mês)
+    const checkinsConcluidosMes = checkinsData.filter(c => {
+      if (c.status !== CHECKIN_STATUS.COMPLETED) return false;
+      if (!c.completedAt) return false;
+      
+      const dataConclusao = c.completedAt.seconds 
+        ? new Date(c.completedAt.seconds * 1000)
+        : new Date(c.completedAt);
+      
+      return dataConclusao >= inicioMes;
+    });
+    
+    const tempoMedioPermanencia = checkinsConcluidosMes.reduce((sum, c) => {
+      if (!c.createdAt || !c.completedAt) return sum;
+      
+      const entrada = c.createdAt.seconds 
+        ? new Date(c.createdAt.seconds * 1000)
+        : new Date(c.createdAt);
+      
+      const saida = c.completedAt.seconds 
+        ? new Date(c.completedAt.seconds * 1000)
+        : new Date(c.completedAt);
+      
+      const dias = (saida - entrada) / (1000 * 60 * 60 * 24);
+      return sum + dias;
+    }, 0) / (checkinsConcluidosMes.length || 1);
+    
+    // === MÉTRICAS SECUNDÁRIAS ===
+    
+    // Total de clientes (para contexto)
+    const totalClientes = clientesData.length;
+    
+    // Clientes atendidos no mês
+    const clientesAtendidosMes = new Set(
+      checkinsData
+        .filter(c => {
+          if (!c.createdAt) return false;
+          const data = c.createdAt.seconds 
+            ? new Date(c.createdAt.seconds * 1000)
+            : new Date(c.createdAt);
+          return data >= inicioMes;
+        })
+        .map(c => c.clientId || c.clientName)
+    ).size;
 
     return {
-      totalClientes: clientesData.length,
-      totalVeiculos: totalVeiculosCadastrados,
-      veiculosAtivos: totalVeiculosCadastrados, // Total de veículos cadastrados
-      veiculosEmAtendimento, // Veículos em serviço ativo
-      totalFerramentas: ferramentasData.length,
-      ferramentasEmUso,
-      ferramentasDisponiveis: ferramentasData.length - ferramentasEmUso - ferramentasManutencao,
-      ferramentasManutencao,
-      totalProdutos: estoqueData.length,
-      totalEstoque: estoqueTotal,
-      produtosBaixoEstoque,
-      receitaMensal,
-      servicosHoje,
-      clientes: clientesData,
-      ferramentas: ferramentasData,
-      estoque: estoqueData,
-      orcamentos: orcamentosData,
-      checkins: checkinsData
+      // === OPERACIONAIS (CRÍTICOS) ===
+      veiculosEmServico: veiculosEmServico.length,
+      servicosAtrasados: servicosAtrasados.length,
+      veiculosProntos: veiculosProntos.length,
+      veiculosParados: veiculosParados.length,
+      
+      // === FINANCEIROS (CRÍTICOS) ===
+      receitaDia: parseFloat(receitaDia.toFixed(2)),
+      receitaMes: parseFloat(receitaMes.toFixed(2)),
+      ticketMedio: parseFloat(ticketMedio.toFixed(2)),
+      taxaConversao: parseFloat(taxaConversao.toFixed(1)),
+      
+      // === EFICIÊNCIA ===
+      tempoMedioPermanencia: parseFloat(tempoMedioPermanencia.toFixed(1)),
+      servicosConcluidosMes: checkinsConcluidosMes.length,
+      
+      // === CONTEXTO ===
+      totalClientes,
+      clientesAtendidosMes,
+      totalOrcamentosMes: orcamentosMes.length,
+      
+      // === DADOS BRUTOS (para detalhes) ===
+      veiculosEmServicoDetalhes: veiculosEmServico.map(c => ({
+        id: c.id || c.firestoreId,
+        placa: c.vehiclePlate,
+        cliente: c.clientName,
+        entrada: c.createdAt,
+        status: c.status
+      })),
+      servicosAtrasadosDetalhes: servicosAtrasados.map(c => ({
+        id: c.id || c.firestoreId,
+        placa: c.vehiclePlate,
+        cliente: c.clientName,
+        dataPromessa: c.expectedDeliveryDate,
+        diasAtraso: Math.floor((hoje - (c.expectedDeliveryDate.seconds 
+          ? new Date(c.expectedDeliveryDate.seconds * 1000)
+          : new Date(c.expectedDeliveryDate))) / (1000 * 60 * 60 * 24))
+      })),
+      veiculosProntosDetalhes: veiculosProntos.map(c => ({
+        id: c.id || c.firestoreId,
+        placa: c.vehiclePlate,
+        cliente: c.clientName,
+        telefone: c.clientPhone,
+        dataConclusao: c.completedAt || c.updatedAt
+      }))
     };
   } catch (error) {
     console.error('[Dashboard] Erro ao buscar estatísticas:', error);
@@ -91,50 +253,228 @@ export const buscarEstatisticasGerais = async () => {
 };
 
 /**
- * Busca alertas críticos do sistema
+ * Busca alertas CRÍTICOS e ACIONÁVEIS do sistema
+ * Prioridade: Problemas que exigem ação IMEDIATA
  */
 export const buscarAlertas = async () => {
   try {
     const alertas = [];
+    const hoje = new Date();
+    
+    // Buscar dados necessários
+    const [checkinsData, estoqueData, orcamentosData] = await Promise.all([
+      getAllDocuments('checkins'),
+      getAllDocuments('inventory'),
+      getAllDocuments('budgets')
+    ]);
 
-    // Verificar estoque baixo
-    const estoqueData = await getAllDocuments('inventory');
+    // === ALERTAS CRÍTICOS (VERMELHO) ===
+    
+    // 1. Serviços ATRASADOS
+    checkinsData.forEach(checkin => {
+      if (checkin.status === CHECKIN_STATUS.COMPLETED) return;
+      if (!checkin.expectedDeliveryDate) return;
+      
+      const dataPromessa = checkin.expectedDeliveryDate.seconds 
+        ? new Date(checkin.expectedDeliveryDate.seconds * 1000)
+        : new Date(checkin.expectedDeliveryDate);
+      
+      if (dataPromessa < hoje) {
+        const diasAtraso = Math.floor((hoje - dataPromessa) / (1000 * 60 * 60 * 24));
+        alertas.push({
+          id: `atraso-${checkin.id}`,
+          tipo: 'critico',
+          categoria: 'operacional',
+          titulo: `Serviço Atrasado - ${diasAtraso} dia${diasAtraso > 1 ? 's' : ''}`,
+          mensagem: `${checkin.vehiclePlate} - ${checkin.clientName}`,
+          data: new Date(),
+          prioridade: 'alta',
+          acao: {
+            label: 'Ver Detalhes',
+            link: `/checkin?id=${checkin.id}`,
+            tipo: 'link'
+          },
+          dados: {
+            checkinId: checkin.id,
+            placa: checkin.vehiclePlate,
+            cliente: checkin.clientName,
+            telefone: checkin.clientPhone,
+            diasAtraso
+          }
+        });
+      }
+    });
+    
+    // 2. Veículos PARADOS (sem atualização há 3+ dias)
+    const tresDiasAtras = new Date();
+    tresDiasAtras.setDate(tresDiasAtras.getDate() - 3);
+    
+    checkinsData.forEach(checkin => {
+      if (checkin.status !== CHECKIN_STATUS.IN_SERVICE && 
+          checkin.status !== CHECKIN_STATUS.WAITING_PARTS) return;
+      
+      const ultimaAtualizacao = checkin.updatedAt?.seconds 
+        ? new Date(checkin.updatedAt.seconds * 1000)
+        : checkin.createdAt?.seconds 
+          ? new Date(checkin.createdAt.seconds * 1000)
+          : new Date();
+      
+      if (ultimaAtualizacao < tresDiasAtras) {
+        const diasParado = Math.floor((hoje - ultimaAtualizacao) / (1000 * 60 * 60 * 24));
+        alertas.push({
+          id: `parado-${checkin.id}`,
+          tipo: 'aviso',
+          categoria: 'operacional',
+          titulo: `Veículo Parado - ${diasParado} dias sem atualização`,
+          mensagem: `${checkin.vehiclePlate} - ${checkin.clientName}`,
+          data: new Date(),
+          prioridade: 'alta',
+          acao: {
+            label: 'Atualizar Status',
+            link: `/checkin?id=${checkin.id}`,
+            tipo: 'link'
+          },
+          dados: {
+            checkinId: checkin.id,
+            placa: checkin.vehiclePlate,
+            diasParado
+          }
+        });
+      }
+    });
+    
+    // 3. Produtos ESGOTADOS
+    estoqueData.forEach(item => {
+      const quantidade = item.quantity || item.currentStock || 0;
+      
+      if (quantidade === 0) {
+        alertas.push({
+          id: `esgotado-${item.id}`,
+          tipo: 'critico',
+          categoria: 'estoque',
+          titulo: 'Produto Esgotado',
+          mensagem: `${item.name} - Estoque ZERO`,
+          data: new Date(),
+          prioridade: 'alta',
+          acao: {
+            label: 'Repor Estoque',
+            link: `/inventory?id=${item.id}`,
+            tipo: 'link'
+          },
+          dados: {
+            produtoId: item.id,
+            nome: item.name,
+            codigo: item.partNumber || item.sku
+          }
+        });
+      }
+    });
+
+    // === ALERTAS IMPORTANTES (AMARELO) ===
+    
+    // 4. Veículos PRONTOS aguardando retirada
+    checkinsData.forEach(checkin => {
+      if (checkin.status !== CHECKIN_STATUS.READY) return;
+      
+      const dataConclusao = checkin.completedAt?.seconds 
+        ? new Date(checkin.completedAt.seconds * 1000)
+        : checkin.updatedAt?.seconds 
+          ? new Date(checkin.updatedAt.seconds * 1000)
+          : new Date();
+      
+      const diasPronto = Math.floor((hoje - dataConclusao) / (1000 * 60 * 60 * 24));
+      
+      if (diasPronto >= 1) {
+        alertas.push({
+          id: `pronto-${checkin.id}`,
+          tipo: 'aviso',
+          categoria: 'operacional',
+          titulo: `Veículo Pronto - ${diasPronto} dia${diasPronto > 1 ? 's' : ''}`,
+          mensagem: `${checkin.vehiclePlate} - ${checkin.clientName}`,
+          data: new Date(),
+          prioridade: 'media',
+          acao: {
+            label: 'Notificar Cliente',
+            link: `/checkin?id=${checkin.id}&action=notify`,
+            tipo: 'action'
+          },
+          dados: {
+            checkinId: checkin.id,
+            placa: checkin.vehiclePlate,
+            cliente: checkin.clientName,
+            telefone: checkin.clientPhone,
+            diasPronto
+          }
+        });
+      }
+    });
+    
+    // 5. Estoque BAIXO
     estoqueData.forEach(item => {
       const quantidade = item.quantity || item.currentStock || 0;
       const minimo = item.minQuantity || item.minStock || 5;
-
-      if (quantidade <= minimo) {
+      
+      if (quantidade > 0 && quantidade <= minimo) {
         alertas.push({
-          id: `estoque-${item.id}`,
-          tipo: quantidade === 0 ? 'critico' : 'aviso',
+          id: `baixo-${item.id}`,
+          tipo: 'aviso',
           categoria: 'estoque',
-          titulo: quantidade === 0 ? 'Produto Esgotado' : 'Estoque Baixo',
-          mensagem: `${item.name} - ${quantidade} unidade${quantidade !== 1 ? 's' : ''} restante${quantidade !== 1 ? 's' : ''}`,
+          titulo: 'Estoque Baixo',
+          mensagem: `${item.name} - ${quantidade} unidade${quantidade !== 1 ? 's' : ''}`,
           data: new Date(),
-          prioridade: quantidade === 0 ? 'alta' : 'media'
+          prioridade: 'media',
+          acao: {
+            label: 'Ver Produto',
+            link: `/inventory?id=${item.id}`,
+            tipo: 'link'
+          }
         });
       }
     });
-
-    // Verificar ferramentas em manutenção
-    const ferramentasData = await getAllDocuments('tools');
-    ferramentasData.forEach(ferramenta => {
-      if (ferramenta.status === 'Manutenção' || ferramenta.status === 'manutencao' || ferramenta.status === 'maintenance') {
+    
+    // 6. Orçamentos PENDENTES há mais de 2 dias
+    const doisDiasAtras = new Date();
+    doisDiasAtras.setDate(doisDiasAtras.getDate() - 2);
+    
+    orcamentosData.forEach(orc => {
+      if (orc.status !== BUDGET_STATUS.PENDING) return;
+      
+      const dataCriacao = orc.createdAt?.seconds 
+        ? new Date(orc.createdAt.seconds * 1000)
+        : new Date(orc.createdAt);
+      
+      if (dataCriacao < doisDiasAtras) {
+        const diasPendente = Math.floor((hoje - dataCriacao) / (1000 * 60 * 60 * 24));
         alertas.push({
-          id: `ferramenta-${ferramenta.id}`,
+          id: `orcamento-${orc.id}`,
           tipo: 'info',
-          categoria: 'ferramentas',
-          titulo: 'Ferramenta em Manutenção',
-          mensagem: `${ferramenta.name} indisponível temporariamente`,
+          categoria: 'comercial',
+          titulo: `Orçamento Pendente - ${diasPendente} dias`,
+          mensagem: `${orc.clientName} - R$ ${(orc.total || 0).toFixed(2)}`,
           data: new Date(),
-          prioridade: 'baixa'
+          prioridade: 'media',
+          acao: {
+            label: 'Acompanhar',
+            link: `/budgets?id=${orc.id}`,
+            tipo: 'link'
+          }
         });
       }
     });
 
-    // Ordenar por prioridade
+    // Ordenar por prioridade e tipo
     const prioridadeOrdem = { alta: 1, media: 2, baixa: 3 };
-    return alertas.sort((a, b) => prioridadeOrdem[a.prioridade] - prioridadeOrdem[b.prioridade]);
+    const tipoOrdem = { critico: 1, aviso: 2, info: 3 };
+    
+    return alertas.sort((a, b) => {
+      const prioA = prioridadeOrdem[a.prioridade] || 3;
+      const prioB = prioridadeOrdem[b.prioridade] || 3;
+      if (prioA !== prioB) return prioA - prioB;
+      
+      const tipoA = tipoOrdem[a.tipo] || 3;
+      const tipoB = tipoOrdem[b.tipo] || 3;
+      return tipoA - tipoB;
+    });
   } catch (error) {
     console.error('[Dashboard] Erro ao buscar alertas:', error);
     return [];
@@ -397,8 +737,11 @@ export const calcularTendencias = async () => {
     const quatorzeDiasAtras = new Date(hoje);
     quatorzeDiasAtras.setDate(quatorzeDiasAtras.getDate() - 14);
 
-    // Buscar clientes (veículos estão dentro dos clientes)
-    const clientesData = await getAllDocuments('clients');
+    // Buscar dados necessários
+    const [clientesData, orcamentosData] = await Promise.all([
+      getAllDocuments('clients'),
+      getAllDocuments('budgets')
+    ]);
 
     // Extrair todos os veículos dos clientes
     const todosVeiculos = [];
@@ -414,6 +757,8 @@ export const calcularTendencias = async () => {
       }
     });
 
+    // === TENDÊNCIAS DE CLIENTES E VEÍCULOS ===
+    
     // Contar registros do período atual (últimos 7 dias)
     const clientesAtual = clientesData.filter(data => {
       if (!data.createdAt) return false;
@@ -440,6 +785,58 @@ export const calcularTendencias = async () => {
       return dataCriacao >= quatorzeDiasAtras && dataCriacao < seteDiasAtras;
     }).length;
 
+    // === TENDÊNCIAS FINANCEIRAS ===
+    
+    // Receita período atual (últimos 7 dias)
+    const orcamentosAtual = orcamentosData.filter(orc => {
+      if (orc.status !== BUDGET_STATUS.APPROVED) return false;
+      if (!orc.approvedAt && !orc.createdAt) return false;
+      
+      const dataAprovacao = orc.approvedAt?.seconds 
+        ? new Date(orc.approvedAt.seconds * 1000)
+        : orc.createdAt?.seconds 
+          ? new Date(orc.createdAt.seconds * 1000)
+          : new Date(orc.createdAt);
+      
+      return dataAprovacao >= seteDiasAtras;
+    });
+    
+    const receitaAtual = orcamentosAtual.reduce((sum, orc) => {
+      const valor = parseFloat(orc.total || orc.totalValue || 0);
+      return sum + (isNaN(valor) ? 0 : valor);
+    }, 0);
+    
+    // Receita período anterior (7-14 dias atrás)
+    const orcamentosAnterior = orcamentosData.filter(orc => {
+      if (orc.status !== BUDGET_STATUS.APPROVED) return false;
+      if (!orc.approvedAt && !orc.createdAt) return false;
+      
+      const dataAprovacao = orc.approvedAt?.seconds 
+        ? new Date(orc.approvedAt.seconds * 1000)
+        : orc.createdAt?.seconds 
+          ? new Date(orc.createdAt.seconds * 1000)
+          : new Date(orc.createdAt);
+      
+      return dataAprovacao >= quatorzeDiasAtras && dataAprovacao < seteDiasAtras;
+    });
+    
+    const receitaAnterior = orcamentosAnterior.reduce((sum, orc) => {
+      const valor = parseFloat(orc.total || orc.totalValue || 0);
+      return sum + (isNaN(valor) ? 0 : valor);
+    }, 0);
+    
+    // Ticket médio período atual
+    const ticketAtual = orcamentosAtual.length > 0 
+      ? receitaAtual / orcamentosAtual.length 
+      : 0;
+    
+    // Ticket médio período anterior
+    const ticketAnterior = orcamentosAnterior.length > 0 
+      ? receitaAnterior / orcamentosAnterior.length 
+      : 0;
+
+    // === FUNÇÕES AUXILIARES ===
+    
     // Calcular tendências
     const getTendencia = (atual, anterior) => {
       // Se ambos são zero, não há dados suficientes
@@ -463,10 +860,19 @@ export const calcularTendencias = async () => {
     };
 
     return {
+      // Tendências de clientes e veículos
       tendenciaClientes: getTendencia(clientesAtual, clientesAnterior),
       percentualClientes: getPercentual(clientesAtual, clientesAnterior),
       tendenciaVeiculos: getTendencia(veiculosAtual, veiculosAnterior),
       percentualVeiculos: getPercentual(veiculosAtual, veiculosAnterior),
+      
+      // Tendências financeiras
+      tendenciaReceita: getTendencia(receitaAtual, receitaAnterior),
+      percentualReceita: getPercentual(receitaAtual, receitaAnterior),
+      tendenciaTicket: getTendencia(ticketAtual, ticketAnterior),
+      percentualTicket: getPercentual(ticketAtual, ticketAnterior),
+      
+      // Placeholders para futuras implementações
       tendenciaFerramentas: 'stable',
       percentualFerramentas: 0,
       tendenciaEstoque: 'stable',
@@ -479,6 +885,10 @@ export const calcularTendencias = async () => {
       percentualClientes: 0,
       tendenciaVeiculos: 'stable',
       percentualVeiculos: 0,
+      tendenciaReceita: 'stable',
+      percentualReceita: 0,
+      tendenciaTicket: 'stable',
+      percentualTicket: 0,
       tendenciaFerramentas: 'stable',
       percentualFerramentas: 0,
       tendenciaEstoque: 'stable',

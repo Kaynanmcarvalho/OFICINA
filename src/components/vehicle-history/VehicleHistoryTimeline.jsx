@@ -79,10 +79,10 @@ export function VehicleHistoryTimeline({ history }) {
         <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
         <p className="text-gray-600 dark:text-gray-400">Nenhum evento no histórico</p>
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <div className="relative">
       {/* Linha vertical */}
       <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-800" />

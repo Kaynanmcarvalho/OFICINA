@@ -20,8 +20,6 @@ class AccountService {
    */
   async createAccount(accountData) {
     try {
-      console.log('💰 Criando nova conta:', accountData);
-
       // Validar dados obrigatórios
       this.validateAccountData(accountData);
 
@@ -48,8 +46,6 @@ class AccountService {
 
       const docRef = await addDoc(collection(db, this.accountsCollection), account);
       
-      console.log('✅ Conta criada com sucesso:', docRef.id);
-      
       return {
         id: docRef.id,
         ...account,
@@ -71,8 +67,6 @@ class AccountService {
    */
   async createInstallmentAccounts(accountData, parcelas) {
     try {
-      console.log('📅 Criando contas parceladas:', { accountData, parcelas });
-
       if (parcelas < 2) {
         throw new Error('Número de parcelas deve ser maior que 1');
       }
@@ -110,7 +104,6 @@ class AccountService {
         accounts.push(parcela);
       }
 
-      console.log('✅ Contas parceladas criadas:', accounts.length);
       return { mainAccount, parcelas: accounts };
     } catch (error) {
       console.error('❌ Erro ao criar contas parceladas:', error);
@@ -126,8 +119,6 @@ class AccountService {
    */
   async updateAccount(accountId, updateData) {
     try {
-      console.log('📝 Atualizando conta:', { accountId, updateData });
-
       const accountRef = doc(db, this.accountsCollection, accountId);
       
       // Preparar dados para atualização
@@ -148,7 +139,6 @@ class AccountService {
       // Buscar conta atualizada
       const updatedAccount = await this.getAccountById(accountId);
       
-      console.log('✅ Conta atualizada com sucesso');
       return updatedAccount;
     } catch (error) {
       console.error('❌ Erro ao atualizar conta:', error);
@@ -164,8 +154,6 @@ class AccountService {
    */
   async registerPayment(accountId, paymentData) {
     try {
-      console.log('💳 Registrando pagamento:', { accountId, paymentData });
-
       const account = await this.getAccountById(accountId);
       
       if (!account) {
@@ -230,8 +218,6 @@ class AccountService {
         dataPagamento: newStatus === 'pago' ? payment.dataPagamento : null
       });
 
-      console.log('✅ Pagamento registrado com sucesso');
-      
       return {
         paymentId: paymentRef.id,
         payment: {
@@ -254,8 +240,6 @@ class AccountService {
    */
   async getAccounts(filters = {}) {
     try {
-      console.log('🔍 Buscando contas:', filters);
-
       let q = collection(db, this.accountsCollection);
       const constraints = [];
 
@@ -276,7 +260,7 @@ class AccountService {
         constraints.push(
           where('dataVencimento', '>=', Timestamp.fromDate(new Date(filters.dataInicio))),
           where('dataVencimento', '<=', Timestamp.fromDate(new Date(filters.dataFim)))
-        );
+
       }
       
       if (filters.vencidas) {
@@ -308,7 +292,6 @@ class AccountService {
         });
       });
 
-      console.log(`✅ ${accounts.length} contas encontradas`);
       return accounts;
     } catch (error) {
       console.error('❌ Erro ao buscar contas:', error);
@@ -355,7 +338,6 @@ class AccountService {
         collection(db, this.paymentsCollection),
         where('contaId', '==', accountId),
         orderBy('dataPagamento', 'desc')
-      );
 
       const querySnapshot = await getDocs(q);
       const payments = [];
@@ -383,8 +365,6 @@ class AccountService {
    */
   async deleteAccount(accountId) {
     try {
-      console.log('🗑️ Excluindo conta:', accountId);
-
       const account = await this.getAccountById(accountId);
       
       if (!account) {
@@ -404,7 +384,6 @@ class AccountService {
       // Excluir conta
       await deleteDoc(doc(db, this.accountsCollection, accountId));
       
-      console.log('✅ Conta excluída com sucesso');
       return true;
     } catch (error) {
       console.error('❌ Erro ao excluir conta:', error);
@@ -420,8 +399,6 @@ class AccountService {
    */
   async getCashFlowReport(startDate, endDate) {
     try {
-      console.log('📊 Gerando relatório de fluxo de caixa:', { startDate, endDate });
-
       const accounts = await this.getAccounts({
         dataInicio: startDate,
         dataFim: endDate,
@@ -502,7 +479,6 @@ class AccountService {
       report.saldo.pagar = report.contasPagar.valorPendente;
       report.saldo.liquido = report.saldo.receber - report.saldo.pagar;
 
-      console.log('✅ Relatório de fluxo de caixa gerado');
       return report;
     } catch (error) {
       console.error('❌ Erro ao gerar relatório de fluxo de caixa:', error);

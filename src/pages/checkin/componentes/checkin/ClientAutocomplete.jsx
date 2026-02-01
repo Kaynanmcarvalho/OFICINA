@@ -40,8 +40,7 @@ const ClientAutocomplete = ({
           where('name', '>=', searchTerm),
           where('name', '<=', searchTerm + '\uf8ff'),
           limit(5)
-        );
-        
+
         const snapshot = await getDocs(nameQuery);
         const results = snapshot.docs.map(doc => ({
           id: doc.id,

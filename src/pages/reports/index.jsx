@@ -165,10 +165,10 @@ const ReportsPage = () => {
       <div className="px-2 sm:px-4 max-w-full overflow-hidden">
         <Outlet context={{ checkins, clients, vehicles, stats, dateRange, setDateRange }} />
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <div className="space-y-6 px-2 sm:px-4 max-w-full overflow-hidden">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

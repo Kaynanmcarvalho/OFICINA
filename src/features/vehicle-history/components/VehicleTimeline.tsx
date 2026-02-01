@@ -173,7 +173,7 @@ export function VehicleTimeline({
                     >
                       {EVENT_TYPE_LABELS[type]}
                     </button>
-                  );
+
                 })}
               </div>
             </div>
@@ -221,7 +221,7 @@ export function VehicleTimeline({
         </div>
       )}
     </div>
-  );
+
 }
 
 // Item da timeline

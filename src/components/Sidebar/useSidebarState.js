@@ -19,8 +19,7 @@ export function useSidebarState(defaultExpanded = true) {
         return parsed.isExpanded ?? defaultExpanded;
       }
     } catch (error) {
-      console.warn('Failed to load sidebar state from LocalStorage:', error);
-    }
+      }
     return defaultExpanded;
   });
 
@@ -33,7 +32,6 @@ export function useSidebarState(defaultExpanded = true) {
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (error) {
-      console.warn('Failed to save sidebar state to LocalStorage:', error);
       // Continua funcionando mesmo se LocalStorage falhar
     }
   }, [isExpanded]);

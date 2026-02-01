@@ -73,10 +73,10 @@ const CompatiblePartsList = ({ parts = [], onPartSelect, onShowEvidence, showOEM
         <span className="text-xs font-semibold">{level.label}</span>
         <span className="text-xs opacity-75">({score}%)</span>
       </div>
-    );
-  };
+  );
+};
 
-  if (parts.length === 0) {
+if (parts.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <Package className={`w-16 h-16 mb-4 ${isDarkMode ? 'text-gray-700' : 'text-gray-300'}`} />
@@ -87,10 +87,10 @@ const CompatiblePartsList = ({ parts = [], onPartSelect, onShowEvidence, showOEM
           Selecione um veículo para ver as peças compatíveis
         </p>
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <div className="space-y-4">
       {/* Header com filtros */}
       <div className="flex items-center justify-between">

@@ -93,7 +93,6 @@ class MaintenanceHistoryService {
       where('vehiclePlate', '==', vehiclePlate),
       where('empresaId', '==', empresaId),
       orderBy('serviceDate', 'desc')
-    );
 
     if (options?.limit) {
       q = query(q, limit(options.limit));
@@ -158,7 +157,6 @@ class MaintenanceHistoryService {
       where('empresaId', '==', empresaId),
       orderBy('serviceDate', 'desc'),
       limit(limitCount)
-    );
 
     const snapshot = await getDocs(q);
     return snapshot.docs.map(doc => this.convertDoc(doc));
@@ -285,7 +283,6 @@ class MaintenanceHistoryService {
     standardMaintenance.forEach(maintenance => {
       const lastService = records.find(r => 
         r.description.toLowerCase().includes(maintenance.service.toLowerCase())
-      );
 
       const lastMileage = lastService?.mileage || 0;
       const nextMileage = Math.ceil(currentMileage / maintenance.interval) * maintenance.interval;

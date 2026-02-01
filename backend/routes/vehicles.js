@@ -3,6 +3,11 @@ const router = express.Router();
 const axios = require('axios');
 const { scrapeKeplaca } = require('../services/keplacaScraper');
 const { getStats } = require('../services/vehicleDatabase');
+const { authenticate } = require('../middleware/auth');
+const { plateLimiter } = require('../middleware/rateLimiter');
+
+// Aplicar autenticação em todas as rotas
+router.use(authenticate);
 
 /**
  * GET /api/vehicles/database/stats
@@ -27,8 +32,9 @@ router.get('/database/stats', async (req, res) => {
  * GET /api/vehicles/plate/:plate
  * Consulta dados do veículo pela placa
  * PRIORIDADE: 1. Base própria (Firebase) → 2. APIs externas
+ * PROTEGIDO: Requer autenticação + rate limit
  */
-router.get('/plate/:plate', async (req, res) => {
+router.get('/plate/:plate', plateLimiter, async (req, res) => {
     try {
         const { plate } = req.params;
         const cleanPlate = plate.replace(/[^A-Z0-9]/g, '').toUpperCase();

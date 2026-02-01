@@ -9,6 +9,30 @@ import {
   deleteDocument,
   subscribeToCollection
 } from '../services/storeHelpers';
+import { checkOperationalLimit, recordOperation } from '../utils/operationalLimits';
+
+// CONFIGURAÇÕES DE SEGMENTAÇÃO
+const SEGMENTATION_CONFIG = {
+  vip: {
+    minTotalSpent: 5000,      // R$ 5.000+ gastos
+    minServices: 10,           // 10+ serviços
+    minFrequency: 0.5          // 0.5+ serviços/mês
+  },
+  regular: {
+    minServices: 3,            // 3+ serviços
+    maxInactiveDays: 90        // Ativo nos últimos 90 dias
+  },
+  new: {
+    maxServices: 2,            // Até 2 serviços
+    maxDaysSinceFirst: 30      // Cadastrado há menos de 30 dias
+  },
+  inactive: {
+    minInactiveDays: 90        // Sem serviço há 90+ dias
+  },
+  churn: {
+    minInactiveDays: 180       // Sem serviço há 180+ dias
+  }
+};
 
 export const useClientStore = create((set, get) => ({
   // State
@@ -18,11 +42,392 @@ export const useClientStore = create((set, get) => ({
   error: null,
   searchResults: [],
   migrationStatus: null,
+  segmentationConfig: SEGMENTATION_CONFIG,
 
   // Actions
   setLoading: (loading) => set({ isLoading: loading }),
   setError: (error) => set({ error }),
   clearError: () => set({ error: null }),
+
+  // ========== VALIDAÇÕES E PREVENÇÃO DE DUPLICIDADE ==========
+
+  // Validar CPF
+  validateCPF: (cpf) => {
+    if (!cpf) return { valid: false, error: 'CPF é obrigatório' };
+    
+    const cleaned = cpf.replace(/\D/g, '');
+    
+    if (cleaned.length !== 11) {
+      return { valid: false, error: 'CPF deve ter 11 dígitos' };
+    }
+    
+    // Validação básica de CPF (sequências repetidas)
+    if (/^(\d)\1{10}$/.test(cleaned)) {
+      return { valid: false, error: 'CPF inválido' };
+    }
+    
+    return { valid: true, normalized: cleaned };
+  },
+
+  // Validar CNPJ
+  validateCNPJ: (cnpj) => {
+    if (!cnpj) return { valid: true, normalized: '' }; // CNPJ é opcional
+    
+    const cleaned = cnpj.replace(/\D/g, '');
+    
+    if (cleaned.length !== 14) {
+      return { valid: false, error: 'CNPJ deve ter 14 dígitos' };
+    }
+    
+    // Validação básica de CNPJ (sequências repetidas)
+    if (/^(\d)\1{13}$/.test(cleaned)) {
+      return { valid: false, error: 'CNPJ inválido' };
+    }
+    
+    return { valid: true, normalized: cleaned };
+  },
+
+  // Validar telefone
+  validatePhone: (phone) => {
+    if (!phone) return { valid: false, error: 'Telefone é obrigatório' };
+    
+    const cleaned = phone.replace(/\D/g, '');
+    
+    if (cleaned.length < 10 || cleaned.length > 11) {
+      return { valid: false, error: 'Telefone inválido' };
+    }
+    
+    return { valid: true, normalized: cleaned };
+  },
+
+  // Validar email
+  validateEmail: (email) => {
+    if (!email) return { valid: false, error: 'Email é obrigatório' };
+    
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    if (!emailPattern.test(email)) {
+      return { valid: false, error: 'Email inválido' };
+    }
+    
+    return { valid: true, normalized: email.toLowerCase().trim() };
+  },
+
+  // Buscar clientes similares (prevenção de duplicidade)
+  findSimilarClients: (clientData) => {
+    const { clients } = get();
+    const similar = [];
+    
+    const normalizedName = clientData.name?.toLowerCase().trim();
+    const normalizedPhone = clientData.phone?.replace(/\D/g, '');
+    const normalizedCPF = clientData.cpf?.replace(/\D/g, '');
+    const normalizedCNPJ = clientData.cnpj?.replace(/\D/g, '');
+    
+    clients.forEach(existing => {
+      const reasons = [];
+      let score = 0;
+      
+      // Verificar CPF (match exato = 100 pontos)
+      if (normalizedCPF && existing.cpf?.replace(/\D/g, '') === normalizedCPF) {
+        reasons.push('CPF idêntico');
+        score += 100;
+      }
+      
+      // Verificar CNPJ (match exato = 100 pontos)
+      if (normalizedCNPJ && existing.cnpj?.replace(/\D/g, '') === normalizedCNPJ) {
+        reasons.push('CNPJ idêntico');
+        score += 100;
+      }
+      
+      // Verificar telefone (match exato = 80 pontos)
+      if (normalizedPhone && existing.phone?.replace(/\D/g, '') === normalizedPhone) {
+        reasons.push('Telefone idêntico');
+        score += 80;
+      }
+      
+      // Verificar nome (similaridade)
+      if (normalizedName && existing.name) {
+        const existingName = existing.name.toLowerCase().trim();
+        
+        // Nome exato = 60 pontos
+        if (normalizedName === existingName) {
+          reasons.push('Nome idêntico');
+          score += 60;
+        }
+        // Nome muito similar = 40 pontos
+        else if (normalizedName.includes(existingName) || existingName.includes(normalizedName)) {
+          reasons.push('Nome similar');
+          score += 40;
+        }
+      }
+      
+      // Se score > 50, considerar similar
+      if (score >= 50) {
+        similar.push({
+          client: existing,
+          score,
+          reasons,
+          isDuplicate: score >= 100 // CPF ou CNPJ idêntico
+        });
+      }
+    });
+    
+    // Ordenar por score (maior primeiro)
+    return similar.sort((a, b) => b.score - a.score);
+  },
+
+  // Validar dados do cliente
+  validateClientData: (clientData, excludeId = null) => {
+    const errors = [];
+    const warnings = [];
+    
+    // Validar nome
+    if (!clientData.name || clientData.name.trim().length < 3) {
+      errors.push('Nome deve ter no mínimo 3 caracteres');
+    }
+    
+    // Validar telefone
+    const phoneValidation = get().validatePhone(clientData.phone);
+    if (!phoneValidation.valid) {
+      errors.push(phoneValidation.error);
+    }
+    
+    // Validar CPF ou CNPJ (pelo menos um obrigatório)
+    const cpfValidation = get().validateCPF(clientData.cpf);
+    const cnpjValidation = get().validateCNPJ(clientData.cnpj);
+    
+    if (!cpfValidation.valid && !cnpjValidation.valid) {
+      errors.push('CPF ou CNPJ é obrigatório');
+    }
+    
+    // Validar email
+    if (clientData.email) {
+      const emailValidation = get().validateEmail(clientData.email);
+      if (!emailValidation.valid) {
+        errors.push(emailValidation.error);
+      }
+    } else {
+      warnings.push('Email não informado (recomendado para comunicação)');
+    }
+    
+    // Validar endereço
+    if (!clientData.address || clientData.address.trim().length < 10) {
+      warnings.push('Endereço não informado ou incompleto');
+    }
+    
+    // Buscar clientes similares (duplicidade)
+    const similarClients = get().findSimilarClients(clientData);
+    
+    // Filtrar clientes similares (excluir o próprio cliente se estiver editando)
+    const filteredSimilar = excludeId
+      ? similarClients.filter(s => s.client.id !== excludeId && s.client.firestoreId !== excludeId)
+      : similarClients;
+    
+    if (filteredSimilar.length > 0) {
+      const duplicates = filteredSimilar.filter(s => s.isDuplicate);
+      
+      if (duplicates.length > 0) {
+        errors.push(`Cliente já cadastrado: ${duplicates[0].reasons.join(', ')}`);
+      } else {
+        warnings.push(`${filteredSimilar.length} cliente(s) similar(es) encontrado(s)`);
+      }
+    }
+    
+    return {
+      valid: errors.length === 0,
+      errors,
+      warnings,
+      similarClients: filteredSimilar,
+      canCreate: errors.length === 0 || (errors.length === 1 && errors[0].includes('já cadastrado'))
+    };
+  },
+
+  // ========== SEGMENTAÇÃO DE CLIENTES ==========
+
+  // Calcular segmento do cliente
+  calculateClientSegment: (client) => {
+    const now = new Date();
+    const serviceHistory = client.serviceHistory || [];
+    const totalServices = serviceHistory.length;
+    const totalSpent = serviceHistory.reduce((sum, s) => sum + (s.value || 0), 0);
+    
+    // Calcular dias desde último serviço
+    let daysSinceLastService = Infinity;
+    if (client.lastServiceDate) {
+      const lastService = new Date(client.lastServiceDate);
+      daysSinceLastService = Math.floor((now - lastService) / (1000 * 60 * 60 * 24));
+    }
+    
+    // Calcular dias desde cadastro
+    let daysSinceCreated = 0;
+    if (client.createdAt) {
+      const created = new Date(client.createdAt);
+      daysSinceCreated = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+    }
+    
+    // Calcular frequência (serviços por mês)
+    let frequency = 0;
+    if (totalServices > 1 && serviceHistory.length >= 2) {
+      const firstService = new Date(serviceHistory[serviceHistory.length - 1].date);
+      const lastService = new Date(serviceHistory[0].date);
+      const monthsDiff = (lastService - firstService) / (1000 * 60 * 60 * 24 * 30);
+      frequency = monthsDiff > 0 ? totalServices / monthsDiff : 0;
+    }
+    
+    const config = SEGMENTATION_CONFIG;
+    
+    // Determinar segmento
+    let segment = 'new';
+    let segmentReason = '';
+    
+    // Churn (prioridade máxima)
+    if (daysSinceLastService >= config.churn.minInactiveDays) {
+      segment = 'churn';
+      segmentReason = `Sem serviço há ${daysSinceLastService} dias`;
+    }
+    // Inativo
+    else if (daysSinceLastService >= config.inactive.minInactiveDays) {
+      segment = 'inactive';
+      segmentReason = `Sem serviço há ${daysSinceLastService} dias`;
+    }
+    // VIP
+    else if (
+      totalSpent >= config.vip.minTotalSpent &&
+      totalServices >= config.vip.minServices &&
+      frequency >= config.vip.minFrequency
+    ) {
+      segment = 'vip';
+      segmentReason = `R$ ${totalSpent.toFixed(2)} gastos, ${totalServices} serviços, ${frequency.toFixed(1)} serviços/mês`;
+    }
+    // Regular
+    else if (
+      totalServices >= config.regular.minServices &&
+      daysSinceLastService <= config.regular.maxInactiveDays
+    ) {
+      segment = 'regular';
+      segmentReason = `${totalServices} serviços, ativo`;
+    }
+    // Novo
+    else if (
+      totalServices <= config.new.maxServices ||
+      daysSinceCreated <= config.new.maxDaysSinceFirst
+    ) {
+      segment = 'new';
+      segmentReason = `${totalServices} serviço(s), cadastrado há ${daysSinceCreated} dias`;
+    }
+    
+    return {
+      segment,
+      segmentReason,
+      metrics: {
+        totalServices,
+        totalSpent,
+        frequency,
+        daysSinceLastService,
+        daysSinceCreated
+      }
+    };
+  },
+
+  // Segmentar todos os clientes
+  segmentAllClients: () => {
+    const { clients } = get();
+    
+    const segmented = clients.map(client => ({
+      ...client,
+      ...get().calculateClientSegment(client)
+    }));
+    
+    return segmented;
+  },
+
+  // Obter clientes por segmento
+  getClientsBySegment: (segment) => {
+    const segmented = get().segmentAllClients();
+    return segmented.filter(c => c.segment === segment);
+  },
+
+  // Identificar clientes em risco de churn
+  getChurnRiskClients: () => {
+    const { clients } = get();
+    const now = new Date();
+    const riskClients = [];
+    
+    clients.forEach(client => {
+      if (!client.lastServiceDate) return;
+      
+      const lastService = new Date(client.lastServiceDate);
+      const daysSince = Math.floor((now - lastService) / (1000 * 60 * 60 * 24));
+      
+      // Cliente em risco se:
+      // - Estava ativo (< 90 dias) e agora está entre 60-90 dias
+      // - Ou está entre 90-180 dias (inativo mas não churn ainda)
+      if (daysSince >= 60 && daysSince < 180) {
+        const serviceHistory = client.serviceHistory || [];
+        const totalServices = serviceHistory.length;
+        
+        // Calcular frequência esperada
+        let expectedFrequency = 0;
+        if (totalServices > 1) {
+          const firstService = new Date(serviceHistory[serviceHistory.length - 1].date);
+          const monthsDiff = (lastService - firstService) / (1000 * 60 * 60 * 24 * 30);
+          expectedFrequency = monthsDiff > 0 ? totalServices / monthsDiff : 0;
+        }
+        
+        riskClients.push({
+          client,
+          daysSinceLastService: daysSince,
+          expectedFrequency,
+          riskLevel: daysSince >= 90 ? 'high' : 'medium',
+          suggestedAction: daysSince >= 90 
+            ? 'Campanha de reativação urgente'
+            : 'Lembrete de manutenção preventiva'
+        });
+      }
+    });
+    
+    return riskClients.sort((a, b) => b.daysSinceLastService - a.daysSinceLastService);
+  },
+
+  // ========== LIFETIME VALUE (LTV) ==========
+
+  // Calcular LTV do cliente
+  calculateLTV: (client) => {
+    const serviceHistory = client.serviceHistory || [];
+    const totalServices = serviceHistory.length;
+    
+    if (totalServices === 0) {
+      return {
+        currentLTV: 0,
+        projectedLTV: 0,
+        averageServiceValue: 0,
+        frequency: 0
+      };
+    }
+    
+    const totalSpent = serviceHistory.reduce((sum, s) => sum + (s.value || 0), 0);
+    const averageServiceValue = totalSpent / totalServices;
+    
+    // Calcular frequência (serviços por mês)
+    let frequency = 0;
+    if (totalServices > 1) {
+      const firstService = new Date(serviceHistory[serviceHistory.length - 1].date);
+      const lastService = new Date(serviceHistory[0].date);
+      const monthsDiff = (lastService - firstService) / (1000 * 60 * 60 * 24 * 30);
+      frequency = monthsDiff > 0 ? totalServices / monthsDiff : 0;
+    }
+    
+    // Projetar LTV para 12 meses
+    const projectedServices = frequency * 12;
+    const projectedLTV = projectedServices * averageServiceValue;
+    
+    return {
+      currentLTV: totalSpent,
+      projectedLTV,
+      averageServiceValue,
+      frequency
+    };
+  },
 
   // Migration from localStorage
   migrateFromLocalStorage: async () => {
@@ -35,7 +440,6 @@ export const useClientStore = create((set, get) => ({
       if (existingMigration) {
         const status = JSON.parse(existingMigration);
         if (status.isComplete) {
-          console.log('[Migration] Already completed:', status);
           set({ migrationStatus: status });
           return status;
         }
@@ -44,17 +448,13 @@ export const useClientStore = create((set, get) => ({
       // Get clients from localStorage
       const localClientsStr = localStorage.getItem(STORAGE_KEY);
       if (!localClientsStr) {
-        console.log('[Migration] No clients found in localStorage');
         return null;
       }
 
       const localClients = JSON.parse(localClientsStr);
       if (localClients.length === 0) {
-        console.log('[Migration] Empty clients array in localStorage');
         return null;
       }
-
-      console.log(`[Migration] Found ${localClients.length} clients in localStorage`);
 
       const migrationStatus = {
         isComplete: false,
@@ -67,12 +467,8 @@ export const useClientStore = create((set, get) => ({
 
       // Fetch existing clients from Firebase
       const existingClients = get().clients;
-      console.log(`[Migration] Existing clients in Firebase: ${existingClients.length}`);
-      
       for (const localClient of localClients) {
         try {
-          console.log(`[Migration] Processing client: ${localClient.name}`, localClient);
-          
           // Check for duplicates by clientId, phone, or CPF
           const isDuplicate = existingClients.some(existing => {
             const match = existing.clientId === localClient.id ||
@@ -81,23 +477,16 @@ export const useClientStore = create((set, get) => ({
               (localClient.cpf && existing.cpf === localClient.cpf);
             
             if (match) {
-              console.log(`[Migration] Found duplicate match:`, {
-                existing: { clientId: existing.clientId, phone: existing.phone, cpf: existing.cpf },
-                local: { id: localClient.id, clientId: localClient.clientId, phone: localClient.phone, cpf: localClient.cpf }
-              });
-            }
+              }
             
             return match;
           });
 
           if (isDuplicate) {
-            console.log(`[Migration] Skipping duplicate client: ${localClient.name}`);
             migrationStatus.skippedCount++;
             continue;
           }
           
-          console.log(`[Migration] Client ${localClient.name} is not a duplicate, migrating...`);
-
           // Prepare client data for Firebase
           const clientData = {
             name: localClient.name,
@@ -117,8 +506,7 @@ export const useClientStore = create((set, get) => ({
           
           if (result.success) {
             migrationStatus.migratedCount++;
-            console.log(`[Migration] Migrated client: ${localClient.name}`);
-          } else {
+            } else {
             migrationStatus.failedCount++;
             migrationStatus.errors.push(`Failed to migrate ${localClient.name}: ${result.error}`);
           }
@@ -134,8 +522,6 @@ export const useClientStore = create((set, get) => ({
       // Save migration status
       localStorage.setItem(MIGRATION_KEY, JSON.stringify(migrationStatus));
       set({ migrationStatus });
-
-      console.log('[Migration] Complete:', migrationStatus);
 
       // Show success notification
       if (migrationStatus.migratedCount > 0) {
@@ -175,10 +561,10 @@ export const useClientStore = create((set, get) => ({
       
       // Show error notification
       toast.error(
+            );
         'Falha ao migrar dados. Seus dados estão seguros no armazenamento local.',
         { duration: 7000 }
-      );
-      
+
       return null;
     }
   },
@@ -187,15 +573,86 @@ export const useClientStore = create((set, get) => ({
   createClient: async (clientData) => {
     set({ isLoading: true, error: null });
     try {
+      const userId = sessionStorage.getItem('userId') || 'unknown';
+      const userName = sessionStorage.getItem('userName') || 'Usuário';
+      
+      // 🔥 BLAST RADIUS: Verificar limite operacional
+      const limitCheck = checkOperationalLimit(userId, 'CREATE_CLIENT');
+      if (!limitCheck.allowed) {
+        throw new Error(limitCheck.error);
+      }
+      
+      // VALIDAÇÃO ROBUSTA
+      const validation = get().validateClientData(clientData);
+      
+      if (!validation.canCreate) {
+        throw new Error(`Validação falhou:\n${validation.errors.join('\n')}`);
+      }
+      
+      // Mostrar warnings (não bloqueia, mas alerta)
+      if (validation.warnings.length > 0) {
+        validation.warnings.forEach(w => toast.warning(w, { duration: 3000 }));
+      }
+      
+      // Alertar sobre clientes similares
+      if (validation.similarClients.length > 0) {
+        const similar = validation.similarClients[0];
+        toast.warning(
+          `Cliente similar encontrado: ${similar.client.name} - ${similar.reasons.join(', ')}`,
+          { duration: 5000 }
+        );
+      }
+      
+      const now = new Date().toISOString();
+      
       const newClient = {
         ...clientData,
         clientId: `CLI-${Date.now()}`,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        
+        // Dados normalizados
+        name: clientData.name.trim(),
+        phone: clientData.phone.replace(/\D/g, ''),
+        cpf: clientData.cpf?.replace(/\D/g, '') || '',
+        cnpj: clientData.cnpj?.replace(/\D/g, '') || '',
+        email: clientData.email?.toLowerCase().trim() || '',
+        address: clientData.address?.trim() || '',
+        
+        // Novos campos
+        birthDate: clientData.birthDate || null,
+        howFound: clientData.howFound || '', // Como conheceu a oficina
+        preferences: clientData.preferences || {
+          preferredMechanic: '',
+          preferredTime: '',
+          observations: ''
+        },
+        complaints: [], // Histórico de reclamações
+        compliments: [], // Histórico de elogios
+        photoUrl: clientData.photoUrl || null,
+        
+        // Metadados
+        createdAt: now,
+        updatedAt: now,
+        createdBy: userId,
+        createdByName: userName,
+        
+        // Dados de serviço
         totalServices: 0,
         lastServiceDate: null,
         vehicles: clientData.vehicles || [],
         serviceHistory: [],
+        
+        // Segmentação (calculada automaticamente)
+        segment: 'new',
+        segmentReason: 'Cliente novo',
+        
+        // Auditoria
+        history: [{
+          action: 'created',
+          timestamp: now,
+          userId,
+          userName,
+          changes: 'Cliente criado'
+        }]
       };
 
       const clientWithId = await addDocument('clients', newClient);
@@ -205,20 +662,84 @@ export const useClientStore = create((set, get) => ({
         isLoading: false,
       }));
 
-      return { success: true, data: clientWithId };
+      // 🔥 AUDITORIA: Registrar operação
+      recordOperation(userId, 'CREATE_CLIENT', {
+        clientId: clientWithId.id,
+        remaining: limitCheck.remaining
+      });
+
+      toast.success('Cliente cadastrado com sucesso!');
+
+      return { success: true, data: clientWithId, warnings: validation.warnings };
     } catch (error) {
+      console.error('❌ Erro ao criar cliente:', error);
       set({ error: error.message, isLoading: false });
+      toast.error(error.message);
       return { success: false, error: error.message };
     }
   },
 
   // Update client
-  updateClient: async (clientId, updates) => {
+  updateClient: async (clientId, updates, reason = 'Atualização de dados') => {
     set({ isLoading: true, error: null });
     try {
+      const userId = sessionStorage.getItem('userId') || 'unknown';
+      const userName = sessionStorage.getItem('userName') || 'Usuário';
+      const currentClient = get().clients.find(c => c.id === clientId || c.firestoreId === clientId);
+      
+      if (!currentClient) {
+        throw new Error('Cliente não encontrado');
+      }
+      
+      // Validar dados se estiver atualizando campos críticos
+      if (updates.name || updates.phone || updates.cpf || updates.cnpj || updates.email) {
+        const dataToValidate = {
+          name: updates.name || currentClient.name,
+          phone: updates.phone || currentClient.phone,
+          cpf: updates.cpf || currentClient.cpf,
+          cnpj: updates.cnpj || currentClient.cnpj,
+          email: updates.email || currentClient.email,
+          address: updates.address || currentClient.address
+        };
+        
+        const validation = get().validateClientData(dataToValidate, clientId);
+        
+        if (!validation.valid) {
+          throw new Error(`Validação falhou:\n${validation.errors.join('\n')}`);
+        }
+        
+        if (validation.warnings.length > 0) {
+          validation.warnings.forEach(w => toast.warning(w, { duration: 3000 }));
+        }
+      }
+      
+      const now = new Date().toISOString();
+      
+      // Registrar mudanças para auditoria
+      const changes = {};
+      Object.keys(updates).forEach(key => {
+        if (currentClient[key] !== updates[key]) {
+          changes[key] = {
+            before: currentClient[key],
+            after: updates[key]
+          };
+        }
+      });
+      
       const updatedData = {
         ...updates,
-        updatedAt: new Date().toISOString(),
+        updatedAt: now,
+        history: [
+          ...(currentClient.history || []),
+          {
+            action: 'updated',
+            timestamp: now,
+            userId,
+            userName,
+            reason,
+            changes
+          }
+        ]
       };
 
       await updateDocument('clients', clientId, updatedData);
@@ -235,9 +756,13 @@ export const useClientStore = create((set, get) => ({
         isLoading: false,
       }));
 
+      toast.success('Cliente atualizado com sucesso!');
+
       return { success: true };
     } catch (error) {
+      console.error('❌ Erro ao atualizar cliente:', error);
       set({ error: error.message, isLoading: false });
+      toast.error(error.message);
       return { success: false, error: error.message };
     }
   },
@@ -275,12 +800,9 @@ export const useClientStore = create((set, get) => ({
 
       set({ clients, isLoading: false });
 
-      console.log('[fetchClients] Loaded clients from Firebase:', clients.length);
-
       // Run migration after fetching clients (only once)
       const migrationStatus = get().migrationStatus;
       if (!migrationStatus) {
-        console.log('[fetchClients] Starting migration...');
         await get().migrateFromLocalStorage();
         
         // Fetch again after migration to get newly migrated clients
@@ -289,8 +811,6 @@ export const useClientStore = create((set, get) => ({
         });
         
         set({ clients: updatedClients });
-        console.log('[fetchClients] Clients after migration:', updatedClients.length);
-        
         return { success: true, data: updatedClients };
       }
 
@@ -346,17 +866,9 @@ export const useClientStore = create((set, get) => ({
       
       // Log performance
       const duration = performance.now() - startTime;
-      console.log('[Smart Search]', {
-        term: searchTerm,
-        totalClients: allClients.length,
-        results: searchResults.length,
-        duration: `${Math.round(duration)}ms`,
-        timestamp: new Date().toISOString()
-      });
 
       // Warn if search is slow
       if (duration > 2000) {
-        console.warn('[Search Performance] Search took longer than 2 seconds:', duration);
         toast.warning('A busca está demorando mais que o esperado. Considere otimizar os índices do Firebase.');
       }
 
@@ -449,31 +961,71 @@ export const useClientStore = create((set, get) => ({
     const totalServices = serviceHistory.length;
     const totalSpent = serviceHistory.reduce((sum, service) => sum + (service.value || 0), 0);
     
-    // Calculate frequency (services per month)
+    // Calcular frequência (serviços por mês)
+    let frequency = 0;
     if (totalServices > 1) {
       const firstService = new Date(serviceHistory[serviceHistory.length - 1].date);
       const lastService = new Date(serviceHistory[0].date);
       const monthsDiff = (lastService - firstService) / (1000 * 60 * 60 * 24 * 30);
-      const frequency = monthsDiff > 0 ? totalServices / monthsDiff : 0;
-      
-      return {
-        totalServices,
-        totalSpent,
-        averageServiceValue: totalSpent / totalServices,
-        frequency: Math.round(frequency * 100) / 100, // services per month
-        lastServiceDate: client.lastServiceDate,
-        vehicleCount: (client.vehicles || []).length,
-      };
+      frequency = monthsDiff > 0 ? totalServices / monthsDiff : 0;
     }
+    
+    // Calcular segmento
+    const segmentation = get().calculateClientSegment(client);
+    
+    // Calcular LTV
+    const ltv = get().calculateLTV(client);
     
     return {
       totalServices,
       totalSpent,
-      averageServiceValue: totalSpent,
-      frequency: 0,
+      averageServiceValue: totalServices > 0 ? totalSpent / totalServices : 0,
+      frequency: Math.round(frequency * 100) / 100,
       lastServiceDate: client.lastServiceDate,
       vehicleCount: (client.vehicles || []).length,
+      segment: segmentation.segment,
+      segmentReason: segmentation.segmentReason,
+      ltv: ltv.currentLTV,
+      projectedLTV: ltv.projectedLTV
     };
+  },
+
+  // Get statistics with segmentation
+  getAllStatistics: () => {
+    const { clients } = get();
+    const segmented = get().segmentAllClients();
+    
+    const stats = {
+      total: clients.length,
+      vip: segmented.filter(c => c.segment === 'vip').length,
+      regular: segmented.filter(c => c.segment === 'regular').length,
+      new: segmented.filter(c => c.segment === 'new').length,
+      inactive: segmented.filter(c => c.segment === 'inactive').length,
+      churn: segmented.filter(c => c.segment === 'churn').length,
+      
+      // Métricas financeiras
+      totalLTV: segmented.reduce((sum, c) => {
+        const ltv = get().calculateLTV(c);
+        return sum + ltv.currentLTV;
+      }, 0),
+      
+      averageLTV: clients.length > 0
+        ? segmented.reduce((sum, c) => {
+            const ltv = get().calculateLTV(c);
+            return sum + ltv.currentLTV;
+          }, 0) / clients.length
+        : 0,
+      
+      // Taxa de churn
+      churnRate: clients.length > 0
+        ? (segmented.filter(c => c.segment === 'churn').length / clients.length) * 100
+        : 0,
+      
+      // Clientes em risco
+      atRisk: get().getChurnRiskClients().length
+    };
+    
+    return stats;
   },
 
   // Get top clients by service count

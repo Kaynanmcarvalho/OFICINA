@@ -63,10 +63,10 @@ export const VehiclePartsProfile: React.FC<VehiclePartsProfileProps> = ({
           </span>
         </div>
       </div>
-    );
-  }
+  );
+}
 
-  if (error) {
+if (error) {
     return (
       <div className={`bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 ${className}`}>
         <div className="flex items-center justify-center gap-3 text-red-500">
@@ -74,10 +74,10 @@ export const VehiclePartsProfile: React.FC<VehiclePartsProfileProps> = ({
           <span>{error}</span>
         </div>
       </div>
-    );
-  }
+  );
+}
 
-  if (!vehicleProfile) return null;
+if (!vehicleProfile) return null;
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {

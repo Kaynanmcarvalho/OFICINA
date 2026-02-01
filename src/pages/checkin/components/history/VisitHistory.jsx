@@ -31,10 +31,10 @@ const VisitHistory = ({ history, loading, className = '' }) => {
       <div className={`py-8 ${className}`}>
         <LoadingSpinner text="Carregando histórico..." />
       </div>
-    );
-  }
+  );
+}
 
-  if (!history || history.length === 0) {
+if (!history || history.length === 0) {
     return (
       <div className={`text-center py-6 ${className}`}>
         <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-3">
@@ -44,10 +44,10 @@ const VisitHistory = ({ history, loading, className = '' }) => {
           Nenhuma visita anterior encontrada
         </p>
       </div>
-    );
-  }
+  );
+}
 
-  return (
+return (
     <div className={className}>
       {/* Header */}
       <div className="flex items-center justify-between mb-3">

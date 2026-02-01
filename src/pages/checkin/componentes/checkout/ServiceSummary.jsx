@@ -340,7 +340,7 @@ const ServiceSummary = ({
         )}
       </AnimatePresence>
     </div>
-  );
+
 };
 
 // Componente auxiliar para cards de informação

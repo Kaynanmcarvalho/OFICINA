@@ -15,23 +15,19 @@ class ConfigService {
       // Sempre usar o cache com chave do usuário master
       const cacheKey = this.MASTER_USER_ID;
       if (this.cache.has(cacheKey)) {
-        console.log('📦 Usando configurações do cache (usuário master)');
         return this.cache.get(cacheKey);
       }
 
       // Sempre buscar configurações do usuário master
-      console.log(`🔧 Carregando configurações do usuário master: ${this.MASTER_USER_ID}`);
       const masterConfigRef = doc(db, 'configuracoes', this.MASTER_USER_ID);
       const masterConfigSnap = await getDoc(masterConfigRef);
       
       if (masterConfigSnap.exists()) {
-        console.log('✅ Configurações do usuário master carregadas');
         const config = masterConfigSnap.data();
         this.cache.set(cacheKey, config);
         return config;
       } else {
         // Se não existir configurações do usuário master, criar configurações padrão
-        console.log('🆕 Criando configurações padrão para o usuário master');
         const defaultConfig = this.getDefaultConfig();
         await this.saveMasterConfig(defaultConfig);
         return defaultConfig;
@@ -47,20 +43,14 @@ class ConfigService {
     try {
       const currentUser = auth.currentUser;
       if (!currentUser) {
-        console.warn('Usuário não autenticado para carregar configurações');
         const defaultConfig = this.getDefaultConfig();
-        console.log('Retornando configurações padrão (usuário não autenticado):', defaultConfig);
         return defaultConfig;
       }
       
       const config = await this.getConfig(currentUser.uid);
-      console.log('Configurações obtidas para usuário:', currentUser.uid, config);
-      
       // Se as configurações estão vazias ou não têm as propriedades de etiqueta, usar padrão
       if (!config || !config.impressoraEtiquetas) {
-        console.warn('Configurações de etiqueta não encontradas, usando padrão');
         const defaultConfig = this.getDefaultConfig();
-        console.log('Configurações padrão aplicadas:', defaultConfig);
         return defaultConfig;
       }
       
@@ -68,7 +58,6 @@ class ConfigService {
     } catch (error) {
       console.error('Erro ao carregar configurações:', error);
       const defaultConfig = this.getDefaultConfig();
-      console.log('Retornando configurações padrão (erro):', defaultConfig);
       return defaultConfig;
     }
   }
@@ -99,7 +88,6 @@ class ConfigService {
   async saveConfig(userId, config) {
     try {
       // Sempre salvar nas configurações do usuário master
-      console.log(`💾 Salvando configurações no usuário master: ${this.MASTER_USER_ID}`);
       const configRef = doc(db, 'configuracoes', this.MASTER_USER_ID);
       const configData = {
         ...config,
@@ -123,7 +111,6 @@ class ConfigService {
   async updateConfig(userId, key, value) {
     try {
       // Sempre atualizar configurações do usuário master
-      console.log(`🔄 Atualizando configuração no usuário master: ${key}`);
       const configRef = doc(db, 'configuracoes', this.MASTER_USER_ID);
       const updateData = {
         [key]: value,

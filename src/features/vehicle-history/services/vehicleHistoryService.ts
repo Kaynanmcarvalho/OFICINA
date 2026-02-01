@@ -64,7 +64,6 @@ class VehicleHistoryService {
       where('empresaId', '==', empresaId),
       orderBy('eventDate', 'desc'),
       limit(limitCount)
-    );
 
     const snapshot = await getDocs(q);
     let records = snapshot.docs.map(doc => this.convertHistoryDoc(doc));
@@ -88,7 +87,7 @@ class VehicleHistoryService {
         records = records.filter(r => 
           r.title.toLowerCase().includes(query) ||
           r.description.toLowerCase().includes(query)
-        );
+
       }
     }
 
@@ -109,7 +108,6 @@ class VehicleHistoryService {
       where('plate', '==', vehiclePlate),
       where('empresaId', '==', empresaId),
       limit(1)
-    );
 
     const snapshot = await getDocs(q);
 
@@ -256,7 +254,7 @@ class VehicleHistoryService {
       stats.lastServiceDate = lastServiceDate;
       stats.daysSinceLastService = Math.floor(
         (Date.now() - lastServiceDate.getTime()) / (1000 * 60 * 60 * 24)
-      );
+
     }
 
     return stats;
@@ -467,8 +465,7 @@ class VehicleHistoryService {
       const profile = await this.getOrCreateProfile(vehiclePlate, empresaId);
       await this.updateProfile(profile.id, { updatedAt: new Date() });
     } catch (error) {
-      console.warn('Erro ao atualizar última atividade:', error);
-    }
+      }
   }
 
   private getEmptyStats(): VehicleStats {

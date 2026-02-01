@@ -83,7 +83,7 @@ const TechnicalPanel = ({ vehicleData }) => {
                 </p>
               </div>
             </motion.div>
-          );
+
         })}
       </div>
 

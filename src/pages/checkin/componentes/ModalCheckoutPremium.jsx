@@ -287,6 +287,7 @@ const ModalCheckoutPremium = ({ isOpen, onClose, onSuccess, checkinData }) => {
         budget.status === 'approved' && 
         (budget.checkinId === checkinData?.id || budget.checkinId === checkinData?.firestoreId || budget.vehiclePlate === checkinData?.plate)
       );
+
       if (approvedBudget?.items) {
         setBudgetData(approvedBudget);
         const services = [], parts = [];
@@ -690,7 +691,6 @@ const ModalCheckoutPremium = ({ isOpen, onClose, onSuccess, checkinData }) => {
                         <Icons.Payment className="w-5 h-5" style={{ color: 'var(--brand-accent)' }} />
                         <span className="text-sm font-semibold" style={{ color: 'var(--brand-text)' }}>Forma de Pagamento</span>
                       </div>
-                      
                       <div className="grid grid-cols-5 gap-3">
                         {PAYMENT_METHODS.map(method => {
                           const Icon = method.icon;
@@ -707,6 +707,7 @@ const ModalCheckoutPremium = ({ isOpen, onClose, onSuccess, checkinData }) => {
                               <span className="text-xs font-medium block" style={{ color: isSelected ? method.color : 'var(--brand-text-muted)' }}>{method.label}</span>
                             </motion.button>
                           );
+
                         })}
                       </div>
                       {errors.metodoPagamento && <p className="mt-3 text-xs font-medium" style={{ color: '#EF4444' }}>{errors.metodoPagamento}</p>}
@@ -730,7 +731,8 @@ const ModalCheckoutPremium = ({ isOpen, onClose, onSuccess, checkinData }) => {
                                 <span className="text-sm font-bold block" style={{ color: isSelected ? '#FFFFFF' : 'var(--brand-text)' }}>{n}x</span>
                                 <span className="text-[10px] block mt-0.5" style={{ color: isSelected ? 'rgba(255,255,255,0.7)' : 'var(--brand-text-muted)' }}>R$ {valorParcela}</span>
                               </motion.button>
-                            );
+                          );
+
                           })}
                         </div>
                       </motion.div>

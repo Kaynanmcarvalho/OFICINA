@@ -24,7 +24,6 @@ export const searchVehicleImage = async (vehicleName) => {
 
   // Se API foi desabilitada devido a problemas, retorna null
   if (apiDisabled) {
-    console.warn('[VehicleImageService] API desabilitada temporariamente');
     return null;
   }
 
@@ -32,9 +31,6 @@ export const searchVehicleImage = async (vehicleName) => {
     const encodedName = encodeURIComponent(vehicleName.trim());
     const url = `${API_BASE_URL}/search?name=${encodedName}`;
     
-    console.log('[VehicleImageService] Buscando imagem:', vehicleName);
-    console.log('[VehicleImageService] URL:', url);
-
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
 
@@ -49,14 +45,12 @@ export const searchVehicleImage = async (vehicleName) => {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      console.warn(`[VehicleImageService] API retornou ${response.status} para: ${vehicleName}`);
       return null;
     }
 
     const result = await response.json();
 
     if (result.success && result.data?.imageUrl) {
-      console.log('[VehicleImageService] ✅ Imagem encontrada:', result.data.source);
       return {
         imageUrl: result.data.imageUrl,
         originalName: result.data.originalName || vehicleName,
@@ -69,20 +63,17 @@ export const searchVehicleImage = async (vehicleName) => {
       };
     }
 
-    console.warn('[VehicleImageService] Nenhuma imagem encontrada para:', vehicleName);
     return null;
 
   } catch (error) {
     lastError = error;
 
     if (error.name === 'AbortError') {
-      console.warn('[VehicleImageService] Timeout na busca de imagem');
       return null;
     }
 
     // Se for erro de CORS ou rede, desabilita API temporariamente
     if (error.name === 'TypeError' || error.message?.includes('fetch') || error.message?.includes('network')) {
-      console.warn(`[VehicleImageService] API indisponível - desabilitando por 2 minutos`);
       apiDisabled = true;
       
       // Reabilita após 2 minutos
@@ -151,7 +142,6 @@ export const searchVehicleImageCached = async (vehicleName) => {
   if (imageCache.has(cacheKey)) {
     const cached = imageCache.get(cacheKey);
     if (Date.now() - cached.timestamp < CACHE_TTL) {
-      console.log('[VehicleImageService] Cache hit:', cacheKey);
       return { ...cached.data, cached: true };
     }
     imageCache.delete(cacheKey);
