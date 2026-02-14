@@ -1,9 +1,10 @@
 # 🚀 TORQ AI - Sistema Completo de Gestão para Oficinas
 
+Agradeço a dedicação de Renier meu grande amigo pelo Design impecavel!
 ## 📊 Status: 90% COMPLETO
 
 **Versão**: 2.1.0  
-**Data**: 17 de Janeiro de 2025  
+**Data**: 17 de Janeiro de 2025 - 13/02/2026 
 **Progresso**: 🟢 7/10 funcionalidades completas  
 
 ---
@@ -374,30 +375,16 @@ MIT License - veja [LICENSE](LICENSE) para detalhes.
 
 Agradecemos a toda equipe de desenvolvimento, designers, testers e especialmente aos usuários beta que nos ajudaram a chegar até aqui.
 
----
 
-## 🌟 Showcase
-
-### Screenshots
-
-![Dashboard](docs/images/dashboard.png)
-![Auto Diagnóstico](docs/images/diagnosis.png)
-![Assistente de Voz](docs/images/voice.png)
-![Análise de Custos](docs/images/costs.png)
-
-### Vídeos
-
-- [Demo Completo](https://youtube.com/...)
-- [Auto Diagnóstico](https://youtube.com/...)
-- [Assistente de Voz](https://youtube.com/...)
 
 ---
+
 
 **Versão**: 2.1.0  
 **Data**: 17 de Janeiro de 2025  
 **Status**: 🟢 90% COMPLETO  
-**Próxima Release**: 3.0.0 (Março 2025)  
+**Próxima Release**: 3.0.0 (13/02/2025)  
 
-**Desenvolvido com ❤️ pela Equipe Torq AI**
+**Desenvolvido com ❤️ pela Equipe Torq AI Renier e Kaynan**
 
 **TRANSFORMANDO O MERCADO AUTOMOTIVO! 🚀🎯💪**
